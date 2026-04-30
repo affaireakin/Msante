@@ -1,26 +1,17 @@
 import type { User } from '@supabase/supabase-js'
 import type { UserProfile, Practitioner, DocumentType } from './database'
+import type { PatientOnboardingFormData, PractitionerStep1FormData } from '@/features/auth/schemas/authSchemas'
 
 export interface AuthResult {
   user: User | null
   error: string | null
 }
 
-export interface PatientOnboardingData {
-  full_name: string
-  phone: string
-  country: string
-  date_of_birth: string
-  language: string
-}
+// Re-export Zod-inferred types as canonical types
+export type PatientOnboardingData = PatientOnboardingFormData
+export type PractitionerOnboardingStep1Data = PractitionerStep1FormData
 
-export interface PractitionerOnboardingData {
-  speciality: string
-  bio: string
-  languages: string[]
-  session_price: number
-  session_currency: string
-  session_duration_min: number
+export interface PractitionerOnboardingData extends PractitionerOnboardingStep1Data {
   documents: Array<{
     document_type: DocumentType
     uri: string
@@ -28,4 +19,4 @@ export interface PractitionerOnboardingData {
   }>
 }
 
-export type { User, UserProfile, Practitioner }
+export type { User, UserProfile, Practitioner, DocumentType }

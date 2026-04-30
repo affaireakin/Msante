@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native'
+import { View, Text, TouchableOpacity, SafeAreaView, Alert } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,9 +18,14 @@ export default function ForgotPasswordScreen() {
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     setLoading(true)
-    await authService.resetPassword(data.email)
-    setLoading(false)
-    setSent(true)
+    try {
+      await authService.resetPassword(data.email)
+      setSent(true)
+    } catch (e) {
+      Alert.alert('Erreur', e instanceof Error ? e.message : 'Impossible d\'envoyer le lien')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
