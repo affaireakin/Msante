@@ -1,0 +1,10 @@
+{
+  "name": "m-sante",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "dev:mobile": "pnpm --filter mobile start",
+    "typecheck": "pnpm --filter mobile tsc --noEmit",
+    "test": "pnpm --filter mobile test"
+  }
+}
