@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Stack, useRouter, useSegments } from 'expo-router'
+import { Providers } from './_providers'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { supabase, fetchUserProfile, fetchPractitionerProfile } from '@/services/supabase'
 
@@ -62,5 +63,9 @@ export default function RootLayout() {
     }
   }, [isAuthenticated, profile, isLoading])
 
-  return <Stack screenOptions={{ headerShown: false }} />
+  return (
+    <Providers>
+      <Stack screenOptions={{ headerShown: false }} />
+    </Providers>
+  )
 }
