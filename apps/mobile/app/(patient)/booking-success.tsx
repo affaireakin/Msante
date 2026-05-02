@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useBookingStore } from '@/features/booking/store/bookingStore'
 import { PrimaryButton, GlassCard } from '@/components/ui'
@@ -7,7 +7,7 @@ const SESSION_LABELS: Record<string, string> = { video: 'Vidéo', audio: 'Audio'
 
 export default function BookingSuccessScreen() {
   const router = useRouter()
-  const { practitionerName, selectedSlot, sessionType, reset } = useBookingStore()
+  const { practitionerName, selectedSlot, sessionType, appointmentId, reset } = useBookingStore()
 
   const handleHome = () => {
     reset()
@@ -43,6 +43,24 @@ export default function BookingSuccessScreen() {
           </View>
         ) : null)}
       </GlassCard>
+
+      {sessionType === 'video' && appointmentId && (
+        <TouchableOpacity
+          onPress={() => router.push({
+            pathname: '/(patient)/consultation/waiting',
+            params: {
+              appointmentId,
+              practitionerName: practitionerName ?? '',
+              scheduledAt: selectedSlot?.date
+                ? `${selectedSlot.date}T${selectedSlot.startTime ?? '00:00'}:00`
+                : new Date().toISOString(),
+            },
+          })}
+          className="w-full border border-primary rounded-full py-3.5 items-center mb-2"
+        >
+          <Text className="text-primary font-semibold font-manrope">Accéder à la salle d'attente 📹</Text>
+        </TouchableOpacity>
+      )}
 
       <PrimaryButton label="Retour à l'accueil" onPress={handleHome} />
     </SafeAreaView>
