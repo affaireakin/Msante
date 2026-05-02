@@ -24,15 +24,17 @@ CREATE INDEX idx_consultations_status ON public.consultations(status);
 -- RLS
 ALTER TABLE public.consultations ENABLE ROW LEVEL SECURITY;
 
+-- Patient: SELECT only
 CREATE POLICY "patient_own_consultations" ON public.consultations
-  FOR ALL USING (
+  FOR SELECT USING (
     appointment_id IN (
       SELECT id FROM public.appointments WHERE patient_id = auth.uid()
     )
   );
 
+-- Practitioner: SELECT only
 CREATE POLICY "practitioner_own_consultations" ON public.consultations
-  FOR ALL USING (
+  FOR SELECT USING (
     appointment_id IN (
       SELECT a.id FROM public.appointments a
       JOIN public.practitioners p ON p.id = a.practitioner_id
@@ -40,20 +42,30 @@ CREATE POLICY "practitioner_own_consultations" ON public.consultations
     )
   );
 
+-- Edge Functions bypass (service_role)
+CREATE POLICY "edge_functions_manage_consultations" ON public.consultations
+  FOR ALL USING (auth.role() = 'service_role');
+
 CREATE POLICY "admin_all_consultations" ON public.consultations
   FOR ALL USING (
     EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin')
   );
 
 -- Bucket prescriptions
-INSERT INTO storage.buckets (id, name, public)
-VALUES ('prescriptions', 'prescriptions', false)
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('prescriptions', 'prescriptions', false, 10485760, ARRAY['application/pdf'])
 ON CONFLICT (id) DO NOTHING;
 
 CREATE POLICY "practitioner_upload_prescription" ON storage.objects
   FOR INSERT WITH CHECK (
     bucket_id = 'prescriptions' AND
-    EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'practitioner')
+    EXISTS (
+      SELECT 1 FROM public.consultations c
+      JOIN public.appointments a ON a.id = c.appointment_id
+      JOIN public.practitioners p ON p.id = a.practitioner_id
+      WHERE c.id::text = (storage.foldername(name))[1]
+        AND p.user_id = auth.uid()
+    )
   );
 
 CREATE POLICY "patient_read_own_prescription" ON storage.objects
@@ -62,7 +74,7 @@ CREATE POLICY "patient_read_own_prescription" ON storage.objects
     EXISTS (
       SELECT 1 FROM public.consultations c
       JOIN public.appointments a ON a.id = c.appointment_id
-      WHERE c.id::text = split_part(storage.objects.name, '.', 1)
+      WHERE c.id::text = (storage.foldername(name))[1]
         AND a.patient_id = auth.uid()
     )
   );
