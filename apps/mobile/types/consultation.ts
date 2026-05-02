@@ -9,19 +9,19 @@ export interface ChatMessage {
 
 export interface Consultation {
   id: string
-  appointmentId: string
-  roomName: string | null
-  roomUrl: string | null
-  patientToken: string | null
-  practitionerToken: string | null
-  startedAt: string | null
-  endedAt: string | null
-  durationActualMin: number | null
-  chatHistory: ChatMessage[]
-  aiSummary: string | null
-  prescriptionUrl: string | null
+  appointment_id: string
+  room_name: string | null
+  room_url: string | null
+  patient_token: string | null
+  practitioner_token: string | null
+  started_at: string | null
+  ended_at: string | null
+  duration_actual_min: number | null
+  chat_history: ChatMessage[]
+  ai_summary: string | null
+  prescription_url: string | null
   status: ConsultationStatus
-  createdAt: string
+  created_at: string
 }
 
 export interface CreateConsultationRoomResponse {

@@ -1,4 +1,4 @@
-import type { Consultation, ChatMessage, ConsultationStatus } from '../consultation'
+import type { ChatMessage, ConsultationStatus } from '../consultation'
 
 describe('Consultation types', () => {
   it('ChatMessage has correct shape', () => {
