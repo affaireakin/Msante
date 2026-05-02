@@ -34,6 +34,12 @@ Deno.serve(async (req) => {
 
     const { appointmentId } = await req.json()
 
+    if (!appointmentId || typeof appointmentId !== 'string') {
+      return new Response(JSON.stringify({ error: 'appointmentId is required' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
     // 1. Vérifie appointment confirmé + payé + appartient au patient
     const { data: appointment, error: aErr } = await supabase
       .from('appointments')
@@ -117,6 +123,10 @@ Deno.serve(async (req) => {
         },
       }),
     })
+    if (!patientTokenRes.ok) {
+      const err = await patientTokenRes.text()
+      throw new Error(`Daily.co patient token failed: ${err}`)
+    }
     const { token: patientToken } = await patientTokenRes.json()
 
     // 5. Générer practitioner_token (is_owner: true)
@@ -135,6 +145,10 @@ Deno.serve(async (req) => {
         },
       }),
     })
+    if (!practTokenRes.ok) {
+      const err = await practTokenRes.text()
+      throw new Error(`Daily.co practitioner token failed: ${err}`)
+    }
     const { token: practitionerToken } = await practTokenRes.json()
 
     // 6. INSERT consultation
