@@ -100,6 +100,7 @@ export default function PatientLayout() {
       <Tabs.Screen name="confirm-session" options={{ href: null }} />
       <Tabs.Screen name="payment" options={{ href: null }} />
       <Tabs.Screen name="practitioner" options={{ href: null }} />
+      <Tabs.Screen name="consultation" options={{ href: null }} />
     </Tabs>
   )
 }
