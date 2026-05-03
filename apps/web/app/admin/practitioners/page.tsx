@@ -54,7 +54,7 @@ function usePractitioners() {
         .select('id, user_id, speciality, verification_status, practitioner_type, permissions, created_at, users!inner(full_name)')
         .order('created_at', { ascending: false })
       if (error) throw error
-      const sorted = (data ?? []) as Practitioner[]
+      const sorted = (data ?? []) as unknown as Practitioner[]
       sorted.sort((a, b) =>
         STATUS_ORDER.indexOf(a.verification_status) - STATUS_ORDER.indexOf(b.verification_status)
       )

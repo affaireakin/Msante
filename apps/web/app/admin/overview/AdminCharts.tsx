@@ -57,7 +57,7 @@ export function AdminCharts() {
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(190,200,206,0.3)" />
             <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#6f787e' }} tickFormatter={(v: string) => v.slice(5)} />
             <YAxis tick={{ fontSize: 11, fill: '#6f787e' }} />
-            <Tooltip formatter={(v: number) => [`${v.toLocaleString()} XOF`, 'Revenus']} />
+            <Tooltip formatter={(v) => [`${Number(v ?? 0).toLocaleString()} XOF`, 'Revenus'] as [string, string]} />
             <Area type="monotone" dataKey="revenue" stroke="#006685" strokeWidth={2} fill="url(#revenueGrad)" />
           </AreaChart>
         </ResponsiveContainer>
@@ -100,9 +100,10 @@ export function AdminCharts() {
               cx="50%"
               cy="50%"
               outerRadius={80}
-              label={({ provider, percent }: { provider: string; percent: number }) =>
-                `${provider} ${(percent * 100).toFixed(0)}%`
-              }
+              label={(props) => {
+                const p = props as unknown as { provider: string; percent: number }
+                return `${p.provider ?? ''} ${((p.percent ?? 0) * 100).toFixed(0)}%`
+              }}
             >
               {(data?.paymentsByProvider ?? []).map((_, index) => (
                 <Cell key={index} fill={COLORS[index % COLORS.length]} />
