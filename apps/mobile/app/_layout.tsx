@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import { Providers } from './_providers'
 import { useAuthStore } from '@/features/auth/store/authStore'
+import { usePushNotifications } from '@/features/notifications/hooks/usePushNotifications'
 import { supabase, fetchUserProfile, fetchPractitionerProfile } from '@/services/supabase'
 
 export default function RootLayout() {
@@ -11,6 +12,7 @@ export default function RootLayout() {
   } = useAuthStore()
   const router = useRouter()
   const segments = useSegments()
+  usePushNotifications(isAuthenticated)
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
