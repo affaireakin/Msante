@@ -36,7 +36,7 @@ const TEMPLATES: Record<
   consultation_starting: {
     title: 'Consultation prête 🎥',
     body: "{patientName} a rejoint la salle d'attente.",
-    route: (data) => `/practitioner/consultation/${data.appointmentId}/waiting`,
+    route: (data) => `/(practitioner)/consultation/${data.appointmentId}/waiting`,
   },
   practitioner_approved: {
     title: 'Compte approuvé ✓',

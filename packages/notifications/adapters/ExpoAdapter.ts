@@ -2,6 +2,13 @@
 import type { NotificationAdapter, NotificationEvent } from '../types.ts'
 import { buildNotificationPayload } from '../templates.ts'
 
+export class DeviceNotRegisteredError extends Error {
+  constructor(public readonly pushToken: string) {
+    super(`DeviceNotRegistered: token ${pushToken} is no longer valid`)
+    this.name = 'DeviceNotRegisteredError'
+  }
+}
+
 export class ExpoAdapter implements NotificationAdapter {
   async send(event: NotificationEvent): Promise<void> {
     if (!event.recipient.push_token) {
@@ -33,8 +40,11 @@ export class ExpoAdapter implements NotificationAdapter {
       throw new Error(`Expo push failed: ${response.status} ${text}`)
     }
 
-    const result = await response.json() as { data?: { status: string; message?: string } }
+    const result = await response.json() as { data?: { status: string; message?: string; details?: string } }
     if (result.data?.status === 'error') {
+      if (result.data.details === 'DeviceNotRegistered' || result.data.message === 'DeviceNotRegistered') {
+        throw new DeviceNotRegisteredError(event.recipient.push_token)
+      }
       throw new Error(`Expo push error: ${result.data.message ?? 'unknown'}`)
     }
   }

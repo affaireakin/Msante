@@ -1,5 +1,6 @@
 // apps/mobile/features/notifications/hooks/usePushNotifications.ts
 import { useEffect } from 'react'
+import { Platform } from 'react-native'
 import * as Notifications from 'expo-notifications'
 import * as Device from 'expo-device'
 import Constants from 'expo-constants'
@@ -56,6 +57,16 @@ export function usePushNotifications(isAuthenticated: boolean) {
     }
 
     void register()
+
+    // Android 8+ requires explicit notification channel
+    if (Platform.OS === 'android') {
+      void Notifications.setNotificationChannelAsync('default', {
+        name: 'M-Santé',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#006685',
+      })
+    }
 
     foregroundSub = Notifications.addNotificationReceivedListener((notification) => {
       const { title, body } = notification.request.content

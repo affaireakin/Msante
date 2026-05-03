@@ -93,21 +93,32 @@ Deno.serve(async (req) => {
 
       // Notify practitioner
       if (practitionerUser) {
-        await notifService.send({
-          type: 'appointment_reminder',
-          recipient: {
-            id: practitionerUser.id,
-            full_name: practitionerUser.full_name,
-            email: practitionerUser.email,
-            push_token: practitionerUser.push_token,
-          },
-          data: {
-            practitionerName: patient.full_name,
-            date: dateStr,
-            time: timeStr,
-            appointment_id: appt.id,
-          },
-        })
+        // Anti-duplicate for practitioner
+        const { data: existingPract } = await supabase
+          .from('notifications')
+          .select('id')
+          .eq('type', 'appointment_reminder')
+          .eq('user_id', practitionerUser.id)
+          .contains('data', { appointment_id: appt.id })
+          .maybeSingle()
+
+        if (!existingPract) {
+          await notifService.send({
+            type: 'appointment_reminder',
+            recipient: {
+              id: practitionerUser.id,
+              full_name: practitionerUser.full_name,
+              email: practitionerUser.email,
+              push_token: practitionerUser.push_token,
+            },
+            data: {
+              practitionerName: patient.full_name,
+              date: dateStr,
+              time: timeStr,
+              appointment_id: appt.id,
+            },
+          })
+        }
       }
 
       sent++

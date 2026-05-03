@@ -7,7 +7,7 @@ import type {
   NotificationChannel,
   NotificationAdapter,
 } from './types.ts'
-import { ExpoAdapter } from './adapters/ExpoAdapter.ts'
+import { ExpoAdapter, DeviceNotRegisteredError } from './adapters/ExpoAdapter.ts'
 import { ResendAdapter } from './adapters/ResendAdapter.ts'
 
 interface NotificationServiceOptions {
@@ -50,6 +50,17 @@ export class NotificationService {
           status = 'failed'
           errorMsg = err instanceof Error ? err.message : 'unknown error'
           console.error(`NotificationService: ${channel} failed for user ${event.recipient.id}:`, errorMsg)
+
+          // Clear stale push token so future notifications fall back to email
+          if (err instanceof DeviceNotRegisteredError) {
+            await this.supabase
+              .from('users')
+              .update({ push_token: null, push_token_updated_at: new Date().toISOString() })
+              .eq('id', event.recipient.id)
+              .then(({ error: tErr }: { error: unknown }) => {
+                if (tErr) console.error('NotificationService: failed to clear stale push_token:', tErr)
+              })
+          }
         }
 
         await this.supabase.from('notifications').insert({
