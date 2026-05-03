@@ -10,15 +10,19 @@
   },
   "dependencies": {
     "@daily-co/daily-js": "^0.89.1",
+    "@hookform/resolvers": "^3.9.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.45.0",
     "@tanstack/react-query": "^5.62.0",
     "@tanstack/react-query-devtools": "^5.100.8",
+    "@xyflow/react": "^12.10.2",
     "next": "15.5.15",
     "papaparse": "^5.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "recharts": "^3.8.1"
+    "react-hook-form": "^7.53.0",
+    "recharts": "^3.8.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
