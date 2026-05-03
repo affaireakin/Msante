@@ -10,7 +10,12 @@
       "expo-router",
       "expo-secure-store",
       ["expo-document-picker", { "iCloudContainerEnvironment": "Production" }],
-      "@daily-co/react-native-daily-js"
+      "@daily-co/react-native-daily-js",
+      ["expo-notifications", {
+        "icon": "./assets/adaptive-icon.png",
+        "color": "#006685",
+        "sounds": []
+      }]
     ],
     "android": {
       "adaptiveIcon": {
@@ -22,6 +27,11 @@
     "ios": {
       "bundleIdentifier": "com.msante.app",
       "supportsTablet": false
+    },
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID"
+      }
     }
   }
 }
