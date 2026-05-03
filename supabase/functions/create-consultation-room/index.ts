@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createNotificationService } from '../../packages/notifications/index.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -166,6 +167,50 @@ Deno.serve(async (req) => {
       .single()
 
     if (cErr || !consultation) throw new Error('Failed to save consultation')
+
+    // Notify practitioner that patient entered the waiting room (fire-and-forget)
+    try {
+      const resendApiKey = Deno.env.get('RESEND_API_KEY') ?? ''
+      const notifService = createNotificationService(supabase, resendApiKey)
+
+      const { data: practData } = await supabase
+        .from('practitioners')
+        .select('user_id')
+        .eq('id', appointment.practitioner_id)
+        .single()
+
+      if (practData?.user_id) {
+        const { data: practUser } = await supabase
+          .from('users')
+          .select('id, full_name, email, push_token')
+          .eq('id', practData.user_id)
+          .single()
+
+        const { data: patientData } = await supabase
+          .from('users')
+          .select('full_name')
+          .eq('id', user.id)
+          .single()
+
+        if (practUser) {
+          await notifService.send({
+            type: 'consultation_starting',
+            recipient: {
+              id: practUser.id,
+              full_name: practUser.full_name,
+              email: practUser.email,
+              push_token: practUser.push_token,
+            },
+            data: {
+              patientName: patientData?.full_name ?? 'Votre patient',
+              appointmentId: appointmentId,
+            },
+          })
+        }
+      }
+    } catch (notifErr) {
+      console.error('create-consultation-room: notification failed', notifErr)
+    }
 
     return new Response(JSON.stringify({
       consultationId: consultation.id,

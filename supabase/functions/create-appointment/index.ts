@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createNotificationService } from '../../packages/notifications/index.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -86,6 +87,55 @@ Deno.serve(async (req) => {
       .single()
 
     if (aErr) throw aErr
+
+    // Send appointment_confirm notification to patient (fire-and-forget)
+    try {
+      const resendApiKey = Deno.env.get('RESEND_API_KEY') ?? ''
+      const notifService = createNotificationService(supabase, resendApiKey)
+
+      const { data: patientUser } = await supabase
+        .from('users')
+        .select('id, full_name, email, push_token')
+        .eq('id', user.id)
+        .single()
+
+      const { data: practUser } = await supabase
+        .from('users')
+        .select('full_name')
+        .eq('id', (await supabase
+          .from('practitioners')
+          .select('user_id')
+          .eq('id', practitioner_id)
+          .single()
+        ).data?.user_id ?? '')
+        .maybeSingle()
+
+      const apptDate = new Date(scheduled_at)
+      const dateTimeStr = apptDate.toLocaleDateString('fr-FR', {
+        day: '2-digit', month: 'long', year: 'numeric',
+      }) + ' à ' + apptDate.toLocaleTimeString('fr-FR', {
+        hour: '2-digit', minute: '2-digit',
+      })
+
+      if (patientUser) {
+        await notifService.send({
+          type: 'appointment_confirm',
+          recipient: {
+            id: patientUser.id,
+            full_name: patientUser.full_name,
+            email: patientUser.email,
+            push_token: patientUser.push_token,
+          },
+          data: {
+            practitionerName: practUser?.full_name ?? 'votre praticien',
+            date: dateTimeStr,
+            appointmentId: appointment.id,
+          },
+        })
+      }
+    } catch (notifErr) {
+      console.error('create-appointment: notification failed', notifErr)
+    }
 
     return new Response(JSON.stringify({
       appointmentId: appointment.id,

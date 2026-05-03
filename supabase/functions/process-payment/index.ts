@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createNotificationService } from '../../packages/notifications/index.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -95,6 +96,36 @@ Deno.serve(async (req) => {
       .from('appointments')
       .update({ status: 'confirmed', payment_id: payment.id })
       .eq('id', appointment_id)
+
+    // Send payment_success notification (fire-and-forget)
+    try {
+      const resendApiKey = Deno.env.get('RESEND_API_KEY') ?? ''
+      const notifService = createNotificationService(supabase, resendApiKey)
+
+      const { data: patientUser } = await supabase
+        .from('users')
+        .select('id, full_name, email, push_token')
+        .eq('id', user.id)
+        .single()
+
+      if (patientUser) {
+        await notifService.send({
+          type: 'payment_success',
+          recipient: {
+            id: patientUser.id,
+            full_name: patientUser.full_name,
+            email: patientUser.email,
+            push_token: patientUser.push_token,
+          },
+          data: {
+            amount: String(practitioner?.session_price ?? 0),
+            currency: practitioner?.session_currency ?? 'XOF',
+          },
+        })
+      }
+    } catch (notifErr) {
+      console.error('process-payment: notification failed', notifErr)
+    }
 
     return new Response(JSON.stringify({
       paymentId: payment.id,
