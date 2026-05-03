@@ -48,7 +48,7 @@ export default function ConsultationSummary() {
         {/* Card infos session */}
         <View
           className="gap-3 rounded-xl p-5 border border-white/50"
-          style={{ backgroundColor: 'rgba(255,255,255,0.60)', backdropFilter: 'blur(16px)' }}
+          style={{ backgroundColor: 'rgba(255,255,255,0.60)' }}
         >
           <Text className="text-xs text-primary font-manrope uppercase tracking-widest font-bold mb-1">Résumé de la session</Text>
           <View className="flex-row justify-between items-center">

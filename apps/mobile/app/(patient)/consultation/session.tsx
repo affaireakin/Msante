@@ -1,16 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   View, Text, TouchableOpacity, FlatList, TextInput,
   KeyboardAvoidingView, Platform, Alert, Dimensions, Modal,
 } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
-import {
-  DailyProvider,
-  useDaily,
-  useLocalSessionId,
-  useParticipantIds,
-  DailyVideo,
-} from '@daily-co/react-native-daily-js'
+import Daily, { DailyMediaView } from '@daily-co/react-native-daily-js'
+import type { DailyCall } from '@daily-co/react-native-daily-js'
+import type { MediaStreamTrack } from '@daily-co/react-native-webrtc'
 import { useConsultationStore } from '@/features/consultation/store/consultationStore'
 import { useSendChatMessage, useEndConsultation } from '@/features/consultation/hooks/useConsultation'
 import { ConsultationTimer } from '@/features/consultation/components/ConsultationTimer'
@@ -175,27 +171,65 @@ function ChatPanel({
   )
 }
 
-function VideoSession({ practitionerName }: { practitionerName: string }) {
-  const daily = useDaily()
-  const localSessionId = useLocalSessionId()
-  const participantIds = useParticipantIds({ filter: 'remote' })
-  const [isMuted, setIsMuted] = useState(false)
-  const [isCameraOff, setIsCameraOff] = useState(false)
-  const [showChat, setShowChat] = useState(false)
+export default function ConsultationSession() {
+  const { practitionerName } = useLocalSearchParams<{ practitionerName: string }>()
   const router = useRouter()
-
-  const { consultationId, chatMessages, startedAt } = useConsultationStore()
+  const { roomUrl, patientToken, consultationId, chatMessages, startedAt } = useConsultationStore()
   const sendMessage = useSendChatMessage(consultationId)
   const { endSession } = useEndConsultation()
 
+  const callRef = useRef<DailyCall | null>(null)
+  const [remoteVideoTrack, setRemoteVideoTrack] = useState<MediaStreamTrack | null>(null)
+  const [remoteAudioTrack, setRemoteAudioTrack] = useState<MediaStreamTrack | null>(null)
+  const [localVideoTrack, setLocalVideoTrack] = useState<MediaStreamTrack | null>(null)
+  const [isMuted, setIsMuted] = useState(false)
+  const [isCameraOff, setIsCameraOff] = useState(false)
+  const [showChat, setShowChat] = useState(false)
+
+  useEffect(() => {
+    if (!roomUrl || !patientToken) return
+
+    const call = Daily.createCallObject()
+    callRef.current = call
+
+    function handleParticipantUpdate(event: { participant: { local: boolean; tracks: { video: { persistentTrack?: MediaStreamTrack }; audio: { persistentTrack?: MediaStreamTrack } } } }) {
+      if (event.participant.local) {
+        setLocalVideoTrack(event.participant.tracks.video.persistentTrack ?? null)
+      } else {
+        setRemoteVideoTrack(event.participant.tracks.video.persistentTrack ?? null)
+        setRemoteAudioTrack(event.participant.tracks.audio.persistentTrack ?? null)
+      }
+    }
+
+    call.on('participant-joined', handleParticipantUpdate)
+    call.on('participant-updated', handleParticipantUpdate)
+    call.on('participant-left', (event) => {
+      if (!event.participant.local) {
+        setRemoteVideoTrack(null)
+        setRemoteAudioTrack(null)
+      }
+    })
+
+    void call.join({ url: roomUrl, token: patientToken })
+
+    return () => {
+      void call.destroy()
+      callRef.current = null
+    }
+  }, [roomUrl, patientToken])
+
   const handleMute = () => {
-    daily?.setLocalAudio(isMuted)
-    setIsMuted(v => !v)
+    const nextMuted = !isMuted
+    setIsMuted(nextMuted)
+    callRef.current?.setLocalAudio(!nextMuted)
   }
+
   const handleCamera = () => {
-    daily?.setLocalVideo(isCameraOff)
-    setIsCameraOff(v => !v)
+    const nextOff = !isCameraOff
+    setIsCameraOff(nextOff)
+    callRef.current?.setLocalVideo(!nextOff)
   }
+
   const handleEnd = () => {
     Alert.alert(
       'Terminer la consultation ?',
@@ -207,7 +241,7 @@ function VideoSession({ practitionerName }: { practitionerName: string }) {
           style: 'destructive',
           onPress: async () => {
             await endSession()
-            daily?.leave()
+            await callRef.current?.leave()
             router.replace('/(patient)/consultation/summary')
           },
         },
@@ -215,14 +249,21 @@ function VideoSession({ practitionerName }: { practitionerName: string }) {
     )
   }
 
-  const remoteId = participantIds[0]
+  if (!roomUrl || !patientToken) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#213145' }}>
+        <Text style={{ color: '#fff', fontFamily: 'Manrope' }}>Chargement de la salle…</Text>
+      </View>
+    )
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: '#213145' }}>
       {/* Vidéo praticien — plein écran */}
-      {remoteId ? (
-        <DailyVideo
-          sessionId={remoteId}
+      {remoteVideoTrack ? (
+        <DailyMediaView
+          videoTrack={remoteVideoTrack}
+          audioTrack={remoteAudioTrack}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}
           objectFit="cover"
         />
@@ -242,7 +283,7 @@ function VideoSession({ practitionerName }: { practitionerName: string }) {
             <Text style={{ fontSize: 14 }}>👨‍⚕️</Text>
           </View>
           <View>
-            <Text style={{ color: '#fff', fontFamily: 'Manrope', fontWeight: '600', fontSize: 14 }}>{practitionerName}</Text>
+            <Text style={{ color: '#fff', fontFamily: 'Manrope', fontWeight: '600', fontSize: 14 }}>{practitionerName ?? 'Praticien'}</Text>
             <Text style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'Manrope', fontSize: 10 }}>Praticien de santé</Text>
           </View>
         </View>
@@ -254,9 +295,10 @@ function VideoSession({ practitionerName }: { practitionerName: string }) {
 
       {/* Self-view miniature — coin haut droit */}
       <View style={{ position: 'absolute', top: 120, right: 16, width: 100, height: 130, borderRadius: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.3)', shadowColor: '#006685', shadowOpacity: 0.2, shadowRadius: 20, elevation: 6 }}>
-        {localSessionId && (
-          <DailyVideo
-            sessionId={localSessionId}
+        {localVideoTrack && (
+          <DailyMediaView
+            videoTrack={localVideoTrack}
+            audioTrack={null}
             style={{ width: '100%', height: '100%' }}
             objectFit="cover"
             mirror
@@ -309,24 +351,5 @@ function VideoSession({ practitionerName }: { practitionerName: string }) {
         />
       </Modal>
     </View>
-  )
-}
-
-export default function ConsultationSession() {
-  const { practitionerName } = useLocalSearchParams<{ practitionerName: string }>()
-  const { roomUrl, patientToken } = useConsultationStore()
-
-  if (!roomUrl || !patientToken) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#213145' }}>
-        <Text style={{ color: '#fff', fontFamily: 'Manrope' }}>Chargement de la salle…</Text>
-      </View>
-    )
-  }
-
-  return (
-    <DailyProvider url={roomUrl} token={patientToken}>
-      <VideoSession practitionerName={practitionerName ?? 'Praticien'} />
-    </DailyProvider>
   )
 }
