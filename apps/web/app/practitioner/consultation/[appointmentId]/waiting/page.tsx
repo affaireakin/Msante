@@ -19,6 +19,7 @@ export default function PractitionerWaitingRoom() {
 
   const [appointment, setAppointment] = useState<AppointmentInfo | null>(null)
   const [patientConnected, setPatientConnected] = useState(false)
+  const [consultationId, setConsultationId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isStarting, setIsStarting] = useState(false)
@@ -73,6 +74,7 @@ export default function PractitionerWaitingRoom() {
 
       if (existingConsultation) {
         setPatientConnected(true)
+        setConsultationId(existingConsultation.id)
       }
 
       setIsLoading(false)
@@ -88,8 +90,10 @@ export default function PractitionerWaitingRoom() {
             table: 'consultations',
             filter: `appointment_id=eq.${appointmentId}`,
           },
-          () => {
+          (payload) => {
+            const newConsultation = payload.new as { id: string }
             setPatientConnected(true)
+            setConsultationId(newConsultation.id)
           }
         )
         .subscribe()
@@ -105,6 +109,7 @@ export default function PractitionerWaitingRoom() {
   }, [appointmentId])
 
   async function handleStart() {
+    if (!consultationId) return
     setIsStarting(true)
     setError(null)
 
@@ -121,7 +126,7 @@ export default function PractitionerWaitingRoom() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${session?.access_token ?? ''}`,
           },
-          body: JSON.stringify({ appointmentId, role: 'practitioner' }),
+          body: JSON.stringify({ consultationId }),
         }
       )
 
@@ -306,13 +311,15 @@ export default function PractitionerWaitingRoom() {
               {/* Start button */}
               <button
                 onClick={() => void handleStart()}
-                disabled={!patientConnected || isStarting}
+                disabled={!patientConnected || !consultationId || isStarting}
                 className="w-full py-3 rounded-xl bg-[#006685] text-white font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#005575] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_16px_rgba(0,102,133,0.2)]"
               >
                 <span className="material-symbols-outlined text-xl select-none">video_call</span>
-                {!patientConnected || isStarting
+                {!patientConnected
                   ? 'En attente du patient…'
-                  : 'Démarrer la consultation'}
+                  : isStarting
+                    ? 'Démarrage…'
+                    : 'Démarrer la consultation'}
               </button>
             </>
           )}
