@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { type ReactNode } from 'react'
+import React from 'react'
 
 const navItems = [
   {
@@ -51,7 +51,7 @@ const navItems = [
   },
 ]
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
