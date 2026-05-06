@@ -59,7 +59,7 @@ export default function RootLayout() {
     }
 
     if (profile.role === 'practitioner') {
-      if (segments[0] !== '(practitioner)') router.replace('/(practitioner)/home')
+      if (segments[0] !== '(practitioner)') router.replace('/(practitioner)/')
     } else {
       if (segments[0] !== '(patient)') router.replace('/(patient)/home')
     }
