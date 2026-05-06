@@ -1,10 +1,12 @@
 import { View, Text, TouchableOpacity, StatusBar, Alert, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { GlassCard } from '@/components/ui/GlassCard'
 
 export default function ProfileScreen() {
+  const router = useRouter()
   const { profile, practitioner } = useAuth()
   const signOut = useAuthStore((s) => s.signOut)
 
@@ -148,6 +150,28 @@ export default function ProfileScreen() {
             ))}
           </View>
         </GlassCard>
+
+        {/* Disponibilités */}
+        <TouchableOpacity
+          onPress={() => router.push('/(practitioner)/availability')}
+          style={{
+            paddingVertical: 16,
+            borderRadius: 999,
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            gap: 8,
+            backgroundColor: '#e5eeff',
+            marginTop: 8,
+          }}
+        >
+          <Text style={{ fontSize: 16 }}>🗓️</Text>
+          <Text
+            style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#006685' }}
+          >
+            Gérer mes disponibilités
+          </Text>
+        </TouchableOpacity>
 
         {/* Déconnexion */}
         <TouchableOpacity
