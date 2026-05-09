@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Practitioner Availability Settings | M-Santé</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#001f2a",
+                    "on-secondary-fixed-variant": "#544600",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "on-surface-variant": "#3f484d",
+                    "tertiary": "#5c5f61",
+                    "secondary-fixed": "#ffe170",
+                    "on-surface": "#0b1c30",
+                    "on-primary-fixed-variant": "#004d65",
+                    "primary-fixed-dim": "#7bd1f8",
+                    "surface-dim": "#cbdbf5",
+                    "on-secondary-fixed": "#221b00",
+                    "surface-variant": "#d3e4fe",
+                    "on-primary-container": "#005e7a",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#e5eeff",
+                    "surface-container-highest": "#d3e4fe",
+                    "secondary-container": "#ffde5c",
+                    "secondary": "#705d00",
+                    "inverse-on-surface": "#eaf1ff",
+                    "background": "#f8f9ff",
+                    "outline-variant": "#bec8ce",
+                    "on-secondary-container": "#756100",
+                    "surface-tint": "#006685",
+                    "primary-fixed": "#bee9ff",
+                    "primary-container": "#82d8ff",
+                    "outline": "#6f787e",
+                    "inverse-surface": "#213145",
+                    "error": "#ba1a1a",
+                    "on-tertiary-container": "#545759",
+                    "surface-bright": "#f8f9ff",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "on-tertiary-fixed": "#191c1e",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#e4c546",
+                    "primary": "#006685",
+                    "surface-container-high": "#dce9ff",
+                    "tertiary-fixed": "#e0e3e5",
+                    "surface": "#f8f9ff",
+                    "tertiary-container": "#cbcdcf",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#eff4ff",
+                    "on-background": "#0b1c30",
+                    "inverse-primary": "#7bd1f8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "unit": "8px",
+                    "card-padding": "20px",
+                    "stack-gap": "12px",
+                    "margin-page": "24px"
+            },
+            "fontFamily": {
+                    "body-base": [
+                            "Manrope"
+                    ],
+                    "body-sm": [
+                            "Manrope"
+                    ],
+                    "label-caps": [
+                            "Manrope"
+                    ],
+                    "headline-md": [
+                            "Manrope"
+                    ],
+                    "display-lg": [
+                            "Manrope"
+                    ]
+            },
+            "fontSize": {
+                    "body-base": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-base text-body-base min-h-screen relative overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Ambient Background Elements (Medical Futurism) -->
+<div class="fixed inset-0 pointer-events-none z-[-1]">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary-fixed/20 blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-5%] w-[30%] h-[30%] rounded-full bg-surface-container-high/60 blur-[100px]"></div>
+</div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 border-b border-white/20 dark:border-slate-700/30 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(130,216,255,0.08)] backdrop-blur-md border-white/10 flex justify-between items-center h-16 px-6 font-manrope antialiased tracking-tight">
+<div class="flex items-center md:w-64">
+<span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-sky-300">M-Santé</span>
+</div>
+<div class="flex items-center gap-4 text-sky-400 dark:text-sky-300">
+<button class="p-2 rounded-full hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-all duration-300 active:scale-95 cursor-pointer flex items-center justify-center">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30 shadow-sm ml-2">
+<img alt="Administrator Profile" class="w-full h-full object-cover" data-alt="A close-up, high-quality headshot of a confident medical professional in a pristine, modern clinical setting. The lighting is soft, bright, and airy, reflecting a clean light-mode aesthetic. They wear a subtle white lab coat, conveying trust and expertise, set against a faintly blurred background of high-tech medical equipment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFOUv0y0iElzlqKj2nbCoHewMU2pf_XRUz4GQYikq32jdciAHV6TjHoguyo57D7pXIAzjdIBgjUA2x2-pWJd6O4_fXPFCx19kwua3SqRO7mC65U5_shSO4t-XMf-0jCiOnnEvhAMkFd1VD0wXdPLeGVYKH7Oxn6A0dBCAyJRHvFmbPM6GwJEXseyqpiB8-zgFx7fBcq-ectL_wV5xEBBzf0vZLQXJQlE62TE-yUnl3BFTDE_J8U5szImLI7WSEMmwE4q3CPS71ODju"/>
+</div>
+</div>
+</header>
+<!-- App Container -->
+<div class="flex pt-16 min-h-screen">
+<!-- SideNavBar (Hidden on Mobile, Flex on MD) -->
+<nav class="hidden md:flex flex-col p-4 gap-2 pt-20 fixed left-0 top-0 h-screen w-64 border-r border-white/20 dark:border-slate-800/50 bg-white/40 dark:bg-slate-950/40 backdrop-blur-2xl font-manrope text-sm font-medium z-40 shadow-2xl shadow-sky-900/5">
+<div class="mb-6 px-4">
+<div class="font-black tracking-widest uppercase text-xs text-sky-600">Admin Console</div>
+<div class="text-slate-500 text-xs mt-1">Medical Sanctuary</div>
+</div>
+<div class="flex-1 space-y-1">
+<!-- Inactive Tab -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:pl-2 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+<span>Financials</span>
+</a>
+<!-- Inactive Tab -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:pl-2 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+<span>Reconciliation</span>
+</a>
+<!-- Inactive Tab -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:pl-2 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+<span>Calendar</span>
+</a>
+<!-- Inactive Tab -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:pl-2 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">medical_services</span>
+<span>Consultations</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center gap-3 px-4 py-3 bg-sky-500/10 text-sky-600 dark:text-sky-300 rounded-lg border-l-4 border-sky-500 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px] icon-fill">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant/20">
+<button class="w-full py-2.5 px-4 bg-sky-50 hover:bg-sky-100 text-sky-600 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">summarize</span>
+                    Generate Report
+                </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 p-margin-page lg:p-8 flex flex-col gap-stack-gap">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface">Availability Settings</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Configure your working hours, consultation formats, and schedule mechanics.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-5 py-2.5 rounded-lg font-label-caps text-label-caps text-on-surface bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 transition-colors">Discard</button>
+<button class="px-5 py-2.5 rounded-lg font-label-caps text-label-caps text-on-primary bg-primary hover:bg-surface-tint shadow-md shadow-primary/20 transition-all active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                        Save Changes
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-gap">
+<!-- Left Column (Span 8): Weekly Schedule & Overrides -->
+<div class="lg:col-span-8 flex flex-col gap-stack-gap">
+<!-- Weekly Recurring Availability Card -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-xl border border-outline-variant/30 rounded-xl p-card-padding shadow-[0_8px_32px_0_rgba(0,102,133,0.03)] relative overflow-hidden">
+<!-- Subtle inner glow -->
+<div class="absolute inset-0 border border-white/40 rounded-xl pointer-events-none"></div>
+<div class="flex items-center gap-3 mb-6 relative z-10">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined">event_repeat</span>
+</div>
+<div>
+<h2 class="font-body-base text-body-base font-semibold text-on-surface">Weekly Recurring Schedule</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Set your standard active hours for patients.</p>
+</div>
+</div>
+<div class="space-y-1 relative z-10">
+<!-- Day Row: Monday (Active) -->
+<div class="flex flex-col sm:flex-row sm:items-center gap-4 p-3 rounded-lg bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-colors">
+<div class="flex items-center gap-3 w-32">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-tertiary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">Mon</span>
+</div>
+<div class="flex-1 flex items-center gap-2">
+<input class="bg-surface border border-outline-variant/50 text-on-surface text-sm rounded-md focus:ring-primary focus:border-primary block w-full p-2.5 font-body-sm" type="time" value="09:00"/>
+<span class="text-on-surface-variant">-</span>
+<input class="bg-surface border border-outline-variant/50 text-on-surface text-sm rounded-md focus:ring-primary focus:border-primary block w-full p-2.5 font-body-sm" type="time" value="17:00"/>
+</div>
+<button class="p-2 text-primary hover:bg-primary-container/50 rounded-full transition-colors self-end sm:self-auto" title="Add Split Shift">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+</button>
+</div>
+<!-- Day Row: Tuesday (Active) -->
+<div class="flex flex-col sm:flex-row sm:items-center gap-4 p-3 rounded-lg bg-surface-container-low border border-transparent hover:border-outline-variant/20 transition-colors">
+<div class="flex items-center gap-3 w-32">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-tertiary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">Tue</span>
+</div>
+<div class="flex-1 flex items-center gap-2">
+<input class="bg-surface border border-outline-variant/50 text-on-surface text-sm rounded-md focus:ring-primary focus:border-primary block w-full p-2.5 font-body-sm" type="time" value="09:00"/>
+<span class="text-on-surface-variant">-</span>
+<input class="bg-surface border border-outline-variant/50 text-on-surface text-sm rounded-md focus:ring-primary focus:border-primary block w-full p-2.5 font-body-sm" type="time" value="17:00"/>
+</div>
+<button class="p-2 text-primary hover:bg-primary-container/50 rounded-full transition-colors self-end sm:self-auto" title="Add Split Shift">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+</button>
+</div>
+<!-- Day Row: Wednesday (Inactive/Off) -->
+<div class="flex flex-col sm:flex-row sm:items-center gap-4 p-3 rounded-lg hover:bg-surface-container-low/50 border border-transparent transition-colors opacity-60">
+<div class="flex items-center gap-3 w-32">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-tertiary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+<span class="font-body-sm text-body-sm text-on-surface">Wed</span>
+</div>
+<div class="flex-1 flex justify-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant italic">Unavailable</span>
+</div>
+<div class="w-10"></div> <!-- spacer for alignment -->
+</div>
+</div>
+</div>
+<!-- Date Overrides Card -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-xl border border-outline-variant/30 rounded-xl p-card-padding shadow-[0_8px_32px_0_rgba(0,102,133,0.03)] relative overflow-hidden">
+<div class="absolute inset-0 border border-white/40 rounded-xl pointer-events-none"></div>
+<div class="flex items-center justify-between mb-4 relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-error-container/30 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">event_busy</span>
+</div>
+<div>
+<h2 class="font-body-base text-body-base font-semibold text-on-surface">Time Off &amp; Exceptions</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Block dates for vacations or emergencies.</p>
+</div>
+</div>
+<button class="flex items-center gap-1 font-label-caps text-label-caps text-primary hover:bg-primary-container/30 px-3 py-1.5 rounded-md transition-colors">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                                Add Exception
+                            </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 relative z-10">
+<!-- Exception Item -->
+<div class="flex items-center justify-between p-3 border border-outline-variant/30 rounded-lg bg-surface">
+<div>
+<div class="font-body-sm text-body-sm font-semibold text-on-surface">Summer Conference</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant text-xs mt-0.5">Aug 12 - Aug 15</div>
+</div>
+<button class="text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Span 4): Formats & Mechanics -->
+<div class="lg:col-span-4 flex flex-col gap-stack-gap">
+<!-- Consultation Types & Pricing Card -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-xl border border-outline-variant/30 rounded-xl p-card-padding shadow-[0_8px_32px_0_rgba(0,102,133,0.03)] relative overflow-hidden">
+<div class="absolute inset-0 border border-white/40 rounded-xl pointer-events-none"></div>
+<div class="mb-5 relative z-10">
+<h2 class="font-body-base text-body-base font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-primary">video_camera_front</span>
+                                Service Modalities
+                            </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Enable formats and set base pricing.</p>
+</div>
+<div class="space-y-4 relative z-10">
+<!-- Modality: Video -->
+<div class="flex flex-col gap-2 p-3 bg-surface rounded-lg border border-outline-variant/20">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">videocam</span>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Telehealth (Video)</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-8 h-4 bg-tertiary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="text-on-surface-variant font-body-sm">$</span>
+</div>
+<input class="bg-surface-container-low border border-outline-variant/30 text-on-surface text-sm rounded-md focus:ring-primary focus:border-primary block w-full pl-7 p-2 font-body-sm" placeholder="Price" type="number" value="120"/>
+</div>
+</div>
+<!-- Modality: In-Person -->
+<div class="flex flex-col gap-2 p-3 bg-surface rounded-lg border border-outline-variant/20">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">business</span>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">In-Clinic</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-8 h-4 bg-tertiary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="text-on-surface-variant font-body-sm">$</span>
+</div>
+<input class="bg-surface-container-low border border-outline-variant/30 text-on-surface text-sm rounded-md focus:ring-primary focus:border-primary block w-full pl-7 p-2 font-body-sm" placeholder="Price" type="number" value="150"/>
+</div>
+</div>
+<!-- Modality: Home Visit -->
+<div class="flex flex-col gap-2 p-3 bg-surface rounded-lg border border-outline-variant/20 opacity-70 hover:opacity-100 transition-opacity">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">home</span>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Home Visit</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-8 h-4 bg-tertiary-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Mechanics Card (Slots & Buffers) -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-xl border border-outline-variant/30 rounded-xl p-card-padding shadow-[0_8px_32px_0_rgba(0,102,133,0.03)] relative overflow-hidden">
+<div class="absolute inset-0 border border-white/40 rounded-xl pointer-events-none"></div>
+<div class="mb-5 relative z-10">
+<h2 class="font-body-base text-body-base font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-primary">tune</span>
+                                Appointment Mechanics
+                            </h2>
+</div>
+<div class="space-y-5 relative z-10">
+<!-- Slot Duration -->
+<div>
+<label class="block font-body-sm text-body-sm font-medium text-on-surface mb-2">Default Slot Duration</label>
+<div class="flex bg-surface-container-low rounded-lg p-1 border border-outline-variant/20">
+<button class="flex-1 py-1.5 text-center font-body-sm text-body-sm rounded-md bg-white shadow-sm border border-outline-variant/20 text-primary font-semibold">30m</button>
+<button class="flex-1 py-1.5 text-center font-body-sm text-body-sm rounded-md text-on-surface-variant hover:text-on-surface transition-colors">45m</button>
+<button class="flex-1 py-1.5 text-center font-body-sm text-body-sm rounded-md text-on-surface-variant hover:text-on-surface transition-colors">1h</button>
+</div>
+</div>
+<!-- Buffer Time -->
+<div>
+<label class="block font-body-sm text-body-sm font-medium text-on-surface mb-2">Buffer Between Appointments</label>
+<select class="bg-surface border border-outline-variant/40 text-on-surface text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 font-body-sm">
+<option value="0">No buffer</option>
+<option value="5">5 minutes</option>
+<option selected="" value="10">10 minutes</option>
+<option value="15">15 minutes</option>
+<option value="30">30 minutes</option>
+</select>
+<p class="text-xs text-on-surface-variant mt-1.5">Allows time for notes and transition.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

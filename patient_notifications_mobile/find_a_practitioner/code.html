@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#004d65",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-surface": "#0b1c30",
+                        "background": "#f8f9ff",
+                        "surface": "#f8f9ff",
+                        "tertiary": "#5c5f61",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "primary-fixed": "#bee9ff",
+                        "on-surface-variant": "#3f484d",
+                        "surface-container": "#e5eeff",
+                        "surface-tint": "#006685",
+                        "on-secondary-fixed": "#221b00",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary-container": "#cbcdcf",
+                        "primary-container": "#82d8ff",
+                        "on-secondary-container": "#756100",
+                        "on-tertiary-container": "#545759",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "secondary-fixed-dim": "#e4c546",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#e0e3e5",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#ffde5c",
+                        "outline-variant": "#bec8ce",
+                        "outline": "#6f787e",
+                        "surface-dim": "#cbdbf5",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-primary-container": "#005e7a",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "inverse-primary": "#7bd1f8",
+                        "secondary": "#705d00",
+                        "surface-variant": "#d3e4fe",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffe170",
+                        "surface-container-low": "#eff4ff",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#dce9ff",
+                        "primary": "#006685",
+                        "on-primary-fixed": "#001f2a",
+                        "on-background": "#0b1c30",
+                        "on-secondary-fixed-variant": "#544600"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "stack-gap": "12px",
+                        "margin-page": "24px",
+                        "gutter": "16px",
+                        "card-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "label-caps": ["Manrope"],
+                        "body-base": ["Manrope"],
+                        "display-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .inner-glow {
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-base min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-white/70 backdrop-blur-xl dark:bg-slate-900/70 border-b border-white/20 dark:border-slate-800/50 shadow-[0_4px_30px_rgba(0,0,0,0.05)] flex justify-between items-center px-6 py-4 h-16">
+<div class="text-xl font-bold tracking-tighter text-sky-500 dark:text-sky-300 font-['Manrope']">
+            M-Santé
+        </div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-white/40 dark:hover:bg-slate-800/40 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-slate-400">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-white/40 dark:hover:bg-slate-800/40 transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-slate-400">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Content Canvas -->
+<main class="pt-20 px-margin-page max-w-4xl mx-auto space-y-6">
+<!-- Search Header Section -->
+<section class="space-y-4">
+<h1 class="font-headline-md text-headline-md text-on-surface">Find your practitioner</h1>
+<!-- High-end Search Bar -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-primary">search</span>
+</div>
+<input class="w-full bg-surface-container-low border-none focus:ring-2 focus:ring-primary/20 rounded-2xl py-4 pl-12 pr-4 text-on-surface-variant font-body-base glass-card inner-glow transition-all duration-300" placeholder="Search by name, specialty or symptom" type="text"/>
+</div>
+<!-- Horizontal Scroll Filters -->
+<div class="flex gap-3 overflow-x-auto no-scrollbar py-2 -mx-2 px-2">
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-full font-label-caps whitespace-nowrap active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+                    Filters
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-white/60 border border-outline-variant/30 rounded-full font-label-caps text-on-surface-variant whitespace-nowrap hover:bg-white/90 transition-all">
+                    Specialization
+                    <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-white/60 border border-outline-variant/30 rounded-full font-label-caps text-on-surface-variant whitespace-nowrap hover:bg-white/90 transition-all">
+                    Price Range
+                    <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-white/60 border border-outline-variant/30 rounded-full font-label-caps text-on-surface-variant whitespace-nowrap hover:bg-white/90 transition-all">
+                    Language
+                    <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 bg-white/60 border border-outline-variant/30 rounded-full font-label-caps text-on-surface-variant whitespace-nowrap hover:bg-white/90 transition-all">
+                    Availability
+                </button>
+</div>
+</section>
+<!-- Practitioner List -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-stack-gap">
+<!-- Practitioner Card 1 -->
+<div class="glass-card rounded-3xl p-card-padding flex flex-col space-y-4 shadow-[0_10px_30px_rgba(130,216,255,0.04)] group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="relative">
+<img class="w-16 h-16 rounded-2xl object-cover border-2 border-white" data-alt="A professional female psychologist in a bright, modern clinic environment. She is smiling warmly at the camera, wearing a neutral-toned medical scrubs. The lighting is soft and clinical yet inviting, reflecting a premium medical futurism aesthetic with light blue and white tones in the blurred background. High-quality digital photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvoBHJbzC8PfI40GHYnbp9p2XTXZBuQ24EywmemV2bP4FkRKVdeB12Na16v9rqtzJiCqwf3FyalCnbO7Cg03AqwZhnDmMbVJkSfyYzJ7i6wEjhBTzu3DcCbynYJLKI49OMo5rtznIHP5T9AZri1sf7tDdmgcmHNzOYUFebjwHL8bt6VGOi-tVnYV_p7XsRPOwJnd5y7NGzCoszJSwzdkdba7ctM4j59hZPDsAAzQdlHMl0fjoJPNYul9FEleKh2kUd6I8Zg_D9YOdJ"/>
+<div class="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5">
+<span class="material-symbols-outlined text-[16px] text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-[18px] text-on-surface">Dr. Sarah Chen</h3>
+<p class="text-primary font-label-caps uppercase tracking-widest text-[10px]">Clinical Psychologist</p>
+</div>
+</div>
+<button class="p-2 text-slate-300 hover:text-error transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="flex items-center justify-between py-2 border-y border-white/30">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps text-tertiary">SESSION FEE</span>
+<span class="font-semibold text-on-surface">$120</span>
+</div>
+<div class="flex flex-col text-right">
+<span class="text-[10px] font-label-caps text-tertiary">NEXT SLOT</span>
+<span class="font-semibold text-primary">Today, 4:00 PM</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-xl font-label-caps hover:bg-on-primary-container transition-all active:scale-95">
+                        Book Session
+                    </button>
+<button class="px-4 bg-white/40 text-primary border border-primary/20 rounded-xl hover:bg-white/80 transition-all">
+<span class="material-symbols-outlined align-middle">calendar_today</span>
+</button>
+</div>
+</div>
+<!-- Practitioner Card 2 -->
+<div class="glass-card rounded-3xl p-card-padding flex flex-col space-y-4 shadow-[0_10px_30px_rgba(130,216,255,0.04)] group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="relative">
+<img class="w-16 h-16 rounded-2xl object-cover border-2 border-white" data-alt="A professional male health coach with a focused and empathetic expression. He is dressed in high-end athletic wellness attire in a minimal, bright white and sky blue studio setting. The atmosphere is serene and technologically sophisticated, with soft natural light illuminating the scene. Professional aesthetic with high-key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjUevowzhajpAon4RSATu1DfD0__dz3upmm-7K_PCZNvmu0qMQ2m9gQ6Ltxacmnvzus7r_zvZ7MsI_BP8a1dG6Hha3LNlbmx8zmbyBdbR5zPbdT0_rueKgmKyR7p5R_g8lkj8GptJPwp7C9dVV78hhBRB2mftTzOhT5Bg5acyT6ib2L8AXO5drMlh6kSYYjFYzZzu8creyZr3yytNhpuSO8vYDcbApd-kpPFffu4OKR2zYThwzsPqWvLdmJAZI2G0t_gSp1mj6wXKi"/>
+<div class="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5">
+<span class="material-symbols-outlined text-[16px] text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-[18px] text-on-surface">Marc Aubert</h3>
+<p class="text-primary font-label-caps uppercase tracking-widest text-[10px]">Holistic Health Coach</p>
+</div>
+</div>
+<button class="p-2 text-slate-300 hover:text-error transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="flex items-center justify-between py-2 border-y border-white/30">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps text-tertiary">SESSION FEE</span>
+<span class="font-semibold text-on-surface">$95</span>
+</div>
+<div class="flex flex-col text-right">
+<span class="text-[10px] font-label-caps text-tertiary">NEXT SLOT</span>
+<span class="font-semibold text-primary">Tomorrow, 10:00 AM</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-xl font-label-caps hover:bg-on-primary-container transition-all active:scale-95">
+                        Book Session
+                    </button>
+<button class="px-4 bg-white/40 text-primary border border-primary/20 rounded-xl hover:bg-white/80 transition-all">
+<span class="material-symbols-outlined align-middle">calendar_today</span>
+</button>
+</div>
+</div>
+<!-- Practitioner Card 3 -->
+<div class="glass-card rounded-3xl p-card-padding flex flex-col space-y-4 shadow-[0_10px_30px_rgba(130,216,255,0.04)] group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="relative">
+<img class="w-16 h-16 rounded-2xl object-cover border-2 border-white" data-alt="A portrait of a senior female medical consultant with a kind and experienced face. The background features a blurred laboratory with futuristic glowing interfaces in medical blue and white. The lighting is diffused and high-end, highlighting the professional expertise and calming presence of the consultant. Sophisticated glassmorphic elements are present." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz2VKLbYQ5aZDZGX2hgCNp_CgvS-iPAt0aM3HfnyUUwyZy7N05VpydlOI1iMkhjZSUjeDKVCqM41Vvp_g8wcP0hbDIB5zs96PJj-4yFYYUfkTtXBxM5e7DIQkAziXIEV3Gq_VlkEtH60SfxQZyZKQKizuRL4NCyxQySh-TIaDQa0l16Z_Fpdzu2wcG3LzIrWLSE5e58NdBng5LhkCLVb0YmbqlesJAg4f2iiGiFNZhWLpb8zUt4q8AWcUe1u6-dI0TXJ5LWLExF9hJ"/>
+<div class="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5">
+<span class="material-symbols-outlined text-[16px] text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-[18px] text-on-surface">Dr. Elena Rodriguez</h3>
+<p class="text-primary font-label-caps uppercase tracking-widest text-[10px]">Medical Consultant</p>
+</div>
+</div>
+<button class="p-2 text-slate-300 hover:text-error transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="flex items-center justify-between py-2 border-y border-white/30">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps text-tertiary">SESSION FEE</span>
+<span class="font-semibold text-on-surface">$150</span>
+</div>
+<div class="flex flex-col text-right">
+<span class="text-[10px] font-label-caps text-tertiary">NEXT SLOT</span>
+<span class="font-semibold text-primary">Wed, 14 June</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-xl font-label-caps hover:bg-on-primary-container transition-all active:scale-95">
+                        Book Session
+                    </button>
+<button class="px-4 bg-white/40 text-primary border border-primary/20 rounded-xl hover:bg-white/80 transition-all">
+<span class="material-symbols-outlined align-middle">calendar_today</span>
+</button>
+</div>
+</div>
+<!-- Practitioner Card 4 -->
+<div class="glass-card rounded-3xl p-card-padding flex flex-col space-y-4 shadow-[0_10px_30px_rgba(130,216,255,0.04)] group">
+<div class="flex justify-between items-start">
+<div class="flex gap-4">
+<div class="relative">
+<img class="w-16 h-16 rounded-2xl object-cover border-2 border-white" data-alt="A portrait of a young male nutritionist with an athletic build. He stands in a clean, minimalist kitchen environment with high-end appliances and soft natural morning light. The color palette is composed of soft whites, light woods, and Medical Blue accents. The overall aesthetic is one of health, precision, and futuristic wellness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI0-2llQBxnJ8aVK3T7UldgxB_FZWMsqo-qe0nNXl7J8DdcFmnXNAWZie5oeGbecHg4VCo6buMYl7csgu02ugTXoMtBfOO9BkP88SMsUFsjD_Nw_hKnkICM3v3fDW21UvKSAPRxqqR-SADuQ3RG8WxL7pRNgsWXK0UqB4BltHfHgqt50pn9fq6MdAjSKQjjDp4Qe4wMYHV8YkgGt390h-Qy5mYkhuXz4tMTHmIIa-0YJsuY9z_ZzIKPGHqXiVe8ZqGBtE66ZSQGcnf"/>
+<div class="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5">
+<span class="material-symbols-outlined text-[16px] text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-[18px] text-on-surface">Julian Vasseur</h3>
+<p class="text-primary font-label-caps uppercase tracking-widest text-[10px]">Nutritional Therapist</p>
+</div>
+</div>
+<button class="p-2 text-slate-300 hover:text-error transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="flex items-center justify-between py-2 border-y border-white/30">
+<div class="flex flex-col">
+<span class="text-[10px] font-label-caps text-tertiary">SESSION FEE</span>
+<span class="font-semibold text-on-surface">$110</span>
+</div>
+<div class="flex flex-col text-right">
+<span class="text-[10px] font-label-caps text-tertiary">NEXT SLOT</span>
+<span class="font-semibold text-primary">Today, 2:30 PM</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-on-primary py-3 rounded-xl font-label-caps hover:bg-on-primary-container transition-all active:scale-95">
+                        Book Session
+                    </button>
+<button class="px-4 bg-white/40 text-primary border border-primary/20 rounded-xl hover:bg-white/80 transition-all">
+<span class="material-symbols-outlined align-middle">calendar_today</span>
+</button>
+</div>
+</div>
+</section>
+<!-- No more results indicator -->
+<div class="py-12 flex flex-col items-center justify-center text-slate-400 space-y-2">
+<span class="material-symbols-outlined text-4xl">medical_information</span>
+<p class="font-body-sm">Showing top results for your criteria</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full flex justify-around items-center px-4 pt-3 pb-6 bg-white/60 backdrop-blur-2xl dark:bg-slate-950/60 rounded-t-[24px] border-t border-white/30 dark:border-slate-800/50 shadow-[0_-10px_40px_rgba(130,216,255,0.08)] z-50">
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-sky-400 dark:hover:text-sky-200 transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined">home_health</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-sky-400 dark:hover:text-sky-200 transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined">self_care</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Wellness</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-sky-400 dark:hover:text-sky-200 transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Metrics</span>
+</div>
+<div class="flex flex-col items-center justify-center text-sky-600 dark:text-sky-300 bg-sky-50/50 dark:bg-sky-900/30 rounded-xl px-3 py-1 active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined">medical_services</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Consult</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-sky-400 dark:hover:text-sky-200 transition-all active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined">sentiment_satisfied</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Mood</span>
+</div>
+</nav>
+</body></html>

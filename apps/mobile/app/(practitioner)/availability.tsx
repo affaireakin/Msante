@@ -5,6 +5,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import {
   useAvailabilitySettings,
@@ -207,7 +208,7 @@ export default function AvailabilityScreen() {
         }}
       >
         <TouchableOpacity onPress={() => router.back()} style={{ padding: 4 }}>
-          <Text style={{ fontFamily: 'Manrope', fontSize: 22, color: '#006685' }}>←</Text>
+          <MaterialIcons name="arrow-back" size={22} color="#006685" />
         </TouchableOpacity>
         <Text
           style={{ fontFamily: 'Manrope', fontSize: 17, fontWeight: '700', color: '#0b1c30' }}
@@ -265,7 +266,7 @@ export default function AvailabilityScreen() {
                 justifyContent: 'center',
               }}
             >
-              <Text style={{ fontSize: 18 }}>🔄</Text>
+              <MaterialIcons name="repeat" size={20} color="#006685" />
             </View>
             <View>
               <Text
@@ -332,7 +333,7 @@ export default function AvailabilityScreen() {
                   justifyContent: 'center',
                 }}
               >
-                <Text style={{ fontSize: 18 }}>🚫</Text>
+                <MaterialIcons name="block" size={20} color="#ba1a1a" />
               </View>
               <View>
                 <Text
@@ -432,7 +433,7 @@ export default function AvailabilityScreen() {
                     onPress={() => handleDeleteException(exc.id, exc.label)}
                     style={{ padding: 8 }}
                   >
-                    <Text style={{ fontSize: 16 }}>🗑️</Text>
+                    <MaterialIcons name="delete-outline" size={20} color="#ba1a1a" />
                   </TouchableOpacity>
                 </View>
               ))}

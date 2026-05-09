@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter, useLocalSearchParams } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { BreathingRing } from '@/features/mental-health/meditation/components/BreathingRing'
 import { useMeditationTimer } from '@/features/mental-health/meditation/hooks/useMeditationTimer'
 
@@ -21,38 +22,59 @@ export default function MeditationSession() {
   const secs = (remaining % 60).toString().padStart(2, '0')
 
   return (
-    <SafeAreaView className="flex-1 bg-background items-center">
-      <View className="w-full px-6 pt-6 flex-row items-center justify-between">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff', alignItems: 'center' }}>
+      <View style={{ width: '100%', paddingHorizontal: 24, paddingTop: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <TouchableOpacity onPress={() => { reset(); router.back() }}>
-          <Text className="text-primary text-2xl">←</Text>
+          <MaterialIcons name="arrow-back" size={24} color="#006685" />
         </TouchableOpacity>
-        <Text className="text-base font-semibold text-on-surface font-manrope">{title}</Text>
+        <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>{title}</Text>
         <View style={{ width: 32 }} />
       </View>
 
-      <View className="flex-1 items-center justify-center gap-8">
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 32 }}>
         <BreathingRing isActive={isActive} size={80} />
-        <View className="items-center gap-2">
-          <Text className="text-2xl font-bold text-on-surface font-manrope">{currentLabel}</Text>
-          <Text className="text-4xl font-bold text-primary font-manrope">{mins}:{secs}</Text>
+        <View style={{ alignItems: 'center', gap: 8 }}>
+          <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>{currentLabel}</Text>
+          <Text style={{ fontSize: 36, fontWeight: 'bold', color: '#006685', fontFamily: 'Manrope' }}>{mins}:{secs}</Text>
         </View>
         {isComplete ? (
-          <View className="items-center gap-4">
-            <Text className="text-lg font-semibold text-on-surface font-manrope">Session terminée 🎉</Text>
+          <View style={{ alignItems: 'center', gap: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <MaterialIcons name="celebration" size={22} color="#0b1c30" />
+              <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>Session terminée</Text>
+            </View>
             <TouchableOpacity
               onPress={() => router.back()}
-              className="bg-primary px-8 py-3 rounded-full"
+              style={{ backgroundColor: '#006685', paddingHorizontal: 32, paddingVertical: 12, borderRadius: 9999 }}
             >
-              <Text className="text-white font-semibold font-manrope">Retour</Text>
+              <Text style={{ color: '#ffffff', fontWeight: '600', fontFamily: 'Manrope' }}>Retour</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <TouchableOpacity
             onPress={isActive ? stop : start}
-            className={`px-10 py-4 rounded-full ${isActive ? 'bg-outline/20 border border-outline' : 'bg-primary'}`}
-            style={{ shadowColor: '#006685', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 20, elevation: 5 }}
+            style={{
+              paddingHorizontal: 40,
+              paddingVertical: 16,
+              borderRadius: 9999,
+              backgroundColor: isActive ? 'rgba(111,120,126,0.2)' : '#006685',
+              borderWidth: isActive ? 1 : 0,
+              borderColor: isActive ? '#6f787e' : 'transparent',
+              shadowColor: '#006685',
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: isActive ? 0 : 0.3,
+              shadowRadius: 20,
+              elevation: isActive ? 0 : 5,
+            }}
           >
-            <Text className={`font-semibold font-manrope text-sm uppercase tracking-wider ${isActive ? 'text-on-surface' : 'text-white'}`}>
+            <Text style={{
+              fontWeight: '600',
+              fontFamily: 'Manrope',
+              fontSize: 14,
+              textTransform: 'uppercase',
+              letterSpacing: 1.2,
+              color: isActive ? '#0b1c30' : '#ffffff',
+            }}>
               {isActive ? 'Pause' : 'Commencer'}
             </Text>
           </TouchableOpacity>

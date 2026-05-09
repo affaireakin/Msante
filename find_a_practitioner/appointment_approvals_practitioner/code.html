@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Appointment Approval</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#e4c546",
+                        "primary": "#006685",
+                        "tertiary-container": "#cbcdcf",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "on-background": "#0b1c30",
+                        "inverse-primary": "#7bd1f8",
+                        "tertiary-fixed": "#e0e3e5",
+                        "surface": "#f8f9ff",
+                        "surface-container-high": "#dce9ff",
+                        "on-secondary-container": "#756100",
+                        "on-tertiary-container": "#545759",
+                        "surface-tint": "#006685",
+                        "primary-fixed": "#bee9ff",
+                        "primary-container": "#82d8ff",
+                        "outline": "#6f787e",
+                        "inverse-surface": "#213145",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#ffde5c",
+                        "secondary": "#705d00",
+                        "inverse-on-surface": "#eaf1ff",
+                        "background": "#f8f9ff",
+                        "surface-container-highest": "#d3e4fe",
+                        "outline-variant": "#bec8ce",
+                        "surface-bright": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-tertiary-fixed": "#191c1e",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#d3e4fe",
+                        "on-primary-container": "#005e7a",
+                        "on-primary-fixed-variant": "#004d65",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#221b00",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "surface-container": "#e5eeff",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#544600",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001f2a",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#5c5f61",
+                        "secondary-fixed": "#ffe170",
+                        "on-surface": "#0b1c30",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#3f484d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "margin-page": "24px",
+                        "stack-gap": "12px",
+                        "unit": "8px",
+                        "card-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "body-base": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "label-caps": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "display-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #f8f9ff;
+            color: #0b1c30;
+        }
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 102, 133, 0.05);
+        }
+    </style>
+</head>
+<body class="font-body-base bg-background text-on-background min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-white/70 backdrop-blur-xl dark:bg-slate-900/70 font-manrope antialiased docked full-width top-0 border-b border-white/20 dark:border-slate-800/50 backdrop-blur-md border-b border-sky-100/20 dark:border-sky-900/30 shadow-[0_8px_32px_0_rgba(130,216,255,0.08)] fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 h-16">
+<div class="flex items-center gap-4">
+<span class="text-2xl font-bold tracking-tight text-sky-500 dark:text-sky-400">M-Santé</span>
+</div>
+<div class="flex-1 max-w-xl mx-8 hidden md:flex">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">search</span>
+<input class="w-full bg-surface-container-highest/50 border border-outline-variant/30 rounded-full py-2 pl-10 pr-4 text-body-sm font-body-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Search patients, records..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4 text-sky-400 dark:text-sky-300">
+<button class="p-2 rounded-full hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-all duration-300 cursor-pointer active:scale-95 transition-transform relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-all duration-300 cursor-pointer active:scale-95 transition-transform">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container overflow-hidden ml-2 cursor-pointer border border-primary/20">
+<img alt="Practitioner profile" class="w-full h-full object-cover" data-alt="A professional headshot of a mature male medical practitioner with a warm smile, wearing a white coat over a light blue shirt. The background is a slightly blurred, bright, modern clinic setting with soft natural light. The overall mood is confident and reassuring." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEXLJuY9NJGhPFcP8dcF7HnE5TuuRY5bYdLBwZqCDMnB9TB43dJwjmpL3AV8PzFuSd0QDj5lglS8RxbldAZJ35eP0tsQwdztlMMd8CiW_RKAMt5W91mp702Fr9fOKq9VuO5XdvHhKjER3DpM0aJhMBqzIqQsT7F1wBP9j6hpgPMjXJbyEQJj0JdiJXcs-ShxWs8F-mKiUp-uf4-Y9Nmb7TCfQv4ObS4H5oZUZNr9CuI2BgOXWyAEj8T4r3aqxSsIEGz7TfmTnd71xx"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="bg-white/40 backdrop-blur-2xl dark:bg-slate-900/40 font-manrope text-sm font-medium h-screen w-64 border-r border-white/10 dark:border-slate-800/50 glassmorphic border-r border-sky-100/10 dark:border-sky-900/20 shadow-2xl shadow-sky-900/5 fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex flex-col pt-8 pb-4 z-40 hidden md:flex">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-surface-variant overflow-hidden flex-shrink-0">
+<img alt="Dr. Miller Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a mature male medical practitioner with a warm smile, wearing a white coat over a light blue shirt. The background is a slightly blurred, bright, modern clinic setting with soft natural light. The overall mood is confident and reassuring." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsOvdIjtTXoArMJNsklEv2Fj9NHvPDwf_fcvx9SjNIWIL-0sbSGrFbtwDqOyOueRcTYsh5lgeTCJImxntWlvI4Sd7qI8g09KMtHujF4g-mpDGwbBsEYxsZsCTdlZCoYdE3ljc3TqOkXFexWSdoi1v1JFh03i2sAccxDGGPzRiNCg1_iGsc-g3M5QJzSnUofQ3e5etXtXf9UqJ-cEPG_PRogQRITDR_lqb8XC00BU_I08o_wB-PD_ZXO9nTzoR8I6vu1D6OAb8GkP4c"/>
+</div>
+<div>
+<div class="text-body-sm font-body-sm font-bold text-on-surface">Dr. Miller</div>
+<div class="text-label-caps font-label-caps text-on-surface-variant">Medical Specialist</div>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-1 px-2">
+<a class="group flex items-center gap-3 px-6 py-4 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer active:scale-95 transition-transform rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span>Dashboard</span>
+</a>
+<a class="group flex items-center gap-3 px-6 py-4 bg-sky-500/10 text-sky-600 dark:text-sky-300 border-r-4 border-sky-500 rounded-l-none rounded-r-lg cursor-pointer active:scale-95 transition-transform mx-2" href="#">
+<span class="material-symbols-outlined">event_upcoming</span>
+<span>Appointments</span>
+</a>
+<a class="group flex items-center gap-3 px-6 py-4 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer active:scale-95 transition-transform rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>Patients</span>
+</a>
+<a class="group flex items-center gap-3 px-6 py-4 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer active:scale-95 transition-transform rounded-lg mx-2" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span>Schedule</span>
+</a>
+<a class="group flex items-center gap-3 px-6 py-4 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-colors cursor-pointer active:scale-95 transition-transform rounded-lg mx-2 mt-auto mb-4" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<div class="px-6 mt-auto">
+<button class="w-full py-3 bg-error/10 text-error rounded-lg text-body-sm font-body-sm font-semibold flex items-center justify-center gap-2 hover:bg-error/20 transition-colors border border-error/20">
+<span class="material-symbols-outlined text-sm">emergency</span>
+                Emergency Request
+            </button>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="pt-24 pb-12 px-margin-page md:pl-72 md:pr-8 min-h-screen max-w-[1600px] mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+<div>
+<h1 class="text-display-lg font-display-lg text-on-surface mb-2">Pending Approvals</h1>
+<p class="text-body-base font-body-base text-on-surface-variant">Review and manage incoming consultation requests.</p>
+</div>
+<div class="flex gap-3">
+<div class="bg-surface-container-high rounded-full px-4 py-2 flex items-center gap-2 border border-outline-variant/30 text-body-sm font-body-sm">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed-dim"></span>
+<span>12 Pending</span>
+</div>
+<div class="bg-surface-container-high rounded-full px-4 py-2 flex items-center gap-2 border border-outline-variant/30 text-body-sm font-body-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span>4 Urgent</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<!-- Requests List Area -->
+<div class="xl:col-span-2 flex flex-col gap-stack-gap">
+<!-- Request Card 1 -->
+<div class="glass-panel rounded-xl p-card-padding transition-all hover:shadow-[0_12px_40px_0_rgba(0,102,133,0.08)] group">
+<div class="flex flex-col sm:flex-row gap-6 items-start">
+<div class="flex-shrink-0">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/20 p-0.5">
+<img alt="Patient Photo" class="w-full h-full object-cover rounded-full" data-alt="A portrait of a young woman with a neutral, slightly concerned expression. She has dark hair and is wearing a simple gray top. The lighting is soft and natural, suggesting an indoor setting. The background is a clean, out-of-focus white wall." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIhr4rkBAZe94PnICMWuDqSHI6Dll2rmk87oZBAb6OgUWu2IOqd5d-F4_tNxtHfd2bLKJEMOkAKNMS-EdnsQjtso2SGiAs-GwsoodFxVSE_8NfIvdaLUyBKrhFhraHcUY6fbH2wFxzWZHeDwOuKbyeZsEvEcucDw54ML_lowWaSqi9E3d3F3747Do8VwCTkOxhZCn1vb8gaLOy7SYbACEp3zM5NrGTCzE11iy6iWbyZhb9BIxokXHxRR4P8Skc8Z63kYS62pCJREqJ"/>
+</div>
+</div>
+<div class="flex-1 w-full">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface">Sarah Jenkins</h3>
+<p class="text-body-sm font-body-sm text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">history</span>
+                                        Returning Patient • ID: #P-8842
+                                    </p>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-label-caps font-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                                    Requested
+                                </span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-4 mb-4 border border-outline-variant/20">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<span class="text-label-caps font-label-caps text-on-surface-variant block mb-1">PROPOSED TIME</span>
+<div class="text-body-base font-body-base font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">calendar_month</span>
+                                            Oct 24, 2023 • 10:30 AM
+                                        </div>
+</div>
+<div>
+<span class="text-label-caps font-label-caps text-on-surface-variant block mb-1">CONSULTATION TYPE</span>
+<div class="text-body-base font-body-base font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">videocam</span>
+                                            Telehealth Follow-up
+                                        </div>
+</div>
+</div>
+</div>
+<div class="mb-6">
+<span class="text-label-caps font-label-caps text-on-surface-variant block mb-1">PATIENT NOTE</span>
+<p class="text-body-sm font-body-sm text-on-surface-variant bg-white/50 p-3 rounded-lg border border-outline-variant/10">
+                                    "Experiencing mild headaches adjusting to the new medication dosage prescribed last week. Would like to discuss adjusting the schedule."
+                                </p>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg text-body-sm font-body-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                    Approve
+                                </button>
+<button class="bg-white border border-outline-variant/30 text-on-surface px-6 py-2.5 rounded-lg text-body-sm font-body-sm font-medium hover:bg-surface-container transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+                                    Reschedule
+                                </button>
+<button class="bg-white border border-error/30 text-error px-6 py-2.5 rounded-lg text-body-sm font-body-sm font-medium hover:bg-error/5 transition-colors flex items-center gap-2 ml-auto">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+                                    Decline
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Request Card 2 -->
+<div class="glass-panel rounded-xl p-card-padding transition-all hover:shadow-[0_12px_40px_0_rgba(0,102,133,0.08)] group">
+<div class="flex flex-col sm:flex-row gap-6 items-start">
+<div class="flex-shrink-0">
+<div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary/20 p-0.5">
+<img alt="Patient Photo" class="w-full h-full object-cover rounded-full" data-alt="A portrait of a middle-aged man with short hair and a beard, wearing a dark blue shirt. He has a serious but calm expression. The background is a bright, minimal white space with soft side lighting highlighting his facial features." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCD17DbgwWPjGOWB-CqCoSjItB45PrjUtklExwnNold0Kp4Glwrs0bal0QLAdxPrkv5_7YO_QjxKleeEfzMbon8D7SzuB82IDMBRAGQGVDMPlLl1H6Gnj2ukb7ZdFncQxntsQ69QfS5FplMpkc-TmL-_JLIcQkHjQS3BoO3elqamlPaND0dlgw1QsSK3ecgDE-BtXmqWj2pQ3xQyjFfuIlMPpF5GHu1cHbOKkfcQL6P_6afDoDQ6RpIGm9CGXRuccCkqbfvWOk_l6oL"/>
+</div>
+</div>
+<div class="flex-1 w-full">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface flex items-center gap-2">
+                                        Marcus Chen
+                                        <span class="w-2 h-2 rounded-full bg-error" title="High Priority"></span>
+</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">person_add</span>
+                                        New Patient • Referral
+                                    </p>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-label-caps font-label-caps flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                                    Requested
+                                </span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-4 mb-4 border border-outline-variant/20">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<span class="text-label-caps font-label-caps text-on-surface-variant block mb-1">PROPOSED TIME</span>
+<div class="text-body-base font-body-base font-medium flex items-center gap-2 text-error">
+<span class="material-symbols-outlined">calendar_month</span>
+                                            Oct 24, 2023 • 2:00 PM
+                                        </div>
+</div>
+<div>
+<span class="text-label-caps font-label-caps text-on-surface-variant block mb-1">CONSULTATION TYPE</span>
+<div class="text-body-base font-body-base font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">clinical_notes</span>
+                                            In-Person Initial Eval
+                                        </div>
+</div>
+</div>
+</div>
+<div class="mb-6">
+<span class="text-label-caps font-label-caps text-on-surface-variant block mb-1">PATIENT NOTE</span>
+<p class="text-body-sm font-body-sm text-on-surface-variant bg-white/50 p-3 rounded-lg border border-outline-variant/10">
+                                    "Referred by Dr. Adams for persistent joint pain in the right shoulder. Discomfort has increased significantly over the last 48 hours."
+                                </p>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg text-body-sm font-body-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                                    Approve
+                                </button>
+<button class="bg-white border border-outline-variant/30 text-on-surface px-6 py-2.5 rounded-lg text-body-sm font-body-sm font-medium hover:bg-surface-container transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">edit_calendar</span>
+                                    Reschedule
+                                </button>
+<button class="bg-white border border-error/30 text-error px-6 py-2.5 rounded-lg text-body-sm font-body-sm font-medium hover:bg-error/5 transition-colors flex items-center gap-2 ml-auto">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+                                    Decline
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar / Mini Calendar Area -->
+<div class="xl:col-span-1">
+<div class="glass-panel rounded-xl p-card-padding sticky top-24">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-headline-md font-headline-md text-on-surface">Availability</h2>
+<div class="flex gap-1">
+<button class="p-1 rounded hover:bg-surface-container transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Mini Calendar -->
+<div class="mb-6">
+<div class="text-center font-semibold text-body-base mb-4 text-primary">October 2023</div>
+<div class="grid grid-cols-7 gap-1 text-center mb-2">
+<div class="text-label-caps font-label-caps text-outline">S</div>
+<div class="text-label-caps font-label-caps text-outline">M</div>
+<div class="text-label-caps font-label-caps text-outline">T</div>
+<div class="text-label-caps font-label-caps text-outline">W</div>
+<div class="text-label-caps font-label-caps text-outline">T</div>
+<div class="text-label-caps font-label-caps text-outline">F</div>
+<div class="text-label-caps font-label-caps text-outline">S</div>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center text-body-sm font-body-sm">
+<div class="p-2 text-outline-variant">1</div>
+<div class="p-2 text-outline-variant">2</div>
+<div class="p-2 text-outline-variant">3</div>
+<div class="p-2 text-outline-variant">4</div>
+<div class="p-2 text-outline-variant">5</div>
+<div class="p-2 text-outline-variant">6</div>
+<div class="p-2 text-outline-variant">7</div>
+<div class="p-2">8</div>
+<div class="p-2">9</div>
+<div class="p-2">10</div>
+<div class="p-2">11</div>
+<div class="p-2">12</div>
+<div class="p-2">13</div>
+<div class="p-2">14</div>
+<div class="p-2">15</div>
+<div class="p-2">16</div>
+<div class="p-2">17</div>
+<div class="p-2">18</div>
+<div class="p-2">19</div>
+<div class="p-2">20</div>
+<div class="p-2">21</div>
+<div class="p-2">22</div>
+<div class="p-2">23</div>
+<div class="p-2 bg-primary text-on-primary rounded-full shadow-md font-bold">24</div>
+<div class="p-2 font-bold text-primary relative">
+                                25
+                                <span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary-fixed-dim rounded-full"></span>
+</div>
+<div class="p-2 font-bold text-primary relative">
+                                26
+                                <span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary-fixed-dim rounded-full"></span>
+</div>
+<div class="p-2">27</div>
+<div class="p-2">28</div>
+<div class="p-2">29</div>
+<div class="p-2">30</div>
+<div class="p-2">31</div>
+<div class="p-2 text-outline-variant">1</div>
+<div class="p-2 text-outline-variant">2</div>
+<div class="p-2 text-outline-variant">3</div>
+<div class="p-2 text-outline-variant">4</div>
+</div>
+</div>
+<!-- Daily Schedule Snapshot -->
+<div class="border-t border-outline-variant/20 pt-4">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant mb-3">TODAY'S SNAPSHOT (OCT 24)</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-2 rounded bg-surface-container-low border-l-2 border-outline-variant">
+<div class="text-body-sm font-body-sm font-medium w-16 text-outline">09:00 AM</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant flex-1 line-through">Dr. Allen (Staff Mtg)</div>
+</div>
+<div class="flex items-center gap-3 p-2 rounded bg-primary/5 border-l-2 border-primary border-dashed">
+<div class="text-body-sm font-body-sm font-medium w-16 text-primary">10:30 AM</div>
+<div class="text-body-sm font-body-sm text-primary font-medium flex-1">Requested: S. Jenkins</div>
+</div>
+<div class="flex items-center gap-3 p-2 rounded bg-surface-container-highest border-l-2 border-primary">
+<div class="text-body-sm font-body-sm font-medium w-16">11:30 AM</div>
+<div class="text-body-sm font-body-sm text-on-surface flex-1 font-medium">J. Doe (Checkup)</div>
+</div>
+<div class="flex items-center gap-3 p-2 rounded bg-primary/5 border-l-2 border-primary border-dashed">
+<div class="text-body-sm font-body-sm font-medium w-16 text-primary">02:00 PM</div>
+<div class="text-body-sm font-body-sm text-primary font-medium flex-1">Requested: M. Chen</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

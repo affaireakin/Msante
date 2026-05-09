@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Alerts &amp; Activity Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#7bd1f8",
+                        "on-surface": "#0b1c30",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#5c5f61",
+                        "surface-container-low": "#eff4ff",
+                        "secondary-fixed": "#ffe170",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#221b00",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#dce9ff",
+                        "secondary-container": "#ffde5c",
+                        "outline": "#6f787e",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "surface-tint": "#006685",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "on-secondary-container": "#756100",
+                        "on-surface-variant": "#3f484d",
+                        "tertiary-fixed": "#e0e3e5",
+                        "secondary": "#705d00",
+                        "on-primary-fixed-variant": "#004d65",
+                        "inverse-surface": "#213145",
+                        "surface-bright": "#f8f9ff",
+                        "primary-container": "#82d8ff",
+                        "on-tertiary-container": "#545759",
+                        "outline-variant": "#bec8ce",
+                        "tertiary-container": "#cbcdcf",
+                        "primary": "#006685",
+                        "background": "#f8f9ff",
+                        "secondary-fixed-dim": "#e4c546",
+                        "primary-fixed": "#bee9ff",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-secondary-fixed-variant": "#544600",
+                        "surface-variant": "#d3e4fe",
+                        "surface": "#f8f9ff",
+                        "surface-container": "#e5eeff",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-primary-container": "#005e7a",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#001f2a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-background": "#0b1c30",
+                        "surface-dim": "#cbdbf5",
+                        "inverse-on-surface": "#eaf1ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "stack-gap": "12px",
+                        "margin-page": "24px",
+                        "card-padding": "20px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "body-base": ["Manrope"],
+                        "label-caps": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 102, 133, 0.04);
+        }
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #006685;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #006685;
+        }
+        .toggle-checkbox:checked + .toggle-label:after {
+            transform: translateX(100%);
+            border-color: white;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-base h-screen flex overflow-hidden">
+<!-- Sidebar Navigation (Derived from BottomNavBar JSON for Desktop View) -->
+<aside class="hidden md:flex flex-col w-64 h-full glass-panel border-r border-outline-variant/20 z-40">
+<div class="h-16 flex items-center px-6 border-b border-outline-variant/10">
+<span class="font-headline-md text-headline-md text-primary">M-Santé</span>
+</div>
+<nav class="flex-1 px-4 py-6 space-y-2">
+<!-- Inactive -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">grid_view</span>
+<span class="font-body-base text-body-base font-medium">Dashboard</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">group</span>
+<span class="font-body-base text-body-base font-medium">Patients</span>
+</a>
+<!-- Active (Alerts Dashboard intent) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary-container text-on-primary-container shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="font-body-base text-body-base font-medium">Alerts</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-body-base text-body-base font-medium">Profile</span>
+</a>
+</nav>
+</aside>
+<!-- Main Workspace -->
+<div class="flex-1 flex flex-col h-full overflow-hidden relative">
+<!-- TopAppBar (From JSON) -->
+<header class="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl font-manrope font-semibold tracking-tight docked full-width top-0 z-50 border-b border-white/20 dark:border-slate-800/50 shadow-[0_4px_20px_rgba(130,216,255,0.05)] flex justify-between items-center w-full px-6 h-16">
+<div class="flex items-center">
+<!-- Headline rendered in JSON style -->
+<span class="text-xl font-bold text-sky-600 dark:text-sky-300 md:hidden">M-Santé</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-slate-400 dark:text-slate-500 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors active:scale-95 duration-200 ease-out">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<img alt="Practitioner Avatar" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" data-alt="A close-up headshot portrait of a professional healthcare practitioner, a middle-aged woman with a warm, reassuring smile, wearing a pristine white clinical coat. The lighting is soft, high-key, and diffused, creating a serene, modern medical aesthetic. The background is a clean, out-of-focus light blue hospital environment, matching a minimalist clinical design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWEHP1yyqvD_giExm4wJaSZTSRAmN2GKggYpg-lMBBIiWr8nAjiGfVyXpGf1Y2zfluco3knEsPQD3rZevekjug58BdvWhCABMtlyIjHLeg2Y2O2gOnIeJy309xNquYxXlTRJeEvtdt2CbPQ7qr0UtlQWWnxsoDBzhD0RHVfjvHxj-v4lZWmuoTNORaxu-1khyGNLraIDZPnfxSCxrZmeYqFEoHq23uNBYYg40No5wxb8kkygdmsdf5gmUBUzUgTzuWSuJxXR4VjkbP"/>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-page bg-gradient-to-br from-background to-surface-container-low/30">
+<div class="max-w-7xl mx-auto space-y-stack-gap">
+<!-- Page Header -->
+<div class="mb-8">
+<h1 class="font-headline-md text-headline-md text-on-surface mb-2">Notification &amp; Activity Management</h1>
+<p class="font-body-base text-body-base text-on-surface-variant">Control how you receive alerts and monitor recent system activity.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-gap">
+<!-- Left Column: Settings & Notices (Col span 4) -->
+<div class="lg:col-span-4 flex flex-col gap-stack-gap">
+<!-- Notification Settings -->
+<section class="glass-panel rounded-xl p-card-padding flex-1">
+<h2 class="font-body-base text-body-base font-semibold text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">tune</span>
+                                Alert Preferences
+                            </h2>
+<div class="space-y-6">
+<!-- Toggle Item -->
+<div class="flex items-center justify-between">
+<div>
+<div class="font-body-base text-body-base font-medium">Email Notifications</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Daily summaries and critical alerts</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-surface-container appearance-none cursor-pointer z-10 transition-transform duration-200 ease-in-out checked:transform checked:translate-x-full checked:border-primary" id="toggle_email" name="toggle_email" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-container cursor-pointer transition-colors duration-200 ease-in-out" for="toggle_email"></label>
+</div>
+</div>
+<hr class="border-outline-variant/20"/>
+<!-- Toggle Item -->
+<div class="flex items-center justify-between">
+<div>
+<div class="font-body-base text-body-base font-medium">SMS Alerts</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Instant updates for new bookings</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-surface-container appearance-none cursor-pointer z-10 transition-transform duration-200 ease-in-out checked:transform checked:translate-x-full checked:border-primary" id="toggle_sms" name="toggle_sms" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-container cursor-pointer transition-colors duration-200 ease-in-out" for="toggle_sms"></label>
+</div>
+</div>
+<hr class="border-outline-variant/20"/>
+<!-- Toggle Item -->
+<div class="flex items-center justify-between">
+<div>
+<div class="font-body-base text-body-base font-medium">Push Notifications</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Browser and device pop-ups</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-surface-container appearance-none cursor-pointer z-10 transition-transform duration-200 ease-in-out" id="toggle_push" name="toggle_push" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-container cursor-pointer transition-colors duration-200 ease-in-out" for="toggle_push"></label>
+</div>
+</div>
+</div>
+</section>
+<!-- System Notices -->
+<section class="glass-panel rounded-xl p-card-padding bg-surface-container-low/80">
+<h2 class="font-body-base text-body-base font-semibold text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">info</span>
+                                System Notices
+                            </h2>
+<div class="bg-surface-bright border border-outline-variant/30 rounded-lg p-4 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="font-body-sm text-body-sm font-semibold text-on-surface mb-1">Scheduled Maintenance</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">The platform will be undergoing routine maintenance on Sunday, 2 AM EST. Expect 15 minutes of downtime.</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Alerts & Activity (Col span 8) -->
+<div class="lg:col-span-8 flex flex-col gap-stack-gap">
+<!-- Recent Alerts -->
+<section class="glass-panel rounded-xl p-card-padding">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-body-base text-body-base font-semibold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-error">priority_high</span>
+                                    Recent Alerts
+                                </h2>
+<button class="font-label-caps text-label-caps text-primary hover:text-primary-fixed-variant transition-colors uppercase tracking-widest">Mark All Read</button>
+</div>
+<div class="space-y-3">
+<!-- Alert Item -->
+<div class="flex items-start gap-4 p-4 rounded-lg bg-surface-bright border border-outline-variant/20 hover:shadow-sm transition-shadow cursor-pointer group">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">calendar_add_on</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h3 class="font-body-base text-body-base font-medium text-on-surface group-hover:text-primary transition-colors">New Patient Booking</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-xs">10 min ago</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Jean Dupont scheduled a consultation for Oct 24th at 10:00 AM.</p>
+</div>
+</div>
+<!-- Alert Item -->
+<div class="flex items-start gap-4 p-4 rounded-lg bg-surface-bright border border-outline-variant/20 hover:shadow-sm transition-shadow cursor-pointer group">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h3 class="font-body-base text-body-base font-medium text-on-surface group-hover:text-primary transition-colors">Payment Received</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-xs">1 hour ago</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Invoice #INV-2034 paid successfully via credit card.</p>
+</div>
+</div>
+<!-- Alert Item -->
+<div class="flex items-start gap-4 p-4 rounded-lg bg-surface-bright border border-outline-variant/20 hover:shadow-sm transition-shadow cursor-pointer group opacity-75">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant">verified_user</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h3 class="font-body-base text-body-base font-medium text-on-surface">Verification Update</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-xs">Yesterday</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Your annual medical license verification is complete.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Activity Log -->
+<section class="glass-panel rounded-xl p-card-padding flex-1">
+<h2 class="font-body-base text-body-base font-semibold text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history</span>
+                                Activity Log
+                            </h2>
+<div class="relative pl-4 space-y-6 before:absolute before:inset-y-0 before:left-6 before:w-px before:bg-outline-variant/30">
+<!-- Timeline Item -->
+<div class="relative pl-8">
+<div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-primary border-2 border-white shadow-sm"></div>
+<div class="font-body-base text-body-base font-medium text-on-surface">Patient file updated</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Updated medical history for Marie Claire. Added notes on recent blood pressure readings.</div>
+<div class="font-body-sm text-body-sm text-outline mt-1 text-xs uppercase tracking-wider">Today, 2:30 PM</div>
+</div>
+<!-- Timeline Item -->
+<div class="relative pl-8">
+<div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-surface-variant border-2 border-white shadow-sm"></div>
+<div class="font-body-base text-body-base font-medium text-on-surface">Prescription sent</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">E-prescription securely transmitted to Pharmacie Centrale for patient ID #9283.</div>
+<div class="font-body-sm text-body-sm text-outline mt-1 text-xs uppercase tracking-wider">Today, 11:15 AM</div>
+</div>
+<!-- Timeline Item -->
+<div class="relative pl-8">
+<div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-surface-variant border-2 border-white shadow-sm"></div>
+<div class="font-body-base text-body-base font-medium text-on-surface">Logged in</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Secure session started from authorized device (IP: 192.168.1.104).</div>
+<div class="font-body-sm text-body-sm text-outline mt-1 text-xs uppercase tracking-wider">Today, 8:00 AM</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

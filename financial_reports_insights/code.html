@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Financials</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#221b00",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "on-primary-fixed-variant": "#004d65",
+                        "surface-variant": "#d3e4fe",
+                        "on-primary-container": "#005e7a",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#e5eeff",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001f2a",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#544600",
+                        "on-surface-variant": "#3f484d",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "on-error": "#ffffff",
+                        "tertiary": "#5c5f61",
+                        "secondary-fixed": "#ffe170",
+                        "on-surface": "#0b1c30",
+                        "secondary-fixed-dim": "#e4c546",
+                        "primary": "#006685",
+                        "tertiary-fixed": "#e0e3e5",
+                        "surface": "#f8f9ff",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "on-background": "#0b1c30",
+                        "inverse-primary": "#7bd1f8",
+                        "tertiary-container": "#cbcdcf",
+                        "outline-variant": "#bec8ce",
+                        "secondary-container": "#ffde5c",
+                        "secondary": "#705d00",
+                        "inverse-on-surface": "#eaf1ff",
+                        "background": "#f8f9ff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-container": "#545759",
+                        "surface-tint": "#006685",
+                        "primary-fixed": "#bee9ff",
+                        "primary-container": "#82d8ff",
+                        "outline": "#6f787e",
+                        "inverse-surface": "#213145",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#756100",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-tertiary-fixed": "#191c1e",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f8f9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "card-padding": "20px",
+                        "stack-gap": "12px",
+                        "margin-page": "24px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "body-base": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Ambient Utilities for Medical Futurism */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(0, 102, 133, 0.05); /* Tinted with primary color */
+        }
+        .inner-glow {
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+        }
+        /* Custom Scrollbar for sleekness */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #dce9ff; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #bee9ff; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-base font-body-base antialiased flex h-screen overflow-hidden">
+<!-- Desktop Side Navigation -->
+<aside class="hidden md:flex flex-col h-full p-4 gap-2 h-screen w-64 border-r border-sky-100/20 dark:border-slate-800 rounded-r-lg shadow-xl shadow-sky-900/5 bg-white/60 backdrop-blur-2xl dark:bg-slate-900/60 transition-all duration-300 ease-in-out font-manrope text-sm font-medium z-40">
+<!-- Header -->
+<div class="flex items-center gap-3 mb-8 px-2 mt-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-white/50 shadow-sm overflow-hidden flex items-center justify-center inner-glow">
+<img alt="Clinic Logo" class="w-full h-full object-cover" data-alt="A macro, soft-focus shot of an abstract, futuristic medical emblem etched into clear glass. The lighting is pristine and high-key, casting a subtle blue-cyan refraction through the frosted material. The mood is clinical yet deeply serene and reassuring, embodying advanced healthcare technology." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQTeYuXxT4MvFc1iSbLMKrAg6u0xecKFaM5oqM3NZbramgBhaOeFuVF-K4o0aL8CPPZ1OhyTv055XrbKbqZBDx_eo7sN-NXa2hF-byqefI-77DVc3tmGldPb4O2f9VxeCoF4CrV7A5JSszwG9fS_J4aqqxKOyGFvuUc9fRgzBfKMGewzSh970iGUozHjLSqsOY2DNryQEC6f-kKACjolcSr1vHcWFVAkHeJBDNe4RbVfsHi1Ri-igTnQz5rQJ2JI5_5SZxpCCmoqEL"/>
+</div>
+<div>
+<h2 class="text-lg font-extrabold text-sky-600">M-Santé Portal</h2>
+<p class="text-xs text-slate-500 dark:text-slate-400">Medical Futurism Systems</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 flex flex-col gap-1">
+<!-- Timeline (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">event_note</span>
+<span>Timeline</span>
+</a>
+<!-- Financials (Active) -->
+<a class="flex items-center gap-3 px-3 py-2.5 bg-sky-500/10 text-sky-600 dark:text-sky-300 rounded-lg border-l-4 border-sky-500 opacity-80 scale-[0.99] duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-bold">Financials</span>
+</a>
+<!-- Patients (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span>Patients</span>
+</a>
+<!-- Analytics (Inactive) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">insights</span>
+<span>Analytics</span>
+</a>
+</nav>
+<!-- CTA -->
+<div class="mt-auto mb-4">
+<button class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-300 rounded-xl hover:bg-sky-100 transition-colors border border-sky-100">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span class="font-bold">Export Reports</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 relative">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto docked full-width top-0 sticky z-50 bg-white/70 backdrop-blur-xl dark:bg-slate-900/70 border-b border-white/20 dark:border-slate-800/50 shadow-[0_8px_32px_0_rgba(130,216,255,0.08)] font-manrope antialiased">
+<!-- Brand (Visible primarily on mobile if SideNav is hidden, but keeping as per layout) -->
+<div class="md:hidden text-2xl font-bold tracking-tighter text-sky-500 dark:text-sky-400">
+                M-Santé
+            </div>
+<!-- Spacer for desktop alignment if brand is hidden -->
+<div class="hidden md:block flex-1"></div>
+<!-- Right Actions -->
+<div class="flex items-center gap-4">
+<!-- Search Bar -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+<input class="pl-9 pr-4 py-1.5 rounded-full bg-slate-50/50 border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-100 transition-all w-48 focus:w-64" placeholder="Search records..." type="text"/>
+</div>
+<!-- Trailing Icons -->
+<button class="text-slate-500 dark:text-slate-400 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors p-2 rounded-full relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-sky-500 rounded-full border border-white"></span>
+</button>
+<button class="text-slate-500 dark:text-slate-400 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+<!-- Profile -->
+<div class="w-8 h-8 rounded-full overflow-hidden border border-white shadow-sm ml-2">
+<img alt="Practitioner Profile" class="w-full h-full object-cover" data-alt="A professional portrait of a calm, reassuring medical practitioner in a modern, brightly lit clinical environment. The background is softly blurred, featuring subtle hints of advanced medical equipment and sterile white surfaces with soft blue ambient lighting. The aesthetic is clean, premium, and trustworthy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXXes52X6Jfiq8gR5SBQOBrgaKDc-mccuh7LEjUaM5YSCOf9Rfwl7v5J0Aguk-s7widEAofwA61DwsQyXgQK7QC1thomcQPE0gamMz4TSBQyeZqqazWkthNltIK28otsHoBraAfW5igDrCWtSAL5B35_iu-AHeXUBBDT_RLlAi5OkhQabZsd7dEhlGcEicEwVSqsG4xEz4ALtp8NUrvdyZQ2UbfHS50UEfvalFjQZN_fsijPfP_Z7pl_LRAQVcx0WFaA5W-6_sS6lz"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Content Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-page pb-32 md:pb-margin-page relative">
+<!-- Ambient Background Elements -->
+<div class="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-surface-container-high/30 to-transparent pointer-events-none z-0"></div>
+<div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-container/20 rounded-full blur-[100px] pointer-events-none z-0"></div>
+<div class="max-w-7xl mx-auto relative z-10 flex flex-col gap-stack-gap">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-4">
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface">Financial Overview</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Track your revenue, payouts, and consultation performance.</p>
+</div>
+<div class="mt-4 md:mt-0 flex items-center gap-2 glass-panel rounded-full px-4 py-1.5 inner-glow">
+<span class="material-symbols-outlined text-[16px] text-primary">calendar_today</span>
+<span class="font-body-sm text-body-sm text-on-surface">Oct 1 - Oct 31, 2023</span>
+<span class="material-symbols-outlined text-[16px] text-outline ml-2 cursor-pointer">expand_more</span>
+</div>
+</div>
+<!-- Bento Grid: Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-6">
+<!-- Total Revenue Card -->
+<div class="glass-panel rounded-xl p-card-padding inner-glow flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-xl"></div>
+<div class="flex items-center justify-between mb-4">
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Total Revenue</span>
+<div class="w-8 h-8 rounded-full bg-primary-container/30 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+</div>
+</div>
+<div>
+<div class="font-display-lg text-display-lg text-on-surface tracking-tight">€12,450</div>
+<div class="flex items-center gap-1 mt-2 text-primary text-sm font-medium">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span>+8.4%</span>
+<span class="text-outline-variant font-normal ml-1">vs last month</span>
+</div>
+</div>
+</div>
+<!-- Pending Payouts Card -->
+<div class="glass-panel rounded-xl p-card-padding inner-glow flex flex-col justify-between">
+<div class="flex items-center justify-between mb-4">
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Pending Payouts</span>
+<div class="w-8 h-8 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+</div>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface text-3xl">€3,200</div>
+<div class="flex items-center gap-1 mt-2 text-on-surface-variant text-sm">
+<span>Processing next week</span>
+</div>
+</div>
+</div>
+<!-- Tax Estimates Card -->
+<div class="glass-panel rounded-xl p-card-padding inner-glow flex flex-col justify-between">
+<div class="flex items-center justify-between mb-4">
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Est. Tax Provision</span>
+<div class="w-8 h-8 rounded-full bg-tertiary-container/30 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+</div>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface text-3xl">€2,490</div>
+<div class="flex items-center gap-1 mt-2 text-on-surface-variant text-sm">
+<span>Based on 20% bracket</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter mb-6">
+<!-- Main Revenue Line Chart (Mock) -->
+<div class="lg:col-span-2 glass-panel rounded-xl p-card-padding inner-glow flex flex-col h-[350px]">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-body-base text-body-base font-semibold text-on-surface">Revenue Trend</h3>
+<div class="flex gap-2 bg-surface-container-low p-1 rounded-lg border border-outline-variant/20">
+<button class="px-3 py-1 rounded-md bg-white text-primary text-xs font-bold shadow-sm">W</button>
+<button class="px-3 py-1 rounded-md text-on-surface-variant text-xs font-medium hover:bg-white/50">M</button>
+<button class="px-3 py-1 rounded-md text-on-surface-variant text-xs font-medium hover:bg-white/50">Y</button>
+</div>
+</div>
+<!-- Chart Area Mockup using Flex/SVG concepts -->
+<div class="flex-1 relative w-full flex items-end">
+<!-- Grid lines -->
+<div class="absolute inset-0 flex flex-col justify-between border-l border-b border-outline-variant/30 pb-6 pl-1">
+<div class="w-full border-t border-outline-variant/20 h-0"></div>
+<div class="w-full border-t border-outline-variant/20 h-0"></div>
+<div class="w-full border-t border-outline-variant/20 h-0"></div>
+<div class="w-full border-t border-outline-variant/20 h-0"></div>
+</div>
+<!-- Fake Line (SVG) -->
+<svg class="absolute inset-0 w-full h-[calc(100%-24px)] pl-1" preserveaspectratio="none" viewbox="0 0 100 100">
+<defs>
+<lineargradient id="gradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#006685" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#006685" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,80 C20,70 30,90 50,40 C70,10 80,50 100,20 L100,100 L0,100 Z" fill="url(#gradient)"></path>
+<path d="M0,80 C20,70 30,90 50,40 C70,10 80,50 100,20" fill="none" stroke="#006685" stroke-linecap="round" stroke-width="3"></path>
+<!-- Data Points -->
+<circle cx="50" cy="40" fill="#ffffff" r="2.5" stroke="#006685" stroke-width="2"></circle>
+<circle cx="100" cy="20" fill="#ffffff" r="2.5" stroke="#006685" stroke-width="2"></circle>
+</svg>
+<!-- X Axis Labels -->
+<div class="absolute bottom-0 left-0 w-full flex justify-between text-[10px] text-outline px-2">
+<span>Mon</span>
+<span>Tue</span>
+<span>Wed</span>
+<span>Thu</span>
+<span>Fri</span>
+<span>Sat</span>
+<span>Sun</span>
+</div>
+</div>
+</div>
+<!-- Consultation Breakdown (Bar/Progress Mock) -->
+<div class="glass-panel rounded-xl p-card-padding inner-glow flex flex-col h-[350px]">
+<h3 class="font-body-base text-body-base font-semibold text-on-surface mb-6">Consultation Types</h3>
+<div class="flex-1 flex flex-col justify-center gap-6">
+<!-- In-Person -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">In-Person</span>
+</div>
+<span class="font-body-sm text-body-sm font-bold text-on-surface">65%</span>
+</div>
+<div class="h-2.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 65%;"></div>
+</div>
+<div class="text-xs text-outline-variant mt-1 text-right">€8,092</div>
+</div>
+<!-- Telehealth/Video -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Video Call</span>
+</div>
+<span class="font-body-sm text-body-sm font-bold text-on-surface">35%</span>
+</div>
+<div class="h-2.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 35%;"></div>
+</div>
+<div class="text-xs text-outline-variant mt-1 text-right">€4,358</div>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant/20 flex justify-center">
+<span class="text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">Telehealth growing +12% this month</span>
+</div>
+</div>
+</div>
+<!-- Export Section -->
+<div class="glass-panel rounded-xl p-card-padding inner-glow mt-4">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+<div>
+<h3 class="font-body-base text-body-base font-semibold text-on-surface">Generate Official Report</h3>
+<p class="text-sm text-on-surface-variant">Compile data for accounting or tax filing purposes.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+<!-- Format Selection -->
+<div class="flex bg-surface-container-low p-1 rounded-lg border border-outline-variant/20">
+<label class="cursor-pointer relative">
+<input checked="" class="peer sr-only" name="format" type="radio"/>
+<div class="px-4 py-1.5 rounded-md text-sm font-medium text-on-surface-variant peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm transition-all">PDF</div>
+</label>
+<label class="cursor-pointer relative">
+<input class="peer sr-only" name="format" type="radio"/>
+<div class="px-4 py-1.5 rounded-md text-sm font-medium text-on-surface-variant peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm transition-all">CSV</div>
+</label>
+</div>
+<!-- Action Button -->
+<button class="flex-1 md:flex-none flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-2 rounded-lg font-bold shadow-[0_4px_14px_rgba(0,102,133,0.3)] hover:bg-primary-fixed-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                                Download
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Bottom Navigation (Visible only on mobile) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe md:hidden bg-white/80 backdrop-blur-lg dark:bg-slate-950/80 rounded-t-2xl border-t border-white/10 dark:border-slate-800 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] font-manrope text-[10px] uppercase tracking-widest z-50">
+<!-- Timeline -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 opacity-60 active:bg-sky-50 dark:active:bg-sky-900/20 w-16 h-12 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1">timeline</span>
+<span>Timeline</span>
+</a>
+<!-- Finance (Active) -->
+<a class="flex flex-col items-center justify-center text-sky-500 dark:text-sky-300 scale-110 active:bg-sky-50 dark:active:bg-sky-900/20 w-16 h-12 rounded-xl transition-all duration-150 ease-out" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+<span class="font-bold">Finance</span>
+</a>
+<!-- Records -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 opacity-60 active:bg-sky-50 dark:active:bg-sky-900/20 w-16 h-12 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1">folder_shared</span>
+<span>Records</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 opacity-60 active:bg-sky-50 dark:active:bg-sky-900/20 w-16 h-12 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px] mb-1">person</span>
+<span>Profile</span>
+</a>
+</nav>
+</body></html>

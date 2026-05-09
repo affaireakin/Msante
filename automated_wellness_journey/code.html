@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Patient Automated Wellness Journey</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#3f484d",
+                        "on-surface": "#0b1c30",
+                        "on-primary": "#ffffff",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#545759",
+                        "on-secondary-fixed-variant": "#544600",
+                        "outline": "#6f787e",
+                        "on-primary-container": "#005e7a",
+                        "surface-bright": "#f8f9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-primary-fixed-variant": "#004d65",
+                        "inverse-surface": "#213145",
+                        "secondary-container": "#ffde5c",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#d3e4fe",
+                        "on-secondary-fixed": "#221b00",
+                        "surface-tint": "#006685",
+                        "inverse-primary": "#7bd1f8",
+                        "background": "#f8f9ff",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "primary-fixed": "#bee9ff",
+                        "tertiary-container": "#cbcdcf",
+                        "tertiary-fixed": "#e0e3e5",
+                        "on-background": "#0b1c30",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#001f2a",
+                        "surface": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary": "#ffffff",
+                        "surface-dim": "#cbdbf5",
+                        "secondary-fixed": "#ffe170",
+                        "secondary": "#705d00",
+                        "tertiary": "#5c5f61",
+                        "outline-variant": "#bec8ce",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#82d8ff",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#006685",
+                        "on-secondary-container": "#756100",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#e4c546",
+                        "surface-container-high": "#dce9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem"
+                    },
+                    "spacing": {
+                        "stack-gap": "12px",
+                        "card-padding": "20px",
+                        "unit": "8px",
+                        "margin-page": "24px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "body-base": ["Manrope", "sans-serif"],
+                        "headline-md": ["Manrope", "sans-serif"],
+                        "display-lg": ["Manrope", "sans-serif"],
+                        "body-sm": ["Manrope", "sans-serif"],
+                        "label-caps": ["Manrope", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: #f8f9ff; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 30px rgba(0, 102, 133, 0.05);
+        }
+        .inner-glow {
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body class="text-on-background min-h-screen flex">
+<!-- SideNavBar (Web Only) -->
+<nav class="hidden md:flex flex-col h-screen w-64 border-r border-white/10 dark:border-slate-800/30 bg-white/40 dark:bg-slate-950/40 backdrop-blur-xl shadow-xl fixed left-0 top-0 py-8 z-40 rounded-r-none">
+<div class="px-6 mb-8">
+<h1 class="text-lg font-black text-slate-900 dark:text-white">M-Santé</h1>
+<p class="font-['Manrope'] text-sm font-medium text-slate-500">Health Sanctuary</p>
+</div>
+<div class="flex-1 px-2 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-sky-400 hover:bg-white/60 transition-all rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+                Workflows
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-sky-400 hover:bg-white/60 transition-all rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+                Scheduling
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-sky-600 bg-sky-50/50 rounded-lg border-r-4 border-sky-400 font-['Manrope'] text-sm font-medium scale-105 transition-transform duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                Wellness
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-sky-400 hover:bg-white/60 transition-all rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+                Finance
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-sky-400 hover:bg-white/60 transition-all rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+                Analytics
+            </a>
+</div>
+<div class="px-6 mt-auto">
+<button class="w-full py-2 px-4 bg-primary text-on-primary rounded-lg font-label-caps inner-glow shadow-md hover:opacity-90 transition-opacity">
+                New Workflow
+            </button>
+</div>
+<div class="px-2 mt-6 space-y-2 border-t border-white/20 pt-4">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-sky-400 transition-all rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-sky-400 transition-all rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Sign Out
+            </a>
+</div>
+</nav>
+<!-- TopAppBar (Mobile & Web) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-white/70 backdrop-blur-md border-b border-white/20 shadow-[0_8px_32px_0_rgba(130,216,255,0.08)] md:pl-[280px]">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Icon -->
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-sky-600 md:hidden">M-Santé</span>
+</div>
+<div class="flex items-center gap-4 text-sky-400">
+<button class="hover:bg-sky-50/50 p-2 rounded-full transition-colors opacity-80 duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="hover:bg-sky-50/50 p-2 rounded-full transition-colors opacity-80 duration-200">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-sm ml-2">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a serene individual, softly lit with cool, clinical lighting indicative of a high-end medical or wellness facility. The background is a blurred, pristine white gradient, emphasizing a clean, light-mode aesthetic. The subject's expression is calm and composed. The overall mood is professional, reassuring, and technologically advanced, fitting a premium health sanctuary context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA41Emh3bHdZjlvO95pgVGyHUjhWR5cm9AA2TTlbvx6R0LMz5Sh9yUap332XBgxw5IX-ArMytjMV0j6X9pDRQACdHcqoPvG03tYmzFNa_BtsZONbR6Qm3Nrzx3RaBTlPIJPG9C_rH6GYQgdYuDN8MwlBEZtjGjYFVjzUxIuTMxyi6o4Ddx0zs5Q2gCZ9tGtB-uLVqQqGkEwjRR19KGouGFDXWl84WSlyhYowY4_HUqI4KHeXdF3zY0_N97nf9QEh-7AM-hM25cMP5-E"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 mt-16 md:ml-64 p-margin-page md:p-8 lg:p-12 overflow-y-auto">
+<!-- Page Header -->
+<div class="mb-8">
+<h2 class="font-headline-md text-on-surface mb-2">Automated Wellness Journey</h2>
+<p class="font-body-base text-on-surface-variant">Your personalized, adaptive roadmap to optimal health.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Timeline Visualisation (Spans 2 columns on lg) -->
+<div class="lg:col-span-2 space-y-6">
+<!-- Highlighted Next Step Card -->
+<div class="glass-panel rounded-3xl p-card-padding inner-glow relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container rounded-full blur-3xl opacity-30 -mr-10 -mt-10"></div>
+<div class="flex items-start gap-4 relative z-10">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg shrink-0">
+<span class="material-symbols-outlined text-on-primary" data-icon="mood" style="font-variation-settings: 'FILL' 1;">mood</span>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-caps text-[10px] tracking-wider uppercase">Urgent Action</span>
+<span class="font-label-caps text-on-surface-variant text-xs">Today, 2:00 PM</span>
+</div>
+<h3 class="font-headline-md text-on-surface text-xl mb-2">Next Step: Mood Check-in</h3>
+<p class="font-body-sm text-on-surface-variant mb-4">Triggered by Elevated Stress Pattern detected via biometrics.</p>
+<button class="bg-primary text-on-primary font-body-sm font-medium px-6 py-2.5 rounded-full hover:opacity-90 transition-opacity shadow-sm">
+                                Start Check-in
+                            </button>
+</div>
+</div>
+</div>
+<!-- Timeline Roadmap -->
+<div class="glass-panel rounded-3xl p-card-padding inner-glow">
+<h3 class="font-headline-md text-on-surface text-lg mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="timeline">timeline</span>
+                        Upcoming Milestones
+                    </h3>
+<div class="relative pl-6 border-l-2 border-surface-variant space-y-8 pb-4">
+<!-- Timeline Item 1 -->
+<div class="relative">
+<div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-surface-container-highest border-2 border-white shadow-sm"></div>
+<div class="mb-1 flex items-center justify-between">
+<span class="font-label-caps text-on-surface-variant text-xs">Tomorrow, 9:00 AM</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-primary font-label-caps text-[10px]">Automated Check-in</span>
+</div>
+<h4 class="font-body-base font-semibold text-on-surface mb-1">Morning Vitals Review</h4>
+<p class="font-body-sm text-on-surface-variant">Automated analysis of your sleep and resting heart rate data.</p>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative">
+<div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-surface-container-highest border-2 border-white shadow-sm"></div>
+<div class="mb-1 flex items-center justify-between">
+<span class="font-label-caps text-on-surface-variant text-xs">Thursday, 6:00 PM</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-primary font-label-caps text-[10px]">Scheduled Meditation</span>
+</div>
+<h4 class="font-body-base font-semibold text-on-surface mb-1">Guided Evening Wind-Down</h4>
+<p class="font-body-sm text-on-surface-variant">A 15-minute session to lower cortisol levels before sleep.</p>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative">
+<div class="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-surface-variant border-2 border-white shadow-sm"></div>
+<div class="mb-1 flex items-center justify-between">
+<span class="font-label-caps text-outline text-xs">Friday, 10:00 AM</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-low text-outline font-label-caps text-[10px]">Automated Check-in</span>
+</div>
+<h4 class="font-body-base font-medium text-outline mb-1">Weekly Progress Summary</h4>
+<p class="font-body-sm text-outline-variant">AI-generated report on your wellness trends.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Context Column (Right side) -->
+<div class="space-y-6">
+<!-- Health Assistant Explanation Card -->
+<div class="glass-panel rounded-3xl p-card-padding inner-glow bg-gradient-to-br from-white/80 to-surface-container/30">
+<div class="flex items-center gap-3 mb-4 border-b border-white/40 pb-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="smart_toy">smart_toy</span>
+</div>
+<h3 class="font-headline-md text-on-surface text-lg">Health Assistant</h3>
+</div>
+<p class="font-body-sm text-on-surface-variant mb-4 leading-relaxed">
+                        Hello! I noticed a slight elevation in your continuous stress markers over the past 4 hours. To ensure we stay ahead of it, I've dynamically adjusted your journey to include a brief Mood Check-in right now.
+                    </p>
+<div class="bg-white/50 rounded-2xl p-3 text-sm">
+<span class="font-semibold text-primary block mb-1">Automation Logic:</span>
+<ul class="list-disc list-inside text-on-surface-variant font-body-sm space-y-1">
+<li>HRV dropped below 40ms</li>
+<li>Activity level decreased</li>
+<li>Action: Trigger Check-in</li>
+</ul>
+</div>
+</div>
+<!-- Quick Stats -->
+<div class="grid grid-cols-2 gap-4">
+<div class="glass-panel rounded-2xl p-4 inner-glow text-center">
+<span class="material-symbols-outlined text-primary mb-2 text-2xl" data-icon="check_circle">check_circle</span>
+<p class="font-display-lg text-2xl text-on-surface mb-0">12</p>
+<p class="font-label-caps text-on-surface-variant text-[10px]">Tasks Completed</p>
+</div>
+<div class="glass-panel rounded-2xl p-4 inner-glow text-center">
+<span class="material-symbols-outlined text-secondary mb-2 text-2xl" data-icon="trending_up">trending_up</span>
+<p class="font-display-lg text-2xl text-on-surface mb-0">85%</p>
+<p class="font-label-caps text-on-surface-variant text-[10px]">Adherence Rate</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

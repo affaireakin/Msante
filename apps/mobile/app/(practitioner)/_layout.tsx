@@ -1,14 +1,15 @@
 import { Redirect, Tabs } from 'expo-router'
 import { View, Text, Platform } from 'react-native'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 
 interface TabIconProps {
-  emoji: string
+  name: React.ComponentProps<typeof MaterialIcons>['name']
   label: string
   focused: boolean
 }
 
-function TabIcon({ emoji, label, focused }: TabIconProps) {
+function TabIcon({ name, label, focused }: TabIconProps) {
   return (
     <View
       style={{
@@ -21,7 +22,7 @@ function TabIcon({ emoji, label, focused }: TabIconProps) {
         minWidth: 52,
       }}
     >
-      <Text style={{ fontSize: focused ? 21 : 19 }}>{emoji}</Text>
+      <MaterialIcons name={name} size={focused ? 24 : 22} color={focused ? '#006685' : '#6f787e'} />
       <Text
         style={{
           fontSize: 10,
@@ -65,25 +66,25 @@ export default function PractitionerLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="📊" label="Dashboard" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="dashboard" label="Dashboard" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="agenda"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="📅" label="Agenda" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="calendar-today" label="Agenda" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="patients"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="👥" label="Patients" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="group" label="Patients" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="👤" label="Profil" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="person" label="Profil" focused={focused} />,
         }}
       />
     </Tabs>

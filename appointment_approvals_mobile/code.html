@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Appointments - Approvals</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#e4c546",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#dce9ff",
+                        "on-secondary-container": "#756100",
+                        "on-tertiary-fixed": "#191c1e",
+                        "primary": "#006685",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#5c5f61",
+                        "outline-variant": "#bec8ce",
+                        "surface-dim": "#cbdbf5",
+                        "secondary-fixed": "#ffe170",
+                        "secondary": "#705d00",
+                        "primary-container": "#82d8ff",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "error-container": "#ffdad6",
+                        "surface": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001f2a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#e0e3e5",
+                        "on-background": "#0b1c30",
+                        "tertiary-container": "#cbcdcf",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "primary-fixed": "#bee9ff",
+                        "surface-tint": "#006685",
+                        "inverse-primary": "#7bd1f8",
+                        "background": "#f8f9ff",
+                        "surface-variant": "#d3e4fe",
+                        "on-secondary-fixed": "#221b00",
+                        "secondary-container": "#ffde5c",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "on-primary-fixed-variant": "#004d65",
+                        "on-primary-container": "#005e7a",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-bright": "#f8f9ff",
+                        "on-tertiary-container": "#545759",
+                        "on-secondary-fixed-variant": "#544600",
+                        "outline": "#6f787e",
+                        "surface-container": "#e5eeff",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#3f484d",
+                        "on-surface": "#0b1c30",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "margin-page": "24px",
+                        "gutter": "16px",
+                        "stack-gap": "12px",
+                        "card-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope"],
+                        "body-base": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "label-caps": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); }
+        /* Subtle ambient glow for medical futurism depth */
+        .ambient-glow {
+            position: fixed;
+            top: -10%;
+            right: -10%;
+            width: 70vw;
+            height: 70vw;
+            background: radial-gradient(circle, rgba(130,216,255,0.15) 0%, rgba(248,249,255,0) 70%);
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px rgba(0, 102, 133, 0.04), inset 0 1px 0 rgba(255,255,255,0.5);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen text-on-background relative overflow-x-hidden">
+<div class="ambient-glow"></div>
+<!-- TopAppBar from JSON -->
+<header class="fixed top-0 w-full z-50 border-b border-white/20 shadow-sm shadow-sky-500/5 bg-white/70 backdrop-blur-xl flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-4">
+<button class="text-sky-500 hover:opacity-80 transition-opacity active:scale-95 duration-200 p-2 -ml-2 rounded-full">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-sky-600 tracking-tight">Appointments</h1>
+</div>
+<div>
+<img alt="Practitioner Profile" class="w-8 h-8 rounded-full object-cover border border-white/50 shadow-sm shadow-sky-500/10 cursor-pointer hover:opacity-80 transition-opacity active:scale-95 duration-200" data-alt="A professional headshot of a modern medical practitioner in a brightly lit, high-end clinic setting. The lighting is soft and diffused, creating a serene, optimistic mood typical of advanced medical environments. The doctor wears subtle, clean white attire over light blue scrubs, perfectly aligning with a sleek, minimalist medical futurism aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8YRGb_z-SrQZHLpFFBVJ2isieJkL7bxakWmTGpH-Ut7sWPpPGzUYNSGboPlYxlO9zr_Yfs4E19kwGAvlBd89E2YNiUoFOSi1VKo3ZX2viIFROUSIP9ffMCANNy5_lqx90QVjx9wBSNALN6p96p22p-o49wD3W2RdhzpaL2vSJ7vaibyOVy4nn2xbwQk17ZoHRJVzhZloCcy80jvWRjQPdDpxLxzqsjszZ-21KGDDkHKp8z5aPz4g53DIO8MJ-9_zKWXLv1OiZo_0S"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-32 px-margin-page relative z-10">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-body-base text-body-base font-semibold text-on-surface">Pending Approvals</h2>
+<span class="bg-primary-container text-on-primary-container font-label-caps text-label-caps px-2 py-1 rounded-full">3 Requests</span>
+</div>
+<div class="flex flex-col gap-stack-gap">
+<!-- Appointment Card 1 -->
+<article class="glass-card rounded-xl p-card-padding flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<img alt="Patient Sarah" class="w-10 h-10 rounded-full object-cover shadow-sm" data-alt="A close-up portrait of a calm, approachable female patient in her late twenties. The image is captured with a shallow depth of field against a soft, blurred background featuring cool, clinical tones. The lighting highlights her features softly, conveying a sense of well-being and trust suitable for a high-end digital health interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVaKV56G_q6AOcdMbGG1U1gx3FMGpQ1hn2-BtBg8oN3JJmv52yAndNdkuMVdDkki7QL6jWzo_RP9tK3jwVh_vMcGrc_rMly22gGh-oMcuDhcpubINR_CayEpJnTclV7mC0WJ61_ETADmmhlMOQlcrMowWsXW5efaUX7nBfttVemnVG9HrNEdy1JgSngNnmF-Jj_fxAdX0RKlDgEqIEMY_0PSsucKbTNmmxIkasIYsXMgQEaJ1wT4xEn9G4Ed6F-BDnxC3NGV_FjSFL"/>
+<div>
+<h3 class="font-body-base text-body-base font-semibold text-on-surface leading-tight">Sarah Jenkins</h3>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-tertiary">videocam</span>
+<span class="font-label-caps text-label-caps text-tertiary">Telehealth</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low/50 rounded-lg p-3 border border-white/30">
+<div class="flex items-center gap-2 text-primary font-body-sm text-body-sm font-medium mb-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                        Oct 24, 10:30 AM
+                    </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">"Experiencing persistent mild headaches and slight dizziness for the past three days. Would like a quick consultation."</p>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 bg-primary text-on-primary font-body-sm text-body-sm font-medium py-2.5 rounded-lg shadow-sm shadow-primary/20 hover:opacity-90 transition-opacity active:scale-95">Approve</button>
+<button class="flex-1 border border-outline-variant text-on-surface font-body-sm text-body-sm font-medium py-2.5 rounded-lg bg-white/40 hover:bg-white/60 transition-colors active:scale-95">Reschedule</button>
+<button class="text-error font-body-sm text-body-sm font-medium px-3 py-2.5 hover:bg-error-container/50 rounded-lg transition-colors active:scale-95">Decline</button>
+</div>
+</article>
+<!-- Appointment Card 2 -->
+<article class="glass-card rounded-xl p-card-padding flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary font-headline-md text-body-base shadow-sm">
+                            MR
+                        </div>
+<div>
+<h3 class="font-body-base text-body-base font-semibold text-on-surface leading-tight">Marcus Reed</h3>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-tertiary">local_hospital</span>
+<span class="font-label-caps text-label-caps text-tertiary">In-person</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low/50 rounded-lg p-3 border border-white/30">
+<div class="flex items-center gap-2 text-primary font-body-sm text-body-sm font-medium mb-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                        Oct 24, 2:15 PM
+                    </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">"Follow-up appointment for recent lab results and medication adjustment discussion."</p>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 bg-primary text-on-primary font-body-sm text-body-sm font-medium py-2.5 rounded-lg shadow-sm shadow-primary/20 hover:opacity-90 transition-opacity active:scale-95">Approve</button>
+<button class="flex-1 border border-outline-variant text-on-surface font-body-sm text-body-sm font-medium py-2.5 rounded-lg bg-white/40 hover:bg-white/60 transition-colors active:scale-95">Reschedule</button>
+<button class="text-error font-body-sm text-body-sm font-medium px-3 py-2.5 hover:bg-error-container/50 rounded-lg transition-colors active:scale-95">Decline</button>
+</div>
+</article>
+</div>
+</main>
+<!-- BottomNavBar from JSON -->
+<nav class="fixed bottom-0 w-full rounded-t-3xl z-50 border-t border-white/30 shadow-[0_-4px_20px_rgba(130,216,255,0.08)] bg-white/80 backdrop-blur-2xl flex justify-around items-center h-20 px-4 pb-safe w-full">
+<!-- Active: Schedule -->
+<button class="flex flex-col items-center justify-center bg-sky-50 text-sky-600 rounded-2xl px-5 py-2 active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="font-manrope text-[11px] font-medium mt-1 text-sky-600">Schedule</span>
+</button>
+<!-- Inactive: Patients -->
+<button class="flex flex-col items-center justify-center text-slate-400 px-5 py-2 hover:text-sky-400 active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined text-[24px]">groups</span>
+<span class="font-manrope text-[11px] font-medium mt-1">Patients</span>
+</button>
+<!-- Inactive: Inbox -->
+<button class="flex flex-col items-center justify-center text-slate-400 px-5 py-2 hover:text-sky-400 active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined text-[24px]">chat_bubble</span>
+<span class="font-manrope text-[11px] font-medium mt-1">Inbox</span>
+</button>
+<!-- Inactive: Profile -->
+<button class="flex flex-col items-center justify-center text-slate-400 px-5 py-2 hover:text-sky-400 active:scale-90 duration-300 ease-out">
+<span class="material-symbols-outlined text-[24px]">account_circle</span>
+<span class="font-manrope text-[11px] font-medium mt-1">Profile</span>
+</button>
+</nav>
+</body></html>

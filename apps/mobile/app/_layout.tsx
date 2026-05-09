@@ -1,11 +1,31 @@
+import '../global.css'
 import { useEffect } from 'react'
-import { Stack, useRouter, useSegments } from 'expo-router'
+import { Stack, useRouter, useSegments, SplashScreen } from 'expo-router'
+import { useFonts,
+  Manrope_400Regular,
+  Manrope_500Medium,
+  Manrope_600SemiBold,
+  Manrope_700Bold,
+  Manrope_800ExtraBold,
+} from '@expo-google-fonts/manrope'
 import { Providers } from './_providers'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { usePushNotifications } from '@/features/notifications/hooks/usePushNotifications'
 import { supabase, fetchUserProfile, fetchPractitionerProfile } from '@/services/supabase'
 
+SplashScreen.preventAutoHideAsync()
+
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Manrope_400Regular,
+    Manrope_500Medium,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
+    Manrope_800ExtraBold,
+    // NativeWind resolves 'Manrope' → map to the weights it will request
+    Manrope: Manrope_400Regular,
+  })
+
   const {
     isAuthenticated, profile, isLoading,
     setSession, setProfile, setPractitioner, setLoading,
@@ -15,8 +35,12 @@ export default function RootLayout() {
   usePushNotifications(isAuthenticated)
 
   useEffect(() => {
+    if (fontsLoaded) SplashScreen.hideAsync()
+  }, [fontsLoaded])
+
+  useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_event, session) => {
         setLoading(true)
         if (session?.user) {
           setSession(session.user)
@@ -64,6 +88,8 @@ export default function RootLayout() {
       if (segments[0] !== '(patient)') router.replace('/(patient)/home')
     }
   }, [isAuthenticated, profile, isLoading])
+
+  if (!fontsLoaded) return null
 
   return (
     <Providers>

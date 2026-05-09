@@ -1,5 +1,6 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { Text, TouchableOpacity } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 
 interface UploadedDoc {
   uri: string
@@ -33,13 +34,33 @@ export function DocumentUploader({ label, documentType, value, onUpload }: Docum
     <TouchableOpacity
       onPress={handlePick}
       activeOpacity={0.7}
-      className="border border-dashed border-outline-variant rounded-xl p-4 items-center gap-2"
+      style={{
+        borderWidth: 1.5,
+        borderStyle: 'dashed',
+        borderColor: value ? '#006685' : '#bec8ce',
+        borderRadius: 14,
+        padding: 16,
+        alignItems: 'center',
+        gap: 8,
+        backgroundColor: value ? '#f0f9ff' : 'transparent',
+      }}
     >
-      <Text className="text-sm font-manrope font-medium text-on-surface-variant">{label}</Text>
+      <MaterialIcons
+        name={value ? 'check-circle' : 'upload-file'}
+        size={24}
+        color={value ? '#006685' : '#6f787e'}
+      />
+      <Text style={{ fontSize: 14, fontFamily: 'Manrope', fontWeight: '600', color: '#3f484d' }}>
+        {label}
+      </Text>
       {value ? (
-        <Text className="text-sm text-primary font-manrope" numberOfLines={1}>{value.name}</Text>
+        <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }} numberOfLines={1}>
+          {value.name}
+        </Text>
       ) : (
-        <Text className="text-xs text-outline font-manrope">Appuyer pour sélectionner (PDF ou image)</Text>
+        <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>
+          Appuyer pour sélectionner · PDF ou image
+        </Text>
       )}
     </TouchableOpacity>
   )

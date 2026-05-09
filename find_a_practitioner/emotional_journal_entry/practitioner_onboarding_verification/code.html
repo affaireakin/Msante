@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Practitioner Onboarding</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#d3e4fe",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "surface": "#f8f9ff",
+                    "inverse-primary": "#7bd1f8",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#bee9ff",
+                    "secondary-fixed": "#ffe170",
+                    "surface-container-high": "#dce9ff",
+                    "secondary-container": "#ffde5c",
+                    "on-secondary-fixed-variant": "#544600",
+                    "tertiary-container": "#cbcdcf",
+                    "primary": "#006685",
+                    "on-tertiary-container": "#545759",
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f8f9ff",
+                    "on-secondary": "#ffffff",
+                    "on-background": "#0b1c30",
+                    "surface-container-highest": "#d3e4fe",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "inverse-surface": "#213145",
+                    "outline-variant": "#bec8ce",
+                    "on-tertiary-fixed": "#191c1e",
+                    "on-surface-variant": "#3f484d",
+                    "on-primary-fixed-variant": "#004d65",
+                    "primary-fixed-dim": "#7bd1f8",
+                    "on-primary-fixed": "#001f2a",
+                    "error-container": "#ffdad6",
+                    "tertiary": "#5c5f61",
+                    "on-tertiary": "#ffffff",
+                    "surface-tint": "#006685",
+                    "secondary": "#705d00",
+                    "on-secondary-container": "#756100",
+                    "on-surface": "#0b1c30",
+                    "outline": "#6f787e",
+                    "primary-container": "#82d8ff",
+                    "tertiary-fixed": "#e0e3e5",
+                    "background": "#f8f9ff",
+                    "surface-container-low": "#eff4ff",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#cbdbf5",
+                    "surface-container": "#e5eeff",
+                    "secondary-fixed-dim": "#e4c546",
+                    "on-primary-container": "#005e7a",
+                    "on-secondary-fixed": "#221b00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "stack-gap": "12px",
+                    "margin-page": "24px",
+                    "gutter": "16px",
+                    "card-padding": "20px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Manrope"],
+                    "body-base": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "label-caps": ["Manrope"],
+                    "headline-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.4) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.6);
+            box-shadow: 0 8px 32px rgba(0, 102, 133, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-base antialiased min-h-screen flex selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar (Generated from JSON) -->
+<nav class="fixed left-0 top-0 h-full flex flex-col p-4 gap-2 h-screen w-64 border-r border-white/10 border-r border-white/20 dark:border-slate-800/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl shadow-xl z-50">
+<div class="mb-8 px-2">
+<div class="text-xl font-extrabold bg-gradient-to-r from-sky-400 to-sky-600 bg-clip-text text-transparent font-manrope">M-Santé Admin</div>
+<div class="text-slate-500 text-[11px] font-manrope font-semibold uppercase tracking-wider mt-1">Health Sanctuary Management</div>
+</div>
+<div class="flex flex-col gap-1 flex-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:translate-x-1 transition-transform duration-300 cursor-pointer font-manrope text-[13px] font-semibold group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-sky-400 transition-colors">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Practitioners -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:translate-x-1 transition-transform duration-300 cursor-pointer font-manrope text-[13px] font-semibold group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-sky-400 transition-colors">medical_services</span>
+<span>Practitioners</span>
+</a>
+<!-- Verification (Active) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-300 border-r-4 border-sky-500 cursor-pointer font-manrope text-[13px] font-semibold" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span>Verification</span>
+</a>
+<!-- Disputes -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:translate-x-1 transition-transform duration-300 cursor-pointer font-manrope text-[13px] font-semibold group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-sky-400 transition-colors">gavel</span>
+<span>Disputes</span>
+</a>
+<!-- Moderation -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:translate-x-1 transition-transform duration-300 cursor-pointer font-manrope text-[13px] font-semibold group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-sky-400 transition-colors">security</span>
+<span>Moderation</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:translate-x-1 transition-transform duration-300 cursor-pointer font-manrope text-[13px] font-semibold group mt-auto mb-4" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-sky-400 transition-colors">settings</span>
+<span>Settings</span>
+</a>
+</div>
+<div class="bg-sky-50/50 rounded-lg p-3 text-center border border-sky-100/50">
+<span class="text-sky-600 font-manrope text-[12px] font-semibold flex items-center justify-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                System Status: Active
+            </span>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 ml-64 flex flex-col min-h-screen relative overflow-hidden">
+<!-- Ambient Background Glows -->
+<div class="absolute top-[-10%] right-[-5%] w-[40vw] h-[40vw] bg-primary-container/20 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="absolute bottom-[-10%] left-[10%] w-[30vw] h-[30vw] bg-surface-variant/30 rounded-full blur-[80px] pointer-events-none"></div>
+<!-- TopAppBar (Generated from JSON) -->
+<header class="sticky top-0 z-40 flex justify-between items-center px-6 py-3 w-full border-b border-white/20 backdrop-blur-xl border-white/10 dark:border-slate-800/50 shadow-[0_20px_40px_rgba(130,216,255,0.08)] bg-white/70 dark:bg-slate-900/70">
+<div class="flex items-center gap-4">
+<span class="text-2xl font-bold tracking-tight text-sky-500 dark:text-sky-400 font-manrope text-sm font-medium">M-Santé</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+<input class="pl-9 pr-4 py-1.5 rounded-full bg-slate-100/50 border border-slate-200/50 text-sm focus:ring-2 focus:ring-sky-400 outline-none w-64 text-slate-600 placeholder:text-slate-400 font-manrope transition-all" placeholder="Search records..." type="text"/>
+</div>
+<div class="flex items-center gap-1 border-l border-slate-200/50 pl-4 ml-2">
+<button class="p-2 rounded-full hover:bg-sky-50/50 dark:hover:bg-slate-800/50 transition-colors active:scale-95 duration-200 text-sky-400 dark:text-sky-300 relative">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-400 border-2 border-white"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-sky-50/50 dark:hover:bg-slate-800/50 transition-colors active:scale-95 duration-200 text-sky-400 dark:text-sky-300">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+</div>
+<img alt="Administrator Profile" class="w-8 h-8 rounded-full border-2 border-white shadow-sm object-cover" data-alt="A small, circular profile picture of an administrator. The portrait shows a professional individual with a neutral, calm expression, set against a pristine, light-grey studio background. The lighting is soft and even, reflecting the serene, clinical precision of the overarching medical futurism aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFs8gH42U7_puX54PvQqB18uKV_9ecWD88KQf1dA0HGoCQDt7khryxKwozOX3Y_jIQBNmQBQJwQGgTbeqhstP-3vvlgjB-Wul8-cS1AgJDuMScHi_Snw7JHId5MVggtSgndVAHeRoID0DOQ9B0CV0BCicm0FhsqwF95XXlFm9SComBibSVT8SaKcNfwrndR48TnsHlLaYw0z7hliDbQUIFu6h58Ra1zPGrFB5s56o2yHoANV39rbT8RR782bmsGObwpq4NbRNu0YRw"/>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 p-margin-page flex flex-col gap-stack-gap max-w-5xl mx-auto w-full z-10">
+<!-- Header Section -->
+<div class="mb-4">
+<div class="flex items-center gap-2 text-on-surface-variant mb-2">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+<span class="font-body-sm cursor-pointer hover:text-primary transition-colors">Back to Verification Queue</span>
+</div>
+<h1 class="font-headline-md text-on-surface text-3xl">Practitioner Onboarding</h1>
+<p class="font-body-base text-on-surface-variant mt-1">Reviewing application for Dr. Eleanor Vance.</p>
+</div>
+<!-- Stepper (Bento/Glass approach) -->
+<div class="glass-panel rounded-xl p-4 mb-4 flex items-center justify-between">
+<!-- Step 1: Completed -->
+<div class="flex items-center gap-3 flex-1">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div>
+<div class="font-label-caps text-on-surface">Step 1</div>
+<div class="font-body-sm text-on-surface-variant">Personal Info</div>
+</div>
+<div class="flex-1 h-px bg-outline-variant mx-4"></div>
+</div>
+<!-- Step 2: Active -->
+<div class="flex items-center gap-3 flex-1">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest border-2 border-primary text-primary flex items-center justify-center shadow-[0_0_15px_rgba(0,102,133,0.2)]">
+<span class="font-label-caps text-[14px]">2</span>
+</div>
+<div>
+<div class="font-label-caps text-primary">Step 2</div>
+<div class="font-body-sm text-on-surface font-semibold">Credentials</div>
+</div>
+<div class="flex-1 h-px bg-outline-variant mx-4 opacity-50"></div>
+</div>
+<!-- Step 3: Pending -->
+<div class="flex items-center gap-3 flex-1">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center">
+<span class="font-label-caps text-[14px]">3</span>
+</div>
+<div class="opacity-60">
+<div class="font-label-caps text-on-surface-variant">Step 3</div>
+<div class="font-body-sm text-on-surface-variant">Identity</div>
+</div>
+<div class="flex-1 h-px bg-outline-variant mx-4 opacity-30"></div>
+</div>
+<!-- Step 4: Pending -->
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center">
+<span class="font-label-caps text-[14px]">4</span>
+</div>
+<div class="opacity-60">
+<div class="font-label-caps text-on-surface-variant">Step 4</div>
+<div class="font-body-sm text-on-surface-variant">Review</div>
+</div>
+</div>
+</div>
+<!-- Main Interactive Area: Professional Credentials -->
+<div class="glass-panel rounded-2xl p-card-padding flex flex-col gap-6">
+<div class="flex justify-between items-start border-b border-outline-variant/30 pb-4">
+<div>
+<h2 class="font-headline-md text-on-surface text-xl">Professional Credentials</h2>
+<p class="font-body-sm text-on-surface-variant mt-1 max-w-2xl">Upload valid medical licenses, board certifications, and specialized training documents. Files must be in PDF or high-resolution image format to ensure automated clinical parsing.</p>
+</div>
+<div class="bg-surface-variant text-on-surface-variant font-label-caps px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                        Required
+                    </div>
+</div>
+<!-- Upload Dropzone -->
+<div class="border-2 border-dashed border-outline-variant hover:border-primary/50 rounded-xl p-10 flex flex-col items-center justify-center bg-surface-variant/20 hover:bg-surface-variant/40 transition-all cursor-pointer group">
+<div class="w-16 h-16 rounded-full bg-surface-container-lowest shadow-sm flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
+<span class="material-symbols-outlined text-primary text-[32px] font-light">cloud_upload</span>
+</div>
+<h3 class="font-body-base text-on-surface font-medium">Drag &amp; drop files here</h3>
+<p class="font-body-sm text-on-surface-variant mt-1 text-center max-w-sm">or click to browse from your computer.<br/>Supported formats: PDF, JPEG, PNG (Max 15MB)</p>
+<button class="mt-6 px-6 py-2 rounded-full bg-surface-container-lowest text-primary font-label-caps border border-primary/20 shadow-sm hover:bg-primary hover:text-on-primary transition-colors">
+                        Browse Files
+                    </button>
+</div>
+<!-- Uploaded/Processing Documents List -->
+<div class="flex flex-col gap-3 mt-2">
+<h4 class="font-label-caps text-on-surface-variant mb-1">Attached Documents (2)</h4>
+<!-- Document Item 1: Verified -->
+<div class="flex items-center gap-4 p-3 rounded-lg bg-surface-container-lowest border border-outline-variant/40 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+<div class="w-10 h-10 rounded bg-surface-variant flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-on-surface font-medium">State_Medical_License_2023.pdf</span>
+<span class="bg-primary-container text-on-primary-container text-[10px] uppercase font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">verified</span> Validated
+                                </span>
+</div>
+<div class="font-body-sm text-on-surface-variant text-[12px] mt-0.5">2.4 MB • Uploaded Today, 09:41 AM</div>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-full hover:bg-error-container/50">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+<!-- Document Item 2: Processing -->
+<div class="flex items-center gap-4 p-3 rounded-lg bg-surface-container-lowest border border-outline-variant/40 shadow-[0_2px_10px_rgba(0,0,0,0.02)] relative overflow-hidden">
+<!-- Progress Bar Background -->
+<div class="absolute bottom-0 left-0 h-1 bg-surface-variant w-full"></div>
+<div class="absolute bottom-0 left-0 h-1 bg-primary w-[65%] transition-all duration-1000"></div>
+<div class="w-10 h-10 rounded bg-surface-variant flex items-center justify-center text-primary opacity-70">
+<span class="material-symbols-outlined">image</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-on-surface font-medium">Board_Certification_Neurology.jpg</span>
+<span class="text-primary text-[11px] font-semibold flex items-center gap-1 animate-pulse">
+<span class="material-symbols-outlined text-[14px] animate-spin">sync</span> Scanning...
+                                </span>
+</div>
+<div class="font-body-sm text-on-surface-variant text-[12px] mt-0.5">4.1 MB • AI Clinical Parsing in progress</div>
+</div>
+<button class="p-2 text-on-surface-variant hover:text-error transition-colors rounded-full hover:bg-error-container/50 disabled:opacity-50">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="flex justify-between items-center mt-4 pb-8">
+<button class="px-6 py-2.5 rounded-full font-label-caps text-on-surface-variant hover:bg-surface-variant/50 transition-colors border border-transparent hover:border-outline-variant/50">
+                    Save Draft
+                </button>
+<div class="flex gap-3">
+<button class="px-6 py-2.5 rounded-full font-label-caps bg-surface-container-lowest border border-outline-variant/50 text-on-surface hover:bg-surface-variant transition-colors shadow-sm">
+                        Previous Step
+                    </button>
+<button class="px-8 py-2.5 rounded-full font-label-caps bg-primary text-on-primary hover:bg-primary/90 transition-colors shadow-[0_4px_14px_rgba(0,102,133,0.3)] flex items-center gap-2">
+                        Verify &amp; Continue
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

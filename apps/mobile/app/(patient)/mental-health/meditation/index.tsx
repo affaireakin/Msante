@@ -1,6 +1,7 @@
 import { View, Text, FlatList, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 
 const SESSIONS = [
   { id: 'coherence', title: 'Cohérence cardiaque', duration: 300, technique: 'coherence', desc: 'Inspirez 5s / Expirez 5s' },
@@ -12,11 +13,11 @@ export default function MeditationCatalogue() {
   const router = useRouter()
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="px-6 pt-8 pb-6">
-        <Text className="text-xs text-primary font-manrope uppercase tracking-wider mb-1">Wellness Space</Text>
-        <Text className="text-2xl font-bold text-on-surface font-manrope">Méditation guidée</Text>
-        <Text className="text-sm text-tertiary font-manrope mt-1">Inspirez confiance, expirez la tension</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+      <View style={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 24 }}>
+        <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 4 }}>Wellness Space</Text>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Méditation guidée</Text>
+        <Text style={{ fontSize: 14, color: '#5c5f61', fontFamily: 'Manrope', marginTop: 4 }}>Inspirez confiance, expirez la tension</Text>
       </View>
       <FlatList
         data={SESSIONS}
@@ -30,18 +31,38 @@ export default function MeditationCatalogue() {
                 params: { technique: item.technique, duration: String(item.duration), title: item.title },
               })
             }
-            className="bg-white/60 rounded-3xl p-6 border border-white/50 flex-row items-center gap-4"
-            style={{ shadowColor: '#006685', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.05, shadowRadius: 24, elevation: 3 }}
+            style={{
+              backgroundColor: 'rgba(255,255,255,0.6)',
+              borderRadius: 24,
+              padding: 24,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.5)',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 16,
+              shadowColor: '#006685',
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.05,
+              shadowRadius: 24,
+              elevation: 3,
+            }}
           >
-            <View className="w-14 h-14 rounded-2xl bg-primary-container/30 items-center justify-center">
-              <Text className="text-2xl">🌬️</Text>
+            <View style={{
+              width: 56,
+              height: 56,
+              borderRadius: 16,
+              backgroundColor: 'rgba(130,216,255,0.3)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <MaterialIcons name="self-improvement" size={28} color="#006685" />
             </View>
-            <View className="flex-1">
-              <Text className="text-base font-semibold text-on-surface font-manrope">{item.title}</Text>
-              <Text className="text-sm text-outline font-manrope">{item.desc}</Text>
-              <Text className="text-xs text-primary font-manrope mt-1">{Math.round(item.duration / 60)} min</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>{item.title}</Text>
+              <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>{item.desc}</Text>
+              <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', marginTop: 4 }}>{Math.round(item.duration / 60)} min</Text>
             </View>
-            <Text className="text-primary text-xl">→</Text>
+            <MaterialIcons name="arrow-forward" size={20} color="#006685" />
           </TouchableOpacity>
         )}
       />

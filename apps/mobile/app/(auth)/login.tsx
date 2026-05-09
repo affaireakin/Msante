@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { GlassCard, AppTextInput, PrimaryButton } from '@/components/ui'
 import { authService } from '@/features/auth/services/authService'
 import { loginSchema, type LoginFormData } from '@/features/auth/schemas/authSchemas'
@@ -30,52 +32,69 @@ export default function LoginScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <ScrollView className="flex-1 px-6" contentContainerStyle={{ paddingBottom: 32 }}>
-        <View className="mt-12 mb-8">
-          <TouchableOpacity onPress={() => router.back()} className="mb-6">
-            <Text className="text-primary font-manrope font-medium">← Retour</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={{ marginTop: 40, marginBottom: 28 }}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 20, alignSelf: 'flex-start' }}
+          >
+            <MaterialIcons name="arrow-back" size={20} color="#006685" />
+            <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>
+              Retour
+            </Text>
           </TouchableOpacity>
-          <Text className="text-2xl font-bold text-on-surface font-manrope">Connexion</Text>
-          <Text className="text-sm text-on-surface-variant font-manrope mt-1">
+          <Text style={{ fontSize: 28, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5, marginBottom: 6 }}>
+            Connexion
+          </Text>
+          <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>
             Bon retour sur M-Santé
           </Text>
         </View>
 
-        <GlassCard className="gap-4">
-          <Controller
-            control={control} name="email"
+        {/* Form */}
+        <GlassCard style={{ gap: 16 }}>
+          <Controller control={control} name="email"
             render={({ field: { onChange, value } }) => (
               <AppTextInput
                 label="Email" value={value} onChangeText={onChange}
                 keyboardType="email-address" autoCapitalize="none"
                 error={errors.email?.message} placeholder="votre@email.com"
               />
-            )}
-          />
-          <Controller
-            control={control} name="password"
+            )} />
+          <Controller control={control} name="password"
             render={({ field: { onChange, value } }) => (
               <AppTextInput
                 label="Mot de passe" value={value} onChangeText={onChange}
                 secureTextEntry error={errors.password?.message} placeholder="••••••••"
               />
-            )}
-          />
-          <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')}>
-            <Text className="text-right text-sm text-primary font-manrope">
+            )} />
+
+          <TouchableOpacity
+            onPress={() => router.push('/(auth)/forgot-password')}
+            style={{ alignSelf: 'flex-end' }}
+          >
+            <Text style={{ fontSize: 13, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>
               Mot de passe oublié ?
             </Text>
           </TouchableOpacity>
+
           <PrimaryButton label="Se connecter" onPress={handleSubmit(onSubmit)} loading={loading} />
         </GlassCard>
 
-        <View className="flex-row items-center gap-4 my-6">
-          <View className="flex-1 h-px bg-outline-variant" />
-          <Text className="text-xs text-outline font-manrope">ou continuer avec</Text>
-          <View className="flex-1 h-px bg-outline-variant" />
+        {/* Séparateur */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginVertical: 20 }}>
+          <View style={{ flex: 1, height: 1, backgroundColor: '#bec8ce' }} />
+          <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>ou continuer avec</Text>
+          <View style={{ flex: 1, height: 1, backgroundColor: '#bec8ce' }} />
         </View>
 
+        {/* Google */}
         <PrimaryButton
           label="Continuer avec Google"
           onPress={handleGoogle}
@@ -83,10 +102,14 @@ export default function LoginScreen() {
           variant="outline"
         />
 
-        <TouchableOpacity onPress={() => router.push('/(auth)/signup-patient')} className="mt-6">
-          <Text className="text-center text-sm text-on-surface-variant font-manrope">
+        {/* Lien inscription */}
+        <TouchableOpacity
+          onPress={() => router.push('/(auth)/signup-patient')}
+          style={{ paddingVertical: 16 }}
+        >
+          <Text style={{ textAlign: 'center', fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>
             Pas encore de compte ?{' '}
-            <Text className="text-primary font-semibold">S'inscrire</Text>
+            <Text style={{ color: '#006685', fontWeight: '700' }}>S'inscrire</Text>
           </Text>
         </TouchableOpacity>
       </ScrollView>

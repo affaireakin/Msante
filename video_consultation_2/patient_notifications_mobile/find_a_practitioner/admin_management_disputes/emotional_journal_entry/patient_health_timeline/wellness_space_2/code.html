@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wellness Space - M-Santé</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "primary-container": "#82d8ff",
+                "secondary-container": "#ffde5c",
+                "on-primary-fixed": "#001f2a",
+                "on-error-container": "#93000a",
+                "tertiary-fixed-dim": "#c4c7c9",
+                "on-background": "#0b1c30",
+                "inverse-primary": "#7bd1f8",
+                "surface-container-high": "#dce9ff",
+                "surface-variant": "#d3e4fe",
+                "surface-container-low": "#eff4ff",
+                "background": "#f8f9ff",
+                "on-surface-variant": "#3f484d",
+                "secondary-fixed": "#ffe170",
+                "on-surface": "#0b1c30",
+                "primary-fixed": "#bee9ff",
+                "on-tertiary-fixed-variant": "#444749",
+                "on-tertiary": "#ffffff",
+                "surface-container-lowest": "#ffffff",
+                "error-container": "#ffdad6",
+                "tertiary-fixed": "#e0e3e5",
+                "secondary-fixed-dim": "#e4c546",
+                "on-tertiary-container": "#545759",
+                "tertiary": "#5c5f61",
+                "inverse-on-surface": "#eaf1ff",
+                "on-secondary-fixed": "#221b00",
+                "outline": "#6f787e",
+                "tertiary-container": "#cbcdcf",
+                "outline-variant": "#bec8ce",
+                "on-tertiary-fixed": "#191c1e",
+                "on-primary": "#ffffff",
+                "surface-dim": "#cbdbf5",
+                "surface-tint": "#006685",
+                "primary": "#006685",
+                "on-primary-container": "#005e7a",
+                "surface-bright": "#f8f9ff",
+                "error": "#ba1a1a",
+                "surface": "#f8f9ff",
+                "primary-fixed-dim": "#7bd1f8",
+                "surface-container-highest": "#d3e4fe",
+                "on-secondary": "#ffffff",
+                "inverse-surface": "#213145",
+                "secondary": "#705d00",
+                "on-secondary-container": "#756100",
+                "on-error": "#ffffff",
+                "surface-container": "#e5eeff",
+                "on-primary-fixed-variant": "#004d65",
+                "on-secondary-fixed-variant": "#544600"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "unit": "8px",
+                "margin-page": "24px",
+                "gutter": "16px",
+                "stack-gap": "12px",
+                "card-padding": "20px"
+        },
+        "fontFamily": {
+                "body-sm": [
+                        "Manrope"
+                ],
+                "headline-md": [
+                        "Manrope"
+                ],
+                "label-caps": [
+                        "Manrope"
+                ],
+                "display-lg": [
+                        "Manrope"
+                ],
+                "body-base": [
+                        "Manrope"
+                ]
+        },
+        "fontSize": {
+                "body-sm": [
+                        "14px",
+                        {
+                                "lineHeight": "1.5",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "1.3",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "label-caps": [
+                        "12px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "display-lg": [
+                        "48px",
+                        {
+                                "lineHeight": "1.1",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-base": [
+                        "16px",
+                        {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+  /* Glassmorphism utility for main content to keep HTML clean while following design system */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px rgba(0, 102, 133, 0.04);
+  }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body-base font-manrope antialiased min-h-screen relative overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Ambient Background Blobs for Medical Futurism Feel -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+<div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary-fixed/30 blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-surface-container-high/60 blur-[100px]"></div>
+</div>
+<!-- Shared Component: TopAppBar -->
+<nav class="fixed top-0 w-full rounded-b-3xl bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-b border-white/20 dark:border-slate-700/30 shadow-[0_4px_30px_rgba(0,0,0,0.05)] flex justify-between items-center px-6 py-4 z-50 font-manrope antialiased tracking-tight">
+<div class="text-2xl font-bold text-sky-500 dark:text-sky-400 tracking-tighter">M-Santé</div>
+<div class="flex items-center gap-4 hidden">
+<!-- Search bar explicitly hidden in JSON -->
+</div>
+<div class="flex items-center gap-3">
+<button class="text-slate-400 dark:text-slate-500 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-all active:scale-95 transition-transform p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-slate-400 dark:text-slate-500 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-all active:scale-95 transition-transform p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+<div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow-sm ml-1">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A close-up studio portrait of a calm, professional individual against a pure white background. The lighting is soft, high-key, and uniformly distributed, creating a serene, approachable atmosphere perfectly suited for a modern healthcare application. The minimalist aesthetic aligns completely with a clean, light-mode design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB44N4UjldIHbwcc8rDtNMP5d2suxhxnBXe9H1BqSPbF918l3g-B4tm3hETwCvEIBDMsBZS7q2GD9B2wjvOmc4Ir1yRd0wWdC-6RG9ZBcPlSoZJVIGFwSf8G3_t5Xqp8vGgYQ_eYGYX_0TxsJTMQWWfzhAdGJM66mUcOIqbzouoS6vFZdywnxFjJgqbHeMq4qRgNJ5HkyyemhU20HwyOW7om8_lFV_AsrJawYXQB4ru0HRlspJlT1r2yszzYGUJu18BJdqnkm9ulqcH"/>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="relative z-10 pt-28 pb-32 px-margin-page md:px-8 max-w-7xl mx-auto space-y-8">
+<!-- Header Section -->
+<header class="flex flex-col gap-2">
+<h1 class="font-headline-md text-headline-md text-on-surface">Wellness Space</h1>
+<p class="font-body-base text-body-base text-on-surface-variant">Your daily sanctuary for mental clarity and emotional balance.</p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter auto-rows-min">
+<!-- Mood Tracker - Daily Prompt (Span 12 on mobile, 7 on desktop) -->
+<section class="glass-card rounded-xl p-card-padding col-span-1 md:col-span-7 flex flex-col justify-between min-h-[220px]">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h2 class="font-body-base text-body-base font-semibold text-on-surface">How are you feeling today?</h2>
+<p class="font-body-sm text-body-sm text-outline mt-1">Log your mood to track patterns over time.</p>
+</div>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">mood</span>
+</div>
+<div class="flex justify-between items-center gap-2 mt-auto">
+<!-- Emoji buttons -->
+<button class="flex-1 flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-sm">😊</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Happy</span>
+</button>
+<button class="flex-1 flex flex-col items-center gap-2 p-3 rounded-lg bg-primary-container/40 border border-primary/20 transition-colors group">
+<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-sm">😌</div>
+<span class="font-label-caps text-label-caps text-primary font-bold">Calm</span>
+</button>
+<button class="flex-1 flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-sm">😰</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Anxious</span>
+</button>
+<button class="flex-1 flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shadow-sm">😔</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Sad</span>
+</button>
+</div>
+</section>
+<!-- Insights - Streak (Span 12 mobile, 5 desktop) -->
+<section class="glass-card rounded-xl p-card-padding col-span-1 md:col-span-5 flex flex-col justify-center items-center text-center relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-fixed-dim/20 to-transparent opacity-50 pointer-events-none"></div>
+<div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center mb-4 text-primary shadow-inner">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">5 Day Streak</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Consistent wellness checking.</p>
+<div class="flex gap-1 mt-6">
+<div class="w-8 h-2 rounded-full bg-primary"></div>
+<div class="w-8 h-2 rounded-full bg-primary"></div>
+<div class="w-8 h-2 rounded-full bg-primary"></div>
+<div class="w-8 h-2 rounded-full bg-primary"></div>
+<div class="w-8 h-2 rounded-full bg-primary"></div>
+<div class="w-8 h-2 rounded-full bg-surface-container-highest"></div>
+<div class="w-8 h-2 rounded-full bg-surface-container-highest"></div>
+</div>
+</section>
+<!-- Quick Sessions - Breathing & Meditation (Span 12) -->
+<section class="col-span-1 md:col-span-12 space-y-4">
+<div class="flex justify-between items-end px-2">
+<h2 class="font-body-base text-body-base font-semibold text-on-surface">Quick Sessions</h2>
+<button class="font-label-caps text-label-caps text-primary hover:text-on-primary-container transition-colors">VIEW ALL</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Session Card 1 -->
+<div class="glass-card rounded-xl p-4 flex items-center gap-4 hover:-translate-y-1 transition-transform cursor-pointer relative overflow-hidden">
+<div class="w-14 h-14 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0 relative z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">air</span>
+</div>
+<div class="flex-1 relative z-10">
+<h3 class="font-body-sm text-body-sm font-semibold text-on-surface">4-7-8 Breathing</h3>
+<p class="font-body-sm text-body-sm text-outline flex items-center gap-1 text-[13px] mt-0.5">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 2 mins
+              </p>
+</div>
+<button class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shrink-0 hover:bg-on-primary-container transition-colors relative z-10 shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<!-- Decorative blur -->
+<div class="absolute right-0 top-0 w-24 h-24 bg-primary-fixed/40 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none"></div>
+</div>
+<!-- Session Card 2 -->
+<div class="glass-card rounded-xl p-4 flex items-center gap-4 hover:-translate-y-1 transition-transform cursor-pointer relative overflow-hidden">
+<div class="w-14 h-14 rounded-lg bg-secondary-fixed/30 flex items-center justify-center text-on-secondary-container shrink-0 relative z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">spa</span>
+</div>
+<div class="flex-1 relative z-10">
+<h3 class="font-body-sm text-body-sm font-semibold text-on-surface">Calm Reflection</h3>
+<p class="font-body-sm text-body-sm text-outline flex items-center gap-1 text-[13px] mt-0.5">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 5 mins
+              </p>
+</div>
+<button class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shrink-0 hover:bg-on-primary-container transition-colors relative z-10 shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<div class="absolute right-0 top-0 w-24 h-24 bg-secondary-container/20 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none"></div>
+</div>
+</div>
+</section>
+<!-- Emotional Journal (Span 12 mobile, 8 desktop) -->
+<section class="glass-card rounded-xl p-card-padding col-span-1 md:col-span-8 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-body-base text-body-base font-semibold text-on-surface">Emotional Journal</h2>
+<span class="material-symbols-outlined text-outline">history_edu</span>
+</div>
+<div class="space-y-stack-gap flex-1">
+<!-- Snippet 1 -->
+<div class="p-4 rounded-lg bg-surface-container-low/50 border border-surface-variant hover:bg-surface-container transition-colors">
+<div class="flex justify-between items-baseline mb-2">
+<span class="font-label-caps text-label-caps text-primary">TODAY</span>
+<span class="font-body-sm text-body-sm text-outline text-[12px]">10:30 AM</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic line-clamp-2">"Felt a bit overwhelmed with work this morning, but taking five minutes to breathe deeply really helped center my focus..."</p>
+</div>
+<!-- Snippet 2 -->
+<div class="p-4 rounded-lg bg-surface-container-low/50 border border-surface-variant hover:bg-surface-container transition-colors">
+<div class="flex justify-between items-baseline mb-2">
+<span class="font-label-caps text-label-caps text-outline">YESTERDAY</span>
+<span class="font-body-sm text-body-sm text-outline text-[12px]">8:15 PM</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic line-clamp-2">"Had a very productive therapy session. Discussed techniques for managing acute stress responses during meetings."</p>
+</div>
+</div>
+<button class="mt-6 w-full py-3 rounded-lg bg-surface-container text-primary font-label-caps text-label-caps flex items-center justify-center gap-2 hover:bg-primary-fixed/50 transition-colors border border-primary-fixed">
+<span class="material-symbols-outlined text-[18px]">add</span> NEW ENTRY
+        </button>
+</section>
+<!-- Weekly Insights Chart Area (Span 12 mobile, 4 desktop) -->
+<section class="glass-card rounded-xl p-card-padding col-span-1 md:col-span-4 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-body-base text-body-base font-semibold text-on-surface">Weekly Flow</h2>
+<span class="material-symbols-outlined text-outline">insights</span>
+</div>
+<!-- CSS Pseudo Chart for Mood Fluctuation -->
+<div class="flex-1 flex items-end justify-between gap-2 pt-8 pb-2 relative border-b border-surface-variant">
+<!-- Y-axis simple guides -->
+<div class="absolute inset-0 flex flex-col justify-between pb-2 z-0 opacity-20 pointer-events-none">
+<div class="w-full border-b border-outline border-dashed"></div>
+<div class="w-full border-b border-outline border-dashed"></div>
+<div class="w-full border-b border-outline border-dashed"></div>
+</div>
+<!-- Bars -->
+<div class="w-full bg-primary-container/40 rounded-t-md h-[40%] relative z-10 hover:bg-primary-container transition-colors group"><div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded">Sad</div></div>
+<div class="w-full bg-primary/80 rounded-t-md h-[70%] relative z-10 hover:bg-primary transition-colors group"><div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded">Calm</div></div>
+<div class="w-full bg-primary-fixed rounded-t-md h-[90%] relative z-10 hover:bg-inverse-primary transition-colors group"><div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded">Happy</div></div>
+<div class="w-full bg-surface-container-highest rounded-t-md h-[30%] relative z-10 hover:bg-outline-variant transition-colors group"><div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded">Anx</div></div>
+<div class="w-full bg-primary/90 rounded-t-md h-[80%] relative z-10 hover:bg-primary transition-colors group"><div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded">Calm</div></div>
+<div class="w-full bg-primary-fixed rounded-t-md h-[85%] relative z-10 hover:bg-inverse-primary transition-colors group"><div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-[10px] px-2 py-1 rounded">Happy</div></div>
+<div class="w-full bg-primary border-2 border-white rounded-t-md h-[75%] relative z-10 shadow-[0_0_12px_rgba(0,102,133,0.4)] group"><div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-primary text-white font-bold text-[10px] px-2 py-1 rounded">Today</div></div>
+</div>
+<div class="flex justify-between mt-2 px-1 text-[10px] font-bold text-outline uppercase tracking-widest">
+<span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span class="text-primary">S</span>
+</div>
+</section>
+</div>
+</main>
+<!-- Shared Component: BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl border-t border-white/30 dark:border-slate-800/50 shadow-[0_-8px_32px_rgba(130,216,255,0.08)] rounded-t-[32px] font-manrope text-[11px] font-medium">
+<!-- Active Tab: Space (Matches "Wellness Space dashboard") -->
+<button class="flex flex-col items-center justify-center text-sky-600 dark:text-sky-300 bg-sky-100/50 dark:bg-sky-500/20 rounded-2xl px-5 py-2 active:scale-90 transition-all duration-300 ease-out">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span>Space</span>
+</button>
+<!-- Inactive Tab: Meditate -->
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-sky-400 dark:hover:text-sky-200 transition-colors active:scale-90 transition-all duration-300 ease-out">
+<span class="material-symbols-outlined mb-1">self_improvement</span>
+<span>Meditate</span>
+</button>
+<!-- Inactive Tab: Journal -->
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-sky-400 dark:hover:text-sky-200 transition-colors active:scale-90 transition-all duration-300 ease-out">
+<span class="material-symbols-outlined mb-1">edit_note</span>
+<span>Journal</span>
+</button>
+<!-- Inactive Tab: Stats -->
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-sky-400 dark:hover:text-sky-200 transition-colors active:scale-90 transition-all duration-300 ease-out">
+<span class="material-symbols-outlined mb-1">query_stats</span>
+<span>Stats</span>
+</button>
+</nav>
+</body></html>

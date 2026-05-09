@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Security &amp; Privacy Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#e5eeff",
+                        "surface-bright": "#f8f9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-primary-fixed": "#001f2a",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#3f484d",
+                        "error-container": "#ffdad6",
+                        "surface": "#f8f9ff",
+                        "primary": "#006685",
+                        "outline-variant": "#bec8ce",
+                        "secondary-fixed": "#ffe170",
+                        "on-primary-container": "#005e7a",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#004d65",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#6f787e",
+                        "secondary-fixed-dim": "#e4c546",
+                        "on-surface": "#0b1c30",
+                        "surface-variant": "#d3e4fe",
+                        "on-background": "#0b1c30",
+                        "tertiary": "#5c5f61",
+                        "surface-tint": "#006685",
+                        "on-error-container": "#93000a",
+                        "secondary": "#705d00",
+                        "primary-fixed": "#bee9ff",
+                        "on-secondary-fixed-variant": "#544600",
+                        "background": "#f8f9ff",
+                        "tertiary-container": "#cbcdcf",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#221b00",
+                        "on-tertiary-container": "#545759",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#ffde5c",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "inverse-primary": "#7bd1f8",
+                        "primary-container": "#82d8ff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#e0e3e5",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container-high": "#dce9ff",
+                        "on-secondary-container": "#756100",
+                        "surface-container-highest": "#d3e4fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-page": "24px",
+                        "card-padding": "20px",
+                        "unit": "8px",
+                        "gutter": "16px",
+                        "stack-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "body-base": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); }
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px rgba(0, 102, 133, 0.05);
+        }
+        .toggle-checkbox:checked {
+            background-color: theme('colors.primary');
+            border-color: theme('colors.primary');
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            transform: translateX(100%);
+            border-color: white;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-base text-on-background antialiased bg-background min-h-screen pb-32 pt-20">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-sm shadow-sky-100/20 font-manrope antialiased tracking-tight">
+<div class="flex items-center">
+<img alt="User profile photo" class="w-8 h-8 rounded-full object-cover" data-alt="A close up, high quality studio portrait of a modern user looking directly at the camera, conveying trust and health. The lighting is soft, diffused and high-key white, matching the serene M-Santé wellness brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhcWoJ1ZN1nu0DNAAfBh2A2ugHs0-DLs8zJQu679KAv2ejN6aycqfZrScXsCxjpZkmqZx2GMYnKo1wRYBBADeBzc8nd5u5HbVXoZur3pCzI8N710VsK4ahbl51OWVKbuQtIvdYcEGmHIi_836TMwzPeGAAlX2fNu8ewVLf9OAaRBSHEY_Ola2-apUUMovL8Mf3SDVREYqNZrwhpyU5AC_-QFFB2xQYtIxrjDRy-O242bmMH9FCwQhgVzYCqbC4xezQXc6VS-_lcAdN"/>
+</div>
+<h1 class="text-xl font-extrabold tracking-tighter text-sky-500">M-Santé</h1>
+<button class="flex items-center justify-center text-sky-400 hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<main class="px-margin-page max-w-md mx-auto flex flex-col gap-8">
+<!-- Page Header -->
+<div class="mt-4">
+<h2 class="font-headline-md text-headline-md text-on-surface">Security &amp; Privacy</h2>
+<p class="font-body-sm text-body-sm text-outline mt-1">Manage your health data protection and account access settings.</p>
+</div>
+<!-- Account Security Section -->
+<section class="flex flex-col gap-stack-gap">
+<h3 class="font-label-caps text-label-caps text-primary uppercase">Account Security</h3>
+<div class="glass-panel rounded-xl p-card-padding flex flex-col gap-4">
+<!-- 2FA Toggle -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">password</span>
+</div>
+<div>
+<p class="font-body-base text-body-base text-on-surface font-semibold">Two-Factor Authentication</p>
+<p class="font-body-sm text-body-sm text-outline">Require code on new devices</p>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer checked:right-0 z-10 transition-transform duration-200" id="toggle1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer absolute top-0 left-0 right-0 bottom-0" for="toggle1"></label>
+</div>
+</div>
+<div class="h-px w-full bg-white/40"></div>
+<!-- Biometrics Toggle -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">fingerprint</span>
+</div>
+<div>
+<p class="font-body-base text-body-base text-on-surface font-semibold">Biometric Login</p>
+<p class="font-body-sm text-body-sm text-outline">Face ID or fingerprint access</p>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer checked:right-0 z-10 transition-transform duration-200" id="toggle2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer absolute top-0 left-0 right-0 bottom-0" for="toggle2"></label>
+</div>
+</div>
+<div class="h-px w-full bg-white/40"></div>
+<!-- Change Password -->
+<button class="flex items-center justify-between w-full text-left group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined">key</span>
+</div>
+<p class="font-body-base text-body-base text-on-surface font-semibold">Change Password</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Data Privacy Section -->
+<section class="flex flex-col gap-stack-gap">
+<h3 class="font-label-caps text-label-caps text-primary uppercase">Data Privacy</h3>
+<div class="glass-panel rounded-xl p-card-padding flex flex-col gap-4">
+<!-- Clinical Research -->
+<div class="flex items-start justify-between">
+<div class="flex items-start gap-3 flex-1 pr-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0 mt-1">
+<span class="material-symbols-outlined">science</span>
+</div>
+<div>
+<p class="font-body-base text-body-base text-on-surface font-semibold">Clinical Research Sharing</p>
+<p class="font-body-sm text-body-sm text-outline mt-1">Anonymously share metrics to aid medical research.</p>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in mt-2 shrink-0">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 transition-transform duration-200" id="toggle3" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer absolute top-0 left-0 right-0 bottom-0" for="toggle3"></label>
+</div>
+</div>
+<div class="h-px w-full bg-white/40"></div>
+<!-- Doctor Access -->
+<div class="flex items-start justify-between">
+<div class="flex items-start gap-3 flex-1 pr-4">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary shrink-0 mt-1">
+<span class="material-symbols-outlined">stethoscope</span>
+</div>
+<div>
+<p class="font-body-base text-body-base text-on-surface font-semibold">Provider Access</p>
+<p class="font-body-sm text-body-sm text-outline mt-1">Allow approved specialists to view your complete history.</p>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in mt-2 shrink-0">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer checked:right-0 z-10 transition-transform duration-200" id="toggle4" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-outline-variant cursor-pointer absolute top-0 left-0 right-0 bottom-0" for="toggle4"></label>
+</div>
+</div>
+<div class="h-px w-full bg-white/40"></div>
+<button class="flex items-center justify-between w-full text-left group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary-container transition-colors">
+<span class="material-symbols-outlined">description</span>
+</div>
+<p class="font-body-base text-body-base text-on-surface font-semibold">Download Health Record</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">download</span>
+</button>
+</div>
+</section>
+<!-- Active Sessions -->
+<section class="flex flex-col gap-stack-gap">
+<div class="flex justify-between items-end">
+<h3 class="font-label-caps text-label-caps text-primary uppercase">Active Sessions</h3>
+<button class="font-label-caps text-label-caps text-error hover:opacity-80 transition-opacity">Log Out All</button>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden">
+<!-- Current Device -->
+<div class="p-card-padding flex items-center justify-between bg-white/30">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container/50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">smartphone</span>
+</div>
+<div>
+<p class="font-body-base text-body-base text-on-surface font-semibold">iPhone 14 Pro</p>
+<p class="font-body-sm text-body-sm text-primary flex items-center gap-1 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span> Current Device
+                            </p>
+</div>
+</div>
+</div>
+<div class="h-px w-full bg-white/40"></div>
+<!-- Other Device -->
+<div class="p-card-padding flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-outline">
+<span class="material-symbols-outlined">computer</span>
+</div>
+<div>
+<p class="font-body-base text-body-base text-on-surface font-semibold">MacBook Air</p>
+<p class="font-body-sm text-body-sm text-outline mt-0.5">Last active 2 hours ago</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container hover:bg-error-container text-outline hover:text-error flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pt-3 pb-8 bg-white/80 backdrop-blur-2xl rounded-t-[32px] border-t border-white/30 shadow-[0_-10px_40px_rgba(0,0,0,0.04)] font-manrope text-[11px] font-semibold uppercase tracking-widest md:hidden">
+<button class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-300 transition-colors active:scale-90 transition-all">
+<span class="material-symbols-outlined mb-1">home</span>
+<span>Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-300 transition-colors active:scale-90 transition-all">
+<span class="material-symbols-outlined mb-1">psychology</span>
+<span>Assistant</span>
+</button>
+<button class="flex flex-col items-center justify-center text-sky-500 relative after:content-[''] after:absolute after:-bottom-1 after:w-1 after:h-1 after:bg-sky-400 after:rounded-full hover:text-sky-300 transition-colors active:scale-90 transition-all">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">shield_person</span>
+<span>Security</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-300 transition-colors active:scale-90 transition-all">
+<span class="material-symbols-outlined mb-1">person</span>
+<span>Profile</span>
+</button>
+</nav>
+</body></html>

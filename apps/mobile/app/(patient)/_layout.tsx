@@ -1,14 +1,15 @@
 import { Redirect, Tabs } from 'expo-router'
 import { View, Text, Platform } from 'react-native'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 
 interface TabIconProps {
-  emoji: string
+  name: React.ComponentProps<typeof MaterialIcons>['name']
   label: string
   focused: boolean
 }
 
-function TabIcon({ emoji, label, focused }: TabIconProps) {
+function TabIcon({ name, label, focused }: TabIconProps) {
   return (
     <View
       style={{
@@ -21,7 +22,11 @@ function TabIcon({ emoji, label, focused }: TabIconProps) {
         minWidth: 52,
       }}
     >
-      <Text style={{ fontSize: focused ? 21 : 19 }}>{emoji}</Text>
+      <MaterialIcons
+        name={name}
+        size={focused ? 24 : 22}
+        color={focused ? '#006685' : '#6f787e'}
+      />
       <Text
         style={{
           fontSize: 10,
@@ -62,39 +67,39 @@ export default function PatientLayout() {
         },
       }}
     >
-      {/* 5 visible tabs */}
       <Tabs.Screen
         name="home"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" label="Accueil" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="home" label="Accueil" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="mental-health"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="🌿" label="Activités" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="self-improvement" label="Activités" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="assistant"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="💙" label="Assistant" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="psychology" label="Assistant" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="find-practitioners"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="👨‍⚕️" label="Praticiens" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="medical-services" label="Praticiens" focused={focused} />,
         }}
       />
       <Tabs.Screen
-        name="support"
+        name="appointments"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon emoji="🆘" label="Support" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="calendar-today" label="Rendez-vous" focused={focused} />,
         }}
       />
 
       {/* Hidden screens */}
+      <Tabs.Screen name="support" options={{ href: null }} />
       <Tabs.Screen name="booking" options={{ href: null }} />
       <Tabs.Screen name="booking-success" options={{ href: null }} />
       <Tabs.Screen name="confirm-session" options={{ href: null }} />

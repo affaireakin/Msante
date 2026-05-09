@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Selection - M-Santé</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed-dim": "#e4c546",
+                        "on-tertiary-container": "#545759",
+                        "tertiary": "#5c5f61",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-secondary-fixed": "#221b00",
+                        "outline": "#6f787e",
+                        "tertiary-container": "#cbcdcf",
+                        "outline-variant": "#bec8ce",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#cbdbf5",
+                        "surface-tint": "#006685",
+                        "primary": "#006685",
+                        "on-primary-container": "#005e7a",
+                        "surface-bright": "#f8f9ff",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9ff",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "secondary": "#705d00",
+                        "on-secondary-container": "#756100",
+                        "on-error": "#ffffff",
+                        "surface-container": "#e5eeff",
+                        "on-primary-fixed-variant": "#004d65",
+                        "on-secondary-fixed-variant": "#544600",
+                        "primary-container": "#82d8ff",
+                        "secondary-container": "#ffde5c",
+                        "on-primary-fixed": "#001f2a",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "on-background": "#0b1c30",
+                        "inverse-primary": "#7bd1f8",
+                        "surface-container-high": "#dce9ff",
+                        "surface-variant": "#d3e4fe",
+                        "surface-container-low": "#eff4ff",
+                        "background": "#f8f9ff",
+                        "on-surface-variant": "#3f484d",
+                        "secondary-fixed": "#ffe170",
+                        "on-surface": "#0b1c30",
+                        "primary-fixed": "#bee9ff",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#e0e3e5"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "unit": "8px",
+                        "margin-page": "24px",
+                        "gutter": "16px",
+                        "stack-gap": "12px",
+                        "card-padding": "20px"
+                    },
+                    fontFamily: {
+                        "label-caps": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "body-base": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "body-sm": ["Manrope"]
+                    },
+                    fontSize: {
+                        "label-caps": ["12px", { lineHeight: "1.2", letterSpacing: "0.05em", fontWeight: "700" }],
+                        "display-lg": ["48px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-base": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "headline-md": ["24px", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "body-sm": ["14px", { lineHeight: "1.5", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 102, 133, 0.05);
+        }
+        .inner-glow {
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-base antialiased pb-32 md:pb-8">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 border-b border-white/20 bg-white/70 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(130,216,255,0.08)] backdrop-blur-md border-b border-sky-100/30">
+<div class="flex justify-between items-center px-6 py-4 w-full h-16">
+<div class="flex items-center gap-4">
+<button class="text-primary hover:bg-sky-50/50 p-2 rounded-full transition-colors active:scale-95 duration-200 ease-in-out flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<div class="font-manrope antialiased tracking-tight text-xl font-bold tracking-tighter text-sky-600">M-Santé</div>
+</div>
+<div class="flex gap-4">
+<button class="text-sky-500 hover:bg-sky-50/50 p-2 rounded-full transition-colors active:scale-95 duration-200 ease-in-out flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-24 px-margin-page max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Left Column: Content -->
+<div class="md:col-span-7 flex flex-col gap-stack-gap">
+<!-- Header -->
+<div class="mb-4">
+<h1 class="font-headline-md text-headline-md text-on-background mb-2">Confirm your session</h1>
+<p class="font-body-base text-body-base text-on-surface-variant">Please review the details below before proceeding to payment.</p>
+</div>
+<!-- Practitioner Summary -->
+<div class="glass-card rounded-xl p-card-padding flex items-center gap-4 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-r from-surface-container-low to-transparent opacity-50 pointer-events-none"></div>
+<img alt="Dr. Julian Vane" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm z-10" data-alt="A professional headshot of a confident male doctor in a modern, well-lit clinic setting. The lighting is soft and bright, creating a clean, futuristic medical aesthetic consistent with a premium health app. The color palette emphasizes crisp whites and deep medical blues, conveying trust and expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTA954N0Nsmgw4-ieI_BiISMDxHPb8TPtQUKRTt-7jk0ZQpLCoqPdV2-zFO_HfCvyW-BSpv9PwFnQoh-egKasQvisCsG4CRXlqAfwQ8rZ_dKvvjjVYI27ub61FGguKeOvcE-dANz2n9ZJcbebY1CI2Hc3273s1GEHzosuIV0RY4JHpdXTbTYUxcdqdxBCtXJ1DC6yoK_LoGbDMReJzrbfrJDFc3wFS5LfQmtiOsTYjDAjZV53XKLn7UHtirftM1STJp6TSSV3rBmO6"/>
+<div class="z-10">
+<h2 class="font-headline-md text-body-base font-bold text-on-surface">Dr. Julian Vane</h2>
+<p class="font-body-sm text-body-sm text-primary flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[16px]">neurology</span> Neurologist
+                    </p>
+</div>
+</div>
+<!-- Session Type Selection -->
+<div class="mt-4">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-3 uppercase">Session Type</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<!-- Option 1: Selected -->
+<label class="glass-card rounded-xl p-4 cursor-pointer relative inner-glow border-primary bg-primary/5 transition-all">
+<input checked="" class="peer sr-only" name="sessionType" type="radio" value="video"/>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-md">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">videocam</span>
+</div>
+<div>
+<span class="block font-headline-md text-body-base font-bold text-on-surface">Video Consultation</span>
+<span class="block font-body-sm text-body-sm text-on-surface-variant">Online via M-Santé</span>
+</div>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center bg-primary">
+<div class="w-2 h-2 rounded-full bg-white"></div>
+</div>
+</div>
+<div class="absolute -top-3 -right-2 bg-secondary-container text-on-secondary-container font-label-caps text-[10px] px-2 py-1 rounded-full shadow-sm border border-white">Recommended</div>
+</label>
+<!-- Option 2: Unselected -->
+<label class="glass-card rounded-xl p-4 cursor-pointer relative hover:bg-white/90 transition-all opacity-70 hover:opacity-100 border-transparent hover:border-outline-variant">
+<input class="peer sr-only" name="sessionType" type="radio" value="inperson"/>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">meeting_room</span>
+</div>
+<div>
+<span class="block font-headline-md text-body-base font-bold text-on-surface">In-Person</span>
+<span class="block font-body-sm text-body-sm text-on-surface-variant">Clinic Visit</span>
+</div>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center">
+</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Date & Time Confirmation -->
+<div class="mt-4 glass-card rounded-xl p-card-padding">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4 uppercase">Schedule Details</h3>
+<div class="flex flex-col sm:flex-row gap-6">
+<div class="flex items-center gap-4 flex-1 bg-surface-container-low p-3 rounded-lg">
+<div class="w-12 h-12 rounded-lg bg-white shadow-sm flex flex-col items-center justify-center border border-surface-variant">
+<span class="font-label-caps text-[10px] text-error font-bold uppercase">Oct</span>
+<span class="font-headline-md text-headline-md text-on-surface leading-none mt-1">15</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Date</p>
+<p class="font-headline-md text-body-base font-bold text-on-surface">Tuesday</p>
+</div>
+</div>
+<div class="flex items-center gap-4 flex-1 bg-surface-container-low p-3 rounded-lg">
+<div class="w-12 h-12 rounded-lg bg-white shadow-sm flex items-center justify-center border border-surface-variant text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">schedule</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Time</p>
+<p class="font-headline-md text-body-base font-bold text-on-surface">02:00 PM</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Summary Sidebar -->
+<div class="md:col-span-5 flex flex-col mt-6 md:mt-0">
+<div class="glass-card rounded-xl p-card-padding sticky top-24 inner-glow">
+<h3 class="font-headline-md text-body-base font-bold text-on-surface border-b border-surface-variant pb-4 mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">receipt_long</span> Payment Summary
+                </h3>
+<div class="space-y-4 mb-6">
+<div class="flex justify-between items-center">
+<span class="font-body-base text-body-base text-on-surface-variant">Session fee</span>
+<span class="font-body-base text-body-base font-medium text-on-surface">$120.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-base text-body-base text-on-surface-variant flex items-center gap-1">
+                            Platform fee 
+                            <span class="material-symbols-outlined text-[14px] text-outline cursor-help" title="Covers secure video hosting and platform maintenance">info</span>
+</span>
+<span class="font-body-base text-body-base font-medium text-on-surface">$5.00</span>
+</div>
+</div>
+<div class="border-t border-surface-variant pt-4 mb-6">
+<div class="flex justify-between items-end">
+<span class="font-headline-md text-body-base font-bold text-on-surface">Total</span>
+<span class="font-headline-md text-headline-md text-primary">$125.00</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-headline-md text-body-base py-4 rounded-xl shadow-[0_8px_20px_rgba(0,102,133,0.2)] hover:bg-on-primary-container transition-colors flex items-center justify-center gap-2">
+                    Proceed to Payment <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<p class="text-center font-body-sm text-[12px] text-outline mt-4 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lock</span> Secure encrypted checkout
+                </p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-[24px] border-t border-white/20 bg-white/80 backdrop-blur-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.04)] inner-glow-border-t">
+<div class="flex justify-around items-center px-4 pt-3 pb-6 w-full">
+<a class="flex flex-col items-center justify-center text-slate-400 opacity-60 hover:text-sky-400 transition-transform duration-150 active:scale-90 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">home_health</span>
+<span class="font-manrope text-[10px] font-medium uppercase tracking-widest">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-sky-600 relative after:content-[''] after:absolute after:-bottom-1 after:w-1 after:h-1 after:bg-sky-500 after:rounded-full transition-transform duration-150 active:scale-90 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+<span class="font-manrope text-[10px] font-medium uppercase tracking-widest text-sky-600">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 opacity-60 hover:text-sky-400 transition-transform duration-150 active:scale-90 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">assignment_ind</span>
+<span class="font-manrope text-[10px] font-medium uppercase tracking-widest">Records</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 opacity-60 hover:text-sky-400 transition-transform duration-150 active:scale-90 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="font-manrope text-[10px] font-medium uppercase tracking-widest">Profile</span>
+</a>
+</div>
+</nav>
+</body></html>

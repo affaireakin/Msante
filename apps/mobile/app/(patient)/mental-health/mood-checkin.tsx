@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { MoodSlider } from '@/features/mental-health/mood/components/MoodSlider'
 import { EmotionPicker } from '@/features/mental-health/mood/components/EmotionPicker'
 import { useAddMoodEntry } from '@/features/mental-health/mood/hooks/useMoodEntries'
@@ -24,7 +25,7 @@ export default function MoodCheckin() {
     await addMood.mutateAsync({ patientId: profile.id, score, emotions })
     if (score < 3) {
       Alert.alert(
-        'Prendre soin de soi 💙',
+        'Prendre soin de soi',
         'Votre humeur semble basse. Parler à un praticien peut aider.',
         [
           { text: 'Plus tard', onPress: () => router.back() },
@@ -37,25 +38,34 @@ export default function MoodCheckin() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <ScrollView className="flex-1 px-6" contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="pt-8 pb-6 flex-row items-center gap-3">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+      <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} contentContainerStyle={{ paddingBottom: 40 }}>
+        <View style={{ paddingTop: 32, paddingBottom: 24, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Text className="text-primary text-2xl">←</Text>
+            <MaterialIcons name="arrow-back" size={24} color="#006685" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-on-surface font-manrope flex-1">Comment vous sentez-vous ?</Text>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope', flex: 1 }}>Comment vous sentez-vous ?</Text>
         </View>
-        <View
-          className="bg-white/60 rounded-3xl p-6 gap-8 border border-white/50"
-          style={{ shadowColor: '#006685', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.05, shadowRadius: 30, elevation: 3 }}
-        >
+        <View style={{
+          backgroundColor: 'rgba(255,255,255,0.6)',
+          borderRadius: 24,
+          padding: 24,
+          gap: 32,
+          borderWidth: 1,
+          borderColor: 'rgba(255,255,255,0.5)',
+          shadowColor: '#006685',
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.05,
+          shadowRadius: 30,
+          elevation: 3,
+        }}>
           <MoodSlider value={score} onChange={setScore} />
-          <View className="gap-3">
-            <Text className="text-xs font-semibold text-on-surface-variant font-manrope uppercase tracking-wider">Vos émotions</Text>
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontSize: 12, fontWeight: '600', color: '#3f484d', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Vos émotions</Text>
             <EmotionPicker selected={emotions} onToggle={toggleEmotion} />
           </View>
         </View>
-        <View className="mt-6">
+        <View style={{ marginTop: 24 }}>
           <PrimaryButton label="Enregistrer" onPress={handleSave} loading={addMood.isPending} />
         </View>
       </ScrollView>

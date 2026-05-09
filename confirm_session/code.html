@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Booking Confirmation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-container": "#82d8ff",
+                      "secondary-container": "#ffde5c",
+                      "on-primary-fixed": "#001f2a",
+                      "on-error-container": "#93000a",
+                      "inverse-primary": "#7bd1f8",
+                      "tertiary-fixed-dim": "#c4c7c9",
+                      "on-background": "#0b1c30",
+                      "surface-variant": "#d3e4fe",
+                      "surface-container-high": "#dce9ff",
+                      "surface-container-low": "#eff4ff",
+                      "background": "#f8f9ff",
+                      "on-surface-variant": "#3f484d",
+                      "secondary-fixed": "#ffe170",
+                      "on-surface": "#0b1c30",
+                      "on-tertiary": "#ffffff",
+                      "primary-fixed": "#bee9ff",
+                      "on-tertiary-fixed-variant": "#444749",
+                      "surface-container-lowest": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "tertiary-fixed": "#e0e3e5",
+                      "secondary-fixed-dim": "#e4c546",
+                      "on-tertiary-container": "#545759",
+                      "inverse-on-surface": "#eaf1ff",
+                      "tertiary": "#5c5f61",
+                      "outline": "#6f787e",
+                      "on-secondary-fixed": "#221b00",
+                      "surface-dim": "#cbdbf5",
+                      "tertiary-container": "#cbcdcf",
+                      "outline-variant": "#bec8ce",
+                      "on-tertiary-fixed": "#191c1e",
+                      "on-primary": "#ffffff",
+                      "surface-tint": "#006685",
+                      "primary": "#006685",
+                      "on-primary-container": "#005e7a",
+                      "surface": "#f8f9ff",
+                      "primary-fixed-dim": "#7bd1f8",
+                      "surface-bright": "#f8f9ff",
+                      "error": "#ba1a1a",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-secondary": "#ffffff",
+                      "inverse-surface": "#213145",
+                      "surface-container": "#e5eeff",
+                      "secondary": "#705d00",
+                      "on-secondary-container": "#756100",
+                      "on-error": "#ffffff",
+                      "on-secondary-fixed-variant": "#544600",
+                      "on-primary-fixed-variant": "#004d65"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-page": "24px",
+                      "gutter": "16px",
+                      "unit": "8px",
+                      "stack-gap": "12px",
+                      "card-padding": "20px"
+              },
+              "fontFamily": {
+                      "body-sm": [
+                              "Manrope"
+                      ],
+                      "label-caps": [
+                              "Manrope"
+                      ],
+                      "display-lg": [
+                              "Manrope"
+                      ],
+                      "body-base": [
+                              "Manrope"
+                      ],
+                      "headline-md": [
+                              "Manrope"
+                      ]
+              },
+              "fontSize": {
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-base": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-base antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="flex items-center justify-between px-6 py-4 w-full sticky top-0 z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg shadow-[0_8px_32px_0_rgba(130,216,255,0.08)] border-b border-white/20 dark:border-slate-800/50">
+<button class="text-sky-400 dark:text-sky-300 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors rounded-full p-2 active:scale-95 duration-200 ease-out flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<div class="font-['Manrope'] font-bold text-lg tracking-tight text-sky-400 dark:text-sky-300">
+<span class="font-black text-sky-500 dark:text-sky-400 text-xl tracking-tighter">M-Santé</span>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-white/10 shadow-sm relative glassmorphic hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors cursor-pointer active:scale-95 duration-200 ease-out">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A close-up portrait of a serene individual, styled in a clean, modern aesthetic with soft, high-key lighting. The background is a minimalist, slightly blurred white environment, reflecting a sense of health, wellness, and futuristic medical care. The overall tone is calm, professional, and visually aligned with a premium healthcare app experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwTx21-vicJ2YcfLyuDV--JtFOevnkf1LNSuN9peUPsbYyhEor8vVHtl2o40WtDN5YsON6UorwwLKzkmYjaCRPJg_arsDHdu2GRTAzM97xtA3jgXeGgCSqsZ1Z6Lr2n-4yHa_-Kjm7SJcWffM01dWXgFvs1_9uyCzgTnqAHGL3fG2VFkuQFbWUbFg0sv_Sq5kfQtIepVR0dyBD8lLcnmTuhzLzZI-Caplwn7wrqC5vgO3vMaL76BWt18oUck_CWuTTeo8wKgIH_cD6"/>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 px-margin-page py-6 flex flex-col gap-stack-gap pb-32">
+<!-- Header Section -->
+<div class="mb-4">
+<h1 class="font-headline-md text-headline-md text-on-surface mb-2">Confirm Booking</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Please review your consultation details below before proceeding to payment.</p>
+</div>
+<!-- Doctor Profile Card (Glassmorphism) -->
+<div class="bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_0_rgba(130,216,255,0.06)] rounded-xl p-card-padding flex items-center gap-4 relative overflow-hidden">
+<!-- Subtle inner glow effect -->
+<div class="absolute inset-0 border border-white/80 rounded-xl pointer-events-none opacity-50"></div>
+<div class="w-16 h-16 rounded-full overflow-hidden shrink-0 shadow-sm relative">
+<img alt="Dr. Julian Vane" class="w-full h-full object-cover" data-alt="A professional headshot of a male doctor in a pristine, white clinical setting. He has a warm, reassuring smile and is wearing a crisp white lab coat over a subtle blue shirt. The lighting is bright, soft, and even, conveying a sense of modern medical expertise and deep empathy. The background features a very soft blur, keeping the focus entirely on the doctor's approachable demeanor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnEYrUy3FDh7XIacH5xO3yOhS9WSJdHcyrWphk8we7rHlnfhrwhTC0TflJFpXtvBZiQaDHPPOJj9_QbP0-r5RLsYnztX4j281UjsqqdqBhME6HMGLVIYBk-qX3ufkQ5seHAURROWoswkqaLPIQHjceGYuUs7EIpKXKI8ALAx-q8ORYNyqLl_qJP6Ur9DXTyHtlaYq9RtX_swtUDjQQu1_fW7ZUKeCz9GbCvQa4b2G1R_u7Dc5uABUV-w8obVzL6lJogUYW1LPrGNC-"/>
+</div>
+<div>
+<h2 class="font-body-base text-body-base font-bold text-on-surface">Dr. Julian Vane</h2>
+<p class="font-body-sm text-body-sm text-primary mb-1">Neurologist</p>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary-fixed-dim" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">4.9 (120 reviews)</span>
+</div>
+</div>
+</div>
+<!-- Session Details Bento Grid -->
+<div class="grid grid-cols-2 gap-stack-gap">
+<!-- Date Card -->
+<div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-[0_4px_16px_0_rgba(0,102,133,0.04)] border border-white/50">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">Date</span>
+<span class="font-body-base text-body-base font-semibold text-on-surface">Tue, Oct 15</span>
+</div>
+<!-- Time Card -->
+<div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-[0_4px_16px_0_rgba(0,102,133,0.04)] border border-white/50">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">schedule</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant mb-1">Time</span>
+<span class="font-body-base text-body-base font-semibold text-on-surface">02:00 PM</span>
+</div>
+</div>
+<!-- Consultation Type Card -->
+<div class="bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_0_rgba(130,216,255,0.06)] rounded-xl p-card-padding flex items-center justify-between relative">
+<div class="absolute inset-0 border border-white/80 rounded-xl pointer-events-none opacity-50"></div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">videocam</span>
+</div>
+<div>
+<span class="block font-label-caps text-label-caps text-on-surface-variant mb-0.5">Session Type</span>
+<span class="block font-body-base text-body-base font-semibold text-on-surface">Video Consultation</span>
+</div>
+</div>
+<button class="text-primary font-label-caps text-label-caps hover:underline active:opacity-70 transition-opacity">Change</button>
+</div>
+<!-- Price Breakdown (Glassmorphic Container) -->
+<div class="mt-4 bg-surface-container-low/50 backdrop-blur-lg rounded-xl p-card-padding border border-white/60 shadow-[0_4px_24px_0_rgba(0,102,133,0.03)] relative">
+<div class="absolute inset-0 border border-white/80 rounded-xl pointer-events-none opacity-40"></div>
+<h3 class="font-body-base text-body-base font-bold text-on-surface mb-4">Payment Summary</h3>
+<div class="flex justify-between items-center mb-3">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Session fee</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">$120.00</span>
+</div>
+<div class="flex justify-between items-center mb-4">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Platform fee</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">$5.00</span>
+</div>
+<div class="h-px bg-outline-variant/30 w-full mb-4"></div>
+<div class="flex justify-between items-center">
+<span class="font-body-base text-body-base font-bold text-on-surface">Total</span>
+<span class="font-headline-md text-headline-md text-primary">$125.00</span>
+</div>
+</div>
+</main>
+<!-- Fixed Bottom Action Area -->
+<div class="fixed bottom-0 left-0 w-full p-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-white/40 dark:border-slate-800/50 shadow-[0_-8px_32px_rgba(0,102,133,0.08)] z-40">
+<button class="w-full bg-primary hover:bg-primary/90 text-on-primary font-body-base text-body-base font-semibold py-4 rounded-xl shadow-[0_8px_24px_rgba(0,102,133,0.2)] transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+            Proceed to Payment
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
+</button>
+</div>
+<!-- Note: BottomNavBar is suppressed based on "Transactional" intent logic (Checkout/Confirmation flow) -->
+</body></html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé Resolution - Dispute Notice</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#0b1c30",
+                        "surface-variant": "#d3e4fe",
+                        "secondary-fixed-dim": "#e4c546",
+                        "on-surface": "#0b1c30",
+                        "outline": "#6f787e",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#004d65",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-primary-container": "#005e7a",
+                        "secondary-fixed": "#ffe170",
+                        "primary": "#006685",
+                        "outline-variant": "#bec8ce",
+                        "surface": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#3f484d",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-primary-fixed": "#001f2a",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-bright": "#f8f9ff",
+                        "surface-container": "#e5eeff",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container-high": "#dce9ff",
+                        "on-secondary-container": "#756100",
+                        "tertiary-fixed": "#e0e3e5",
+                        "primary-container": "#82d8ff",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#7bd1f8",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "secondary-container": "#ffde5c",
+                        "on-tertiary-container": "#545759",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#221b00",
+                        "tertiary-container": "#cbcdcf",
+                        "surface-dim": "#cbdbf5",
+                        "background": "#f8f9ff",
+                        "secondary": "#705d00",
+                        "primary-fixed": "#bee9ff",
+                        "on-secondary-fixed-variant": "#544600",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#006685",
+                        "tertiary": "#5c5f61"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "gutter": "16px",
+                        "margin-page": "24px",
+                        "card-padding": "20px",
+                        "stack-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope", "sans-serif"],
+                        "body-base": ["Manrope", "sans-serif"],
+                        "label-caps": ["Manrope", "sans-serif"],
+                        "display-lg": ["Manrope", "sans-serif"],
+                        "body-sm": ["Manrope", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen font-body-base antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-white/70 backdrop-blur-xl fixed top-0 w-full z-50 shadow-[0_8px_32px_0_rgba(130,216,255,0.08)]">
+<div class="flex justify-between items-center h-16 px-6 w-full">
+<div class="flex items-center gap-3">
+<img alt="Practitioner Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant/30" data-alt="A close-up, high-key portrait of a medical practitioner wearing clean scrubs, set against a bright, minimalist clinical background. The lighting is soft and diffused, emphasizing a calm, professional, and technologically advanced healthcare environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxyMqOHQs-t-mP9FAY8MjVQkqVoMu9ZmSopu9Qwgm8iihp8iSsuoKGiK4qk5dAdswmtch-GrzarCmMzLCI_3W48udA4VgVyPaQNASI5MfUJ5bvb2iflg4bxpxFkzDkNhLd5h-DrO19Eae1_Ghq79EmBXZHGr0gCiZQ0ZxHyC214B9YRREBrUuc-zfGa-CbjIh8Lad11MC9wQ2l6Ce55fEUvT_uvBXveGuznjhbp0aCUH4EDy1nDYNsZsKsEQCpOCLqqsbTupnMwBGH"/>
+<span class="text-lg font-bold text-sky-600 font-manrope tracking-tight font-semibold">M-Santé Resolution</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-sky-500 hover:bg-sky-50/50 transition-colors active:scale-95 duration-200 ease-out">
+<span class="material-symbols-outlined icon-fill">notifications_active</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[104px] pb-24 px-margin-page max-w-4xl mx-auto flex flex-col gap-8">
+<!-- Context / Back Action -->
+<nav class="flex items-center text-primary cursor-pointer hover:text-on-primary-container transition-colors w-fit group">
+<span class="material-symbols-outlined mr-2 text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+<span class="font-label-caps text-label-caps uppercase">Back to Disputes</span>
+</nav>
+<!-- Header -->
+<header>
+<h1 class="font-display-lg text-display-lg text-primary mb-2">Dispute Notice</h1>
+<p class="font-body-base text-body-base text-on-surface-variant">Case #DPT-2023-8841 • Requires Immediate Review</p>
+</header>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Left Column: Details & Timeline -->
+<div class="md:col-span-7 flex flex-col gap-6">
+<!-- Patient Details Card (Glassmorphism) -->
+<article class="bg-surface/80 backdrop-blur-xl border border-white/40 shadow-[0_12px_40px_-12px_rgba(0,102,133,0.08)] rounded-xl p-card-padding relative overflow-hidden">
+<!-- Inner Glow effect -->
+<div class="absolute inset-0 rounded-xl border border-white pointer-events-none opacity-50"></div>
+<div class="flex items-start justify-between mb-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Eleanor Vance</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Patient ID: MS-992-4B</p>
+</div>
+</div>
+<span class="bg-error-container text-on-error-container font-label-caps text-label-caps px-3 py-1 rounded-full uppercase">High Priority</span>
+</div>
+<div class="space-y-4">
+<div>
+<h3 class="font-label-caps text-label-caps text-primary uppercase mb-1">Date of Service</h3>
+<p class="font-body-base text-body-base text-on-surface">October 14, 2023</p>
+</div>
+<div class="bg-surface-container-low rounded-lg p-4 border border-outline-variant/30">
+<h3 class="font-label-caps text-label-caps text-primary uppercase mb-2">Specific Complaint</h3>
+<p class="font-body-base text-body-base text-on-surface leading-relaxed">
+                                Patient alleges that the post-operative care instructions provided during the telehealth consultation were unclear, leading to a minor complication. Patient requests a full review of the consultation transcript and clarification on the prescribed recovery protocol.
+                            </p>
+</div>
+</div>
+</article>
+<!-- Timeline Section -->
+<section class="bg-surface-bright border border-white/50 shadow-[0_8px_32px_-12px_rgba(0,102,133,0.05)] rounded-xl p-card-padding">
+<h3 class="font-headline-md text-headline-md text-primary mb-6">Case Timeline</h3>
+<div class="relative pl-6 space-y-8 before:absolute before:inset-y-0 before:left-2.5 before:w-px before:bg-outline-variant/50">
+<div class="relative">
+<div class="absolute -left-[30px] w-5 h-5 rounded-full bg-primary flex items-center justify-center ring-4 ring-surface-bright">
+<div class="w-2 h-2 rounded-full bg-white"></div>
+</div>
+<h4 class="font-label-caps text-label-caps text-on-surface uppercase">Dispute Initiated</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Oct 16, 2023 • 09:41 AM</p>
+<p class="font-body-sm text-body-sm text-outline mt-1">Filed by Patient via Patient Portal</p>
+</div>
+<div class="relative">
+<div class="absolute -left-[30px] w-5 h-5 rounded-full bg-surface-container-high flex items-center justify-center ring-4 ring-surface-bright border border-primary">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+</div>
+<h4 class="font-label-caps text-label-caps text-on-surface uppercase">Practitioner Notified</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Oct 16, 2023 • 10:05 AM</p>
+<p class="font-body-sm text-body-sm text-outline mt-1">System auto-generated alert sent.</p>
+</div>
+<div class="relative opacity-50">
+<div class="absolute -left-[30px] w-5 h-5 rounded-full bg-surface flex items-center justify-center ring-4 ring-surface-bright border border-outline-variant">
+</div>
+<h4 class="font-label-caps text-label-caps text-outline uppercase">Pending Practitioner Response</h4>
+<p class="font-body-sm text-body-sm text-outline mt-1">Awaiting your input to proceed.</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Response Action -->
+<div class="md:col-span-5 flex flex-col h-full">
+<form class="bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_16px_48px_-16px_rgba(0,102,133,0.1)] rounded-xl p-card-padding flex flex-col gap-6 flex-grow sticky top-24">
+<div>
+<h2 class="font-headline-md text-headline-md text-primary mb-2">Practitioner Response</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Please provide a detailed clarification regarding the patient's complaint. This will be securely added to the case file.</p>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-label-caps text-on-surface uppercase" for="response">Enter Response / Clarification</label>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg p-4 font-body-base text-body-base text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none" id="response" placeholder="Detail your clinical perspective and the instructions provided during the consultation..." rows="8"></textarea>
+</div>
+<div class="flex flex-col gap-2">
+<span class="font-label-caps text-label-caps text-on-surface uppercase">Evidence (Optional)</span>
+<button class="w-full border-2 border-dashed border-primary/30 rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-low hover:border-primary/50 transition-colors group bg-surface" type="button">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">upload_file</span>
+</div>
+<span class="font-label-caps text-label-caps text-primary uppercase mt-2">Upload Documents</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Supported: PDF, JPG, PNG (Max 10MB)</span>
+</button>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant/30 flex justify-end">
+<button class="bg-primary text-on-primary font-label-caps text-label-caps uppercase px-6 py-4 rounded-lg shadow-md hover:bg-primary/90 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm transition-all flex items-center gap-2 w-full justify-center" type="button">
+<span class="material-symbols-outlined text-[18px]">send</span>
+                            Submit Response
+                        </button>
+</div>
+</form>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Health Insights</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#705d00",
+                        "on-primary-fixed-variant": "#004d65",
+                        "inverse-surface": "#213145",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "on-secondary-container": "#756100",
+                        "on-surface-variant": "#3f484d",
+                        "tertiary-fixed": "#e0e3e5",
+                        "outline-variant": "#bec8ce",
+                        "surface-bright": "#f8f9ff",
+                        "primary-container": "#82d8ff",
+                        "on-tertiary-container": "#545759",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#5c5f61",
+                        "surface-container-low": "#eff4ff",
+                        "secondary-fixed": "#ffe170",
+                        "inverse-primary": "#7bd1f8",
+                        "on-surface": "#0b1c30",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#dce9ff",
+                        "secondary-container": "#ffde5c",
+                        "outline": "#6f787e",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "surface-tint": "#006685",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#221b00",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#cbdbf5",
+                        "on-primary-fixed": "#001f2a",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-background": "#0b1c30",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary": "#006685",
+                        "background": "#f8f9ff",
+                        "secondary-fixed-dim": "#e4c546",
+                        "primary-fixed": "#bee9ff",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-secondary-fixed-variant": "#544600",
+                        "tertiary-container": "#cbcdcf",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-primary-container": "#005e7a",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#d3e4fe",
+                        "surface": "#f8f9ff",
+                        "surface-container": "#e5eeff",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "12px",
+                        "margin-page": "24px",
+                        "card-padding": "20px",
+                        "gutter": "16px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "label-caps": ["Manrope"],
+                        "body-base": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 102, 133, 0.05);
+        }
+        .inner-glow {
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="font-body-base text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col md:flex-row overflow-x-hidden">
+<!-- TopAppBar (Mobile/Tablet) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-white/20 dark:border-slate-800/50 shadow-[0_8px_32px_0_rgba(130,216,255,0.08)] md:hidden">
+<div class="text-xl font-bold tracking-tighter text-sky-500 dark:text-sky-400 font-['Manrope'] antialiased tracking-tight">M-Santé</div>
+<div class="flex items-center gap-4">
+<button class="text-sky-400 dark:text-sky-300 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors p-2 rounded-full opacity-80 duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-sky-400 dark:text-sky-300 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors p-2 rounded-full opacity-80 duration-200">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<img alt="Practitioner Profile" class="w-8 h-8 rounded-full border border-white/40" data-alt="A small, professional headshot of a healthcare practitioner. The lighting is soft and clinical, evoking a sense of trust and modern medical care. The background is a clean, bright white or light blue, fitting the minimalist M-Santé aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl7dY0cAA1B_bxlSJH6eyDpbh1G8icWA2wwK6r9NLLJxRaZhQmlYVKHCG6tHN0Y4RHUAgY52JqkQLQYYlsrIJB6S8WIepuEXNgtwmevtwnnC0qOLCSOcZTafWag2AEAsm_THbgcmXopSHlLIgHzPV8HdSajRG-ftyMtPtuJYWBsmY4fAla5xb6wW6xOUeZUspkQIJuds4X0awePLGT5t-Xl-P2gmpgpJn9JMe2eK9p-jvOFvR1JRR9wPPqjWtnbpwk304UUAU7lBMe"/>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden lg:flex flex-col fixed left-0 top-0 h-full p-4 gap-2 w-64 border-r border-white/10 dark:border-slate-800/50 bg-white/60 dark:bg-slate-950/60 backdrop-blur-2xl z-40">
+<div class="flex items-center gap-3 mb-8 px-4 mt-4">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white font-bold text-xl inner-glow">M</div>
+<div>
+<div class="text-lg font-black text-sky-500 dark:text-sky-400 font-['Manrope']">M-Santé</div>
+<div class="text-xs text-on-surface-variant opacity-70">Healthtech Platform</div>
+</div>
+</div>
+<div class="flex flex-col gap-1 flex-1 font-['Manrope'] text-sm font-medium">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-300 border-r-2 border-sky-500 scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                Analytics
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">badge</span>
+                Profiles
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">diversity_1</span>
+                Referrals
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+                Audit Logs
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</div>
+<button class="mt-auto w-full py-3 bg-primary text-on-primary rounded-xl font-label-caps tracking-wider inner-glow hover:bg-on-primary-container transition-colors shadow-sm">
+            New Referral
+        </button>
+</nav>
+<!-- Main Canvas -->
+<main class="flex-1 w-full lg:ml-64 pt-20 md:pt-8 pb-24 lg:pb-8 px-margin-page xl:px-12 transition-all duration-300">
+<!-- Header Section -->
+<div class="mb-8 max-w-7xl mx-auto">
+<h1 class="font-display-lg text-display-lg text-on-surface mb-2">Patient Insights</h1>
+<p class="font-body-base text-body-base text-on-surface-variant max-w-2xl">Advanced longitudinal analysis and AI-driven wellness observations.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-gutter lg:gap-6">
+<!-- AI Wellness Observations (Spans 8 cols on desktop) -->
+<div class="glass-panel rounded-2xl p-card-padding md:col-span-12 lg:col-span-8 flex flex-col justify-between relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary-container/20 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+<div class="flex items-center justify-between mb-6 relative z-10">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                        AI Clinical Synthesis
+                    </h2>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant font-label-caps text-label-caps rounded-full inner-glow">Last 30 Days</span>
+</div>
+<div class="space-y-stack-gap relative z-10">
+<div class="flex gap-4 items-start p-4 bg-white/50 rounded-xl border border-white/60">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-primary">trending_up</span>
+</div>
+<div>
+<h3 class="font-body-base font-semibold text-on-surface mb-1">Activity Correlates with Improved Sleep Architecture</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Patient demonstrates a strong positive correlation (r=0.78) between moderate aerobic activity (45+ mins) and deep sleep phase duration. Recommend maintaining current evening exercise protocol.</p>
+</div>
+</div>
+<div class="flex gap-4 items-start p-4 bg-white/50 rounded-xl border border-white/60">
+<div class="w-10 h-10 rounded-full bg-secondary-container/30 flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-on-secondary-container">warning</span>
+</div>
+<div>
+<h3 class="font-body-base font-semibold text-on-surface mb-1">Mood Volatility Preceding Restless Nights</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Self-reported anxiety spikes consistently precede fragmented sleep cycles by 12-24 hours. Consider adjusting cognitive behavioral therapy focus toward evening wind-down routines.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sleep Quality Trends (Spans 4 cols on desktop) -->
+<div class="glass-panel rounded-2xl p-card-padding md:col-span-12 lg:col-span-4 flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">bedtime</span>
+                        Sleep Quality
+                    </h2>
+</div>
+<div class="flex-1 flex flex-col justify-center items-center py-4">
+<!-- Circular Progress Indicator Mockup -->
+<div class="relative w-40 h-40 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle class="text-surface-container-high" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary drop-shadow-[0_0_8px_rgba(0,102,133,0.4)]" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-dasharray="283" stroke-dashoffset="42" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-display-lg text-4xl text-on-surface">85<span class="text-xl text-on-surface-variant">%</span></span>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-1">Avg Score</span>
+</div>
+</div>
+</div>
+<div class="mt-auto grid grid-cols-2 gap-4">
+<div class="bg-surface-bright p-3 rounded-lg border border-outline-variant/30 text-center">
+<div class="font-label-caps text-label-caps text-on-surface-variant mb-1">Deep Sleep</div>
+<div class="font-body-base font-semibold text-on-surface">2h 15m</div>
+</div>
+<div class="bg-surface-bright p-3 rounded-lg border border-outline-variant/30 text-center">
+<div class="font-label-caps text-label-caps text-on-surface-variant mb-1">REM</div>
+<div class="font-body-base font-semibold text-on-surface">1h 45m</div>
+</div>
+</div>
+</div>
+<!-- Mood vs Activity Correlation (Spans full width) -->
+<div class="glass-panel rounded-2xl p-card-padding md:col-span-12 flex flex-col">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-1">Mood vs. Activity Correlation</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Longitudinal analysis of self-reported mood against measured physical exertion.</p>
+</div>
+<div class="flex gap-2">
+<span class="flex items-center gap-1 text-xs font-medium text-on-surface-variant"><div class="w-3 h-3 rounded-full bg-primary"></div> Activity Level</span>
+<span class="flex items-center gap-1 text-xs font-medium text-on-surface-variant"><div class="w-3 h-3 rounded-full bg-secondary"></div> Mood Score</span>
+</div>
+</div>
+<!-- Abstract Chart Visual Representation -->
+<div class="w-full h-64 relative bg-gradient-to-b from-transparent to-surface-container-low/30 rounded-xl border-b border-l border-outline-variant/50 p-4 flex items-end justify-between">
+<!-- Chart Lines (Simulated with SVG) -->
+<svg class="absolute inset-0 w-full h-full p-4 overflow-visible" preserveaspectratio="none">
+<!-- Activity Line -->
+<path class="text-primary drop-shadow-[0_4px_12px_rgba(0,102,133,0.3)]" d="M 0 180 Q 50 120, 100 150 T 200 90 T 300 130 T 400 60 T 500 100 T 600 40 T 700 80 T 800 30 T 900 60 T 1000 20" fill="none" stroke="currentColor" stroke-width="3"></path>
+<!-- Mood Line -->
+<path class="text-secondary drop-shadow-[0_4px_12px_rgba(112,93,0,0.2)]" d="M 0 200 Q 50 150, 100 180 T 200 120 T 300 160 T 400 100 T 500 140 T 600 80 T 700 110 T 800 60 T 900 90 T 1000 50" fill="none" stroke="currentColor" stroke-dasharray="6,4" stroke-width="3"></path>
+</svg>
+<!-- X-Axis Labels -->
+<div class="absolute bottom-[-24px] left-0 w-full flex justify-between text-xs text-on-surface-variant font-medium px-4">
+<span>Wk 1</span>
+<span>Wk 2</span>
+<span>Wk 3</span>
+<span>Wk 4</span>
+<span>Wk 5</span>
+<span>Wk 6</span>
+</div>
+<!-- Y-Axis Labels -->
+<div class="absolute left-[-32px] top-0 h-full flex flex-col justify-between text-xs text-on-surface-variant font-medium py-4 items-end pr-2">
+<span>High</span>
+<span>Med</span>
+<span>Low</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-t border-white/20 rounded-t-2xl shadow-[0_-4px_24px_rgba(130,216,255,0.1)]">
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 font-['Manrope'] text-[10px] uppercase tracking-widest font-bold active:bg-sky-100/50 scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1">insights</span>
+            Health
+        </a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 font-['Manrope'] text-[10px] uppercase tracking-widest font-bold active:bg-sky-100/50 scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1">share_reviews</span>
+            Network
+        </a>
+<a class="flex flex-col items-center justify-center text-sky-500 dark:text-sky-400 bg-sky-50/50 dark:bg-sky-900/30 rounded-xl px-4 py-1 font-['Manrope'] text-[10px] uppercase tracking-widest font-bold active:bg-sky-100/50 scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1">verified_user</span>
+            Logs
+        </a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 font-['Manrope'] text-[10px] uppercase tracking-widest font-bold active:bg-sky-100/50 scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+            Profile
+        </a>
+</nav>
+</body></html>

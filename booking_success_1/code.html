@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Booking Success</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#eff4ff",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "surface-container-high": "#dce9ff",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "on-primary-fixed": "#001f2a",
+                        "surface-dim": "#cbdbf5",
+                        "inverse-surface": "#213145",
+                        "primary-container": "#82d8ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-container-highest": "#d3e4fe",
+                        "secondary-fixed": "#ffe170",
+                        "outline": "#6f787e",
+                        "on-tertiary-container": "#545759",
+                        "on-secondary": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-secondary-fixed": "#221b00",
+                        "tertiary-container": "#cbcdcf",
+                        "surface-tint": "#006685",
+                        "surface": "#f8f9ff",
+                        "secondary-container": "#ffde5c",
+                        "error": "#ba1a1a",
+                        "tertiary": "#5c5f61",
+                        "on-surface": "#0b1c30",
+                        "on-background": "#0b1c30",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#006685",
+                        "surface-container": "#e5eeff",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#bec8ce",
+                        "on-secondary-fixed-variant": "#544600",
+                        "on-primary-fixed-variant": "#004d65",
+                        "on-tertiary-fixed": "#191c1e",
+                        "inverse-primary": "#7bd1f8",
+                        "on-secondary-container": "#756100",
+                        "on-surface-variant": "#3f484d",
+                        "surface-variant": "#d3e4fe",
+                        "surface-bright": "#f8f9ff",
+                        "primary-fixed": "#bee9ff",
+                        "tertiary-fixed": "#e0e3e5",
+                        "secondary": "#705d00",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#e4c546",
+                        "on-primary-container": "#005e7a",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem"
+                    },
+                    "spacing": {
+                        "stack-gap": "12px",
+                        "unit": "8px",
+                        "margin-page": "24px",
+                        "gutter": "16px",
+                        "card-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "body-base": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "label-caps": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(130, 216, 255, 0.08);
+        }
+        .glass-icon-container {
+            background: linear-gradient(135deg, rgba(130, 216, 255, 0.2) 0%, rgba(255, 255, 255, 0.4) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 20px rgba(0, 102, 133, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="font-body-base text-on-surface antialiased min-h-screen flex flex-col relative overflow-hidden">
+<!-- Ambient Background Elements -->
+<div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary-container opacity-20 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-surface-container-high opacity-30 rounded-full blur-[120px] pointer-events-none"></div>
+<main class="flex-grow flex flex-col items-center justify-center px-margin-page py-12 relative z-10 w-full max-w-2xl mx-auto">
+<!-- Header / Success Visual -->
+<div class="flex flex-col items-center text-center mb-10">
+<div class="w-24 h-24 rounded-full glass-icon-container flex items-center justify-center mb-6 relative">
+<!-- Inner glow -->
+<div class="absolute inset-0 rounded-full bg-primary-container opacity-20 blur-md"></div>
+<span class="material-symbols-outlined text-primary text-[48px] relative z-10" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary mb-2">You're all set, Julian.</h1>
+<p class="font-body-base text-body-base text-on-surface-variant max-w-md">Your appointment has been confirmed. We've sent the details to your email.</p>
+</div>
+<!-- Session Card (Glassmorphism) -->
+<div class="w-full glass-panel rounded-3xl p-card-padding mb-8 relative overflow-hidden">
+<!-- Decorative accent line -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<!-- Doctor Info -->
+<div class="flex items-center gap-4">
+<img alt="Doctor profile" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm" data-alt="A professional headshot of a friendly male doctor in a modern, well-lit clinic. He is wearing a white coat over a light blue shirt. The lighting is soft and clinical, reflecting a modern healthcare setting. The mood is approachable and trustworthy." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMnRZp8xrQcRNs8hrjUwXW6U6aBgktXDDh4MJAVlIKDzua1gQh3K35VJWX8EORHHu-QqYWCfhWkqhp-DYfgl4foGGcCy6A9iQuDYtdLaSS65FbyhCB9mkcMh2xoLY5p6iJyWfDFo2BeZOQFvLwRtWS-Bg2ryo8ezqSpISMULd71r_p02A8mjvQXODPvZvFHscEy45BZG3gluNDnrtTfeKT03ZoDIogWUv25fZcx6TW1qmiEsiPmUcxjFiFwOBNCXpHDzWlHihaZkMT"/>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-1">Dr. Julian Vane</h2>
+<p class="font-body-sm text-body-sm text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">videocam</span> Video Consultation
+                        </p>
+</div>
+</div>
+<!-- Date & Time -->
+<div class="flex flex-col gap-2 md:items-end bg-surface-container-low/50 p-4 rounded-2xl">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">calendar_today</span>
+<span class="font-body-base text-body-base text-on-surface font-medium">Tuesday, Oct 15</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">schedule</span>
+<span class="font-body-base text-body-base text-on-surface font-medium">02:00 PM</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Next Steps -->
+<div class="w-full mb-10">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-4 px-2">Next Steps</h3>
+<div class="flex flex-col gap-stack-gap">
+<div class="flex items-start gap-4 p-4 rounded-2xl bg-surface-container-lowest/60 border border-white/40 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-primary text-[18px]">mail</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface">A confirmation email has been sent to your registered address.</p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-4 rounded-2xl bg-surface-container-lowest/60 border border-white/40 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-primary text-[18px]">login</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface">You can join the session directly from your dashboard 5 minutes before the start time.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="w-full flex flex-col sm:flex-row gap-4">
+<button class="flex-1 bg-primary text-on-primary font-body-base text-body-base font-medium py-4 px-6 rounded-2xl shadow-[0_8px_20px_rgba(0,102,133,0.15)] hover:bg-on-primary-fixed-variant transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">event_available</span>
+                Add to Calendar
+            </button>
+<button class="flex-1 bg-white/80 border border-outline-variant text-primary font-body-base text-body-base font-medium py-4 px-6 rounded-2xl hover:bg-surface-container-low transition-colors backdrop-blur-md flex justify-center items-center gap-2 shadow-sm">
+                Go to Dashboard
+            </button>
+</div>
+</main>
+</body></html>

@@ -1,15 +1,16 @@
 import { View, Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 
 export default function Support() {
   return (
-    <SafeAreaView className="flex-1 bg-background items-center justify-center px-6">
-      <Text style={{ fontSize: 40 }}>🆘</Text>
-      <Text className="text-xl font-bold text-on-surface font-manrope mt-4 text-center">Support</Text>
-      <Text className="text-sm text-outline font-manrope mt-2 text-center">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }}>
+      <MaterialIcons name="support-agent" size={52} color="#006685" />
+      <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope', marginTop: 16, textAlign: 'center' }}>Support</Text>
+      <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', marginTop: 8, textAlign: 'center' }}>
         Aide et ressources — à venir
       </Text>
-      <Text className="text-sm text-primary font-manrope mt-6 font-semibold text-center">
+      <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope', marginTop: 24, fontWeight: '600', textAlign: 'center' }}>
         SOS Amitié Sénégal{'\n'}+221 33 823 8020
       </Text>
     </SafeAreaView>

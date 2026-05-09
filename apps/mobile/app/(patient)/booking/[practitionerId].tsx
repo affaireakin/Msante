@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { usePractitioner } from '@/features/practitioners/hooks/usePractitioner'
 import { useAvailability } from '@/features/practitioners/hooks/useAvailability'
 import { WeekCalendar } from '@/features/practitioners/components/WeekCalendar'
@@ -9,10 +11,12 @@ import { PrimaryButton } from '@/components/ui'
 import { useBookingStore } from '@/features/booking/store/bookingStore'
 import type { SessionType, TimeSlot } from '@/types/booking'
 
-const SESSION_TYPES: Array<{ id: SessionType; label: string; emoji: string }> = [
-  { id: 'video', label: 'Vidéo', emoji: '📹' },
-  { id: 'audio', label: 'Audio', emoji: '🎙️' },
-  { id: 'chat', label: 'Chat', emoji: '💬' },
+type SessionTypeItem = { id: SessionType; label: string; iconName: 'videocam' | 'mic' | 'chat' }
+
+const SESSION_TYPES: SessionTypeItem[] = [
+  { id: 'video', label: 'Vidéo', iconName: 'videocam' },
+  { id: 'audio', label: 'Audio', iconName: 'mic' },
+  { id: 'chat', label: 'Chat', iconName: 'chat' },
 ]
 
 export default function BookingScreen() {
@@ -54,36 +58,44 @@ export default function BookingScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
-        <View className="px-6 pt-4 mb-6">
-          <TouchableOpacity onPress={() => router.back()} className="mb-4">
-            <Text className="text-primary font-manrope font-medium">← Retour</Text>
+        <View style={{ paddingHorizontal: 24, paddingTop: 16, marginBottom: 24 }}>
+          <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <MaterialIcons name="arrow-back" size={20} color="#006685" />
+            <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: '500' }}>Retour</Text>
           </TouchableOpacity>
-          <Text className="text-2xl font-bold text-on-surface font-manrope">
+          <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>
             Choisir un créneau
           </Text>
-          <Text className="text-sm text-on-surface-variant font-manrope mt-1">
+          <Text style={{ fontSize: 14, color: '#3f484d', fontFamily: 'Manrope', marginTop: 4 }}>
             {practitioner?.users?.full_name} · {practitioner?.session_duration_min} min
           </Text>
         </View>
 
         {/* Type de session */}
-        <View className="px-6 mb-6">
-          <Text className="text-sm font-semibold text-on-surface font-manrope mb-3">
+        <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
+          <Text style={{ fontSize: 14, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: 12 }}>
             Type de consultation
           </Text>
-          <View className="flex-row gap-2">
+          <View style={{ flexDirection: 'row', gap: 8 }}>
             {SESSION_TYPES.map(t => (
               <TouchableOpacity
                 key={t.id}
                 onPress={() => setSessionType(t.id)}
-                className={`flex-1 py-3 rounded-xl border items-center gap-1 ${
-                  sessionType === t.id ? 'bg-primary border-primary' : 'bg-white/60 border-white/80'
-                }`}
+                style={{
+                  flex: 1,
+                  paddingVertical: 12,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  alignItems: 'center',
+                  gap: 4,
+                  backgroundColor: sessionType === t.id ? '#006685' : 'rgba(255,255,255,0.6)',
+                  borderColor: sessionType === t.id ? '#006685' : 'rgba(255,255,255,0.8)',
+                }}
               >
-                <Text className="text-lg">{t.emoji}</Text>
-                <Text className={`text-xs font-manrope font-medium ${sessionType === t.id ? 'text-white' : 'text-on-surface'}`}>
+                <MaterialIcons name={t.iconName} size={20} color={sessionType === t.id ? '#ffffff' : '#0b1c30'} />
+                <Text style={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: '500', color: sessionType === t.id ? '#ffffff' : '#0b1c30' }}>
                   {t.label}
                 </Text>
               </TouchableOpacity>
@@ -92,12 +104,12 @@ export default function BookingScreen() {
         </View>
 
         {/* Calendrier */}
-        <View className="mb-6">
-          <Text className="text-sm font-semibold text-on-surface font-manrope px-6 mb-3">
+        <View style={{ marginBottom: 24 }}>
+          <Text style={{ fontSize: 14, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', paddingHorizontal: 24, marginBottom: 12 }}>
             Choisir une date
           </Text>
           {isLoading ? (
-            <View className="h-20 items-center justify-center">
+            <View style={{ height: 80, alignItems: 'center', justifyContent: 'center' }}>
               <ActivityIndicator color="#006685" />
             </View>
           ) : (
@@ -111,8 +123,8 @@ export default function BookingScreen() {
 
         {/* Créneaux */}
         {selectedDate && (
-          <View className="px-6">
-            <Text className="text-sm font-semibold text-on-surface font-manrope mb-3">
+          <View style={{ paddingHorizontal: 24 }}>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: 12 }}>
               Créneaux disponibles
             </Text>
             <SlotPicker
@@ -126,7 +138,7 @@ export default function BookingScreen() {
       </ScrollView>
 
       {selectedSlot && (
-        <View className="absolute bottom-0 left-0 right-0 px-6 pb-8 pt-4 bg-background/90">
+        <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 24, paddingBottom: 32, paddingTop: 16, backgroundColor: 'rgba(248,249,255,0.9)' }}>
           <PrimaryButton
             label={`Confirmer — ${selectedSlot.start_time} le ${selectedSlot.date}`}
             onPress={handleConfirm}

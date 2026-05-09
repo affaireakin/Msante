@@ -1,6 +1,9 @@
 import { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Alert } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useBookingStore } from '@/features/booking/store/bookingStore'
 import { useCreateAppointment } from '@/features/booking/hooks/useCreateAppointment'
 import { PaymentSheet } from '@/features/booking/components/PaymentSheet'
@@ -47,19 +50,20 @@ export default function ConfirmSessionScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <ScrollView className="flex-1 px-6" contentContainerStyle={{ paddingBottom: 32 }}>
-        <View className="mt-8 mb-6">
-          <TouchableOpacity onPress={() => router.back()} className="mb-4">
-            <Text className="text-primary font-manrope font-medium">← Retour</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+      <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} contentContainerStyle={{ paddingBottom: 32 }}>
+        <View style={{ marginTop: 32, marginBottom: 24 }}>
+          <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <MaterialIcons name="arrow-back" size={20} color="#006685" />
+            <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: '500' }}>Retour</Text>
           </TouchableOpacity>
-          <Text className="text-2xl font-bold text-on-surface font-manrope">
+          <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>
             Confirmer la session
           </Text>
         </View>
 
-        <GlassCard className="gap-4 mb-6">
-          <Text className="text-base font-semibold text-on-surface font-manrope">
+        <GlassCard style={{ gap: 16, marginBottom: 24 }}>
+          <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>
             Récapitulatif
           </Text>
 
@@ -69,15 +73,15 @@ export default function ConfirmSessionScreen() {
             { label: 'Heure', value: selectedSlot ? `${selectedSlot.startTime} → ${selectedSlot.endTime}` : '' },
             { label: 'Type', value: SESSION_LABELS[sessionType] },
           ].map(({ label, value }) => (
-            <View key={label} className="flex-row justify-between">
-              <Text className="text-sm text-on-surface-variant font-manrope">{label}</Text>
-              <Text className="text-sm font-semibold text-on-surface font-manrope">{value}</Text>
+            <View key={label} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={{ fontSize: 14, color: '#3f484d', fontFamily: 'Manrope' }}>{label}</Text>
+              <Text style={{ fontSize: 14, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>{value}</Text>
             </View>
           ))}
 
-          <View className="border-t border-outline-variant pt-3 flex-row justify-between">
-            <Text className="text-base font-bold text-on-surface font-manrope">Total</Text>
-            <Text className="text-base font-black text-primary font-manrope">
+          <View style={{ borderTopWidth: 1, borderTopColor: '#bec8ce', paddingTop: 12, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Total</Text>
+            <Text style={{ fontSize: 16, fontWeight: '900', color: '#006685', fontFamily: 'Manrope' }}>
               {amount?.toLocaleString()} {currency}
             </Text>
           </View>

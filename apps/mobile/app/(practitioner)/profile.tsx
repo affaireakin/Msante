@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StatusBar, Alert, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { GlassCard } from '@/components/ui/GlassCard'
@@ -27,11 +28,11 @@ export default function ProfileScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f8f9ff]" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }} edges={['top']}>
       <StatusBar barStyle="dark-content" />
 
       <ScrollView
-        className="flex-1"
+        style={{ flex: 1 }}
         contentContainerStyle={{ padding: 24, gap: 24 }}
         showsVerticalScrollIndicator={false}
       >
@@ -99,7 +100,7 @@ export default function ProfileScreen() {
                 color: isApproved ? '#1d7a3a' : '#92400e',
               }}
             >
-              {isApproved ? '✓ Compte vérifié' : '⏳ Vérification en cours'}
+              {isApproved ? 'Compte vérifié' : 'Vérification en cours'}
             </Text>
           </View>
         </View>
@@ -165,7 +166,7 @@ export default function ProfileScreen() {
             marginTop: 8,
           }}
         >
-          <Text style={{ fontSize: 16 }}>🗓️</Text>
+          <MaterialIcons name="event-available" size={20} color="#006685" />
           <Text
             style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#006685' }}
           >

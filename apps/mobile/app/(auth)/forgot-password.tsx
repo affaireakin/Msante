@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { View, Text, TouchableOpacity, SafeAreaView, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, Alert } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { GlassCard, AppTextInput, PrimaryButton } from '@/components/ui'
 import { authService } from '@/features/auth/services/authService'
 import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/features/auth/schemas/authSchemas'
@@ -22,45 +24,72 @@ export default function ForgotPasswordScreen() {
       await authService.resetPassword(data.email)
       setSent(true)
     } catch (e) {
-      Alert.alert('Erreur', e instanceof Error ? e.message : 'Impossible d\'envoyer le lien')
+      Alert.alert('Erreur', e instanceof Error ? e.message : "Impossible d'envoyer le lien")
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background px-6">
-      <View className="mt-12 mb-8">
-        <TouchableOpacity onPress={() => router.back()} className="mb-6">
-          <Text className="text-primary font-manrope font-medium">← Retour</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff', paddingHorizontal: 24 }}>
+      {/* Header */}
+      <View style={{ marginTop: 40, marginBottom: 28 }}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 20, alignSelf: 'flex-start' }}
+        >
+          <MaterialIcons name="arrow-back" size={20} color="#006685" />
+          <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>Retour</Text>
         </TouchableOpacity>
-        <Text className="text-2xl font-bold text-on-surface font-manrope">
-          Mot de passe oublié
-        </Text>
-        <Text className="text-sm text-on-surface-variant font-manrope mt-1">
-          Nous vous enverrons un lien de réinitialisation
-        </Text>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+          <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+            <MaterialIcons name="lock-reset" size={22} color="#006685" />
+          </View>
+          <View>
+            <Text style={{ fontSize: 24, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5 }}>
+              Mot de passe oublié
+            </Text>
+            <Text style={{ fontSize: 13, color: '#6f787e', fontFamily: 'Manrope' }}>
+              Réinitialisation par email
+            </Text>
+          </View>
+        </View>
       </View>
 
       {sent ? (
-        <GlassCard className="items-center gap-6">
-          <View className="w-16 h-16 bg-primary-container rounded-full items-center justify-center">
-            <Text className="text-3xl">📩</Text>
+        /* ── État envoyé ── */
+        <GlassCard style={{ alignItems: 'center', gap: 20 }}>
+          <View style={{
+            width: 72, height: 72, borderRadius: 36,
+            backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <MaterialIcons name="mark-email-read" size={36} color="#006685" />
           </View>
-          <View className="gap-2 items-center">
-            <Text className="text-lg font-semibold text-on-surface font-manrope">Email envoyé !</Text>
-            <Text className="text-sm text-on-surface-variant font-manrope text-center">
+
+          <View style={{ alignItems: 'center', gap: 8 }}>
+            <Text style={{ fontSize: 20, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope' }}>
+              Email envoyé !
+            </Text>
+            <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center', lineHeight: 22 }}>
               Vérifiez votre boîte mail et cliquez sur le lien pour réinitialiser votre mot de passe.
             </Text>
           </View>
-          <PrimaryButton
-            label="Retour à la connexion"
-            onPress={() => router.replace('/(auth)/login')}
-            className="w-full"
-          />
+
+          <View style={{ width: '100%' }}>
+            <PrimaryButton
+              label="Retour à la connexion"
+              onPress={() => router.replace('/(auth)/login')}
+            />
+          </View>
         </GlassCard>
       ) : (
-        <GlassCard className="gap-4">
+        /* ── Formulaire ── */
+        <GlassCard style={{ gap: 16 }}>
+          <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', lineHeight: 20 }}>
+            Entrez votre adresse email et nous vous enverrons un lien de réinitialisation.
+          </Text>
+
           <Controller control={control} name="email"
             render={({ field: { onChange, value } }) => (
               <AppTextInput
@@ -69,6 +98,7 @@ export default function ForgotPasswordScreen() {
                 error={errors.email?.message} placeholder="votre@email.com"
               />
             )} />
+
           <PrimaryButton label="Envoyer le lien" onPress={handleSubmit(onSubmit)} loading={loading} />
         </GlassCard>
       )}

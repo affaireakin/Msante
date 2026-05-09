@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useMoodEntries } from '@/features/mental-health/mood/hooks/useMoodEntries'
 import { useMoodStore } from '@/features/mental-health/store/moodStore'
@@ -59,32 +60,40 @@ export default function WellnessHub() {
   const todayScore = useMoodStore(s => s.todayScore)
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
         {/* Header */}
-        <View className="px-6 pt-6 pb-4">
-          <Text className="text-xs text-primary font-manrope uppercase tracking-wider">Mindfulness Sanctuary</Text>
-          <Text className="text-2xl font-bold text-on-surface font-manrope mt-1">Espace bien-être</Text>
-          <Text className="text-sm text-outline font-manrope mt-1">
+        <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 16 }}>
+          <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Mindfulness Sanctuary</Text>
+          <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope', marginTop: 4 }}>Espace bien-être</Text>
+          <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', marginTop: 4 }}>
             Respirez. Écoutez-vous. Avancez doucement.
           </Text>
         </View>
 
-        <View className="px-6 gap-4">
+        <View style={{ paddingHorizontal: 24, gap: 16 }}>
           {/* ─── Breathing Module ─── */}
-          <View
-            className="rounded-3xl p-6 items-center border border-white/50"
-            style={{ backgroundColor: 'rgba(255,255,255,0.60)', shadowColor: '#006685', shadowOpacity: 0.06, shadowRadius: 24, elevation: 3 }}
-          >
-            <View className="items-center gap-5 w-full">
-              <View className="items-center gap-1">
-                <Text className="text-lg font-semibold text-on-surface font-manrope">Respiration guidée</Text>
-                <Text className="text-xs text-outline font-manrope">Inspirez la sérénité, expirez la tension</Text>
+          <View style={{
+            borderRadius: 24,
+            padding: 24,
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.5)',
+            backgroundColor: 'rgba(255,255,255,0.60)',
+            shadowColor: '#006685',
+            shadowOpacity: 0.06,
+            shadowRadius: 24,
+            elevation: 3,
+          }}>
+            <View style={{ alignItems: 'center', gap: 20, width: '100%' }}>
+              <View style={{ alignItems: 'center', gap: 4 }}>
+                <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>Respiration guidée</Text>
+                <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>Inspirez la sérénité, expirez la tension</Text>
               </View>
 
               <BreathingRing isActive size={80} />
 
-              <View className="flex-row gap-3 w-full">
+              <View style={{ flexDirection: 'row', gap: 12, width: '100%' }}>
                 <TouchableOpacity
                   onPress={() =>
                     router.push({
@@ -92,9 +101,9 @@ export default function WellnessHub() {
                       params: { technique: 'coherence', duration: '300', title: 'Cohérence cardiaque' },
                     })
                   }
-                  className="flex-1 bg-primary rounded-full py-3 items-center"
+                  style={{ flex: 1, backgroundColor: '#006685', borderRadius: 9999, paddingVertical: 12, alignItems: 'center' }}
                 >
-                  <Text className="text-white text-sm font-semibold font-manrope">Commencer</Text>
+                  <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600', fontFamily: 'Manrope' }}>Commencer</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() =>
@@ -103,32 +112,46 @@ export default function WellnessHub() {
                       params: { technique: '478', duration: '480', title: '4-7-8' },
                     })
                   }
-                  className="flex-1 border border-outline-variant rounded-full py-3 items-center bg-white/40"
+                  style={{ flex: 1, borderWidth: 1, borderColor: '#bec8ce', borderRadius: 9999, paddingVertical: 12, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.4)' }}
                 >
-                  <Text className="text-on-surface text-sm font-semibold font-manrope">4-7-8</Text>
+                  <Text style={{ color: '#0b1c30', fontSize: 14, fontWeight: '600', fontFamily: 'Manrope' }}>4-7-8</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
 
           {/* ─── Mood Row (chart + today check-in) ─── */}
-          <View className="flex-row gap-4">
-            <View
-              className="flex-1 rounded-3xl p-5 border border-white/50"
-              style={{ backgroundColor: 'rgba(255,255,255,0.60)', shadowColor: '#006685', shadowOpacity: 0.05, shadowRadius: 16, elevation: 2 }}
-            >
-              <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-base font-semibold text-on-surface font-manrope">Humeur 7j</Text>
-                <Text style={{ fontSize: 18 }}>📊</Text>
+          <View style={{ flexDirection: 'row', gap: 16 }}>
+            <View style={{
+              flex: 1,
+              borderRadius: 24,
+              padding: 20,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.5)',
+              backgroundColor: 'rgba(255,255,255,0.60)',
+              shadowColor: '#006685',
+              shadowOpacity: 0.05,
+              shadowRadius: 16,
+              elevation: 2,
+            }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>Humeur 7j</Text>
+                <MaterialIcons name="bar-chart" size={20} color="#006685" />
               </View>
               <MoodChart entries={moodEntries} />
             </View>
 
             <TouchableOpacity
               onPress={() => router.push('/(patient)/mental-health/mood-checkin')}
-              className="rounded-3xl p-5 border border-white/50 items-center justify-center gap-2"
               style={{
                 width: 110,
+                borderRadius: 24,
+                padding: 20,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.5)',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
                 backgroundColor: todayScore != null ? '#006685' : 'rgba(255,255,255,0.60)',
                 shadowColor: '#006685',
                 shadowOpacity: 0.08,
@@ -138,17 +161,19 @@ export default function WellnessHub() {
             >
               {todayScore != null ? (
                 <>
-                  <Text style={{ fontSize: 28 }}>
-                    {todayScore >= 8 ? '😊' : todayScore >= 5 ? '🙂' : todayScore >= 3 ? '😐' : '😔'}
-                  </Text>
-                  <Text className="text-2xl font-bold text-white font-manrope">{todayScore}</Text>
-                  <Text className="text-[10px] text-white/70 font-manrope text-center">Aujourd'hui</Text>
+                  <MaterialIcons
+                    name={todayScore >= 8 ? 'sentiment-satisfied' : todayScore >= 5 ? 'sentiment-neutral' : todayScore >= 3 ? 'sentiment-dissatisfied' : 'sentiment-very-dissatisfied'}
+                    size={28}
+                    color="#ffffff"
+                  />
+                  <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#ffffff', fontFamily: 'Manrope' }}>{todayScore}</Text>
+                  <Text style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontFamily: 'Manrope', textAlign: 'center' }}>Aujourd'hui</Text>
                 </>
               ) : (
                 <>
-                  <Text style={{ fontSize: 26 }}>🎯</Text>
-                  <Text className="text-xs font-semibold text-on-surface font-manrope text-center">Check-in</Text>
-                  <Text className="text-[10px] text-outline font-manrope text-center">du jour</Text>
+                  <MaterialIcons name="gps-fixed" size={26} color="#0b1c30" />
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center' }}>Check-in</Text>
+                  <Text style={{ fontSize: 10, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center' }}>du jour</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -157,78 +182,143 @@ export default function WellnessHub() {
           {/* ─── Quick Journal ─── */}
           <TouchableOpacity
             onPress={() => router.push('/(patient)/mental-health/journal/new')}
-            className="rounded-3xl p-5 border border-white/50"
-            style={{ backgroundColor: 'rgba(255,255,255,0.60)', shadowColor: '#006685', shadowOpacity: 0.05, shadowRadius: 16, elevation: 2 }}
+            style={{
+              borderRadius: 24,
+              padding: 20,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.5)',
+              backgroundColor: 'rgba(255,255,255,0.60)',
+              shadowColor: '#006685',
+              shadowOpacity: 0.05,
+              shadowRadius: 16,
+              elevation: 2,
+            }}
           >
-            <View className="flex-row items-center gap-3 mb-3">
-              <View className="w-10 h-10 rounded-xl items-center justify-center" style={{ backgroundColor: '#e0f2fe' }}>
-                <Text style={{ fontSize: 20 }}>📝</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+              <View style={{ width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: '#e0f2fe' }}>
+                <MaterialIcons name="edit" size={20} color="#006685" />
               </View>
-              <Text className="text-base font-bold text-on-surface font-manrope">Journal rapide</Text>
+              <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Journal rapide</Text>
             </View>
-            <Text className="text-sm text-outline font-manrope mb-3">
+            <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', marginBottom: 12 }}>
               Pour quoi êtes-vous reconnaissant(e) aujourd'hui ?
             </Text>
-            <View
-              className="rounded-2xl px-4 py-3 border border-outline-variant/30"
-              style={{ backgroundColor: 'rgba(255,255,255,0.20)' }}
-            >
-              <Text className="text-sm text-outline font-manrope italic">Appuyez pour écrire...</Text>
+            <View style={{
+              borderRadius: 16,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              borderWidth: 1,
+              borderColor: 'rgba(190,200,206,0.3)',
+              backgroundColor: 'rgba(255,255,255,0.20)',
+            }}>
+              <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', fontStyle: 'italic' }}>Appuyez pour écrire...</Text>
             </View>
           </TouchableOpacity>
 
           {/* ─── Quick Nav ─── */}
-          <View className="flex-row gap-3">
+          <View style={{ flexDirection: 'row', gap: 12 }}>
             <TouchableOpacity
               onPress={() => router.push('/(patient)/mental-health/meditation')}
-              className="flex-1 rounded-2xl p-4 border border-white/50 items-center gap-2"
-              style={{ backgroundColor: 'rgba(255,255,255,0.60)', shadowColor: '#006685', shadowOpacity: 0.05, shadowRadius: 12, elevation: 2 }}
+              style={{
+                flex: 1,
+                borderRadius: 16,
+                padding: 16,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.5)',
+                alignItems: 'center',
+                gap: 8,
+                backgroundColor: 'rgba(255,255,255,0.60)',
+                shadowColor: '#006685',
+                shadowOpacity: 0.05,
+                shadowRadius: 12,
+                elevation: 2,
+              }}
             >
-              <Text style={{ fontSize: 24 }}>🧘</Text>
-              <Text className="text-xs font-semibold text-on-surface font-manrope text-center">Méditation</Text>
+              <MaterialIcons name="self-improvement" size={24} color="#006685" />
+              <Text style={{ fontSize: 12, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center' }}>Méditation</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => router.push('/(patient)/mental-health/journal')}
-              className="flex-1 rounded-2xl p-4 border border-white/50 items-center gap-2"
-              style={{ backgroundColor: 'rgba(255,255,255,0.60)', shadowColor: '#006685', shadowOpacity: 0.05, shadowRadius: 12, elevation: 2 }}
+              style={{
+                flex: 1,
+                borderRadius: 16,
+                padding: 16,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.5)',
+                alignItems: 'center',
+                gap: 8,
+                backgroundColor: 'rgba(255,255,255,0.60)',
+                shadowColor: '#006685',
+                shadowOpacity: 0.05,
+                shadowRadius: 12,
+                elevation: 2,
+              }}
             >
-              <Text style={{ fontSize: 24 }}>📓</Text>
-              <Text className="text-xs font-semibold text-on-surface font-manrope text-center">Journal</Text>
+              <MaterialIcons name="book" size={24} color="#006685" />
+              <Text style={{ fontSize: 12, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center' }}>Journal</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => router.push('/(patient)/mental-health/mood-history')}
-              className="flex-1 rounded-2xl p-4 border border-white/50 items-center gap-2"
-              style={{ backgroundColor: 'rgba(255,255,255,0.60)', shadowColor: '#006685', shadowOpacity: 0.05, shadowRadius: 12, elevation: 2 }}
+              style={{
+                flex: 1,
+                borderRadius: 16,
+                padding: 16,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.5)',
+                alignItems: 'center',
+                gap: 8,
+                backgroundColor: 'rgba(255,255,255,0.60)',
+                shadowColor: '#006685',
+                shadowOpacity: 0.05,
+                shadowRadius: 12,
+                elevation: 2,
+              }}
             >
-              <Text style={{ fontSize: 24 }}>📈</Text>
-              <Text className="text-xs font-semibold text-on-surface font-manrope text-center">Historique</Text>
+              <MaterialIcons name="bar-chart" size={24} color="#006685" />
+              <Text style={{ fontSize: 12, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center' }}>Historique</Text>
             </TouchableOpacity>
           </View>
 
           {/* ─── Ami CTA ─── */}
           <TouchableOpacity
             onPress={() => router.push('/(patient)/mental-health/ami')}
-            className="rounded-3xl p-5 border border-primary/20 flex-row items-center gap-4"
-            style={{ backgroundColor: 'rgba(0,102,133,0.07)', shadowColor: '#006685', shadowOpacity: 0.08, shadowRadius: 16, elevation: 2 }}
+            style={{
+              borderRadius: 24,
+              padding: 20,
+              borderWidth: 1,
+              borderColor: 'rgba(0,102,133,0.2)',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 16,
+              backgroundColor: 'rgba(0,102,133,0.07)',
+              shadowColor: '#006685',
+              shadowOpacity: 0.08,
+              shadowRadius: 16,
+              elevation: 2,
+            }}
           >
-            <View
-              className="w-14 h-14 rounded-full bg-primary items-center justify-center"
-              style={{ shadowColor: '#82d8ff', shadowOpacity: 1, shadowRadius: 20, elevation: 4 }}
-            >
-              <Text style={{ fontSize: 24 }}>🌊</Text>
+            <View style={{
+              width: 56, height: 56, borderRadius: 28, backgroundColor: '#006685',
+              alignItems: 'center', justifyContent: 'center',
+              shadowColor: '#82d8ff', shadowOpacity: 1, shadowRadius: 20, elevation: 4,
+            }}>
+              <MaterialIcons name="waves" size={28} color="#ffffff" />
             </View>
-            <View className="flex-1">
-              <Text className="text-base font-bold text-on-surface font-manrope">Parler à Ami 💙</Text>
-              <Text className="text-xs text-outline font-manrope mt-0.5">
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Parler à Ami</Text>
+                <MaterialIcons name="favorite" size={14} color="#006685" />
+              </View>
+              <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', marginTop: 2 }}>
                 Votre espace d'écoute bienveillant
               </Text>
             </View>
-            <Text className="text-primary text-xl">→</Text>
+            <MaterialIcons name="arrow-forward" size={20} color="#006685" />
           </TouchableOpacity>
 
-          <Text className="text-xs text-outline font-manrope text-center mt-2">
+          <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center', marginTop: 8 }}>
             Cet espace ne remplace pas un professionnel de santé
           </Text>
         </View>

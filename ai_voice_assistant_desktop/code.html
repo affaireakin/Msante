@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Voice Sanctuary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed": "#221b00",
+                      "surface-bright": "#f8f9ff",
+                      "tertiary-container": "#cbcdcf",
+                      "primary-container": "#82d8ff",
+                      "on-secondary-container": "#756100",
+                      "on-tertiary-container": "#545759",
+                      "on-tertiary-fixed-variant": "#444749",
+                      "secondary-fixed-dim": "#e4c546",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed": "#e0e3e5",
+                      "on-primary-fixed-variant": "#004d65",
+                      "on-tertiary-fixed": "#191c1e",
+                      "surface": "#f8f9ff",
+                      "on-surface": "#0b1c30",
+                      "background": "#f8f9ff",
+                      "tertiary": "#5c5f61",
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-surface": "#213145",
+                      "primary-fixed": "#bee9ff",
+                      "on-surface-variant": "#3f484d",
+                      "surface-container": "#e5eeff",
+                      "surface-tint": "#006685",
+                      "surface-variant": "#d3e4fe",
+                      "on-error": "#ffffff",
+                      "secondary-fixed": "#ffe170",
+                      "surface-container-low": "#eff4ff",
+                      "error-container": "#ffdad6",
+                      "surface-container-high": "#dce9ff",
+                      "primary": "#006685",
+                      "on-primary-fixed": "#001f2a",
+                      "on-background": "#0b1c30",
+                      "on-secondary-fixed-variant": "#544600",
+                      "on-primary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "surface-dim": "#cbdbf5",
+                      "secondary-container": "#ffde5c",
+                      "primary-fixed-dim": "#7bd1f8",
+                      "outline-variant": "#bec8ce",
+                      "outline": "#6f787e",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-secondary": "#ffffff",
+                      "on-primary-container": "#005e7a",
+                      "tertiary-fixed-dim": "#c4c7c9",
+                      "inverse-primary": "#7bd1f8",
+                      "secondary": "#705d00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "card-padding": "20px",
+                      "gutter": "16px",
+                      "stack-gap": "12px",
+                      "margin-page": "24px"
+              },
+              "fontFamily": {
+                      "body-sm": [
+                              "Manrope"
+                      ],
+                      "headline-md": [
+                              "Manrope"
+                      ],
+                      "body-base": [
+                              "Manrope"
+                      ],
+                      "label-caps": [
+                              "Manrope"
+                      ],
+                      "display-lg": [
+                              "Manrope"
+                      ]
+              },
+              "fontSize": {
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-base": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        /* Force dark mode styling for this specific 'Sanctuary' view despite the light mode class */
+        body {
+            background-color: #0b1c30; /* on-surface used as dark bg */
+            color: #f8f9ff; /* surface-bright used as light text */
+        }
+      </style>
+</head>
+<body class="font-body-base text-body-base h-screen overflow-hidden flex flex-col md:flex-row relative">
+<!-- TopAppBar (Web) / BottomNavBar (Mobile) Shells -->
+<!-- TopAppBar (Hidden on mobile, visible on md+) -->
+<header class="hidden md:flex fixed top-0 left-0 w-full z-50 justify-between items-center px-6 h-16 bg-white/60 backdrop-blur-xl dark:bg-slate-900/60 font-manrope text-sm tracking-wide shadow-sm shadow-sky-100/20 dark:shadow-none !bg-[#0b1c30]/80 !border-b !border-[#213145]">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold text-slate-900 dark:text-slate-50 tracking-tighter !text-surface-bright">Sanctuary</span>
+</div>
+<!-- Navigation Tabs (Mapping to BottomNavBar JSON labels for consistency in top nav) -->
+<nav class="flex space-x-8">
+<a class="flex items-center gap-2 text-sky-500 dark:text-sky-300 font-bold !text-primary-container" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mic_none</span>
+                Voice
+             </a>
+<a class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors active:scale-95 duration-200 !text-tertiary-container hover:!bg-[#213145]/50 rounded-lg px-2 py-1" href="#">
+<span class="material-symbols-outlined">history</span>
+                Logs
+             </a>
+<a class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors active:scale-95 duration-200 !text-tertiary-container hover:!bg-[#213145]/50 rounded-lg px-2 py-1" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                Insights
+             </a>
+<a class="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors active:scale-95 duration-200 !text-tertiary-container hover:!bg-[#213145]/50 rounded-lg px-2 py-1" href="#">
+<span class="material-symbols-outlined">person</span>
+                Profile
+             </a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-sky-400 dark:text-sky-300 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors active:scale-95 duration-200 !text-tertiary-container hover:!bg-[#213145]/50 p-2 rounded-full">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="text-sky-400 dark:text-sky-300 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors active:scale-95 duration-200 !text-tertiary-container hover:!bg-[#213145]/50 p-2 rounded-full">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col md:flex-row relative pt-16 md:pt-16 h-full w-full">
+<!-- Center Stage: Voice Core -->
+<div class="flex-1 flex flex-col items-center justify-center relative p-margin-page">
+<!-- Trust Indicators -->
+<div class="absolute top-6 left-6 flex flex-col gap-2 z-10">
+<div class="flex items-center gap-2 bg-[#213145]/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-[0_4px_24px_rgba(0,102,133,0.1)]">
+<span class="material-symbols-outlined text-label-caps text-primary-container" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="font-label-caps text-label-caps text-surface-bright uppercase">Encrypted Voice Link</span>
+</div>
+<div class="flex items-center gap-2 bg-[#213145]/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/5">
+<span class="material-symbols-outlined text-label-caps text-tertiary-container">info</span>
+<span class="font-label-caps text-label-caps text-tertiary-container uppercase tracking-wider text-[10px]">Non-Clinical Support Space</span>
+</div>
+</div>
+<!-- 3D Orb Visual Representation (CSS Gradient/Blur) -->
+<div class="relative w-64 h-64 md:w-96 md:h-96 flex items-center justify-center mb-12">
+<!-- Outer Glow -->
+<div class="absolute inset-0 bg-primary-container rounded-full blur-[80px] opacity-20"></div>
+<!-- Mid Layer -->
+<div class="absolute inset-8 bg-surface-tint rounded-full blur-[40px] opacity-40"></div>
+<!-- Core -->
+<div class="relative w-32 h-32 md:w-48 md:h-48 rounded-full bg-gradient-to-br from-primary-container via-surface-tint to-[#004d65] shadow-[0_0_60px_rgba(130,216,255,0.4),inset_0_0_20px_rgba(255,255,255,0.5)] border border-white/20 backdrop-blur-sm flex items-center justify-center">
+<div class="w-24 h-24 md:w-36 md:h-36 rounded-full bg-gradient-to-tl from-white/10 to-transparent blur-sm"></div>
+</div>
+</div>
+<!-- Real-time Transcription -->
+<div class="text-center max-w-2xl px-6 min-h-[100px] flex flex-col justify-end">
+<p class="font-headline-md text-headline-md text-surface-bright/50 mb-2 opacity-50 blur-[1px]">I understand. Sometimes the pressure feels...</p>
+<p class="font-headline-md text-headline-md text-surface-bright bg-clip-text text-transparent bg-gradient-to-r from-surface-bright via-primary-container to-surface-bright drop-shadow-[0_0_8px_rgba(130,216,255,0.3)]">
+                    It feels like too much all at once.
+                </p>
+</div>
+</div>
+<!-- Right Panel: Conversation History & Insights -->
+<aside class="w-full md:w-80 lg:w-96 bg-[#213145]/30 backdrop-blur-2xl border-l border-white/10 p-6 flex flex-col h-full overflow-y-auto hidden md:flex">
+<div class="mb-8">
+<h2 class="font-headline-md text-headline-md text-surface-bright mb-2">Session Insights</h2>
+<p class="font-body-sm text-body-sm text-tertiary-container">Real-time thematic analysis</p>
+</div>
+<div class="flex flex-col gap-stack-gap flex-1">
+<!-- Insight Card -->
+<div class="bg-[#213145]/60 rounded-xl p-card-padding border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.1)] relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary-fixed-dim"></div>
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-secondary-fixed-dim">psychology</span>
+<span class="font-label-caps text-label-caps text-surface-bright uppercase">Stress Pattern</span>
+</div>
+<p class="font-body-sm text-body-sm text-tertiary-container">Elevated anxiety markers detected when discussing upcoming deadlines.</p>
+</div>
+<!-- Insight Card -->
+<div class="bg-[#213145]/60 rounded-xl p-card-padding border border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.1)] relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary-container"></div>
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-primary-container">self_improvement</span>
+<span class="font-label-caps text-label-caps text-surface-bright uppercase">Coping Mechanism</span>
+</div>
+<p class="font-body-sm text-body-sm text-tertiary-container">Positive response noted to guided breathing suggestions. Consider saving exercise.</p>
+</div>
+<!-- Log snippet -->
+<div class="mt-8 border-t border-white/10 pt-6">
+<h3 class="font-label-caps text-label-caps text-tertiary-container uppercase mb-4 tracking-wider">Recent Exchanges</h3>
+<div class="flex flex-col gap-4">
+<div class="flex gap-3">
+<div class="w-8 h-8 rounded-full bg-[#006685]/30 flex items-center justify-center shrink-0 border border-white/10">
+<span class="material-symbols-outlined text-[16px] text-surface-bright">person</span>
+</div>
+<p class="font-body-sm text-body-sm text-tertiary-container bg-[#213145]/40 rounded-lg p-3 rounded-tl-none">I've been having trouble sleeping lately.</p>
+</div>
+<div class="flex gap-3 flex-row-reverse">
+<div class="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center shrink-0 border border-primary-container/30">
+<span class="material-symbols-outlined text-[16px] text-primary-container" style="font-variation-settings: 'FILL' 1;">graphic_eq</span>
+</div>
+<p class="font-body-sm text-body-sm text-surface-bright bg-primary-container/10 border border-primary-container/20 rounded-lg p-3 rounded-tr-none">Let's explore that. When do you usually try to sleep?</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Bottom Control Bar -->
+<div class="absolute bottom-0 left-0 w-full md:w-[calc(100%-24rem)] bg-gradient-to-t from-[#0b1c30] via-[#0b1c30]/90 to-transparent p-6 md:pb-12 flex justify-center items-center gap-6 z-20 pb-24 md:pb-8">
+<button class="w-12 h-12 rounded-full bg-[#213145]/60 border border-white/10 flex items-center justify-center text-tertiary-container hover:text-surface-bright hover:bg-[#213145] transition-all backdrop-blur-md">
+<span class="material-symbols-outlined">mic_off</span>
+</button>
+<!-- Main Mic Toggle (Active State) -->
+<button class="w-20 h-20 rounded-full bg-gradient-to-b from-primary-container to-surface-tint border-2 border-surface-bright/20 shadow-[0_0_30px_rgba(130,216,255,0.4),inset_0_4px_10px_rgba(255,255,255,0.3)] flex items-center justify-center text-on-primary-container transform hover:scale-105 transition-all">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+<button class="px-6 h-12 rounded-full bg-error-container/10 border border-error/30 text-error hover:bg-error-container/20 transition-all font-label-caps text-label-caps uppercase backdrop-blur-md">
+                End Session
+            </button>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-white/70 backdrop-blur-2xl dark:bg-slate-900/70 font-manrope text-[10px] font-semibold uppercase tracking-widest rounded-t-3xl border-t border-white/30 dark:border-slate-800/50 shadow-[0_-4px_24px_rgba(130,216,255,0.08)] !bg-[#213145]/90 !border-[#0b1c30]">
+<div class="flex flex-col items-center justify-center text-sky-500 dark:text-sky-300 scale-110 !text-primary-container">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">mic_none</span>
+            Voice
+        </div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 opacity-60 hover:text-sky-400 dark:hover:text-sky-200 transition-all active:scale-90 duration-300 ease-out !text-tertiary-container hover:!text-surface-bright">
+<span class="material-symbols-outlined mb-1">history</span>
+            Logs
+        </div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 opacity-60 hover:text-sky-400 dark:hover:text-sky-200 transition-all active:scale-90 duration-300 ease-out !text-tertiary-container hover:!text-surface-bright">
+<span class="material-symbols-outlined mb-1">analytics</span>
+            Insights
+        </div>
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 opacity-60 hover:text-sky-400 dark:hover:text-sky-200 transition-all active:scale-90 duration-300 ease-out !text-tertiary-container hover:!text-surface-bright">
+<span class="material-symbols-outlined mb-1">person</span>
+            Profile
+        </div>
+</nav>
+</body></html>

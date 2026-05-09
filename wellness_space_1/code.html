@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wellness Space | M-Santé</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#004d65",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-surface": "#0b1c30",
+                        "background": "#f8f9ff",
+                        "surface": "#f8f9ff",
+                        "tertiary": "#5c5f61",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "primary-fixed": "#bee9ff",
+                        "on-surface-variant": "#3f484d",
+                        "surface-container": "#e5eeff",
+                        "surface-tint": "#006685",
+                        "on-secondary-fixed": "#221b00",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary-container": "#cbcdcf",
+                        "primary-container": "#82d8ff",
+                        "on-secondary-container": "#756100",
+                        "on-tertiary-container": "#545759",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "secondary-fixed-dim": "#e4c546",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#e0e3e5",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-container": "#ffde5c",
+                        "outline-variant": "#bec8ce",
+                        "outline": "#6f787e",
+                        "surface-dim": "#cbdbf5",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-primary-container": "#005e7a",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "inverse-primary": "#7bd1f8",
+                        "secondary": "#705d00",
+                        "surface-variant": "#d3e4fe",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffe170",
+                        "surface-container-low": "#eff4ff",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#dce9ff",
+                        "primary": "#006685",
+                        "on-primary-fixed": "#001f2a",
+                        "on-background": "#0b1c30",
+                        "on-secondary-fixed-variant": "#544600"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "stack-gap": "12px",
+                        "margin-page": "24px",
+                        "gutter": "16px",
+                        "card-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "label-caps": ["Manrope"],
+                        "body-base": ["Manrope"],
+                        "display-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .breathing-circle {
+            animation: breathe 8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(0.85); opacity: 0.4; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+    </style>
+</head>
+<body class="bg-background font-body-base text-on-background min-h-screen">
+<!-- TopAppBar Navigation Shell -->
+<header class="fixed top-0 left-0 w-full z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.05)] flex justify-between items-center px-6 py-4 w-full h-16">
+<div class="text-xl font-bold tracking-tighter text-sky-500 font-headline-md">M-Santé</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-8 mr-8">
+<span class="text-slate-400 font-body-base hover:bg-white/40 transition-colors cursor-pointer px-3 py-1 rounded-lg">Home</span>
+<span class="text-sky-600 font-bold font-body-base cursor-pointer px-3 py-1 rounded-lg">Wellness</span>
+<span class="text-slate-400 font-body-base hover:bg-white/40 transition-colors cursor-pointer px-3 py-1 rounded-lg">Metrics</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-full hover:bg-white/40 active:scale-95 transition-all text-slate-500">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-white/40 active:scale-95 transition-all text-slate-500">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-margin-page max-w-7xl mx-auto space-y-8">
+<!-- Welcome Section -->
+<header class="flex flex-col gap-2">
+<span class="text-label-caps font-label-caps text-primary uppercase tracking-widest">Mindfulness Sanctuary</span>
+<h1 class="text-headline-md font-headline-md text-on-surface">Good Morning, Serene Mind</h1>
+<p class="text-body-sm font-body-sm text-tertiary max-w-lg">Embrace the stillness. Today's wellness journey focuses on restorative breathing and emotional awareness.</p>
+</header>
+<!-- Main Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Daily Breathing Module (Large Focus) -->
+<section class="md:col-span-7 lg:col-span-8 glass-panel rounded-[32px] p-card-padding flex flex-col items-center justify-center min-h-[400px] relative overflow-hidden">
+<div class="absolute inset-0 z-0 opacity-30 bg-gradient-to-br from-primary-container/20 to-transparent"></div>
+<div class="relative z-10 text-center space-y-8">
+<div class="space-y-2">
+<h2 class="text-headline-md font-headline-md text-on-surface">Daily Breathing</h2>
+<p class="text-body-sm font-body-sm text-tertiary">Inhale confidence, exhale tension</p>
+</div>
+<!-- Breathing Visualizer -->
+<div class="relative flex items-center justify-center w-64 h-64 mx-auto">
+<div class="absolute w-full h-full rounded-full bg-primary-container/30 breathing-circle"></div>
+<div class="absolute w-48 h-48 rounded-full bg-primary/20 blur-xl"></div>
+<div class="w-32 h-32 rounded-full bg-primary shadow-[0_0_40px_rgba(0,102,133,0.3)] flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-4xl">air</span>
+</div>
+</div>
+<div class="flex gap-4 justify-center">
+<button class="px-8 py-3 bg-primary text-white rounded-full font-headline-md hover:shadow-lg transition-all active:scale-95">Begin Session</button>
+<button class="px-8 py-3 glass-panel border-outline-variant text-on-surface rounded-full font-headline-md hover:bg-white/80 transition-all active:scale-95">4-7-8 Tech</button>
+</div>
+</div>
+</section>
+<!-- Mood Tracker (7-day emotional graph) -->
+<section class="md:col-span-5 lg:col-span-4 glass-panel rounded-[32px] p-card-padding flex flex-col gap-6">
+<div class="flex justify-between items-center">
+<h2 class="text-headline-md font-headline-md text-on-surface">Mood Tracker</h2>
+<span class="material-symbols-outlined text-primary">monitoring</span>
+</div>
+<!-- Simplified Graph Visualization -->
+<div class="flex-1 flex items-end justify-between h-48 gap-2 px-2">
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary-container/30 rounded-t-xl transition-all duration-500 group-hover:bg-primary-container/50 h-[40%]"></div>
+<span class="text-label-caps font-label-caps text-slate-400">M</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary-container/30 rounded-t-xl transition-all duration-500 group-hover:bg-primary-container/50 h-[65%]"></div>
+<span class="text-label-caps font-label-caps text-slate-400">T</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary-container/30 rounded-t-xl transition-all duration-500 group-hover:bg-primary-container/50 h-[50%]"></div>
+<span class="text-label-caps font-label-caps text-slate-400">W</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary-container/30 rounded-t-xl transition-all duration-500 group-hover:bg-primary-container/50 h-[85%]"></div>
+<span class="text-label-caps font-label-caps text-slate-400">T</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary rounded-t-xl transition-all duration-500 h-[70%]"></div>
+<span class="text-label-caps font-label-caps text-primary">F</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary-container/30 rounded-t-xl transition-all duration-500 group-hover:bg-primary-container/50 h-[45%]"></div>
+<span class="text-label-caps font-label-caps text-slate-400">S</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group">
+<div class="w-full bg-primary-container/30 rounded-t-xl transition-all duration-500 group-hover:bg-primary-container/50 h-[60%]"></div>
+<span class="text-label-caps font-label-caps text-slate-400">S</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-4 flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-weight="fill">sentiment_satisfied</span>
+</div>
+<div>
+<p class="text-body-sm font-body-sm font-semibold">Mood Insight</p>
+<p class="text-[12px] text-tertiary">Your focus is 12% higher on Fridays.</p>
+</div>
+</div>
+</section>
+<!-- Quick Journaling -->
+<section class="md:col-span-4 glass-panel rounded-[32px] p-card-padding flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-lg bg-sky-100 text-sky-600">
+<span class="material-symbols-outlined">edit_note</span>
+</div>
+<h3 class="text-body-base font-headline-md font-bold">Quick Journaling</h3>
+</div>
+<p class="text-body-sm font-body-sm text-tertiary">What's one thing you're grateful for today?</p>
+<div class="flex-1 min-h-[100px] border border-outline-variant/30 rounded-2xl bg-white/20 p-3 text-body-sm text-slate-400 italic">
+                    Tap to start writing...
+                </div>
+<button class="w-full py-2 bg-on-surface-variant/5 hover:bg-on-surface-variant/10 rounded-xl text-label-caps font-label-caps transition-colors">SAVE ENTRY</button>
+</section>
+<!-- Recommended Meditations -->
+<section class="md:col-span-8 glass-panel rounded-[32px] p-card-padding">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-headline-md font-headline-md">Guided Meditations</h2>
+<button class="text-primary text-body-sm font-semibold hover:underline">View All</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Meditation Card 1 -->
+<div class="group relative rounded-2xl overflow-hidden h-32 cursor-pointer transition-transform active:scale-95">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<img alt="Forest meditation" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="A serene, wide-angle photograph of a misty, sun-drenched forest aisle at dawn. Soft golden light filters through tall coniferous trees, casting ethereal rays onto a lush green carpet of ferns. The atmosphere is quiet, tranquil, and deeply meditative, reflecting a professional medical futurism wellness aesthetic with crisp, high-definition details and a calming blue-tinted shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACkzGEAVE72vN7wrJNjaENafeOifR35GXuk8QAS85bdK3y4YBwsVxuXQOqHJR0Qod_Z26UAAAWuS-rIYpxo0w33kG_wCJx4GPVuPy8gCTAySbgrDK-tPocxv1ca8G-TUmlJh3SoUOAQEFe7T6yDqDTz6FQT_U1l03SppjtyBxQfVKmMnquJAfMkXoGzUr1mbQLzewZvguJymofydFL07s2KNVN37wBvS_BK4wwmqzXOO2gpQpBdLTpI3M1JQRTAlG4y7pDiRN7zrUP"/>
+<div class="absolute bottom-3 left-4 z-20">
+<p class="text-white font-headline-md text-body-base">Deep Sleep Drift</p>
+<p class="text-white/70 text-[10px] font-label-caps">12 MIN • GUIDED</p>
+</div>
+<div class="absolute right-4 bottom-3 z-20 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-lg">play_arrow</span>
+</div>
+</div>
+<!-- Meditation Card 2 -->
+<div class="group relative rounded-2xl overflow-hidden h-32 cursor-pointer transition-transform active:scale-95">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+<img alt="Minimal desk" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="A minimalist overhead view of a high-end health tech workspace with a single ceramic cup of steaming tea and a small, smooth river stone on a pristine white desk. The lighting is high-key and soft, creating a serene and clinical yet human-centric environment. The color palette is dominated by off-whites and soft sky blues, representing the medical futurism aesthetic of M-Santé." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOPM3Hu2EAO-hLvVah9mhJxuVUDwO78TBQia0DwnD-6Dtq6twqw75UEwJNNgNmwGx18fQ-KabDaI4w6yrv4IvRjdyZGfLmePqDj-fc9JATHSMb4_CYgZqdYb6yWVuWMD9N3thcWyDwGyAfdkRq8--0czVtzCi5JBapzxrRhNECXUISWl55X92ig3BilywmFslo0C6Y3r1qX2Nk_zW2YOvxQnC_45pNlXagbN98UdGfY0JfA20MVFGOM5jIzu_Rsvnh6HUNOpNF-ZQW"/>
+<div class="absolute bottom-3 left-4 z-20">
+<p class="text-white font-headline-md text-body-base">Anxiety Release</p>
+<p class="text-white/70 text-[10px] font-label-caps">08 MIN • AMBIENT</p>
+</div>
+<div class="absolute right-4 bottom-3 z-20 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-lg">play_arrow</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar Navigation Shell -->
+<nav class="fixed bottom-0 w-full flex justify-around items-center px-4 pt-3 pb-6 bg-white/60 backdrop-blur-2xl border-t border-white/30 shadow-[0_-10px_40px_rgba(130,216,255,0.08)] rounded-t-[24px] z-50 md:hidden">
+<div class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-400 transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="home_health">home_health</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-sky-600 bg-sky-50/50 rounded-xl px-3 py-1 active:scale-90">
+<span class="material-symbols-outlined" data-icon="self_care" style="font-variation-settings: 'FILL' 1;">self_care</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Wellness</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-400 transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Metrics</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-400 transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="medical_services">medical_services</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Consult</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 hover:text-sky-400 transition-all active:scale-90">
+<span class="material-symbols-outlined" data-icon="sentiment_satisfied">sentiment_satisfied</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Mood</span>
+</div>
+</nav>
+</body></html>

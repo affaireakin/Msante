@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { ScrollView, View, Text, TouchableOpacity, TextInput, StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { usePatients, type PatientItem } from '@/features/practitioner/hooks/usePatients'
 import { GlassCard } from '@/components/ui/GlassCard'
@@ -92,7 +93,7 @@ function PatientCard({ patient }: { patient: PatientItem }) {
             backgroundColor: '#eff4ff',
           }}
         >
-          <Text style={{ fontSize: 14, marginTop: 1 }}>📅</Text>
+          <MaterialIcons name="event" size={15} color="#006685" style={{ marginTop: 1 }} />
           <View style={{ flex: 1 }}>
             <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e' }}>
               Dernière consultation :{' '}
@@ -135,7 +136,7 @@ function PatientCard({ patient }: { patient: PatientItem }) {
             backgroundColor: 'rgba(255,255,255,0.60)',
           }}
         >
-          <Text style={{ fontSize: 13 }}>📁</Text>
+          <MaterialIcons name="folder" size={15} color="#0b1c30" />
           <Text
             style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#0b1c30' }}
           >
@@ -154,7 +155,7 @@ function PatientCard({ patient }: { patient: PatientItem }) {
             backgroundColor: '#006685',
           }}
         >
-          <Text style={{ fontSize: 13 }}>💬</Text>
+          <MaterialIcons name="chat-bubble" size={15} color="#fff" />
           <Text
             style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#fff' }}
           >
@@ -186,7 +187,7 @@ export default function PatientsScreen() {
   }, [patients, activeTab, search])
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f8f9ff]" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }} edges={['top']}>
       <StatusBar barStyle="dark-content" />
 
       {/* Header */}
@@ -219,7 +220,7 @@ export default function PatientsScreen() {
               justifyContent: 'center',
             }}
           >
-            <Text style={{ fontSize: 16 }}>⚙️</Text>
+            <MaterialIcons name="settings" size={18} color="#6f787e" />
           </TouchableOpacity>
         </View>
 
@@ -237,7 +238,7 @@ export default function PatientsScreen() {
             backgroundColor: 'rgba(255,255,255,0.70)',
           }}
         >
-          <Text style={{ fontSize: 16 }}>🔍</Text>
+          <MaterialIcons name="search" size={18} color="#6f787e" />
           <TextInput
             value={search}
             onChangeText={setSearch}
@@ -282,7 +283,7 @@ export default function PatientsScreen() {
       </View>
 
       <ScrollView
-        className="flex-1"
+        style={{ flex: 1 }}
         contentContainerStyle={{ padding: 24, gap: 16 }}
         showsVerticalScrollIndicator={false}
       >

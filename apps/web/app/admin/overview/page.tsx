@@ -44,7 +44,7 @@ export default function OverviewPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-[#0b1c30]">Vue d'ensemble</h1>
+        <h1 className="text-2xl font-bold text-[#0b1c30]">Vue d&apos;ensemble</h1>
         <p className="text-sm text-[#6f787e] mt-1">Données en temps réel</p>
       </div>
 

@@ -6,26 +6,38 @@ interface PrimaryButtonProps {
   loading?: boolean
   disabled?: boolean
   variant?: 'primary' | 'outline'
-  className?: string
 }
 
 export function PrimaryButton({
-  label, onPress, loading, disabled, variant = 'primary', className = '',
+  label, onPress, loading, disabled, variant = 'primary',
 }: PrimaryButtonProps) {
   const isPrimary = variant === 'primary'
+  const isDisabled = disabled || loading
   return (
     <TouchableOpacity
       onPress={onPress}
-      disabled={disabled || loading}
+      disabled={isDisabled}
       activeOpacity={0.8}
-      className={`rounded-lg py-4 items-center justify-center ${
-        isPrimary ? 'bg-primary' : 'border border-primary bg-transparent'
-      } ${disabled || loading ? 'opacity-60' : ''} ${className}`}
+      style={{
+        borderRadius: 12,
+        paddingVertical: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: isPrimary ? '#006685' : 'transparent',
+        borderWidth: isPrimary ? 0 : 1.5,
+        borderColor: '#006685',
+        opacity: isDisabled ? 0.6 : 1,
+      }}
     >
       {loading ? (
         <ActivityIndicator color={isPrimary ? '#ffffff' : '#006685'} />
       ) : (
-        <Text className={`font-manrope font-semibold text-base ${isPrimary ? 'text-white' : 'text-primary'}`}>
+        <Text style={{
+          fontFamily: 'Manrope',
+          fontWeight: '700',
+          fontSize: 15,
+          color: isPrimary ? '#ffffff' : '#006685',
+        }}>
           {label}
         </Text>
       )}

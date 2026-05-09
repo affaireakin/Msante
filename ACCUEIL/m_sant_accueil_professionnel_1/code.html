@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé | Votre sanctuaire de santé mentale, réinventé</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#e5eeff",
+                    "secondary": "#705d00",
+                    "on-primary-container": "#005e7a",
+                    "on-primary-fixed": "#001f2a",
+                    "on-secondary-fixed-variant": "#544600",
+                    "outline": "#6f787e",
+                    "on-secondary-fixed": "#221b00",
+                    "surface-variant": "#d3e4fe",
+                    "surface-container-high": "#dce9ff",
+                    "primary-fixed-dim": "#7bd1f8",
+                    "primary-container": "#82d8ff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "tertiary-container": "#cbcdcf",
+                    "surface": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed": "#191c1e",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "primary": "#006685",
+                    "outline-variant": "#bec8ce",
+                    "on-secondary": "#ffffff",
+                    "on-surface-variant": "#3f484d",
+                    "on-surface": "#0b1c30",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#004d65",
+                    "on-secondary-container": "#756100",
+                    "surface-tint": "#006685",
+                    "primary-fixed": "#bee9ff",
+                    "secondary-fixed": "#ffe170",
+                    "error": "#ba1a1a",
+                    "on-tertiary-container": "#545759",
+                    "surface-dim": "#cbdbf5",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "on-error": "#ffffff",
+                    "tertiary": "#5c5f61",
+                    "secondary-container": "#ffde5c",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#7bd1f8",
+                    "surface-container-low": "#eff4ff",
+                    "surface-bright": "#f8f9ff",
+                    "tertiary-fixed": "#e0e3e5",
+                    "inverse-surface": "#213145",
+                    "error-container": "#ffdad6",
+                    "background": "#f8f9ff",
+                    "surface-container-highest": "#d3e4fe",
+                    "on-background": "#0b1c30",
+                    "secondary-fixed-dim": "#e4c546"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "card-padding": "20px",
+                    "margin-page": "24px",
+                    "gutter": "16px",
+                    "unit": "8px",
+                    "stack-gap": "12px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Manrope"],
+                    "body-sm": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "body-base": ["Manrope"],
+                    "display-lg": ["Manrope"]
+            },
+            "fontSize": {
+                    "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-medical-glow {
+            background: radial-gradient(circle at 50% 50%, rgba(130, 216, 255, 0.15) 0%, transparent 70%);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-base text-on-surface selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="bg-surface/80 dark:bg-inverse-surface/80 backdrop-blur-xl border-b border-white/10 shadow-sm docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center h-20 px-margin-page max-w-7xl mx-auto w-full"><div class="text-xl font-bold text-primary dark:text-inverse-primary tracking-tight py-2 px-4 bg-primary/5 rounded-lg border border-primary/10">M-Santé</div>
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-primary dark:text-inverse-primary font-bold border-b-2 border-primary py-1 text-sm" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors text-sm font-medium" href="#">Wellness</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors text-sm font-medium" href="#">Practitioners</a>
+</nav>
+<div class="flex items-center space-x-3">
+<button class="px-5 py-2 text-primary text-sm font-semibold hover:bg-primary/5 transition-all rounded-lg">Connexion</button>
+<button class="px-5 py-2 bg-primary text-on-primary text-sm font-bold rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">Inscription</button>
+</div></div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] flex items-center pt-20 overflow-hidden">
+<div class="absolute inset-0 bg-medical-glow pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-margin-page w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="z-10 space-y-8">
+<div class="inline-flex items-center px-3 py-1 rounded-full bg-primary-container/30 border border-primary/20 text-primary font-label-caps text-label-caps">
+<span class="mr-2">NOUVEAU</span> INNOVATION BIEN-ÊTRE
+                    </div>
+<h1 class="font-display-lg text-display-lg text-on-surface leading-[1.05] tracking-tight">
+                        Votre sanctuaire de santé mentale, <span class="text-primary">réinventé.</span>
+</h1>
+<p class="font-body-base text-body-base text-on-surface-variant max-w-lg leading-relaxed">
+                        Une approche holistique propulsée par l'intelligence artificielle pour des soins personnalisés et accessibles. Redécouvrez l'équilibre intérieur avec M-Santé.
+                    </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="px-8 py-4 bg-primary text-on-primary font-bold rounded-xl shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                            Commencer mon parcours
+                        </button>
+<button class="px-8 py-4 glass-card text-on-surface font-semibold rounded-xl hover:bg-white/80 transition-all">
+                            Découvrir nos praticiens
+                        </button>
+</div>
+</div>
+<div class="relative group">
+<div class="absolute -inset-4 bg-primary/10 blur-3xl rounded-full opacity-50 group-hover:opacity-70 transition-opacity"></div>
+<div class="relative rounded-3xl overflow-hidden shadow-2xl aspect-square glass-card p-2">
+<img class="w-full h-full object-cover rounded-2xl" data-alt="A professional and friendly African medical practitioner smiling warmly in a bright, futuristic clinic setting. The lighting is soft and high-key, emphasizing a clinical yet serene atmosphere. The background features subtle glass elements and minimalist medical equipment in a light blue and white palette. The composition is clean and modern, conveying trust and technological advancement." src="https://placeholder.pics/svg/300"/>
+</div>
+<!-- Floating Stats Card -->
+<div class="absolute -bottom-6 -left-6 glass-card p-6 rounded-2xl shadow-xl max-w-[200px]">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<span class="font-bold text-headline-md leading-none text-primary">98%</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">De satisfaction patient</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Bar -->
+<section class="py-12 bg-surface-container-low border-y border-outline-variant/30">
+<div class="max-w-7xl mx-auto px-margin-page">
+<p class="text-center font-label-caps text-label-caps text-on-surface-variant mb-8 opacity-60">NOS PARTENAIRES DE CONFIANCE</p>
+<div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 grayscale opacity-70 hover:grayscale-0 transition-all duration-500">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="account_balance">account_balance</span>
+<span class="font-bold text-on-surface/50 font-body-base">Ministère de la Santé</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="waves">waves</span>
+<span class="font-bold text-on-surface/50 font-body-base">Wave</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="cell_tower">cell_tower</span>
+<span class="font-bold text-on-surface/50 font-body-base">Orange Money</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="shield_with_heart">shield_with_heart</span>
+<span class="font-bold text-on-surface/50 font-body-base">Santevie</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Grid -->
+<section class="py-24 max-w-7xl mx-auto px-margin-page">
+<div class="text-center mb-16 space-y-4">
+<h2 class="font-display-lg text-headline-md md:text-[40px] text-on-surface">Des solutions pensées pour vous</h2>
+<p class="text-on-surface-variant max-w-2xl mx-auto">Allier la technologie de pointe à la chaleur humaine pour transformer votre expérience de santé.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Card 1 -->
+<div class="glass-card p-8 rounded-[2rem] hover:shadow-2xl hover:-translate-y-2 transition-all group">
+<div class="w-16 h-16 rounded-2xl bg-primary-container flex items-center justify-center text-primary mb-8 group-hover:rotate-6 transition-transform">
+<span class="material-symbols-outlined !text-4xl" data-icon="psychology">psychology</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4">Compagnon Bien-être IA</h3>
+<p class="text-on-surface-variant font-body-sm leading-relaxed mb-6">Un assistant émotionnel intelligent disponible 24/7 pour vous écouter, analyser vos humeurs et proposer des exercices de respiration adaptés.</p>
+<div class="w-full h-40 rounded-xl bg-surface-variant overflow-hidden"><img alt="Interface médicale IA" class="w-full h-full object-cover" src="https://placeholder.pics/svg/300"/></div>
+</div>
+<!-- Card 2 -->
+<div class="glass-card p-8 rounded-[2rem] hover:shadow-2xl hover:-translate-y-2 transition-all group border-primary/20">
+<div class="w-16 h-16 rounded-2xl bg-secondary-container flex items-center justify-center text-secondary mb-8 group-hover:rotate-6 transition-transform">
+<span class="material-symbols-outlined !text-4xl" data-icon="verified_user">verified_user</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4">Réseau d'Experts</h3>
+<p class="text-on-surface-variant font-body-sm leading-relaxed mb-6">Accédez à un panel de psychologues, psychiatres et coachs de vie certifiés, sélectionnés pour leur excellence et leur bienveillance.</p>
+<div class="w-full h-40 rounded-xl bg-surface-variant overflow-hidden"><img alt="Équipe de praticiens" class="w-full h-full object-cover" src="https://placeholder.pics/svg/300"/></div>
+</div>
+<!-- Card 3 -->
+<div class="glass-card p-8 rounded-[2rem] hover:shadow-2xl hover:-translate-y-2 transition-all group">
+<div class="w-16 h-16 rounded-2xl bg-primary-container/40 flex items-center justify-center text-primary mb-8 group-hover:rotate-6 transition-transform">
+<span class="material-symbols-outlined !text-4xl" data-icon="video_chat">video_chat</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-4">Téléconsultation Sécurisée</h3>
+<p class="text-on-surface-variant font-body-sm leading-relaxed mb-6">Des sessions vidéo chiffrées de bout en bout pour garantir une confidentialité totale. Consultez depuis le confort de votre foyer.</p>
+<div class="w-full h-40 rounded-xl bg-surface-variant overflow-hidden"><img alt="Téléconsultation sécurisée" class="w-full h-full object-cover" src="https://placeholder.pics/svg/300"/></div>
+</div>
+</div>
+</section>
+<!-- Value Proposition Section -->
+<section class="py-24 bg-surface-container-low overflow-hidden">
+<div class="max-w-7xl mx-auto px-margin-page">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+<div class="relative order-2 lg:order-1">
+<div class="absolute -top-10 -left-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl"></div>
+<div class="glass-card rounded-[2.5rem] p-12 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8">
+<span class="material-symbols-outlined !text-6xl text-primary/10" data-icon="vital_signs">vital_signs</span>
+</div>
+<h2 class="font-display-lg text-headline-md mb-12">Le Futurisme Médical : L'IA au service de l'empathie.</h2>
+<div class="space-y-10">
+<div class="flex gap-6">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+</div>
+<div>
+<h4 class="font-bold text-body-base mb-2">Précision Clinique</h4>
+<p class="text-on-surface-variant font-body-sm">Algorithmes de diagnostic préventif basés sur des protocoles médicaux internationaux validés.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" data-icon="spa">spa</span>
+</div>
+<div>
+<h4 class="font-bold text-body-base mb-2">Sérénité Humaine</h4>
+<p class="text-on-surface-variant font-body-sm">Interfaces minimalistes et apaisantes conçues pour réduire l'anxiété et favoriser la guérison mentale.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+</div>
+<div>
+<h4 class="font-bold text-body-base mb-2">Écosystème Connecté</h4>
+<p class="text-on-surface-variant font-body-sm">Synchronisation transparente entre vos appareils, vos praticiens et votre historique de santé.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="order-1 lg:order-2 space-y-8">
+<div class="aspect-video rounded-[2rem] bg-surface-container-highest overflow-hidden shadow-2xl relative"><img alt="Clinique moderne" class="absolute inset-0 w-full h-full object-cover" src="https://placeholder.pics/svg/300"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center group/play">
+<div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 group-hover/play:scale-110 transition-transform">
+<span class="material-symbols-outlined !text-4xl text-white" data-icon="play_arrow" data-weight="fill">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-6 left-6 right-6 glass-card p-4 rounded-xl flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined !text-xl" data-icon="play_circle" data-weight="fill">play_circle</span>
+</div>
+<span class="font-bold text-sm text-on-surface">Découvrez notre vision (2:45)</span>
+</div></div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-6 rounded-2xl bg-white shadow-sm border border-outline-variant/20">
+<span class="block text-2xl font-bold text-primary mb-1">500+</span>
+<span class="text-body-sm text-on-surface-variant">Praticiens Certifiés</span>
+</div>
+<div class="p-6 rounded-2xl bg-white shadow-sm border border-outline-variant/20">
+<span class="block text-2xl font-bold text-primary mb-1">24/7</span>
+<span class="text-body-sm text-on-surface-variant">Support IA Illimité</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA Section -->
+<section class="py-24 px-margin-page">
+<div class="max-w-5xl mx-auto rounded-[3rem] bg-inverse-surface p-12 md:p-20 text-center relative overflow-hidden shadow-2xl">
+<div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_-20%,rgba(130,216,255,0.15),transparent_70%)]"></div>
+<div class="relative z-10 space-y-8">
+<h2 class="font-display-lg text-headline-md md:text-display-lg text-surface leading-tight">Prêt à transformer votre rapport à la santé mentale ?</h2>
+<p class="text-surface-variant/80 max-w-xl mx-auto font-body-base">Rejoignez des milliers de personnes qui ont choisi une approche moderne et bienveillante pour leur bien-être.</p>
+<div class="flex flex-wrap justify-center gap-6 pt-4">
+<button class="px-10 py-5 bg-primary text-on-primary font-bold rounded-2xl shadow-xl shadow-primary/30 hover:scale-105 active:scale-95 transition-all">
+                            Commencer maintenant
+                        </button>
+<button class="px-10 py-5 bg-white/10 text-white backdrop-blur-md border border-white/20 font-bold rounded-2xl hover:bg-white/20 transition-all">
+                            Consulter les tarifs
+                        </button>
+</div>
+<p class="text-surface-variant/50 font-body-sm">Essai gratuit de 7 jours sur le Compagnon IA. Sans engagement.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-high dark:bg-surface-container-highest border-t border-outline-variant full-width bottom-0">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-page py-12 max-w-7xl mx-auto w-full">
+<div class="space-y-6">
+<div class="text-headline-md font-headline-md text-primary dark:text-inverse-primary tracking-tighter">
+                    M-Santé
+                </div>
+<p class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim max-w-xs leading-relaxed">
+                    Votre partenaire de confiance pour une santé mentale épanouie, alliant innovation et humanité.
+                </p>
+<div class="flex space-x-4">
+<a class="w-10 h-10 rounded-full glass-card flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all" href="#">
+<span class="material-symbols-outlined !text-xl" data-icon="share">share</span>
+</a>
+<a class="w-10 h-10 rounded-full glass-card flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all" href="#">
+<span class="material-symbols-outlined !text-xl" data-icon="mail">mail</span>
+</a>
+</div>
+</div>
+<div>
+<h5 class="font-bold mb-6 text-on-surface">Produit</h5>
+<ul class="space-y-4">
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">Wellness IA</a></li>
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">Praticiens</a></li>
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">Tarifs</a></li>
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">Aide</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-6 text-on-surface">Entreprise</h5>
+<ul class="space-y-4">
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">À propos</a></li>
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">Carrières</a></li>
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">Presse</a></li>
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-6 text-on-surface">Légal</h5>
+<ul class="space-y-4">
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">Plan du site</a></li>
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">Mentions légales</a></li>
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">Confidentialité</a></li>
+<li><a class="font-body-sm text-body-sm text-on-tertiary-container dark:text-tertiary-fixed-dim hover:text-primary transition-colors" href="#">Conditions d'utilisation</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 py-8 px-margin-page max-w-7xl mx-auto w-full text-center">
+<p class="font-body-sm text-body-sm text-on-tertiary-container/60">© 2024 M-Santé. Tous droits réservés.</p>
+</div>
+</footer>
+</body></html>

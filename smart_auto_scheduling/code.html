@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Scheduling</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#3f484d",
+                      "on-surface": "#0b1c30",
+                      "on-primary": "#ffffff",
+                      "surface-container": "#e5eeff",
+                      "error": "#ba1a1a",
+                      "on-tertiary-container": "#545759",
+                      "on-secondary-fixed-variant": "#544600",
+                      "outline": "#6f787e",
+                      "on-primary-container": "#005e7a",
+                      "surface-bright": "#f8f9ff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "on-primary-fixed-variant": "#004d65",
+                      "inverse-surface": "#213145",
+                      "secondary-container": "#ffde5c",
+                      "on-error": "#ffffff",
+                      "surface-variant": "#d3e4fe",
+                      "on-secondary-fixed": "#221b00",
+                      "surface-tint": "#006685",
+                      "inverse-primary": "#7bd1f8",
+                      "background": "#f8f9ff",
+                      "primary-fixed-dim": "#7bd1f8",
+                      "primary-fixed": "#bee9ff",
+                      "tertiary-container": "#cbcdcf",
+                      "tertiary-fixed": "#e0e3e5",
+                      "on-background": "#0b1c30",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed": "#001f2a",
+                      "surface": "#f8f9ff",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary": "#ffffff",
+                      "surface-dim": "#cbdbf5",
+                      "secondary-fixed": "#ffe170",
+                      "secondary": "#705d00",
+                      "tertiary": "#5c5f61",
+                      "outline-variant": "#bec8ce",
+                      "error-container": "#ffdad6",
+                      "primary-container": "#82d8ff",
+                      "on-tertiary-fixed-variant": "#444749",
+                      "tertiary-fixed-dim": "#c4c7c9",
+                      "surface-container-lowest": "#ffffff",
+                      "primary": "#006685",
+                      "on-secondary-container": "#756100",
+                      "on-tertiary-fixed": "#191c1e",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed-dim": "#e4c546",
+                      "surface-container-high": "#dce9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-gap": "12px",
+                      "card-padding": "20px",
+                      "unit": "8px",
+                      "margin-page": "24px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "body-base": [
+                              "Manrope"
+                      ],
+                      "headline-md": [
+                              "Manrope"
+                      ],
+                      "display-lg": [
+                              "Manrope"
+                      ],
+                      "body-sm": [
+                              "Manrope"
+                      ],
+                      "label-caps": [
+                              "Manrope"
+                      ]
+              },
+              "fontSize": {
+                      "body-base": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: #f8f9ff;
+            font-family: 'Manrope', sans-serif;
+            color: #0b1c30;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(130, 216, 255, 0.05);
+        }
+        .ai-slot {
+            background: linear-gradient(135deg, rgba(130,216,255,0.2) 0%, rgba(130,216,255,0.05) 100%);
+            border: 1px dashed #82d8ff;
+        }
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(130, 216, 255, 0.3);
+        }
+        
+        /* Custom scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #bec8ce;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6f787e;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-base antialiased overflow-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-white/70 backdrop-blur-md border-b border-white/20 shadow-[0_8px_32px_0_rgba(130,216,255,0.08)]">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Toggle (hidden on md) -->
+<button class="md:hidden text-primary hover:bg-sky-50/50 p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-400 to-sky-600 font-['Manrope'] tracking-tight">M-Santé</div>
+</div>
+<div class="flex-1 max-w-md mx-6 hidden md:block">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline-variant group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border border-outline-variant/30 rounded-full leading-5 bg-surface-container-lowest/50 text-on-surface placeholder-outline-variant focus:outline-none focus:bg-surface-container-lowest focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm transition-all shadow-sm" placeholder="Search patients, appointments..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button aria-label="notifications" class="text-sky-400 hover:bg-sky-50/50 p-2 rounded-full transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button aria-label="settings" class="text-sky-400 hover:bg-sky-50/50 p-2 rounded-full transition-colors hidden sm:block">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden border-2 border-white shadow-sm ml-2">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a professional medical practitioner in a modern clinical setting. They are wearing a clean white coat with a subtle light blue shirt underneath. The lighting is bright, soft, and high-key, reflecting a modern light-mode aesthetic. The background is slightly blurred, showing a serene, high-tech hospital environment with glass walls." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNps8PqYdekaVO_asPGUGIM_Ji_TTPZ_okj8cEKiZuUkXIpEEZW0gXFkeqYKgs2zwqzrH6_sTd_c7KP0EbXV8yciP-2RtUE9j0OCMw6Lu76VFafDEw26mkFETjtNbDOCnhyGpFE0IknDNvg-8MIwE3mneSCsruVmKUeV_k6bmk4JZTUrqFwL_ZGLUmpB15lXIu5bsn21JcII6YlS5ALvmnTo41iBzq73DYinsaJAEvMaELx1dMNfdc1EwICPxbToCZTKHTBKpjSA_T"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex fixed left-0 top-0 h-screen flex-col py-8 z-40 w-64 border-r rounded-r-none border-white/10 shadow-xl bg-white/40 backdrop-blur-xl pt-24 pb-6 justify-between">
+<div class="px-4 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-sky-400 hover:bg-white/60 transition-all rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+<span>Workflows</span>
+</a>
+<!-- Active State: Scheduling -->
+<a class="flex items-center gap-3 px-4 py-3 text-sky-600 bg-sky-50/50 rounded-lg border-r-4 border-sky-400 font-['Manrope'] text-sm font-medium scale-105 transition-transform duration-300 ease-out shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span>Scheduling</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-sky-400 hover:bg-white/60 transition-all rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span>Wellness</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-sky-400 hover:bg-white/60 transition-all rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Finance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-sky-400 hover:bg-white/60 transition-all rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span>Analytics</span>
+</a>
+</div>
+<div class="px-4 flex flex-col gap-2 mt-auto">
+<button class="w-full mb-4 bg-primary text-on-primary py-2.5 rounded-lg font-body-sm font-medium shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Workflow
+            </button>
+<div class="h-px w-full bg-outline-variant/30 my-2"></div>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-sky-400 transition-colors rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-sky-400 transition-colors rounded-lg font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-20 pb-24 md:pl-64 md:pb-8 min-h-screen flex flex-col xl:flex-row gap-6 p-6">
+<!-- Calendar Area (Left/Main) -->
+<div class="flex-1 flex flex-col gap-4">
+<!-- Header & Controls -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 glass-panel rounded-xl p-4">
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface">Smart Auto-Scheduling</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Review AI-suggested follow-ups for this week.</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center bg-surface-container-lowest rounded-lg border border-outline-variant/30 p-1">
+<button class="px-3 py-1 text-sm font-medium rounded-md hover:bg-surface-variant transition-colors">Day</button>
+<button class="px-3 py-1 text-sm font-medium rounded-md bg-primary text-on-primary shadow-sm">Week</button>
+<button class="px-3 py-1 text-sm font-medium rounded-md hover:bg-surface-variant transition-colors">Month</button>
+</div>
+<div class="flex gap-1">
+<button class="p-2 rounded-lg border border-outline-variant/30 bg-surface-container-lowest text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="p-2 rounded-lg border border-outline-variant/30 bg-surface-container-lowest text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Calendar Grid -->
+<div class="glass-panel rounded-xl flex-1 flex flex-col overflow-hidden min-h-[600px]">
+<!-- Days Header -->
+<div class="grid grid-cols-6 border-b border-outline-variant/20 bg-surface-container-lowest/50">
+<div class="p-3 text-center border-r border-outline-variant/20">
+<div class="font-label-caps text-label-caps text-outline">TIME</div>
+</div>
+<!-- Mon -->
+<div class="p-3 text-center border-r border-outline-variant/20">
+<div class="font-label-caps text-label-caps text-outline">MON</div>
+<div class="font-headline-md text-headline-md mt-1">12</div>
+</div>
+<!-- Tue -->
+<div class="p-3 text-center border-r border-outline-variant/20">
+<div class="font-label-caps text-label-caps text-primary">TUE</div>
+<div class="font-headline-md text-headline-md mt-1 text-primary">13</div>
+<div class="w-1 h-1 bg-primary rounded-full mx-auto mt-1"></div>
+</div>
+<!-- Wed -->
+<div class="p-3 text-center border-r border-outline-variant/20">
+<div class="font-label-caps text-label-caps text-outline">WED</div>
+<div class="font-headline-md text-headline-md mt-1">14</div>
+</div>
+<!-- Thu -->
+<div class="p-3 text-center border-r border-outline-variant/20">
+<div class="font-label-caps text-label-caps text-outline">THU</div>
+<div class="font-headline-md text-headline-md mt-1">15</div>
+</div>
+<!-- Fri -->
+<div class="p-3 text-center">
+<div class="font-label-caps text-label-caps text-outline">FRI</div>
+<div class="font-headline-md text-headline-md mt-1">16</div>
+</div>
+</div>
+<!-- Time Grid Body (Scrollable) -->
+<div class="flex-1 overflow-y-auto relative bg-surface-container-lowest/30">
+<!-- Current time line -->
+<div class="absolute w-full flex items-center z-20" style="top: 25%;">
+<div class="w-16 text-right pr-2 font-label-caps text-[10px] text-error">10:30 AM</div>
+<div class="flex-1 h-px bg-error relative">
+<div class="absolute -left-1 -top-1 w-2 h-2 rounded-full bg-error"></div>
+</div>
+</div>
+<div class="grid grid-cols-6 min-h-[800px]">
+<!-- Time Column -->
+<div class="border-r border-outline-variant/20 relative">
+<div class="absolute w-full text-right pr-3 font-body-sm text-xs text-outline-variant" style="top: 0%;">09:00 AM</div>
+<div class="absolute w-full text-right pr-3 font-body-sm text-xs text-outline-variant" style="top: 12.5%;">10:00 AM</div>
+<div class="absolute w-full text-right pr-3 font-body-sm text-xs text-outline-variant" style="top: 25%;">11:00 AM</div>
+<div class="absolute w-full text-right pr-3 font-body-sm text-xs text-outline-variant" style="top: 37.5%;">12:00 PM</div>
+<div class="absolute w-full text-right pr-3 font-body-sm text-xs text-outline-variant" style="top: 50%;">01:00 PM</div>
+<div class="absolute w-full text-right pr-3 font-body-sm text-xs text-outline-variant" style="top: 62.5%;">02:00 PM</div>
+<div class="absolute w-full text-right pr-3 font-body-sm text-xs text-outline-variant" style="top: 75%;">03:00 PM</div>
+<div class="absolute w-full text-right pr-3 font-body-sm text-xs text-outline-variant" style="top: 87.5%;">04:00 PM</div>
+</div>
+<!-- Mon Grid -->
+<div class="border-r border-outline-variant/10 relative">
+<!-- Background Grid Lines -->
+<div class="absolute w-full border-b border-outline-variant/10 h-[12.5%] top-[0%]"></div>
+<div class="absolute w-full border-b border-outline-variant/10 h-[12.5%] top-[12.5%]"></div>
+<div class="absolute w-full border-b border-outline-variant/10 h-[12.5%] top-[25%]"></div>
+<div class="absolute w-full border-b border-outline-variant/10 h-[12.5%] top-[37.5%]"></div>
+<!-- Confirmed Appointment -->
+<div class="absolute left-1 right-1 rounded-md p-2 border-l-4 border-surface-tint bg-surface-container shadow-sm overflow-hidden" style="top: 2%; height: 10%;">
+<div class="font-body-sm text-xs font-semibold text-on-surface truncate">J. Doe - Checkup</div>
+<div class="font-body-sm text-[10px] text-on-surface-variant truncate">09:15 - 10:00 AM</div>
+</div>
+</div>
+<!-- Tue Grid (Active) -->
+<div class="border-r border-outline-variant/10 relative bg-primary-fixed/10">
+<!-- Background Grid Lines -->
+<div class="absolute w-full border-b border-outline-variant/10 h-[12.5%] top-[0%]"></div>
+<div class="absolute w-full border-b border-outline-variant/10 h-[12.5%] top-[12.5%]"></div>
+<div class="absolute w-full border-b border-outline-variant/10 h-[12.5%] top-[25%]"></div>
+<!-- AI Suggested Slot 1 -->
+<div class="absolute left-1 right-1 rounded-md p-2 ai-slot cursor-pointer transition-all hover:bg-primary-container/30 border-primary" style="top: 30%; height: 12%;">
+<div class="flex items-start justify-between">
+<div class="font-body-sm text-xs font-semibold text-primary truncate flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+                                        A. Smith
+                                    </div>
+<button class="w-5 h-5 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm ai-glow">
+<span class="material-symbols-outlined text-[12px]">check</span>
+</button>
+</div>
+<div class="font-body-sm text-[10px] text-primary truncate mt-1">11:30 - 12:30 PM</div>
+<div class="font-body-sm text-[10px] text-on-surface-variant truncate mt-0.5">Follow-up</div>
+</div>
+</div>
+<!-- Wed Grid -->
+<div class="border-r border-outline-variant/10 relative">
+<!-- Background Grid Lines -->
+<div class="absolute w-full border-b border-outline-variant/10 h-[12.5%] top-[0%]"></div>
+<div class="absolute w-full border-b border-outline-variant/10 h-[12.5%] top-[12.5%]"></div>
+<!-- AI Suggested Slot 2 -->
+<div class="absolute left-1 right-1 rounded-md p-2 ai-slot cursor-pointer transition-all hover:bg-primary-container/30" style="top: 52%; height: 9%;">
+<div class="flex items-start justify-between">
+<div class="font-body-sm text-xs font-semibold text-primary truncate flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+                                        M. Garcia
+                                    </div>
+<button class="w-5 h-5 rounded-full border border-primary text-primary flex items-center justify-center bg-white/50">
+<span class="material-symbols-outlined text-[12px]">check</span>
+</button>
+</div>
+<div class="font-body-sm text-[10px] text-primary truncate mt-1">01:15 - 02:00 PM</div>
+</div>
+</div>
+<!-- Thu Grid -->
+<div class="border-r border-outline-variant/10 relative">
+<div class="absolute w-full border-b border-outline-variant/10 h-[12.5%] top-[0%]"></div>
+</div>
+<!-- Fri Grid -->
+<div class="relative">
+<div class="absolute w-full border-b border-outline-variant/10 h-[12.5%] top-[0%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar (Scheduling Assistant) -->
+<aside class="w-full xl:w-80 flex flex-col gap-4">
+<!-- Assistant Header Card -->
+<div class="glass-panel rounded-xl p-5 border-t-4 border-primary shadow-sm relative overflow-hidden">
+<!-- Decorative background elements -->
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary-fixed rounded-full blur-2xl opacity-50 pointer-events-none"></div>
+<div class="flex items-center gap-3 mb-4 relative z-10">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined">auto_awesome</span>
+</div>
+<div>
+<h2 class="font-body-base text-base font-bold text-on-surface">Scheduling Assistant</h2>
+<div class="flex items-center gap-1 mt-0.5">
+<div class="w-2 h-2 rounded-full bg-[#10b981]"></div>
+<span class="font-body-sm text-[11px] text-on-surface-variant font-medium">AI Engine Active</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-bright rounded-lg p-3 border border-outline-variant/20 relative z-10">
+<p class="font-body-sm text-sm text-on-surface-variant leading-relaxed">
+                        I've analyzed your upcoming availability and patient follow-up needs. <strong class="text-primary font-semibold">2 optimal slots</strong> have been suggested to minimize gaps and match patient preferences.
+                    </p>
+</div>
+</div>
+<!-- Suggested Action Cards -->
+<div class="flex-1 flex flex-col gap-3">
+<h3 class="font-label-caps text-label-caps text-outline-variant px-1 mt-2">PENDING SUGGESTIONS</h3>
+<!-- Card 1 (Active/Focused) -->
+<div class="glass-panel rounded-xl p-4 border border-primary ai-glow cursor-pointer">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs">
+                                AS
+                            </div>
+<div>
+<h4 class="font-body-sm font-semibold text-on-surface">Alice Smith</h4>
+<p class="font-body-sm text-[11px] text-on-surface-variant">Post-Op Follow-up (60m)</p>
+</div>
+</div>
+<div class="text-right">
+<div class="font-body-sm text-xs font-bold text-primary">Tue 13</div>
+<div class="font-body-sm text-[11px] text-outline">11:30 AM</div>
+</div>
+</div>
+<div class="bg-primary-fixed/20 rounded-lg p-2.5 mb-3 border border-primary/20">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-[14px] text-primary mt-0.5">lightbulb</span>
+<div class="font-body-sm text-xs text-on-surface-variant">
+<span class="font-medium text-primary block mb-0.5">Why this slot?</span>
+<ul class="list-disc pl-3 space-y-0.5 opacity-90">
+<li>Matches patient's typical morning availability.</li>
+<li>Groups with another high-focus task.</li>
+<li>Creates optimal practitioner focus time.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-1.5 rounded-lg border border-outline-variant text-on-surface font-body-sm text-xs font-medium hover:bg-surface-variant transition-colors">
+                            Dismiss
+                        </button>
+<button class="flex-1 py-1.5 rounded-lg bg-primary text-on-primary font-body-sm text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check</span> Approve
+                        </button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="glass-panel rounded-xl p-4 border border-outline-variant/30 hover:border-primary/50 transition-colors cursor-pointer opacity-80 hover:opacity-100">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold text-xs">
+                                MG
+                            </div>
+<div>
+<h4 class="font-body-sm font-semibold text-on-surface">Maria Garcia</h4>
+<p class="font-body-sm text-[11px] text-on-surface-variant">Routine Check (45m)</p>
+</div>
+</div>
+<div class="text-right">
+<div class="font-body-sm text-xs font-bold text-on-surface">Wed 14</div>
+<div class="font-body-sm text-[11px] text-outline">01:15 PM</div>
+</div>
+</div>
+<div class="flex items-start gap-2 mb-3 px-1">
+<span class="material-symbols-outlined text-[14px] text-outline mt-0.5">info</span>
+<p class="font-body-sm text-[11px] text-on-surface-variant">Fills an unexpected cancellation gap perfectly.</p>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-1.5 rounded-lg bg-surface-container text-on-surface font-body-sm text-xs font-medium hover:bg-surface-variant transition-colors">
+                            Review
+                        </button>
+</div>
+</div>
+</div>
+<!-- Settings Toggle Area -->
+<div class="glass-panel rounded-xl p-4 mt-auto">
+<div class="flex items-center justify-between">
+<div>
+<h4 class="font-body-sm font-semibold text-on-surface">Auto-Approve Sessions</h4>
+<p class="font-body-sm text-[10px] text-on-surface-variant mt-0.5 max-w-[200px]">Automatically confirm AI suggestions for low-complexity recurring patients.</p>
+</div>
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-outline-variant/50 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</aside>
+</main>
+<!-- Mobile Bottom Navigation -->
+<nav class="md:hidden fixed bottom-0 w-full bg-white/80 backdrop-blur-xl border-t border-white/20 shadow-[0_-8px_32px_0_rgba(130,216,255,0.08)] z-50 flex justify-around items-center h-16 pb-safe">
+<a class="flex flex-col items-center justify-center w-full h-full text-slate-500 hover:text-sky-500 transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="hub">hub</span>
+<span class="text-[10px] font-['Manrope'] font-medium mt-1">Workflows</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-sky-500 font-bold" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="calendar_today" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="text-[10px] font-['Manrope'] font-medium mt-1">Scheduling</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-slate-500 hover:text-sky-500 transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="auto_awesome">auto_awesome</span>
+<span class="text-[10px] font-['Manrope'] font-medium mt-1">Wellness</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-slate-500 hover:text-sky-500 transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="text-[10px] font-['Manrope'] font-medium mt-1">Finance</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-slate-500 hover:text-sky-500 transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="monitoring">monitoring</span>
+<span class="text-[10px] font-['Manrope'] font-medium mt-1">Analytics</span>
+</a>
+</nav>
+</body></html>

@@ -4,9 +4,15 @@ import {
   KeyboardAvoidingView, Platform, Alert, Dimensions, Modal,
 } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
-import Daily, { DailyMediaView } from '@daily-co/react-native-daily-js'
-import type { DailyCall } from '@daily-co/react-native-daily-js'
-import type { MediaStreamTrack } from '@daily-co/react-native-webrtc'
+
+// Daily.co est une feature P2 — stub pour Expo Go
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type DailyCall = any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MediaStreamTrack = any
+const Daily = { createCallObject: () => null }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const DailyMediaView = (_props: unknown) => null
 import { useConsultationStore } from '@/features/consultation/store/consultationStore'
 import { useSendChatMessage, useEndConsultation } from '@/features/consultation/hooks/useConsultation'
 import { ConsultationTimer } from '@/features/consultation/components/ConsultationTimer'

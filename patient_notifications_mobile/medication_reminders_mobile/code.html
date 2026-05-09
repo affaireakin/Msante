@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Medication Reminders</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#e4c546",
+                    "primary": "#006685",
+                    "tertiary-container": "#cbcdcf",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#eff4ff",
+                    "on-background": "#0b1c30",
+                    "inverse-primary": "#7bd1f8",
+                    "tertiary-fixed": "#e0e3e5",
+                    "surface": "#f8f9ff",
+                    "surface-container-high": "#dce9ff",
+                    "on-secondary-container": "#756100",
+                    "on-tertiary-container": "#545759",
+                    "surface-tint": "#006685",
+                    "primary-fixed": "#bee9ff",
+                    "primary-container": "#82d8ff",
+                    "outline": "#6f787e",
+                    "inverse-surface": "#213145",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#ffde5c",
+                    "secondary": "#705d00",
+                    "inverse-on-surface": "#eaf1ff",
+                    "background": "#f8f9ff",
+                    "surface-container-highest": "#d3e4fe",
+                    "outline-variant": "#bec8ce",
+                    "surface-bright": "#f8f9ff",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "on-tertiary-fixed": "#191c1e",
+                    "error-container": "#ffdad6",
+                    "surface-variant": "#d3e4fe",
+                    "on-primary-container": "#005e7a",
+                    "on-primary-fixed-variant": "#004d65",
+                    "surface-dim": "#cbdbf5",
+                    "on-secondary-fixed": "#221b00",
+                    "primary-fixed-dim": "#7bd1f8",
+                    "surface-container": "#e5eeff",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#544600",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#001f2a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#5c5f61",
+                    "secondary-fixed": "#ffe170",
+                    "on-surface": "#0b1c30",
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#3f484d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "margin-page": "24px",
+                    "stack-gap": "12px",
+                    "unit": "8px",
+                    "card-padding": "20px"
+            },
+            "fontFamily": {
+                    "body-base": [
+                            "Manrope"
+                    ],
+                    "body-sm": [
+                            "Manrope"
+                    ],
+                    "label-caps": [
+                            "Manrope"
+                    ],
+                    "headline-md": [
+                            "Manrope"
+                    ],
+                    "display-lg": [
+                            "Manrope"
+                    ]
+            },
+            "fontSize": {
+                    "body-base": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body-base text-on-background min-h-screen flex flex-col pb-24 pt-20">
+<!-- TopAppBar -->
+<header class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl font-manrope antialiased fixed top-0 w-full z-50 border-b border-white/20 dark:border-slate-800/50 shadow-[0_8px_32px_rgba(130,216,255,0.08)] flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-3">
+<img alt="User Profile" class="w-8 h-8 rounded-full object-cover border-2 border-white/50" data-alt="A macro, softly lit portrait of a young adult looking forward with a serene expression. The lighting is high-key and diffused, typical of a modern health app avatar, highlighting clean skin and subtle features. The background is a pure, minimalist light gray to complement a crisp, light-mode interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD20MusQu87VlVsJbUPGumE7jmRQLTFTbCHTGUoJHmnnCWGcFH1Yb3IJs0o5AVqQqQFCqbcE99zrQRwMzl-zsvHyMca-bZUuO_qPptvG14bLgf3s4rURk_reTyu0UJ206e9ngnI6jYGfqA6ASVklLjsqGR8RLe--1CGhTottyAok6NLcM_Ha5w-TAcZ6z0cDfrke5Q-jx1rwkRdkBd4yt5ZqYTmgGaTBa-xpYZCs_2x9Udj81eMny7o2QUu624Tcwq6OdR0Lb0ZJGmR"/>
+<span class="text-2xl font-bold tracking-tight text-sky-600 dark:text-sky-400">M-Santé</span>
+</div>
+<button class="text-sky-500 dark:text-sky-400 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors active:scale-95 duration-200 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-margin-page flex flex-col gap-stack-gap">
+<!-- Header -->
+<section class="py-4">
+<h1 class="font-headline-md text-headline-md text-on-background mb-1">Today's Schedule</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Wednesday, October 11</p>
+</section>
+<!-- Morning Doses -->
+<section class="bg-surface-container-lowest/60 backdrop-blur-xl border border-white/80 rounded-xl p-card-padding shadow-[0_4px_24px_rgba(0,102,133,0.03)] relative overflow-hidden">
+<!-- Subtle inner glow -->
+<div class="absolute inset-0 border border-white/40 rounded-xl pointer-events-none"></div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">wb_sunny</span>
+<h2 class="font-label-caps text-label-caps text-primary uppercase tracking-wider">Morning · 08:00 AM</h2>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Dose Card: Checked -->
+<div class="bg-surface-container-low/50 border border-white/50 rounded-lg p-3 flex items-center justify-between group cursor-pointer hover:bg-surface-container-low/80 transition-all">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-primary text-[16px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div>
+<p class="font-body-base text-body-base text-on-background line-through opacity-70">Vitamin B12</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-through opacity-70">1000mcg · 1 capsule</p>
+</div>
+</div>
+</div>
+<!-- Dose Card: Unchecked -->
+<div class="bg-surface-container-lowest border border-white/80 rounded-lg p-3 flex items-center justify-between group cursor-pointer shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant group-hover:border-primary transition-colors flex items-center justify-center">
+<!-- Empty circle for uncompleted -->
+</div>
+<div>
+<p class="font-body-base text-body-base text-on-background font-semibold">Magnesium</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">250mg · Take with food</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Refill Alerts -->
+<section class="mt-4">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-secondary text-xl">autorenew</span>
+<h2 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Refill Alerts</h2>
+</div>
+<div class="bg-surface-container-lowest/80 backdrop-blur-2xl border border-white/60 rounded-xl p-card-padding shadow-[0_8px_32px_rgba(0,102,133,0.06)] relative overflow-hidden">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-background text-[20px] leading-tight">Lisinopril</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">10mg · Blood Pressure</p>
+</div>
+<div class="bg-secondary-container/30 border border-secondary-container/50 px-2 py-1 rounded-md flex items-center gap-1">
+<span class="material-symbols-outlined text-secondary text-[14px]">warning</span>
+<span class="font-label-caps text-label-caps text-secondary">5 Days Left</span>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden mt-4 shadow-inner">
+<div class="bg-secondary-fixed-dim h-full rounded-full" style="width: 15%;"></div>
+</div>
+<div class="mt-4 flex justify-end">
+<button class="bg-surface-container-highest text-primary font-label-caps text-label-caps px-4 py-2 rounded-full hover:bg-surface-container transition-colors flex items-center gap-2">
+                        Order Refill
+                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Active Prescriptions -->
+<section class="mt-4 mb-8">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-3">Active Prescriptions</h2>
+<div class="flex flex-col gap-2">
+<!-- Prescription Item 1 -->
+<div class="bg-surface-container-lowest/40 backdrop-blur-md border border-white/40 rounded-lg p-3 flex justify-between items-center active:scale-[0.98] transition-transform cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="bg-primary-container/20 p-2 rounded-md">
+<span class="material-symbols-outlined text-primary text-[20px]">medication</span>
+</div>
+<div>
+<p class="font-body-base text-body-base text-on-background font-semibold">Atorvastatin</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">20mg · Daily</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant">chevron_right</span>
+</div>
+<!-- Prescription Item 2 -->
+<div class="bg-surface-container-lowest/40 backdrop-blur-md border border-white/40 rounded-lg p-3 flex justify-between items-center active:scale-[0.98] transition-transform cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="bg-primary-container/20 p-2 rounded-md">
+<span class="material-symbols-outlined text-primary text-[20px]">medication</span>
+</div>
+<div>
+<p class="font-body-base text-body-base text-on-background font-semibold">Metformin</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">500mg · Twice Daily</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant">chevron_right</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl fixed bottom-0 w-full rounded-t-[32px] border-t border-white/30 dark:border-slate-800/50 shadow-[0_-10px_40px_rgba(0,0,0,0.04)] fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 md:hidden">
+<!-- Tab 1: Schedule (ACTIVE) -->
+<button class="flex flex-col items-center justify-center text-sky-600 dark:text-sky-400 bg-sky-50/50 dark:bg-sky-400/10 rounded-2xl px-3 py-1.5 hover:text-sky-500 dark:hover:text-sky-300 transition-all active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_note</span>
+<span class="text-[11px] font-semibold font-manrope uppercase tracking-wider mt-1">Schedule</span>
+</button>
+<!-- Tab 2: Meds (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1.5 hover:text-sky-500 dark:hover:text-sky-300 transition-all active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">medication</span>
+<span class="text-[11px] font-semibold font-manrope uppercase tracking-wider mt-1">Meds</span>
+</button>
+<!-- Tab 3: Refills (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1.5 hover:text-sky-500 dark:hover:text-sky-300 transition-all active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">autorenew</span>
+<span class="text-[11px] font-semibold font-manrope uppercase tracking-wider mt-1">Refills</span>
+</button>
+<!-- Tab 4: Profile (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1.5 hover:text-sky-500 dark:hover:text-sky-300 transition-all active:scale-90 duration-300 ease-out group">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="text-[11px] font-semibold font-manrope uppercase tracking-wider mt-1">Profile</span>
+</button>
+</nav>
+</body></html>

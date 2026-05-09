@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#3f484d",
+                      "on-surface": "#0b1c30",
+                      "on-primary": "#ffffff",
+                      "surface-container": "#e5eeff",
+                      "error": "#ba1a1a",
+                      "on-tertiary-container": "#545759",
+                      "on-secondary-fixed-variant": "#544600",
+                      "outline": "#6f787e",
+                      "on-primary-container": "#005e7a",
+                      "surface-bright": "#f8f9ff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "on-primary-fixed-variant": "#004d65",
+                      "inverse-surface": "#213145",
+                      "secondary-container": "#ffde5c",
+                      "on-error": "#ffffff",
+                      "surface-variant": "#d3e4fe",
+                      "on-secondary-fixed": "#221b00",
+                      "surface-tint": "#006685",
+                      "inverse-primary": "#7bd1f8",
+                      "background": "#f8f9ff",
+                      "primary-fixed-dim": "#7bd1f8",
+                      "primary-fixed": "#bee9ff",
+                      "tertiary-container": "#cbcdcf",
+                      "tertiary-fixed": "#e0e3e5",
+                      "on-background": "#0b1c30",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-fixed": "#001f2a",
+                      "surface": "#f8f9ff",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary": "#ffffff",
+                      "surface-dim": "#cbdbf5",
+                      "secondary-fixed": "#ffe170",
+                      "secondary": "#705d00",
+                      "tertiary": "#5c5f61",
+                      "outline-variant": "#bec8ce",
+                      "error-container": "#ffdad6",
+                      "primary-container": "#82d8ff",
+                      "on-tertiary-fixed-variant": "#444749",
+                      "tertiary-fixed-dim": "#c4c7c9",
+                      "surface-container-lowest": "#ffffff",
+                      "primary": "#006685",
+                      "on-secondary-container": "#756100",
+                      "on-tertiary-fixed": "#191c1e",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed-dim": "#e4c546",
+                      "surface-container-high": "#dce9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-gap": "12px",
+                      "card-padding": "20px",
+                      "unit": "8px",
+                      "margin-page": "24px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "body-base": [
+                              "Manrope"
+                      ],
+                      "headline-md": [
+                              "Manrope"
+                      ],
+                      "display-lg": [
+                              "Manrope"
+                      ],
+                      "body-sm": [
+                              "Manrope"
+                      ],
+                      "label-caps": [
+                              "Manrope"
+                      ]
+              },
+              "fontSize": {
+                      "body-base": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: theme('colors.background'); }
+        /* Subtle grid background to enhance the 'Command Center' feel without being overwhelming */
+        .bg-grid-pattern {
+            background-image: linear-gradient(to right, theme('colors.surface-variant') 1px, transparent 1px),
+                              linear-gradient(to bottom, theme('colors.surface-variant') 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center top;
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-on-surface bg-grid-pattern relative">
+<!-- Ambient glowing orbs for Medical Futurism aesthetic -->
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-container/20 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-inverse-primary/20 rounded-full blur-[80px] pointer-events-none"></div>
+<!-- SideNavBar (Generated from JSON) -->
+<nav class="fixed left-0 top-0 h-screen flex flex-col py-8 z-40 h-full w-64 border-r rounded-r-none border-r border-white/10 dark:border-slate-800/30 shadow-xl bg-white/40 dark:bg-slate-950/40 backdrop-blur-xl">
+<div class="px-6 mb-8 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-white/50 shadow-sm">
+<img alt="M-Santé Admin" class="w-full h-full object-cover" data-alt="A professional headshot of a confident female healthcare administrator in her late 30s. She is wearing a crisp, modern minimalist white blouse. The lighting is soft and high-key, illuminating her face against a bright, airy clinical background. The mood is approachable yet authoritative, fitting a premium medical sanctuary aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhGdWnou-L57X3t8M0mvv6RqKyGIz3YRFA52waOLd2vfSIA3ll9ESsux-G5VfGGGnPytrY2ntTnT-_0s1biLx8QttKrpMfmidKYvMAzwVZqdIY7Xm4pNmRC6ofPPUurjKIogzb-peehbqrop8y2P71xXGUtWSCX90uFB0U96AtM5S9DWEn-n6KwtML7djhtoRDIDYiOqzyjAJxTjjRsdpSgDINYSW4g-NK7cb5DYB1NuhNzfGOUryVdsIRShq2-CMdMN9caV_rtkHO"/>
+</div>
+<div>
+<h1 class="text-lg font-black text-slate-900 dark:text-white leading-tight">M-Santé</h1>
+<p class="font-['Manrope'] text-sm font-medium text-slate-500">Health Sanctuary</p>
+</div>
+</div>
+<div class="px-4 mb-6">
+<button class="w-full py-3 px-4 bg-primary text-on-primary rounded-lg font-['Manrope'] text-sm font-medium flex items-center justify-center gap-2 shadow-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+                New Workflow
+            </button>
+</div>
+<div class="flex-1 flex flex-col gap-2 px-2 overflow-y-auto">
+<a class="flex items-center gap-3 px-4 py-3 text-sky-600 dark:text-sky-400 bg-sky-50/50 dark:bg-sky-900/30 rounded-lg border-r-4 border-sky-400 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">hub</span>
+                Workflows
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                Scheduling
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+                Wellness
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+                Finance
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+                Analytics
+            </a>
+</div>
+<div class="px-2 mt-auto pt-4 border-t border-white/10 dark:border-slate-800/30 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">help</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-white/60 dark:hover:bg-slate-800/60 transition-all font-['Manrope'] text-sm font-medium" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Sign Out
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 overflow-y-auto p-margin-page relative z-10">
+<!-- Header -->
+<header class="mb-8 flex justify-between items-end">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface mb-2">Automation Command Center</h2>
+<p class="font-body-base text-body-base text-on-surface-variant">Monitor, manage, and construct intelligent clinical workflows.</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-2 font-label-caps text-label-caps text-primary bg-primary-container/30 px-3 py-1.5 rounded-full border border-primary-container">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    System Online
+                </span>
+</div>
+</header>
+<!-- Top Metrics Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-8">
+<!-- Metric 1 -->
+<div class="bg-surface/60 backdrop-blur-md rounded-xl p-card-padding border border-white/50 shadow-[0_4px_24px_0_rgba(0,102,133,0.05)] relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary-container/20 rounded-bl-full -mr-4 -mt-4"></div>
+<div class="flex items-start justify-between mb-4">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Active Automations</p>
+<div class="w-8 h-8 rounded-full bg-primary-container/50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-display-lg text-display-lg text-on-surface">24</h3>
+<span class="font-label-caps text-label-caps text-secondary-fixed-dim bg-secondary-container/50 px-2 py-0.5 rounded">Running</span>
+</div>
+</div>
+<!-- Metric 2 -->
+<div class="bg-surface/60 backdrop-blur-md rounded-xl p-card-padding border border-white/50 shadow-[0_4px_24px_0_rgba(0,102,133,0.05)] relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary-container/20 rounded-bl-full -mr-4 -mt-4"></div>
+<div class="flex items-start justify-between mb-4">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Success Rate (24h)</p>
+<div class="w-8 h-8 rounded-full bg-primary-container/50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-display-lg text-display-lg text-on-surface">99.8%</h3>
+<span class="font-label-caps text-label-caps text-primary bg-primary-container/50 px-2 py-0.5 rounded">+0.2%</span>
+</div>
+</div>
+<!-- Metric 3 -->
+<div class="bg-surface/60 backdrop-blur-md rounded-xl p-card-padding border border-white/50 shadow-[0_4px_24px_0_rgba(0,102,133,0.05)] relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary-container/20 rounded-bl-full -mr-4 -mt-4"></div>
+<div class="flex items-start justify-between mb-4">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Tasks Completed</p>
+<div class="w-8 h-8 rounded-full bg-primary-container/50 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-display-lg text-display-lg text-on-surface">1,402</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Today</span>
+</div>
+</div>
+</div>
+<!-- Main Layout: Builder + Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Left Area: Workflow Builder Canvas (Takes up 2 columns) -->
+<div class="lg:col-span-2 bg-surface/40 backdrop-blur-xl rounded-xl border border-white/60 shadow-sm flex flex-col h-[600px] overflow-hidden">
+<!-- Canvas Header -->
+<div class="px-card-padding py-4 border-b border-surface-variant/50 bg-white/50 flex justify-between items-center backdrop-blur-md">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">architecture</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Workflow Builder: <span class="font-normal text-on-surface-variant">Onboarding Sequence</span></h3>
+</div>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded-full bg-surface-container hover:bg-surface-variant flex items-center justify-center text-on-surface transition-colors">
+<span class="material-symbols-outlined text-sm">undo</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-container hover:bg-surface-variant flex items-center justify-center text-on-surface transition-colors">
+<span class="material-symbols-outlined text-sm">redo</span>
+</button>
+<button class="px-4 py-1.5 rounded-full bg-primary text-on-primary font-label-caps text-label-caps shadow-sm hover:opacity-90 transition-opacity">Deploy</button>
+</div>
+</div>
+<!-- Canvas Area -->
+<div class="flex-1 bg-surface-container-lowest/30 p-8 overflow-y-auto relative flex flex-col items-center">
+<!-- Background Grid for Canvas -->
+<div class="absolute inset-0 bg-[radial-gradient(theme('colors.outline-variant')_1px,transparent_1px)] [background-size:20px_20px] opacity-20 pointer-events-none"></div>
+<!-- Node Pipeline -->
+<div class="flex flex-col items-center relative z-10 w-full max-w-md gap-0">
+<!-- Trigger Node -->
+<div class="w-full bg-white/80 backdrop-blur-md border border-outline-variant/30 rounded-xl p-4 shadow-[0_4px_20px_-4px_rgba(0,102,133,0.1)] relative z-20 group hover:border-primary/50 transition-colors">
+<div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-secondary-container border-2 border-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[12px] text-on-secondary-container font-bold">play_arrow</span>
+</div>
+<div class="pl-4">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-1 block">Trigger Event</span>
+<h4 class="font-body-base text-body-base font-semibold text-on-surface">On Practitioner Verified</h4>
+</div>
+</div>
+<!-- Connector -->
+<div class="w-px h-8 bg-outline-variant/50 relative">
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 rounded-full bg-outline-variant/50"></div>
+</div>
+<!-- Condition Split -->
+<div class="w-full relative z-20 mt-4 mb-8">
+<div class="bg-surface-variant/50 backdrop-blur-sm border border-outline-variant/30 rounded-full px-4 py-2 mx-auto w-max text-center flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">call_split</span>
+<span class="font-label-caps text-label-caps text-on-surface">Condition: Region Match</span>
+</div>
+<!-- Branch Connectors (Simplified visual) -->
+<div class="absolute top-full left-1/2 -translate-x-1/2 w-3/4 h-8 border-b border-l border-r border-outline-variant/50 rounded-b-xl"></div>
+</div>
+<!-- Parallel Actions Row -->
+<div class="w-full flex justify-between gap-6 relative z-20 pt-8">
+<!-- Action Node 1 -->
+<div class="flex-1 bg-white/80 backdrop-blur-md border border-outline-variant/30 rounded-xl p-4 shadow-[0_4px_20px_-4px_rgba(0,102,133,0.1)] relative group hover:border-primary/50 transition-colors">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-primary border-2 border-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[12px] text-on-primary">bolt</span>
+</div>
+<div class="text-center mt-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-1 block">Action</span>
+<h4 class="font-body-sm text-body-sm font-semibold text-on-surface">Create Profile Record</h4>
+<p class="font-body-sm text-[11px] text-outline mt-1 truncate">Database: Auth_User</p>
+</div>
+</div>
+<!-- Action Node 2 -->
+<div class="flex-1 bg-white/80 backdrop-blur-md border border-outline-variant/30 rounded-xl p-4 shadow-[0_4px_20px_-4px_rgba(0,102,133,0.1)] relative group hover:border-primary/50 transition-colors">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-primary border-2 border-white flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[12px] text-on-primary">sms</span>
+</div>
+<div class="text-center mt-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-1 block">Action</span>
+<h4 class="font-body-sm text-body-sm font-semibold text-on-surface">Send Welcome SMS</h4>
+<p class="font-body-sm text-[11px] text-outline mt-1 truncate">Template: Welcome_V2</p>
+</div>
+</div>
+</div>
+<!-- Connector merging back -->
+<div class="w-3/4 h-8 border-t border-l border-r border-outline-variant/50 rounded-t-xl mt-8 relative">
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-outline-variant/50"></div>
+</div>
+<div class="w-px h-8 bg-outline-variant/50 relative"></div>
+<!-- Final Node -->
+<div class="w-full max-w-[200px] bg-white/80 backdrop-blur-md border border-outline-variant/30 rounded-xl p-3 shadow-sm relative z-20 text-center opacity-70">
+<span class="font-label-caps text-label-caps text-on-surface-variant">End Workflow</span>
+</div>
+<!-- Add Node Button (Floating) -->
+<div class="absolute bottom-8 right-8 z-30">
+<button class="w-12 h-12 rounded-full bg-primary text-on-primary shadow-lg flex items-center justify-center hover:scale-105 transition-transform">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Area: Activity Log & Quick Controls -->
+<div class="flex flex-col gap-gutter">
+<!-- Quick Controls Card -->
+<div class="bg-surface/60 backdrop-blur-md rounded-xl p-card-padding border border-white/50 shadow-sm">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4">Properties</h3>
+<div class="space-y-4">
+<div>
+<label class="font-label-caps text-label-caps text-on-surface-variant mb-1 block">Workflow Name</label>
+<input class="w-full bg-white/50 border-outline-variant/30 rounded-lg font-body-sm text-body-sm text-on-surface px-3 py-2 focus:ring-primary focus:border-primary transition-shadow outline-none" type="text" value="Onboarding Sequence"/>
+</div>
+<div>
+<label class="font-label-caps text-label-caps text-on-surface-variant mb-1 block">Status</label>
+<div class="flex bg-surface-container rounded-lg p-1">
+<button class="flex-1 py-1 text-center font-body-sm text-body-sm font-medium rounded-md bg-white shadow-sm text-primary">Active</button>
+<button class="flex-1 py-1 text-center font-body-sm text-body-sm font-medium rounded-md text-on-surface-variant hover:bg-white/50">Draft</button>
+</div>
+</div>
+<div class="pt-2 border-t border-outline-variant/20">
+<div class="flex justify-between items-center mb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Error Handling</span>
+<span class="material-symbols-outlined text-[18px] text-outline">settings</span>
+</div>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 bg-white/50" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface">Auto-retry failed actions</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Execution Log -->
+<div class="flex-1 bg-surface/60 backdrop-blur-md rounded-xl p-card-padding border border-white/50 shadow-sm flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline-md text-headline-md text-on-surface">Execution Log</h3>
+<button class="font-label-caps text-label-caps text-primary hover:underline">View All</button>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 space-y-3">
+<!-- Log Item 1 (Success) -->
+<div class="flex gap-3 items-start p-2 rounded-lg hover:bg-white/40 transition-colors">
+<div class="mt-0.5 w-6 h-6 rounded-full bg-primary-container/50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[14px] text-primary">check</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-medium text-on-surface leading-tight">Instance #8902 Completed</p>
+<p class="font-body-sm text-[12px] text-on-surface-variant mt-0.5">Trigger: Dr. Sarah Jenkins verified.</p>
+<p class="font-label-caps text-[10px] text-outline mt-1">2 MINS AGO</p>
+</div>
+</div>
+<!-- Log Item 2 (Warning) -->
+<div class="flex gap-3 items-start p-2 rounded-lg hover:bg-white/40 transition-colors">
+<div class="mt-0.5 w-6 h-6 rounded-full bg-secondary-container/50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[14px] text-secondary">warning</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-medium text-on-surface leading-tight">SMS Delivery Delayed</p>
+<p class="font-body-sm text-[12px] text-on-surface-variant mt-0.5">Retrying action for Instance #8901.</p>
+<p class="font-label-caps text-[10px] text-outline mt-1">15 MINS AGO</p>
+</div>
+</div>
+<!-- Log Item 3 (Success) -->
+<div class="flex gap-3 items-start p-2 rounded-lg hover:bg-white/40 transition-colors">
+<div class="mt-0.5 w-6 h-6 rounded-full bg-primary-container/50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[14px] text-primary">check</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-medium text-on-surface leading-tight">Instance #8900 Completed</p>
+<p class="font-body-sm text-[12px] text-on-surface-variant mt-0.5">Trigger: Clinic location updated.</p>
+<p class="font-label-caps text-[10px] text-outline mt-1">1 HOUR AGO</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

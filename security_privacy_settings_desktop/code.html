@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Security &amp; Privacy Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "secondary": "#705d00",
+                        "primary-fixed": "#bee9ff",
+                        "on-secondary-fixed-variant": "#544600",
+                        "tertiary": "#5c5f61",
+                        "surface-tint": "#006685",
+                        "background": "#f8f9ff",
+                        "on-secondary-fixed": "#221b00",
+                        "tertiary-container": "#cbcdcf",
+                        "surface-dim": "#cbdbf5",
+                        "on-tertiary-container": "#545759",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#ffde5c",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "inverse-primary": "#7bd1f8",
+                        "tertiary-fixed": "#e0e3e5",
+                        "primary-container": "#82d8ff",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container-high": "#dce9ff",
+                        "on-secondary-container": "#756100",
+                        "surface-container-highest": "#d3e4fe",
+                        "inverse-on-surface": "#eaf1ff",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "surface-container": "#e5eeff",
+                        "surface-bright": "#f8f9ff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-primary-fixed": "#001f2a",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "on-surface-variant": "#3f484d",
+                        "error-container": "#ffdad6",
+                        "surface": "#f8f9ff",
+                        "primary": "#006685",
+                        "outline-variant": "#bec8ce",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "secondary-fixed": "#ffe170",
+                        "on-primary-container": "#005e7a",
+                        "outline": "#6f787e",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#004d65",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#0b1c30",
+                        "secondary-fixed-dim": "#e4c546",
+                        "on-surface": "#0b1c30",
+                        "surface-variant": "#d3e4fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-page": "24px",
+                        "card-padding": "20px",
+                        "unit": "8px",
+                        "gutter": "16px",
+                        "stack-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Manrope"],
+                        "body-base": ["Manrope"],
+                        "label-caps": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "body-sm": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #f8f9ff;
+            background-image: radial-gradient(circle at 100% 0%, rgba(130, 216, 255, 0.15) 0%, transparent 50%),
+                              radial-gradient(circle at 0% 100%, rgba(130, 216, 255, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 30px rgba(0, 102, 133, 0.05);
+        }
+        .glass-button {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body class="font-body-base text-body-base text-on-background min-h-screen">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full flex flex-col z-40 h-screen w-64 border-r border-slate-100 bg-white/70 backdrop-blur-xl shadow-[20px_0_40px_rgba(130,216,255,0.05)] text-sky-400 font-manrope text-sm font-medium">
+<div class="p-6 pb-2 border-b border-slate-100">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold shadow-md">
+                    M
+                </div>
+<div>
+<h1 class="text-xl font-bold tracking-tight text-slate-900">M-Santé</h1>
+<p class="text-xs text-slate-500 font-normal">Security Portal</p>
+</div>
+</div>
+</div>
+<div class="flex-1 py-6 overflow-y-auto">
+<ul class="space-y-2 px-4">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-sky-500 font-bold border-r-2 border-sky-500 bg-sky-50/50 transition-all duration-300 ease-in-out hover:pl-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">security</span>
+<span>Security Overview</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-slate-50/50 transition-all duration-300 ease-in-out hover:pl-1" href="#">
+<span class="material-symbols-outlined">shield_lock</span>
+<span>Data Privacy</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-slate-50/50 transition-all duration-300 ease-in-out hover:pl-1" href="#">
+<span class="material-symbols-outlined">enhanced_encryption</span>
+<span>Encryption</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-slate-50/50 transition-all duration-300 ease-in-out hover:pl-1" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>Session Logs</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-500 hover:text-sky-400 hover:bg-slate-50/50 transition-all duration-300 ease-in-out hover:pl-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Global Settings</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="p-6 border-t border-slate-100">
+<button class="w-full py-3 px-4 rounded-lg bg-error/10 text-error font-semibold hover:bg-error/20 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">warning</span>
+                Emergency Lockdown
+            </button>
+</div>
+</nav>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-64 z-30 flex items-center justify-between px-8 w-full h-16 border-b border-slate-200/50 bg-white/60 backdrop-blur-lg shadow-sm font-manrope text-base text-sky-500">
+<div class="text-lg font-black text-slate-900 uppercase tracking-wider">
+            M-Santé
+        </div>
+<div class="flex flex-1 justify-end items-center gap-6">
+<div class="relative w-64 mr-4">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-10 pr-4 py-2 rounded-full bg-white/50 border border-slate-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm text-slate-700" placeholder="Search settings..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-500 hover:text-sky-500 transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-slate-500 hover:text-sky-500 transition-all active:scale-95 duration-200">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<button class="text-slate-500 hover:text-sky-500 transition-all active:scale-95 duration-200">
+<img alt="Administrator Avatar" class="w-8 h-8 rounded-full border-2 border-white shadow-sm" data-alt="A professional headshot of a male administrator wearing a light blue medical scrub top, smiling gently. The background is a clean, softly lit white clinical space typical of a modern futuristic medical facility. The lighting is bright and reassuring." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgudDxO_2-8FT8eg0ZtASHuQyAOO3Lf5gKNePaSllbimUz82l1yZiWq8b4ayDhP1EfSDTKxlma35Y3SiVD_P5psd6timhgnB04aHtjxLPCHNzkZXedJl14zlXJ445FXC-o0ldfQKJCgHVwpulzgGZAUR5pDcxSB8EIpsjz0d6ufxKnTyLqE5oTMsGmutOnXgFJhz90RJuOimddcykWXPFp1oINgDAcTR88H52yh41rbvtZbI7j-eQfAedTVki6Stw1_ylrRHDz5LIe"/>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 pb-12 px-8 lg:px-12 max-w-7xl mx-auto">
+<!-- Page Header -->
+<div class="mb-10">
+<h2 class="font-display-lg text-display-lg text-on-surface mb-2">Security Overview</h2>
+<p class="text-on-surface-variant font-body-base text-body-base max-w-2xl">Manage your account security, data privacy preferences, and monitor active sessions within the M-Santé secure environment.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Section 1: Account Security (Large Card) -->
+<div class="glass-card rounded-xl p-card-padding md:col-span-2 flex flex-col gap-stack-gap">
+<div class="flex items-center gap-3 mb-4 border-b border-surface-variant pb-4">
+<div class="w-10 h-10 rounded-full bg-primary-container text-primary flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Account Security</h3>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<!-- 2FA Status -->
+<div class="bg-surface/50 rounded-lg p-4 border border-outline-variant/30 flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+</div>
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface mb-1">Two-Factor Authentication</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">Status: <span class="text-primary font-semibold">Enabled</span></p>
+<button class="glass-button px-4 py-1.5 rounded-full font-body-sm text-body-sm text-primary hover:bg-white/60 transition-colors">Manage 2FA</button>
+</div>
+</div>
+<!-- Password -->
+<div class="bg-surface/50 rounded-lg p-4 border border-outline-variant/30 flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-sm">password</span>
+</div>
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface mb-1">Password</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">Last changed: 45 days ago</p>
+<button class="glass-button px-4 py-1.5 rounded-full font-body-sm text-body-sm text-primary hover:bg-white/60 transition-colors">Change Password</button>
+</div>
+</div>
+<!-- Biometrics -->
+<div class="bg-surface/50 rounded-lg p-4 border border-outline-variant/30 flex items-start gap-4 sm:col-span-2">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-sm">fingerprint</span>
+</div>
+<div class="flex-1 flex items-center justify-between">
+<div>
+<h4 class="font-label-caps text-label-caps text-on-surface mb-1">Biometric Login</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Use FaceID or Fingerprint for quick access on supported devices.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-tertiary-fixed peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 3: Encryption & Compliance (Tall Side Card) -->
+<div class="glass-card rounded-xl p-card-padding md:row-span-2 flex flex-col gap-stack-gap relative overflow-hidden">
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/5 rounded-full blur-2xl"></div>
+<div class="flex items-center gap-3 mb-6 relative z-10">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-primary flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">enhanced_encryption</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Encryption</h3>
+</div>
+<div class="flex flex-col items-center justify-center p-6 bg-gradient-to-b from-surface to-white/50 rounded-lg border border-white/80 shadow-inner mb-6 relative z-10">
+<div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 relative">
+<div class="absolute inset-0 rounded-full border-2 border-primary border-dashed animate-[spin_10s_linear_infinite] opacity-50"></div>
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">lock</span>
+</div>
+<h4 class="font-label-caps text-label-caps text-primary mb-2 text-center">End-to-End Encrypted</h4>
+<p class="font-body-sm text-body-sm text-center text-on-surface-variant">Your health data is secured with AES-256 encryption at rest and in transit.</p>
+</div>
+<div class="space-y-4 relative z-10 mt-auto">
+<h4 class="font-label-caps text-label-caps text-on-surface border-b border-surface-variant pb-2">Compliance Status</h4>
+<div class="flex items-center justify-between bg-white/50 p-3 rounded-lg border border-outline-variant/30">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-body-sm text-body-sm font-medium">GDPR Compliant</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+<div class="flex items-center justify-between bg-white/50 p-3 rounded-lg border border-outline-variant/30">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-body-sm text-body-sm font-medium">HIPAA Ready</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+</div>
+</div>
+<!-- Section 2: Data Privacy -->
+<div class="glass-card rounded-xl p-card-padding flex flex-col gap-stack-gap">
+<div class="flex items-center gap-3 mb-4 border-b border-surface-variant pb-4">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-primary flex items-center justify-center">
+<span class="material-symbols-outlined">policy</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Data Privacy</h3>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div>
+<h4 class="font-body-sm text-body-sm font-medium text-on-surface">Health Data Sharing</h4>
+<p class="text-xs text-on-surface-variant mt-1">Allow anonymous data for research.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-tertiary-fixed peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between border-t border-surface-variant/50 pt-4">
+<div>
+<h4 class="font-body-sm text-body-sm font-medium text-on-surface">Marketing Preferences</h4>
+<p class="text-xs text-on-surface-variant mt-1">Receive updates and newsletters.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-tertiary-fixed peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<div class="pt-4 mt-2">
+<button class="w-full py-2.5 px-4 rounded-lg border border-outline text-on-surface font-body-sm text-body-sm font-medium flex items-center justify-center gap-2 hover:bg-surface-variant/50 transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+                            Download My Data
+                        </button>
+</div>
+</div>
+</div>
+<!-- Section 4: Active Sessions -->
+<div class="glass-card rounded-xl p-card-padding md:col-span-2 flex flex-col gap-stack-gap">
+<div class="flex items-center justify-between mb-4 border-b border-surface-variant pb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-primary flex items-center justify-center">
+<span class="material-symbols-outlined">devices</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Active Sessions</h3>
+</div>
+<button class="text-error font-body-sm text-body-sm font-medium hover:underline">Revoke All</button>
+</div>
+<div class="space-y-3">
+<!-- Session 1 -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-white/40 border border-white/60 hover:bg-white/60 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">laptop_mac</span>
+</div>
+<div>
+<h4 class="font-body-sm text-body-sm font-semibold text-on-surface flex items-center gap-2">
+                                    MacBook Pro 16"
+                                    <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">Current</span>
+</h4>
+<p class="text-xs text-on-surface-variant mt-0.5">Paris, France • Safari • IP: 192.168.1.1</p>
+</div>
+</div>
+</div>
+<!-- Session 2 -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-white/20 border border-white/40 hover:bg-white/40 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">smartphone</span>
+</div>
+<div>
+<h4 class="font-body-sm text-body-sm font-semibold text-on-surface">iPhone 14 Pro</h4>
+<p class="text-xs text-on-surface-variant mt-0.5">Lyon, France • M-Santé App • Last active: 2h ago</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-tertiary hover:bg-error/10 hover:text-error transition-colors" title="End Session">
+<span class="material-symbols-outlined text-sm">logout</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Section 5: Security Audit Log (Full Width Footer-ish) -->
+<div class="glass-card rounded-xl p-card-padding md:col-span-3 flex flex-col gap-stack-gap mt-4">
+<div class="flex items-center gap-3 mb-4 border-b border-surface-variant pb-4">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-primary flex items-center justify-center">
+<span class="material-symbols-outlined">manage_search</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Recent Security Activity</h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/30">
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant">Action</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant">Device / IP</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant">Location</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant text-right">Date &amp; Time</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface">
+<tr class="border-b border-outline-variant/10 hover:bg-white/30 transition-colors">
+<td class="py-3 px-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-500 text-sm">login</span>
+                                    Successful Login
+                                </td>
+<td class="py-3 px-4 text-on-surface-variant">MacBook Pro • 192.168.1.1</td>
+<td class="py-3 px-4 text-on-surface-variant">Paris, FR</td>
+<td class="py-3 px-4 text-right text-on-surface-variant">Today, 09:41 AM</td>
+</tr>
+<tr class="border-b border-outline-variant/10 hover:bg-white/30 transition-colors">
+<td class="py-3 px-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm">settings_backup_restore</span>
+                                    2FA Settings Modified
+                                </td>
+<td class="py-3 px-4 text-on-surface-variant">MacBook Pro • 192.168.1.1</td>
+<td class="py-3 px-4 text-on-surface-variant">Paris, FR</td>
+<td class="py-3 px-4 text-right text-on-surface-variant">Yesterday, 14:22 PM</td>
+</tr>
+<tr class="hover:bg-white/30 transition-colors">
+<td class="py-3 px-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">key</span>
+                                    Password Changed
+                                </td>
+<td class="py-3 px-4 text-on-surface-variant">iPhone 14 Pro • 10.0.0.5</td>
+<td class="py-3 px-4 text-on-surface-variant">Lyon, FR</td>
+<td class="py-3 px-4 text-right text-on-surface-variant">Oct 12, 2023, 18:05 PM</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-2 text-center">
+<button class="text-primary font-body-sm text-body-sm font-medium hover:underline">View Full Audit Log</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé | Votre sanctuaire de santé mentale</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#cbcdcf",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "on-secondary-container": "#756100",
+                    "outline-variant": "#bec8ce",
+                    "on-tertiary-container": "#545759",
+                    "on-primary-fixed-variant": "#004d65",
+                    "error-container": "#ffdad6",
+                    "surface-container": "#e5eeff",
+                    "on-primary-fixed": "#001f2a",
+                    "inverse-primary": "#7bd1f8",
+                    "outline": "#6f787e",
+                    "secondary": "#705d00",
+                    "surface-dim": "#cbdbf5",
+                    "on-tertiary-fixed": "#191c1e",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "surface-container-low": "#eff4ff",
+                    "on-surface": "#0b1c30",
+                    "surface-bright": "#f8f9ff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-secondary-fixed-variant": "#544600",
+                    "tertiary-fixed": "#e0e3e5",
+                    "surface-variant": "#d3e4fe",
+                    "on-error-container": "#93000a",
+                    "secondary-container": "#ffde5c",
+                    "secondary-fixed": "#ffe170",
+                    "error": "#ba1a1a",
+                    "inverse-surface": "#213145",
+                    "surface": "#f8f9ff",
+                    "primary-fixed": "#bee9ff",
+                    "secondary-fixed-dim": "#e4c546",
+                    "on-background": "#0b1c30",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#3f484d",
+                    "surface-container-highest": "#d3e4fe",
+                    "surface-container-high": "#dce9ff",
+                    "tertiary": "#5c5f61",
+                    "on-primary-container": "#005e7a",
+                    "primary-container": "#82d8ff",
+                    "primary": "#006685",
+                    "surface-tint": "#006685",
+                    "primary-fixed-dim": "#7bd1f8",
+                    "on-secondary-fixed": "#221b00",
+                    "on-secondary": "#ffffff",
+                    "background": "#f8f9ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "card-padding": "20px",
+                    "unit": "8px",
+                    "margin-page": "24px",
+                    "stack-gap": "12px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "label-caps": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "body-base": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 102, 133, 0.05);
+        }
+        .medical-gradient {
+            background: radial-gradient(circle at top right, #e5eeff 0%, #f8f9ff 100%);
+        }
+    </style>
+</head>
+<body class="bg-background font-body-base text-on-background selection:bg-primary-container">
+<!-- TopAppBar -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-3 bg-white/80 backdrop-blur-xl border-b border-slate-100/50 shadow-sm font-manrope antialiased tracking-tight">
+<div class="text-2xl font-bold text-slate-900">M-Santé</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-sky-500 font-semibold" href="#">Home</a>
+<a class="text-slate-500 hover:bg-slate-50/50 transition-colors px-3 py-1 rounded-lg" href="#">Wellness</a>
+<a class="text-slate-500 hover:bg-slate-50/50 transition-colors px-3 py-1 rounded-lg" href="#">Practitioners</a>
+</div>
+<div class="flex items-center gap-4"><a class="text-on-surface-variant font-semibold hover:text-primary transition-colors px-4 py-2" href="#">Connexion</a><a class="bg-primary text-on-primary px-6 py-2.5 rounded-xl font-bold hover:shadow-lg hover:shadow-primary/20 transition-all" href="#">Inscription</a><div class="flex items-center ml-2"><button class="p-2 text-slate-500 hover:bg-slate-50/50 transition-colors rounded-full"><span class="material-symbols-outlined">settings</span></button><button class="p-2 text-slate-500 hover:bg-slate-50/50 transition-colors rounded-full"><span class="material-symbols-outlined">account_circle</span></button></div></div>
+</nav>
+<main class="pt-16">
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] flex items-center overflow-hidden px-margin-page py-20">
+<div class="container mx-auto grid lg:grid-cols-2 gap-12 items-center relative z-10">
+<div class="max-w-2xl">
+<div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-container/30 text-on-primary-container font-label-caps text-label-caps mb-8">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                        L'AVENIR DE LA SANTÉ MENTALE AU SÉNÉGAL
+                    </div>
+<h1 class="font-display-lg text-display-lg mb-6 leading-tight text-on-surface">
+                        Votre sanctuaire de santé mentale, <span class="text-primary">réinventé.</span>
+</h1>
+<p class="text-body-base font-body-base text-on-surface-variant mb-10 max-w-xl">
+                        Découvrez une approche holistique propulsée par l'intelligence artificielle. Des soins personnalisés, sécurisés et accessibles partout, conçus pour harmoniser votre esprit et votre technologie.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="px-8 py-4 bg-primary text-on-primary rounded-xl font-semibold shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
+                            Commencer mon parcours
+                        </button>
+<button class="px-8 py-4 glass-card text-primary border-primary/20 rounded-xl font-semibold active:scale-[0.98] transition-all">
+                            Découvrir nos praticiens
+                        </button>
+</div>
+</div>
+<div class="relative hidden lg:block">
+<div class="absolute -top-20 -right-20 w-96 h-96 bg-primary-container/20 blur-[100px] rounded-full"></div>
+<div class="glass-card rounded-[40px] p-4 relative overflow-hidden aspect-square flex items-center justify-center">
+<img alt="" class="w-full h-full object-cover rounded-[32px]" data-alt="Une praticienne de santé accueillante dans un cabinet médical moderne et lumineux au Sénégal, entourée d'une interface technologique discrète et élégante, symbolisant l'harmonie entre l'humain et l'IA." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzD3fB9QzaB5HcEb7MDxa4QsglNHMY-s4-M4lbeVgXIk5loUd02FXZu-h_cfr6XkJanD5Nr7pRutjhQ8Ufr-g3Rrksgw4GtywTtAZ4VqOcdBPBcKkiI4K55YWNFQEYtlcL275WaFS0fK9HmvfmjbzQrdMedG0t__u1JqzO4V4H-RHKb_Di0WXuVvRvznySO_FO2xhUQzbX0G8iWsFZFKIfE9G2hBMOrnJVC5vn5C5t5aSJZiyjwD5OoU_kDS-s4BDxIpxW3m5sZPHa"/>
+<div class="absolute bottom-10 left-10 glass-card p-6 rounded-2xl flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">verified</span>
+</div>
+<div>
+<div class="text-body-sm font-bold">500+ Praticiens</div>
+<div class="text-[12px] opacity-70">Vérifiés et certifiés</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Social Proof -->
+<section class="py-12 bg-white/40 border-y border-slate-100/50">
+<div class="container mx-auto px-margin-page flex flex-wrap justify-between items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
+<span class="font-label-caps text-label-caps uppercase tracking-widest text-on-surface-variant">Partenaires de Confiance</span>
+<div class="flex items-center gap-12 flex-wrap">
+<div class="text-2xl font-black text-slate-400">WAVE</div>
+<div class="text-2xl font-black text-slate-400">ORANGE MONEY</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined">security</span>
+<span class="font-bold">PCI DSS SECURE</span>
+</div>
+<div class="text-xl font-bold">MINISTÈRE DE LA SANTÉ</div>
+</div>
+</div>
+</section>
+<!-- Features Bento Grid -->
+<section class="py-24 px-margin-page bg-surface">
+<div class="container mx-auto">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<h2 class="font-display-lg text-[40px] mb-4">L'innovation au service de votre bien-être</h2>
+<p class="text-on-surface-variant">Une suite d'outils intelligents conçus pour vous accompagner à chaque étape.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-full">
+<div class="md:col-span-8 glass-card p-10 rounded-[32px] flex flex-col justify-between overflow-hidden relative">
+<div>
+<span class="material-symbols-outlined text-4xl text-primary mb-6">psychology</span>
+<h3 class="text-2xl font-bold mb-4">Compagnon Bien-être IA</h3>
+<p class="text-on-surface-variant max-w-md">Une intelligence artificielle empathique qui analyse vos humeurs et vous suggère des exercices personnalisés en temps réel.</p>
+</div>
+<div class="mt-8 flex gap-2">
+<div class="px-4 py-2 bg-primary/10 rounded-full text-primary font-semibold text-body-sm">Analyse Sentimentale</div>
+<div class="px-4 py-2 bg-primary/10 rounded-full text-primary font-semibold text-body-sm">Deep Learning</div>
+</div>
+</div>
+<div class="md:col-span-4 bg-primary text-on-primary p-10 rounded-[32px] flex flex-col justify-between">
+<span class="material-symbols-outlined text-4xl mb-6">groups</span>
+<h3 class="text-2xl font-bold mb-4">Réseau d'Experts</h3>
+<p class="opacity-80">Accédez aux meilleurs psychologues et psychiatres, rigoureusement sélectionnés pour leur excellence.</p>
+<button class="mt-8 w-fit flex items-center gap-2 font-bold hover:gap-4 transition-all">
+                            Voir le réseau <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<div class="md:col-span-4 glass-card p-10 rounded-[32px]">
+<span class="material-symbols-outlined text-4xl text-primary mb-6">videocam</span>
+<h3 class="text-2xl font-bold mb-4">Téléconsultation Sécurisée</h3>
+<p class="text-on-surface-variant">Des sessions vidéo chiffrées de bout en bout pour une confidentialité totale.</p>
+</div>
+<div class="md:col-span-8 glass-card p-10 rounded-[32px] flex flex-col md:flex-row gap-8 items-center border-2 border-primary/5">
+<div class="flex-1">
+<span class="material-symbols-outlined text-4xl text-secondary mb-6">payments</span>
+<h3 class="text-2xl font-bold mb-4">Paiements Intégrés</h3>
+<p class="text-on-surface-variant">Réglez vos séances en un clic via Wave, Orange Money ou carte bancaire.</p>
+</div>
+<div class="flex-shrink-0 grid grid-cols-2 gap-3">
+<div class="w-16 h-12 bg-white rounded-lg shadow-sm border border-slate-100"></div>
+<div class="w-16 h-12 bg-white rounded-lg shadow-sm border border-slate-100"></div>
+<div class="w-16 h-12 bg-white rounded-lg shadow-sm border border-slate-100"></div>
+<div class="w-16 h-12 bg-white rounded-lg shadow-sm border border-slate-100"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Value Proposition: Medical Futurism -->
+<section class="py-32 px-margin-page relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary blur-[160px] rounded-full"></div>
+</div>
+<div class="container mx-auto flex flex-col lg:flex-row gap-20 items-center">
+<div class="lg:w-1/2">
+<h2 class="font-display-lg text-[44px] mb-8 leading-tight">Le Futurisme Médical :<br/>L'IA au service de l'empathie</h2>
+<div class="space-y-8">
+<div class="flex gap-6">
+<div class="w-14 h-14 rounded-2xl bg-white shadow-xl flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary text-3xl">precision_manufacturing</span>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-2">Précision Clinique</h4>
+<p class="text-on-surface-variant">Des algorithmes de pointe pour identifier les signaux faibles et prévenir les crises avant qu'elles ne surviennent.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="w-14 h-14 rounded-2xl bg-white shadow-xl flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-secondary text-3xl">favorite</span>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-2">Sérénité Humaine</h4>
+<p class="text-on-surface-variant">La technologie s'efface pour laisser place à une relation humaine authentique et apaisante.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="w-14 h-14 rounded-2xl bg-white shadow-xl flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary text-3xl">cloud_sync</span>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-2">Écosystème Connecté</h4>
+<p class="text-on-surface-variant">Vos données de santé, vos rendez-vous et vos exercices de méditation synchronisés en un seul lieu.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:w-1/2 grid grid-cols-2 gap-4">
+<div class="space-y-4 pt-12">
+<div class="h-64 rounded-3xl overflow-hidden glass-card">
+<img alt="" class="w-full h-full object-cover" data-alt="Gros plan d'une tablette médicale futuriste affichant des données de santé précises dans un environnement clinique serein." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfSQjg6WGcxnslUh9PPXQeGSqlKf3WlhxIeDAihTsAwxYSYuifnLu4x095Epx7QEzSvNuFGLQcyy33wwJ09yu7swDzUclGsdhdS3qNgnOFRU5ssiQFys9mu06LgsjUhWi2fz07GF7yK6TWcZ-qkwNhfb9nkC_OjeDtuvt2UWmvQJM1_vhCOhdvWiNwoOgoRZkXLllx8N0q5Hlyfl91IS96yESnxpvZzPWipTlg0df4kJqP66MUhSi6xq_uoUMYxfjLV6pEMlRROfMk"/>
+</div>
+<div class="h-48 rounded-3xl bg-secondary-container/20 border border-secondary/10"></div>
+</div>
+<div class="space-y-4">
+<div class="h-48 rounded-3xl bg-primary-container/20 border border-primary/10"></div>
+<div class="h-64 rounded-3xl overflow-hidden glass-card">
+<img alt="" class="w-full h-full object-cover" data-alt="Portrait d'un psychologue professionnel sénégalais souriant dans un bureau de consultation moderne et apaisant, inspirant confiance et empathie." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVnPGsS5qSxnXisNfdkBW_9C35Kv7XW9tAsjpwPyAWuXkk4JTQgB3nomKDNQuLN5i2nxUUV_FB-bBQe6FguKkfMry5VdQbEJ1z5NWWyw-tGqOU_HRNH45vhLquP0MXp1l3StDc-QhIV8yPoIYQVJzJHXvgpPAckrt_dgHSkGCXTqAOMYY_tleheqoW4jB-NCGQIXLwF-DX31v3FqDw4CO8ywgikn61o1st6ZV1vdX6xkATfQnU8Vut-MX5dw6SEWvf4bpvOAEHAYq8"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-24 px-margin-page">
+<div class="container mx-auto">
+<div class="relative bg-on-surface rounded-[48px] p-12 md:p-24 overflow-hidden text-center text-white">
+<div class="absolute top-0 right-0 w-96 h-96 bg-primary/20 blur-[100px] rounded-full"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary/10 blur-[80px] rounded-full"></div>
+<div class="relative z-10 max-w-3xl mx-auto">
+<h2 class="font-display-lg text-[48px] mb-8">Prêt à transformer votre rapport à la santé mentale ?</h2>
+<p class="text-xl opacity-70 mb-12">Rejoignez des milliers de personnes qui ont choisi M-Santé pour un équilibre durable.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-4">
+<button class="px-10 py-5 bg-primary text-on-primary rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-primary/40 transition-all">
+                                Commencer maintenant
+                            </button>
+<button class="px-10 py-5 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
+                                Consulter les tarifs
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<footer class="py-20 px-margin-page bg-surface-container-low">
+<div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-2">
+<div class="text-2xl font-bold mb-6">M-Santé</div>
+<p class="text-on-surface-variant max-w-xs mb-8">Votre partenaire quotidien pour une santé mentale épanouie, alliant technologie de pointe et bienveillance humaine.</p>
+<div class="flex gap-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm cursor-pointer">
+<span class="material-symbols-outlined">share</span>
+</div>
+</div>
+</div>
+<div>
+<h5 class="font-bold mb-6">Plateforme</h5>
+<ul class="space-y-4 text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">Praticiens</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">AI Companion</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Entreprises</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Tarification</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-bold mb-6">Support</h5>
+<ul class="space-y-4 text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">Centre d'aide</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Confidentialité</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Conditions d'utilisation</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="container mx-auto mt-20 pt-8 border-t border-slate-200 text-center text-on-surface-variant text-body-sm">
+                © 2024 M-Santé. Tous droits réservés. Propulsé par l'innovation sénégalaise.
+            </div>
+</footer>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-3 bg-white/70 backdrop-blur-lg border-t border-white/20 shadow-[0_-8px_30px_rgb(0,0,0,0.04)] rounded-t-[32px]">
+<div class="flex flex-col items-center justify-center bg-sky-50 text-sky-600 rounded-2xl px-5 py-2 font-manrope text-[10px] font-semibold uppercase tracking-wider">
+<span class="material-symbols-outlined mb-1">home</span>
+            Home
+        </div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-5 py-2 font-manrope text-[10px] font-semibold uppercase tracking-wider hover:text-sky-400">
+<span class="material-symbols-outlined mb-1">spa</span>
+            Wellness
+        </div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-5 py-2 font-manrope text-[10px] font-semibold uppercase tracking-wider hover:text-sky-400">
+<span class="material-symbols-outlined mb-1">notifications</span>
+            Notifications
+        </div>
+<div class="flex flex-col items-center justify-center text-slate-400 px-5 py-2 font-manrope text-[10px] font-semibold uppercase tracking-wider hover:text-sky-400">
+<span class="material-symbols-outlined mb-1">person_2</span>
+            Profile
+        </div>
+</nav>
+</body></html>

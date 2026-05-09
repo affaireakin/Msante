@@ -6,17 +6,30 @@ interface AppTextInputProps extends TextInputProps {
   error?: string
 }
 
-export function AppTextInput({ label, error, className = '', ...props }: AppTextInputProps) {
+export function AppTextInput({ label, error, style, ...props }: AppTextInputProps) {
   return (
-    <View className="gap-1">
-      <Text className="text-sm font-manrope font-medium text-on-surface-variant">{label}</Text>
+    <View style={{ gap: 6 }}>
+      <Text style={{ fontSize: 13, fontFamily: 'Manrope', fontWeight: '500', color: '#3f484d' }}>
+        {label}
+      </Text>
       <TextInput
-        className={`border rounded-lg px-4 py-3 text-base font-manrope text-on-surface bg-surface-container-low
-          ${error ? 'border-error' : 'border-outline-variant'} ${className}`}
+        style={[{
+          borderWidth: 1,
+          borderColor: error ? '#ba1a1a' : '#bec8ce',
+          borderRadius: 10,
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          fontSize: 15,
+          fontFamily: 'Manrope',
+          color: '#0b1c30',
+          backgroundColor: '#eff4ff',
+        }, style]}
         placeholderTextColor="#6f787e"
         {...props}
       />
-      {error ? <Text className="text-xs text-error font-manrope">{error}</Text> : null}
+      {error ? (
+        <Text style={{ fontSize: 12, color: '#ba1a1a', fontFamily: 'Manrope' }}>{error}</Text>
+      ) : null}
     </View>
   )
 }

@@ -1,5 +1,7 @@
-import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useBookingStore } from '@/features/booking/store/bookingStore'
 import { PrimaryButton, GlassCard } from '@/components/ui'
 
@@ -15,31 +17,31 @@ export default function BookingSuccessScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background px-6 justify-center gap-8">
-      <View className="items-center gap-4">
-        <View className="w-24 h-24 bg-emerald-50 rounded-full items-center justify-center">
-          <Text className="text-5xl">✅</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff', paddingHorizontal: 24, justifyContent: 'center', gap: 32 }}>
+      <View style={{ alignItems: 'center', gap: 16 }}>
+        <View style={{ width: 96, height: 96, backgroundColor: '#ecfdf5', borderRadius: 48, alignItems: 'center', justifyContent: 'center' }}>
+          <MaterialIcons name="check-circle" size={52} color="#1d7a3a" />
         </View>
-        <View className="items-center gap-2">
-          <Text className="text-2xl font-black text-on-surface font-manrope">
+        <View style={{ alignItems: 'center', gap: 8 }}>
+          <Text style={{ fontSize: 22, fontWeight: '900', color: '#0b1c30', fontFamily: 'Manrope' }}>
             Vous êtes prêt !
           </Text>
-          <Text className="text-sm text-on-surface-variant font-manrope text-center">
+          <Text style={{ fontSize: 14, color: '#3f484d', fontFamily: 'Manrope', textAlign: 'center' }}>
             Votre rendez-vous a été confirmé avec succès.
           </Text>
         </View>
       </View>
 
-      <GlassCard className="gap-3">
+      <GlassCard style={{ gap: 12 }}>
         {[
-          { label: '👨‍⚕️ Praticien', value: practitionerName },
-          { label: '📅 Date', value: selectedSlot?.date },
-          { label: '🕐 Heure', value: selectedSlot?.startTime },
-          { label: '📹 Type', value: SESSION_LABELS[sessionType] },
-        ].map(({ label, value }) => value ? (
-          <View key={label} className="flex-row justify-between">
-            <Text className="text-sm text-on-surface-variant font-manrope">{label}</Text>
-            <Text className="text-sm font-semibold text-on-surface font-manrope">{value}</Text>
+          { label: 'Praticien', value: practitionerName, icon: 'person' as const },
+          { label: 'Date', value: selectedSlot?.date, icon: 'event' as const },
+          { label: 'Heure', value: selectedSlot?.startTime, icon: 'schedule' as const },
+          { label: 'Type', value: SESSION_LABELS[sessionType], icon: 'videocam' as const },
+        ].map(({ label, value, icon }) => value ? (
+          <View key={label} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ fontSize: 14, color: '#3f484d', fontFamily: 'Manrope' }}>{label}</Text>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>{value}</Text>
           </View>
         ) : null)}
       </GlassCard>
@@ -56,9 +58,21 @@ export default function BookingSuccessScreen() {
                 : new Date().toISOString(),
             },
           })}
-          className="w-full border border-primary rounded-full py-3.5 items-center mb-2"
+          style={{
+            width: '100%',
+            borderWidth: 1,
+            borderColor: '#006685',
+            borderRadius: 9999,
+            paddingVertical: 14,
+            alignItems: 'center',
+            marginBottom: 8,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            gap: 8,
+          }}
         >
-          <Text className="text-primary font-semibold font-manrope">Accéder à la salle d'attente 📹</Text>
+          <Text style={{ color: '#006685', fontWeight: '600', fontFamily: 'Manrope' }}>Accéder à la salle d'attente</Text>
+          <MaterialIcons name="videocam" size={18} color="#006685" />
         </TouchableOpacity>
       )}
 

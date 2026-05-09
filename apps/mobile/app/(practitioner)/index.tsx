@@ -1,6 +1,7 @@
 import { ScrollView, View, Text, TouchableOpacity, StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useDashboard } from '@/features/practitioner/hooks/useDashboard'
 import { GlassCard } from '@/components/ui/GlassCard'
@@ -57,7 +58,7 @@ export default function DashboardScreen() {
     .toUpperCase()
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f8f9ff]" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#f8f9ff" />
 
       {/* Header */}
@@ -111,12 +112,12 @@ export default function DashboardScreen() {
             justifyContent: 'center',
           }}
         >
-          <Text style={{ fontSize: 18 }}>🔔</Text>
+          <MaterialIcons name="notifications-none" size={22} color="#0b1c30" />
         </View>
       </View>
 
       <ScrollView
-        className="flex-1"
+        style={{ flex: 1 }}
         contentContainerStyle={{ padding: 24, gap: 32 }}
         showsVerticalScrollIndicator={false}
       >
@@ -125,7 +126,7 @@ export default function DashboardScreen() {
           {/* Earnings — full width */}
           <GlassCard>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-              <Text style={{ fontSize: 16 }}>💰</Text>
+              <MaterialIcons name="account-balance-wallet" size={16} color="#6f787e" />
               <Text
                 style={{
                   fontFamily: 'Manrope',
@@ -162,9 +163,11 @@ export default function DashboardScreen() {
                 <View
                   style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}
                 >
-                  <Text style={{ fontSize: 12 }}>
-                    {(data?.earningsTrend ?? 0) >= 0 ? '📈' : '📉'}
-                  </Text>
+                  <MaterialIcons
+                    name={(data?.earningsTrend ?? 0) >= 0 ? 'trending-up' : 'trending-down'}
+                    size={14}
+                    color={(data?.earningsTrend ?? 0) >= 0 ? '#16a34a' : '#dc2626'}
+                  />
                   <Text
                     style={{
                       fontFamily: 'Manrope',
@@ -194,7 +197,7 @@ export default function DashboardScreen() {
                   marginBottom: 8,
                 }}
               >
-                🩺 Consultations
+                Consultations
               </Text>
               <Text
                 style={{
@@ -219,7 +222,7 @@ export default function DashboardScreen() {
                   marginBottom: 8,
                 }}
               >
-                ⭐ Note
+                Note
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 2 }}>
                 <Text
@@ -336,7 +339,7 @@ export default function DashboardScreen() {
                       gap: 4,
                     }}
                   >
-                    <Text style={{ fontSize: 11 }}>🕐</Text>
+                    <MaterialIcons name="schedule" size={13} color="#005e7a" />
                     <Text
                       style={{
                         fontFamily: 'Manrope',
@@ -367,7 +370,7 @@ export default function DashboardScreen() {
                         backgroundColor: '#006685',
                       }}
                     >
-                      <Text style={{ fontSize: 16 }}>🎥</Text>
+                      <MaterialIcons name="videocam" size={20} color="#fff" />
                       <Text
                         style={{
                           fontFamily: 'Manrope',
@@ -439,9 +442,11 @@ export default function DashboardScreen() {
                         backgroundColor: item.type?.includes('payment') ? '#ffde5c' : '#e5eeff',
                       }}
                     >
-                      <Text style={{ fontSize: 16 }}>
-                        {item.type?.includes('payment') ? '💳' : '✉️'}
-                      </Text>
+                      <MaterialIcons
+                        name={item.type?.includes('payment') ? 'credit-card' : 'mail'}
+                        size={18}
+                        color={item.type?.includes('payment') ? '#705d00' : '#006685'}
+                      />
                     </View>
                     <View style={{ flex: 1, gap: 2 }}>
                       <Text

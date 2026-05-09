@@ -3,14 +3,17 @@
   "private": true,
   "packageManager": "pnpm@9.0.0",
   "scripts": {
-    "dev:mobile": "pnpm --filter mobile start",
-    "typecheck": "pnpm --filter mobile tsc --noEmit",
+    "dev:mobile": "pnpm --filter mobile start --offline",
+    "dev:web": "pnpm --filter web dev",
+    "dev": "pnpm --filter web dev",
+    "build:web": "pnpm --filter web build",
+    "typecheck": "pnpm -r tsc --noEmit",
     "test": "pnpm --filter mobile test"
   },
   "pnpm": {
     "overrides": {
-      "@types/react": "^19.2.14",
-      "@types/react-dom": "^19"
+      "@types/react": "^19.1.0",
+      "@types/react-dom": "^19.1.0"
     }
   }
 }

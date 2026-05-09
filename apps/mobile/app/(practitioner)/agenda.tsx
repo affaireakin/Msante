@@ -1,5 +1,6 @@
 import { ScrollView, View, Text, TouchableOpacity, Alert, StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useAgenda, type AgendaAppointment } from '@/features/practitioner/hooks/useAgenda'
@@ -69,9 +70,11 @@ function AppointmentCard({
           <View
             style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}
           >
-            <Text style={{ fontSize: 12 }}>
-              {appt.consultationType === 'Telehealth' ? '📹' : '🏥'}
-            </Text>
+            <MaterialIcons
+              name={appt.consultationType === 'Telehealth' ? 'videocam' : 'local-hospital'}
+              size={14}
+              color="#6f787e"
+            />
             <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#6f787e' }}>
               {appt.consultationType}
             </Text>
@@ -91,7 +94,7 @@ function AppointmentCard({
           backgroundColor: '#eff4ff',
         }}
       >
-        <Text style={{ fontSize: 14 }}>📅</Text>
+        <MaterialIcons name="event" size={16} color="#006685" />
         <Text
           style={{
             fontFamily: 'Manrope',
@@ -233,7 +236,7 @@ export default function AgendaScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f8f9ff]" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }} edges={['top']}>
       <StatusBar barStyle="dark-content" />
 
       {/* Header */}
@@ -263,7 +266,7 @@ export default function AgendaScreen() {
       </View>
 
       <ScrollView
-        className="flex-1"
+        style={{ flex: 1 }}
         contentContainerStyle={{ padding: 24, gap: 24 }}
         showsVerticalScrollIndicator={false}
       >

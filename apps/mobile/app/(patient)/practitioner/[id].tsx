@@ -1,5 +1,7 @@
-import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { usePractitioner } from '@/features/practitioners/hooks/usePractitioner'
 import { RatingStars } from '@/features/practitioners/components/RatingStars'
 import { PrimaryButton } from '@/components/ui'
@@ -15,7 +17,7 @@ export default function PractitionerProfileScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-background items-center justify-center">
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff', alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator color="#006685" size="large" />
       </SafeAreaView>
     )
@@ -23,8 +25,8 @@ export default function PractitionerProfileScreen() {
 
   if (!practitioner) {
     return (
-      <SafeAreaView className="flex-1 bg-background items-center justify-center">
-        <Text className="text-error font-manrope">Praticien introuvable</Text>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ color: '#ba1a1a', fontFamily: 'Manrope' }}>Praticien introuvable</Text>
       </SafeAreaView>
     )
   }
@@ -32,20 +34,21 @@ export default function PractitionerProfileScreen() {
   const name = practitioner.users?.full_name ?? 'Praticien'
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
-        <View className="px-6 pt-4 pb-6">
-          <TouchableOpacity onPress={() => router.back()} className="mb-4">
-            <Text className="text-primary font-manrope font-medium">← Retour</Text>
+        <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 24 }}>
+          <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <MaterialIcons name="arrow-back" size={20} color="#006685" />
+            <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: '500' }}>Retour</Text>
           </TouchableOpacity>
 
-          <View className="items-center gap-4">
-            <View className="w-24 h-24 rounded-2xl bg-primary-container items-center justify-center">
-              <Text className="text-primary font-manrope font-bold text-3xl">{getInitials(name)}</Text>
+          <View style={{ alignItems: 'center', gap: 16 }}>
+            <View style={{ width: 96, height: 96, borderRadius: 16, backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: 'bold', fontSize: 28 }}>{getInitials(name)}</Text>
             </View>
-            <View className="items-center gap-1">
-              <Text className="text-2xl font-bold text-on-surface font-manrope">{name}</Text>
-              <Text className="text-base text-on-surface-variant font-manrope">{practitioner.speciality}</Text>
+            <View style={{ alignItems: 'center', gap: 4 }}>
+              <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>{name}</Text>
+              <Text style={{ fontSize: 16, color: '#3f484d', fontFamily: 'Manrope' }}>{practitioner.speciality}</Text>
               {practitioner.rating != null && (
                 <RatingStars rating={practitioner.rating} total={practitioner.total_reviews} />
               )}
@@ -53,37 +56,37 @@ export default function PractitionerProfileScreen() {
           </View>
         </View>
 
-        <View className="px-6 gap-4">
+        <View style={{ paddingHorizontal: 24, gap: 16 }}>
           {practitioner.bio && (
-            <View className="bg-white/60 rounded-xl p-4 border border-white/80">
-              <Text className="text-sm font-bold text-on-surface font-manrope mb-2 uppercase tracking-wide">
+            <View style={{ backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.8)' }}>
+              <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.8 }}>
                 À propos
               </Text>
-              <Text className="text-sm text-on-surface-variant font-manrope leading-relaxed">
+              <Text style={{ fontSize: 14, color: '#3f484d', fontFamily: 'Manrope', lineHeight: 22 }}>
                 {practitioner.bio}
               </Text>
             </View>
           )}
 
-          <View className="bg-white/60 rounded-xl p-4 border border-white/80 gap-3">
-            <Text className="text-sm font-bold text-on-surface font-manrope uppercase tracking-wide">
+          <View style={{ backgroundColor: 'rgba(255,255,255,0.6)', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.8)', gap: 12 }}>
+            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 0.8 }}>
               Informations
             </Text>
-            <View className="flex-row justify-between">
-              <Text className="text-sm text-on-surface-variant font-manrope">Tarif</Text>
-              <Text className="text-sm font-semibold text-primary font-manrope">
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={{ fontSize: 14, color: '#3f484d', fontFamily: 'Manrope' }}>Tarif</Text>
+              <Text style={{ fontSize: 14, fontWeight: '600', color: '#006685', fontFamily: 'Manrope' }}>
                 {practitioner.session_price?.toLocaleString()} {practitioner.session_currency}
               </Text>
             </View>
-            <View className="flex-row justify-between">
-              <Text className="text-sm text-on-surface-variant font-manrope">Durée</Text>
-              <Text className="text-sm font-semibold text-on-surface font-manrope">
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={{ fontSize: 14, color: '#3f484d', fontFamily: 'Manrope' }}>Durée</Text>
+              <Text style={{ fontSize: 14, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>
                 {practitioner.session_duration_min} min
               </Text>
             </View>
-            <View className="flex-row justify-between">
-              <Text className="text-sm text-on-surface-variant font-manrope">Langues</Text>
-              <Text className="text-sm font-semibold text-on-surface font-manrope">
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={{ fontSize: 14, color: '#3f484d', fontFamily: 'Manrope' }}>Langues</Text>
+              <Text style={{ fontSize: 14, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>
                 {practitioner.languages.join(', ')}
               </Text>
             </View>
@@ -91,7 +94,7 @@ export default function PractitionerProfileScreen() {
         </View>
       </ScrollView>
 
-      <View className="absolute bottom-0 left-0 right-0 px-6 pb-8 pt-4 bg-background/90">
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 24, paddingBottom: 32, paddingTop: 16, backgroundColor: 'rgba(248,249,255,0.9)' }}>
         <PrimaryButton
           label="Réserver une séance"
           onPress={() => router.push(`/(patient)/booking/${id}`)}

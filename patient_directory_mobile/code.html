@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé Patient Directory</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#ffdad6",
+                    "on-surface-variant": "#3f484d",
+                    "on-tertiary-fixed": "#191c1e",
+                    "on-primary-fixed": "#001f2a",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#213145",
+                    "on-tertiary": "#ffffff",
+                    "surface-container": "#e5eeff",
+                    "surface-bright": "#f8f9ff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "secondary-fixed-dim": "#e4c546",
+                    "on-surface": "#0b1c30",
+                    "surface-variant": "#d3e4fe",
+                    "on-background": "#0b1c30",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed-variant": "#004d65",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#6f787e",
+                    "secondary-fixed": "#ffe170",
+                    "on-primary-container": "#005e7a",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "surface": "#f8f9ff",
+                    "primary": "#006685",
+                    "outline-variant": "#bec8ce",
+                    "on-tertiary-container": "#545759",
+                    "on-primary": "#ffffff",
+                    "secondary-container": "#ffde5c",
+                    "tertiary-container": "#cbcdcf",
+                    "surface-dim": "#cbdbf5",
+                    "on-secondary-fixed": "#221b00",
+                    "background": "#f8f9ff",
+                    "tertiary": "#5c5f61",
+                    "surface-tint": "#006685",
+                    "on-error-container": "#93000a",
+                    "secondary": "#705d00",
+                    "primary-fixed": "#bee9ff",
+                    "on-secondary-fixed-variant": "#544600",
+                    "surface-container-low": "#eff4ff",
+                    "surface-container-high": "#dce9ff",
+                    "on-secondary-container": "#756100",
+                    "surface-container-highest": "#d3e4fe",
+                    "primary-container": "#82d8ff",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed": "#e0e3e5",
+                    "inverse-primary": "#7bd1f8",
+                    "primary-fixed-dim": "#7bd1f8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-page": "24px",
+                    "card-padding": "20px",
+                    "unit": "8px",
+                    "gutter": "16px",
+                    "stack-gap": "12px"
+            },
+            "fontFamily": {
+                    "label-caps": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "body-sm": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "body-base": ["Manrope"]
+            },
+            "fontSize": {
+                    "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                    "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                    "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                    "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Base material icon class requirement */
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen relative font-body-base pb-[100px] pt-[72px]">
+<!-- Shared Component: TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-white/20 dark:border-white/10 shadow-sm shadow-sky-500/5 flex justify-between items-center px-6 py-3">
+<div class="flex items-center gap-3">
+<img alt="Practitioner Avatar" class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" data-alt="A professional headshot of a smiling female doctor wearing a white clinical coat and stethoscope around her neck. The background is a brightly lit, minimalist medical office with soft, diffused light, evoking a sense of calm and expertise. The color palette emphasizes crisp whites and deep medical blues." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdmN08VOdyPqjeNSJ46V5riGV6Rqvi5fSiMeB1JF-boQrF4rfTBMFTOPmuHRic_sTBsI0LYTNHFkq6Su1tTu6MYXWKlSW9VaENdl3_DdhvQl6gpMOImBrD-QKRceAxWPoM13s_AwATk_NGzDt92reBe3RgX9fIsdcL54Q1zqN624_58D6dVxksr6cbcJIa7aKkiNqA4lINGi5c2cp7o196-Q0NAhqeL31BhNK6bZXz5zT3Q9eag_cL2C-DFpysRhKhop5U2w6Bq9Aa"/>
+</div>
+<h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-sky-400 font-manrope antialiased tracking-tight">
+            M-Santé
+        </h1>
+<button class="text-sky-500 dark:text-sky-400 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors active:scale-95 duration-200 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="px-margin-page flex flex-col gap-stack-gap mt-4">
+<!-- Search and Filters (Glassmorphic) -->
+<section class="flex flex-col gap-unit">
+<div class="relative bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_4px_24px_0_rgba(0,102,133,0.05)] rounded-xl flex items-center p-3">
+<span class="material-symbols-outlined text-outline ml-2 mr-3" data-icon="search">search</span>
+<input class="bg-transparent border-none outline-none w-full font-body-base text-body-base text-on-surface placeholder:text-on-surface-variant focus:ring-0 p-0" placeholder="Search patients, IDs..." type="text"/>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="bg-primary text-on-primary font-label-caps text-label-caps px-4 py-2 rounded-full whitespace-nowrap shadow-sm shadow-primary/20">All Patients</button>
+<button class="bg-white/60 backdrop-blur-md border border-white/40 text-on-surface-variant font-label-caps text-label-caps px-4 py-2 rounded-full whitespace-nowrap hover:bg-surface-container transition-colors">Requires Follow-up</button>
+<button class="bg-white/60 backdrop-blur-md border border-white/40 text-on-surface-variant font-label-caps text-label-caps px-4 py-2 rounded-full whitespace-nowrap hover:bg-surface-container transition-colors">Stable</button>
+</div>
+</section>
+<!-- Directory List (Bento/Glassmorphic Cards) -->
+<section class="flex flex-col gap-gutter">
+<!-- Patient Card 1: Urgent/Follow-up -->
+<article class="bg-white/70 backdrop-blur-xl rounded-xl p-card-padding border border-white/50 shadow-[0_8px_32px_0_rgba(0,102,133,0.08)] relative overflow-hidden group">
+<!-- Inner glow simulation -->
+<div class="absolute inset-0 border-[0.5px] border-white/80 rounded-xl pointer-events-none"></div>
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Patient Avatar" class="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm" data-alt="A serene portrait of a young woman with dark hair, looking gently toward the camera. The lighting is soft and natural, casting a warm, healthy glow on her skin. The background is completely white and out of focus, adhering to a minimalist clinical aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrbavsn_2aqp_YDuQb7NftDKHrBqEw-JNIW2epp_fIEAeQGn0XKWCrgkyFChNVXouWAX3YJ7nO2N8MMDNgt3wvuQBT5NE_WHXPCvktpllICf9rg5AbVr7AZFXnVu8e9FUs5RV8ThsmQKEXcRoUOpL2hdV1j6fUfLzL9VBKBDrb3rOH05QgVbh3MSvy5zeP5z29eIHRoIUZcG8suNpH1cV3iEktVli2LTxsCRKRENSDbxgg0o3E80wUaiq4_skKwE5KrF68v5YoJYaW"/>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-error rounded-full border-2 border-white shadow-sm"></div>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Elena Rostova</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant uppercase tracking-widest">ID: MS-8492-B</p>
+</div>
+</div>
+<span class="bg-error-container text-on-error-container font-label-caps text-label-caps px-3 py-1 rounded-full">Follow-up</span>
+</div>
+<div class="bg-surface/50 rounded-lg p-3 mb-4 border border-white/40 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center flex-shrink-0 text-primary">
+<span class="material-symbols-outlined text-[18px]" data-icon="event_note">event_note</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Last Consult: Oct 24, 2023</p>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">Elevated BP noted. Pending comprehensive metabolic panel results.</p>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-white border border-outline-variant hover:border-primary/50 text-primary rounded-lg py-2 flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="folder_open">folder_open</span>
+<span class="font-label-caps text-label-caps">Records</span>
+</button>
+<button class="flex-1 bg-primary text-on-primary rounded-lg py-2 flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-label-caps text-label-caps">Message</span>
+</button>
+</div>
+</article>
+<!-- Patient Card 2: Stable -->
+<article class="bg-white/50 backdrop-blur-lg rounded-xl p-card-padding border border-white/40 shadow-[0_4px_24px_0_rgba(0,102,133,0.04)] relative overflow-hidden">
+<div class="absolute inset-0 border-[0.5px] border-white/60 rounded-xl pointer-events-none"></div>
+<div class="flex items-start justify-between mb-4">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Patient Avatar" class="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm opacity-90" data-alt="A portrait of a middle-aged man with short, neat hair and a relaxed expression. The lighting is high-key and bright, emphasizing a clean, hygienic environment. The background is a subtle, translucent frosted glass texture, reflecting a modern, premium healthcare setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8ic3dWujpnZKMfsnldjolYz7SSLGOdck4B1mDzpJwX-KSbKF8ZLrdOI6yp26chC74sQbtCV_05jYlmmPUCQajhaBrVCGKxY4fnY-thBPc4MBb-XFIetLUHjFR5hUdBJ5smVwCBPGAJhuwJyFlqpEmKvW1_EzSUatHOi5UKE0iaZas0BGqi0TfJGUvUOBx70MqxdM2uBvyNN3dkd9l13hLWYgRraxjdY9vPbwWFT_4xbwf8KbtfkjaTOciunhrJ2norj8HBy8mscAd"/>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-[#10b981] rounded-full border-2 border-white shadow-sm"></div>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Marcus Vance</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant uppercase tracking-widest">ID: MS-1124-A</p>
+</div>
+</div>
+<span class="bg-surface-container-high text-primary font-label-caps text-label-caps px-3 py-1 rounded-full border border-primary/10">Stable</span>
+</div>
+<div class="bg-surface/30 rounded-lg p-3 mb-4 border border-white/30 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center flex-shrink-0 text-outline">
+<span class="material-symbols-outlined text-[18px]" data-icon="check_circle">check_circle</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Last Consult: Sep 12, 2023</p>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug">Routine physical. All vitals within normal parameters.</p>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-white/80 border border-outline-variant/50 hover:border-primary/30 text-primary rounded-lg py-2 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-[20px]" data-icon="folder_open">folder_open</span>
+<span class="font-label-caps text-label-caps">Records</span>
+</button>
+<button class="flex-1 bg-surface-container text-primary rounded-lg py-2 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-[20px]" data-icon="mail">mail</span>
+<span class="font-label-caps text-label-caps">Email</span>
+</button>
+</div>
+</article>
+</section>
+</main>
+<!-- Shared Component: BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 border-t border-white/30 dark:border-white/5 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-[0_-4px_24px_0_rgba(0,0,0,0.04)] flex justify-around items-center h-20 px-4 pb-safe md:hidden">
+<!-- Active Tab: Health (represents directory here) -->
+<div class="flex flex-col items-center justify-center text-sky-600 dark:text-sky-300 bg-sky-50/50 dark:bg-sky-400/10 rounded-2xl px-4 py-1 hover:text-sky-500 transition-all active:scale-90 duration-150 ease-out cursor-pointer">
+<span class="material-symbols-outlined" data-icon="monitor_heart" style="font-variation-settings: 'FILL' 1;">monitor_heart</span>
+<span class="font-manrope text-[10px] font-semibold uppercase tracking-widest mt-1">Health</span>
+</div>
+<!-- Inactive Tab: Timeline -->
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-sky-500 transition-all active:scale-90 duration-150 ease-out cursor-pointer">
+<span class="material-symbols-outlined" data-icon="timeline">timeline</span>
+<span class="font-manrope text-[10px] font-semibold uppercase tracking-widest mt-1">Timeline</span>
+</div>
+<!-- Inactive Tab: Finance -->
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-sky-500 transition-all active:scale-90 duration-150 ease-out cursor-pointer">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-manrope text-[10px] font-semibold uppercase tracking-widest mt-1">Finance</span>
+</div>
+<!-- Inactive Tab: Profile -->
+<div class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:text-sky-500 transition-all active:scale-90 duration-150 ease-out cursor-pointer">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-manrope text-[10px] font-semibold uppercase tracking-widest mt-1">Profile</span>
+</div>
+</nav>
+</body></html>

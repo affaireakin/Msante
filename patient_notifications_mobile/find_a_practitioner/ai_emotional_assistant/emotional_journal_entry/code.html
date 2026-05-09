@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Journal Entry</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<!-- Tailwind CSS with Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-primary-container": "#005e7a",
+                        "secondary-fixed": "#ffe170",
+                        "primary": "#006685",
+                        "outline-variant": "#bec8ce",
+                        "surface": "#f8f9ff",
+                        "on-background": "#0b1c30",
+                        "surface-variant": "#d3e4fe",
+                        "secondary-fixed-dim": "#e4c546",
+                        "on-surface": "#0b1c30",
+                        "outline": "#6f787e",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#004d65",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-primary-fixed": "#001f2a",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-bright": "#f8f9ff",
+                        "surface-container": "#e5eeff",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#3f484d",
+                        "inverse-primary": "#7bd1f8",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container-high": "#dce9ff",
+                        "on-secondary-container": "#756100",
+                        "tertiary-fixed": "#e0e3e5",
+                        "primary-container": "#82d8ff",
+                        "error": "#ba1a1a",
+                        "background": "#f8f9ff",
+                        "secondary": "#705d00",
+                        "primary-fixed": "#bee9ff",
+                        "on-secondary-fixed-variant": "#544600",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#006685",
+                        "tertiary": "#5c5f61",
+                        "secondary-container": "#ffde5c",
+                        "on-tertiary-container": "#545759",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#221b00",
+                        "tertiary-container": "#cbcdcf",
+                        "surface-dim": "#cbdbf5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "12px",
+                        "margin-page": "24px",
+                        "card-padding": "20px",
+                        "unit": "8px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Manrope", "sans-serif"],
+                        "body-sm": ["Manrope", "sans-serif"],
+                        "label-caps": ["Manrope", "sans-serif"],
+                        "headline-md": ["Manrope", "sans-serif"],
+                        "body-base": ["Manrope", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-base antialiased flex h-screen overflow-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Ambient Background Effects for Medical Futurism depth -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+<div class="absolute top-[-10%] left-[-10%] w-1/2 h-1/2 bg-surface-variant/40 rounded-full blur-3xl opacity-50 mix-blend-multiply"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary-fixed-dim/20 rounded-full blur-[120px] opacity-40 mix-blend-multiply"></div>
+</div>
+<!-- JSON Component: SideNavBar -->
+<nav class="relative z-20 hidden md:flex flex-col bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl h-screen w-64 border-r border-white/20 dark:border-slate-800/50 shadow-[20px_0_40px_rgba(130,216,255,0.05)] py-8 px-4 flex-shrink-0">
+<!-- Header -->
+<div class="flex items-center gap-3 mb-10 px-2">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white/50 shadow-sm flex-shrink-0">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A close-up, softly lit portrait of a calm individual in a clinical yet serene setting. The lighting is high-key and pristine, emphasizing a modern light-mode aesthetic with minimal shadows. Deep blacks and bright whites form the baseline, accented gently by clinical blues, conveying trust and technologically advanced wellness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBA0-N7ibweTTcjLZDjp9PwgpV429HnQPBlEaxZbKJAGnWuXMC1CNb08icREPOeDNWentgDSNYC_aT7ZAnsseCZ7oeiG8zvL5R3V-qvHBTJDOei1dOL5bxWbEjzKxy38p3_YDwR1Zzojftu5mcH3loL60KDYKDGc8aMVZASiv78Edw3p2h9wcXuBPMPjD6HmcSBF9IsBjdbN8zQafTREuV9SqaMu_RV9G2XKXlK5ItOidVDVP1jdYucUzr11DmSUiD6xkBU3l5tXbiW"/>
+</div>
+<div>
+<h1 class="text-xl font-bold tracking-wider text-sky-500 dark:text-sky-400 font-display-lg" style="font-size: 1.25rem;">M-Santé</h1>
+<p class="text-slate-500 text-xs font-body-sm">High-end Sanctuary</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-2">
+<!-- Active Tab: Journal -->
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-sky-600 dark:text-sky-300 font-semibold border-r-4 border-sky-400 bg-sky-50/50 dark:bg-sky-900/20 Active: scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+<span class="font-body-base font-medium">Journal</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 transition-colors hover:bg-white/40 dark:hover:bg-slate-800/40 duration-300" href="#">
+<span class="material-symbols-outlined">self_improvement</span>
+<span class="font-body-base font-medium">Meditation</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 transition-colors hover:bg-white/40 dark:hover:bg-slate-800/40 duration-300" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-body-base font-medium">Vitals</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 transition-colors hover:bg-white/40 dark:hover:bg-slate-800/40 duration-300" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-body-base font-medium">Community</span>
+</a>
+</div>
+<div class="mt-auto pt-6 border-t border-white/10 dark:border-slate-700/30">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-sky-400 transition-colors hover:bg-white/40 dark:hover:bg-slate-800/40 duration-300" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-base font-medium">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col relative z-10 h-screen overflow-hidden">
+<!-- JSON Component: TopAppBar -->
+<header class="flex justify-between items-center px-8 w-full max-w-full h-16 sticky top-0 z-40 bg-white/40 dark:bg-slate-950/40 backdrop-blur-md border-b border-white/20 dark:border-slate-800/40 shadow-sm">
+<div class="flex items-center gap-4">
+<span class="text-lg font-black text-sky-600 dark:text-sky-400 font-display-lg" style="font-size: 1.125rem;">Wellness Space</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-600 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-300 transition-all p-2 rounded-full hover:bg-white/50 focus-within:ring-2 focus-within:ring-sky-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-slate-600 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-300 transition-all p-2 rounded-full hover:bg-white/50 focus-within:ring-2 focus-within:ring-sky-200">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Journal Entry Canvas -->
+<div class="flex-1 overflow-y-auto p-margin-page pb-32">
+<div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-margin-page items-start">
+<!-- Left: Main Writing Area -->
+<div class="lg:col-span-8 flex flex-col gap-stack-gap">
+<!-- Mood Selection (Glassmorphic Bar) -->
+<div class="bg-white/50 backdrop-blur-xl border border-white/60 shadow-[0_8px_32px_rgba(0,102,133,0.04)] rounded-2xl p-4 flex flex-wrap items-center gap-4">
+<span class="font-body-sm text-on-surface-variant font-medium mr-2">Current State:</span>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container/50 border border-white/80 hover:bg-primary-container/30 hover:border-primary/20 text-on-surface transition-all group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">sentiment_satisfied</span>
+<span class="font-body-sm">Calm</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-primary-container/40 border border-primary/20 text-on-primary-container shadow-[inset_0_0_0_1px_rgba(255,255,255,0.4)] transition-all scale-105">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">sentiment_content</span>
+<span class="font-body-sm font-semibold">Grateful</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container/50 border border-white/80 hover:bg-primary-container/30 hover:border-primary/20 text-on-surface transition-all group">
+<span class="material-symbols-outlined text-tertiary group-hover:scale-110 transition-transform">water_drop</span>
+<span class="font-body-sm">Anxious</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container/50 border border-white/80 hover:bg-primary-container/30 hover:border-primary/20 text-on-surface transition-all group">
+<span class="material-symbols-outlined text-tertiary group-hover:scale-110 transition-transform">bedtime</span>
+<span class="font-body-sm">Fatigued</span>
+</button>
+</div>
+<!-- Writing Canvas -->
+<div class="bg-white/60 backdrop-blur-2xl border border-white/50 shadow-[0_16px_40px_rgba(0,102,133,0.06)] rounded-3xl p-8 flex flex-col min-h-[600px] relative overflow-hidden group focus-within:shadow-[0_16px_40px_rgba(0,102,133,0.1)] focus-within:border-primary-fixed/50 transition-all duration-500">
+<!-- Inner subtle glow line -->
+<div class="absolute inset-0 border border-white/80 rounded-3xl pointer-events-none opacity-50"></div>
+<!-- Title Field -->
+<input class="w-full bg-transparent border-0 border-b-2 border-transparent focus:border-primary-container focus:ring-0 text-headline-md font-headline-md text-on-surface placeholder:text-outline/40 pb-4 mb-6 transition-colors bg-none" placeholder="Entry Title..." type="text" value="A moment of clarity"/>
+<!-- Body Area -->
+<textarea class="w-full flex-1 bg-transparent border-0 focus:ring-0 text-body-base font-body-base text-on-surface-variant placeholder:text-outline/30 resize-none leading-relaxed" placeholder="Write without constraints. How is your mind processing today?" spellcheck="false">The morning light felt different today. Not harsh, just present.
+
+I spent 20 minutes doing the breathing exercises recommended in the Vitals section. My resting heart rate finally dipped below 65, which feels like a tangible victory. It's strange how physical metrics can validate an emotional state, or maybe it's the other way around.
+
+Still feeling a lingering tension in my shoulders, perhaps residual stress from yesterday's meeting. Need to remember to hydrate more frequently. The sanctuary environment here makes it easier to pause and reflect, rather than just reacting to notifications.</textarea>
+<!-- Auto-save indicator -->
+<div class="absolute bottom-6 right-8 flex items-center gap-2 text-outline font-body-sm opacity-60">
+<span class="material-symbols-outlined text-[16px]">cloud_done</span>
+<span>Saved just now</span>
+</div>
+</div>
+</div>
+<!-- Right: Reflection & History Sidebar -->
+<div class="lg:col-span-4 flex flex-col gap-margin-page">
+<!-- Reflection Prompts Card -->
+<div class="bg-gradient-to-br from-primary-fixed/30 to-surface/40 backdrop-blur-xl border border-white/60 shadow-[0_8px_24px_rgba(0,102,133,0.05)] rounded-2xl p-card-padding relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">psychology</span>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Guided Reflection</h3>
+</div>
+<div class="flex flex-col gap-3">
+<button class="text-left w-full p-4 rounded-xl bg-white/50 border border-white/40 hover:bg-white/80 hover:border-primary/20 hover:shadow-sm transition-all group">
+<p class="font-body-sm text-on-surface group-hover:text-primary transition-colors">What physical sensation is most prominent right now?</p>
+</button>
+<button class="text-left w-full p-4 rounded-xl bg-white/50 border border-white/40 hover:bg-white/80 hover:border-primary/20 hover:shadow-sm transition-all group">
+<p class="font-body-sm text-on-surface group-hover:text-primary transition-colors">Identify one small victory from the last 24 hours.</p>
+</button>
+<button class="text-left w-full p-4 rounded-xl bg-white/50 border border-white/40 hover:bg-white/80 hover:border-primary/20 hover:shadow-sm transition-all group">
+<p class="font-body-sm text-on-surface group-hover:text-primary transition-colors">If your current mood had a color, what would it be?</p>
+</button>
+</div>
+</div>
+<!-- Previous Entries -->
+<div class="bg-white/40 backdrop-blur-md border border-white/50 rounded-2xl p-card-padding">
+<div class="flex items-center justify-between mb-5">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Recent Logs</h3>
+<button class="text-primary hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</div>
+<div class="flex flex-col gap-unit">
+<!-- History Item -->
+<div class="p-3 rounded-lg hover:bg-white/60 cursor-pointer transition-colors border border-transparent hover:border-white/80 flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="font-body-sm font-medium text-on-surface">Evening decompression</span>
+<span class="font-label-caps text-[10px] text-outline">Yesterday</span>
+</div>
+<p class="font-body-sm text-on-surface-variant/70 line-clamp-1 text-[13px]">Finally managed to disconnect after 8PM. The soundscape helped...</p>
+<div class="flex gap-1 mt-1">
+<div class="w-2 h-2 rounded-full bg-primary-container"></div>
+</div>
+</div>
+<!-- History Item -->
+<div class="p-3 rounded-lg hover:bg-white/60 cursor-pointer transition-colors border border-transparent hover:border-white/80 flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="font-body-sm font-medium text-on-surface">Spike in anxiety</span>
+<span class="font-label-caps text-[10px] text-outline">Oct 12</span>
+</div>
+<p class="font-body-sm text-on-surface-variant/70 line-clamp-1 text-[13px]">Not sure what triggered the sudden heart rate jump around noon...</p>
+<div class="flex gap-1 mt-1">
+<div class="w-2 h-2 rounded-full bg-error-container"></div>
+</div>
+</div>
+<!-- History Item -->
+<div class="p-3 rounded-lg hover:bg-white/60 cursor-pointer transition-colors border border-transparent hover:border-white/80 flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="font-body-sm font-medium text-on-surface">Morning Walk</span>
+<span class="font-label-caps text-[10px] text-outline">Oct 10</span>
+</div>
+<p class="font-body-sm text-on-surface-variant/70 line-clamp-1 text-[13px]">The air was crisp. Feeling much more grounded today than last week.</p>
+<div class="flex gap-1 mt-1">
+<div class="w-2 h-2 rounded-full bg-surface-variant"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Contextual for Journal - New Entry) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-[0_12px_30px_rgba(0,102,133,0.3)] hover:scale-105 hover:bg-on-primary-container transition-all flex items-center justify-center z-50">
+<span class="material-symbols-outlined">add</span>
+</button>
+</body></html>

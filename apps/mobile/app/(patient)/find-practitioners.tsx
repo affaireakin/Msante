@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { View, Text, FlatList, TextInput, SafeAreaView, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList, TextInput, ActivityIndicator } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { usePractitioners } from '@/features/practitioners/hooks/usePractitioners'
 import { PractitionerCard } from '@/features/practitioners/components/PractitionerCard'
 import { FilterBar } from '@/features/practitioners/components/FilterBar'
@@ -31,19 +33,28 @@ export default function FindPractitionersScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="px-6 pt-6 pb-4 gap-4">
-        <Text className="text-2xl font-bold text-on-surface font-manrope">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+      <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 16, gap: 16 }}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>
           Trouver un praticien
         </Text>
 
-        <View className="flex-row items-center bg-white/60 rounded-xl border border-white/80 px-4 gap-2">
-          <Text className="text-outline">🔍</Text>
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: 'rgba(255,255,255,0.6)',
+          borderRadius: 12,
+          borderWidth: 1,
+          borderColor: 'rgba(255,255,255,0.8)',
+          paddingHorizontal: 16,
+          gap: 8,
+        }}>
+          <MaterialIcons name="search" size={20} color="#6f787e" />
           <TextInput
             value={search}
             onChangeText={setSearch}
             placeholder="Nom, spécialité..."
-            className="flex-1 py-3 text-base font-manrope text-on-surface"
+            style={{ flex: 1, paddingVertical: 12, fontSize: 16, fontFamily: 'Manrope', color: '#0b1c30' }}
             placeholderTextColor="#6f787e"
           />
         </View>
@@ -57,12 +68,12 @@ export default function FindPractitionersScreen() {
       </View>
 
       {isLoading ? (
-        <View className="flex-1 items-center justify-center">
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator color="#006685" size="large" />
         </View>
       ) : error ? (
-        <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-error font-manrope text-center">
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }}>
+          <Text style={{ color: '#ba1a1a', fontFamily: 'Manrope', textAlign: 'center' }}>
             Impossible de charger les praticiens
           </Text>
         </View>
@@ -75,8 +86,8 @@ export default function FindPractitionersScreen() {
             <PractitionerCard practitioner={item} onPress={() => handleSelect(item)} />
           )}
           ListEmptyComponent={
-            <View className="py-12 items-center">
-              <Text className="text-on-surface-variant font-manrope">
+            <View style={{ paddingVertical: 48, alignItems: 'center' }}>
+              <Text style={{ color: '#3f484d', fontFamily: 'Manrope' }}>
                 Aucun praticien trouvé
               </Text>
             </View>

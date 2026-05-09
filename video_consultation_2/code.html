@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Consultation - M-Santé</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#006685",
+                        "on-tertiary-container": "#545759",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#f8f9ff",
+                        "secondary-fixed": "#ffe170",
+                        "surface-container-high": "#dce9ff",
+                        "secondary-container": "#ffde5c",
+                        "on-secondary-fixed-variant": "#544600",
+                        "tertiary-container": "#cbcdcf",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#0b1c30",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "surface-variant": "#d3e4fe",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed": "#bee9ff",
+                        "surface": "#f8f9ff",
+                        "inverse-primary": "#7bd1f8",
+                        "error": "#ba1a1a",
+                        "primary-container": "#82d8ff",
+                        "tertiary-fixed": "#e0e3e5",
+                        "background": "#f8f9ff",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-container": "#756100",
+                        "on-surface": "#0b1c30",
+                        "outline": "#6f787e",
+                        "surface-dim": "#cbdbf5",
+                        "surface-container": "#e5eeff",
+                        "secondary-fixed-dim": "#e4c546",
+                        "on-primary-container": "#005e7a",
+                        "on-secondary-fixed": "#221b00",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#004d65",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "on-primary-fixed": "#001f2a",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "outline-variant": "#bec8ce",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-surface-variant": "#3f484d",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#006685",
+                        "secondary": "#705d00",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#5c5f61"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "stack-gap": "12px",
+                        "margin-page": "24px",
+                        "gutter": "16px",
+                        "card-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Manrope"],
+                        "label-caps": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "body-base": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body-base text-on-surface h-screen w-screen overflow-hidden selection:bg-primary-container selection:text-on-primary-container relative">
+<!-- Main Background (Doctor Video Feed) -->
+<div class="absolute inset-0 z-0 bg-inverse-surface">
+<img alt="Doctor Video Feed" class="w-full h-full object-cover opacity-90" data-alt="A medium close-up shot of a professional male doctor wearing a pristine white clinical coat over a crisp, light blue shirt. He is looking directly into the camera with a calm, reassuring, and highly empathetic expression, suggesting active listening during a telemedicine call. The environment is a brightly lit, modern clinical office with soft, diffused white lighting that creates a clean, trustworthy light-mode aesthetic. The background features beautifully blurred, minimalist white shelving and subtle hints of advanced medical technology. The overall mood is deeply serene, intensely professional, and technologically advanced, perfectly executing a high-end medical futurism style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqP1Aapn-uKNPCpnswVoHd-BBWd7YN7b-o04odUIbILySYgN5hXGDCEKvUKAeFbBqITi3TBRKOdxiH3CI88LLwWubkszyutpv-1vLuoONB9tV9D_SaT_JUXXcgNVjaachlciTURn9Kp_b0gz4N6yfjmauET4Q1Q4xlPLct9gM6jjKFeNrNXia_RCqr3lN5B_eVq36t60sYjtt7Qq8YLNKRQZ01vRmuxwz_nL3yB1UayH4z8qp_xOOb7HvRc8sMwxjW6ituPAexu8YQ"/>
+</div>
+<!-- TopAppBar (From JSON Shell) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-white/70 dark:bg-slate-950/70 backdrop-blur-md shadow-sm border-b border-white/20 transition-all duration-300 ease-in-out">
+<button class="text-sky-500 dark:text-sky-300 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-all duration-300 ease-in-out active:scale-95 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-manrope font-semibold tracking-tight text-lg font-bold text-sky-600 dark:text-sky-400">Consultation</h1>
+<button class="text-slate-500 dark:text-slate-400 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-all duration-300 ease-in-out active:scale-95 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</header>
+<!-- Secondary Header: Timer & Security Badge (Glassmorphic) -->
+<div class="absolute top-[80px] left-0 w-full flex justify-center z-40 px-margin-page pointer-events-none">
+<div class="flex items-center gap-stack-gap bg-surface-container-lowest/60 backdrop-blur-[16px] px-4 py-2 rounded-full shadow-[0_4px_30px_rgba(0,102,133,0.1)] border border-white/50 pointer-events-auto">
+<div class="flex items-center gap-1.5 text-primary font-label-caps">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span>Secure</span>
+</div>
+<div class="w-[1px] h-4 bg-outline-variant/40"></div>
+<div class="text-on-surface font-body-sm font-medium tracking-wide">14:23</div>
+</div>
+</div>
+<!-- PiP Window (Patient View) -->
+<div class="absolute top-[136px] right-margin-page w-28 h-40 rounded-xl overflow-hidden border-[1.5px] border-white/40 shadow-[0_12px_40px_rgba(0,102,133,0.2)] z-40 bg-surface-container-high pointer-events-auto cursor-move">
+<img alt="Patient View" class="w-full h-full object-cover" data-alt="A close-up, mobile-style selfie view of a young adult woman looking attentively at the screen. She is situated in a remarkably bright room with soft, abundant natural sunlight streaming in, creating an exceptionally warm, optimistic, and healthy atmosphere. The lighting is incredibly flattering, highlighting her calm and relaxed expression. The background is softly out of focus, revealing a minimalist home interior decorated with light, airy neutral tones and a hint of indoor greenery, perfectly matching a serene, light-mode wellness aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDunCDkbci_7fFSPveDVH_5i638VretZ3T_w_2QeIlW4q3igxhnZb37fMYIqKz_5ttf8d1ZCxkLYQo8GtaTkkFNK2z6oLNpszxUH3EQagLHBJNsJ7zCL9ZAk1op_afX2Dadhqi3KIkTLSqLWdEfbfd9PaLRKvemHcdQ6Z44gcIc3ssExdBgRcwzuvxI6f8WAIQi3iTs-wrFhBO34fyKcV7IjV_0Bs_9eCqmMikmhi9rxT39V1Ja9pWD-QT4-gW3kNuCMGpnD_gwKtqd"/>
+</div>
+<!-- Side Trigger: Chat/Notes -->
+<button class="absolute top-1/2 right-0 -translate-y-1/2 bg-surface-container-lowest/70 backdrop-blur-[16px] py-4 px-3 rounded-l-2xl shadow-[-8px_0_30px_rgba(0,102,133,0.1)] border border-r-0 border-white/50 text-primary hover:bg-surface-container-lowest hover:w-14 transition-all duration-300 ease-out flex flex-col items-center gap-1 z-40 group">
+<span class="material-symbols-outlined transition-transform group-hover:scale-110" style="font-variation-settings: 'FILL' 1;">chat</span>
+</button>
+<!-- Floating Bottom Control Bar (Glassmorphic) -->
+<div class="absolute bottom-margin-page left-0 w-full z-40 flex justify-center px-margin-page pointer-events-none">
+<div class="flex items-center justify-between gap-3 md:gap-6 bg-surface-container-lowest/60 backdrop-blur-[24px] px-6 py-4 rounded-[2.5rem] shadow-[0_16px_40px_rgba(0,102,133,0.15)] border border-white/60 w-full max-w-sm pointer-events-auto">
+<!-- Mute Button -->
+<button class="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container-low/80 text-on-surface hover:bg-primary hover:text-on-primary transition-colors shadow-sm border border-white/40">
+<span class="material-symbols-outlined text-[22px]">mic</span>
+</button>
+<!-- Video Toggle Button -->
+<button class="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container-low/80 text-on-surface hover:bg-primary hover:text-on-primary transition-colors shadow-sm border border-white/40">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">videocam</span>
+</button>
+<!-- Flip Camera Button -->
+<button class="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container-low/80 text-on-surface hover:bg-primary hover:text-on-primary transition-colors shadow-sm border border-white/40">
+<span class="material-symbols-outlined text-[22px]">cameraswitch</span>
+</button>
+<div class="w-[1px] h-8 bg-outline-variant/30 mx-1"></div>
+<!-- End Session Button -->
+<button class="w-14 h-14 flex items-center justify-center rounded-full bg-error text-on-error hover:bg-on-error-container transition-colors shadow-[0_8px_20px_rgba(186,26,26,0.25)] border border-error/50">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">call_end</span>
+</button>
+</div>
+</div>
+<!-- 
+      Note: BottomNavBar from JSON is intentionally suppressed here as this is a 
+      linear/transactional "Task-Focused" screen (active video call) where the global navigation 
+      would distract from the primary action.
+    -->
+</body></html>

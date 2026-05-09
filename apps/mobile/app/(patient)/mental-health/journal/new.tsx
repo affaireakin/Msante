@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { View, Text, TextInput, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { EmotionPicker } from '@/features/mental-health/mood/components/EmotionPicker'
 import { useCreateJournalEntry } from '@/features/mental-health/journal/hooks/useJournalEntries'
 import { useAuth } from '@/features/auth/hooks/useAuth'
@@ -36,57 +37,82 @@ export default function JournalNew() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className="flex-1">
-        <View className="px-6 pt-6 pb-3 flex-row items-center justify-between">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+        <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Text className="text-primary text-2xl">←</Text>
+            <MaterialIcons name="arrow-back" size={24} color="#006685" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleSave}
             disabled={!content.trim() || createEntry.isPending}
-            className="bg-primary px-5 py-2 rounded-full"
-            style={{ opacity: !content.trim() || createEntry.isPending ? 0.5 : 1 }}
+            style={{
+              backgroundColor: '#006685',
+              paddingHorizontal: 20,
+              paddingVertical: 8,
+              borderRadius: 9999,
+              opacity: !content.trim() || createEntry.isPending ? 0.5 : 1,
+            }}
           >
-            <Text className="text-white text-sm font-semibold font-manrope">Enregistrer</Text>
+            <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600', fontFamily: 'Manrope' }}>Enregistrer</Text>
           </TouchableOpacity>
         </View>
-        <ScrollView className="flex-1 px-6" contentContainerStyle={{ paddingBottom: 40, gap: 16 }}>
-          <View
-            className="bg-white/60 rounded-3xl p-6 border border-white/50"
-            style={{ shadowColor: '#006685', shadowOffset: { width: 0, height: 16 }, shadowOpacity: 0.06, shadowRadius: 40, elevation: 4, gap: 16 }}
-          >
+        <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} contentContainerStyle={{ paddingBottom: 40, gap: 16 }}>
+          <View style={{
+            backgroundColor: 'rgba(255,255,255,0.6)',
+            borderRadius: 24,
+            padding: 24,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.5)',
+            shadowColor: '#006685',
+            shadowOffset: { width: 0, height: 16 },
+            shadowOpacity: 0.06,
+            shadowRadius: 40,
+            elevation: 4,
+            gap: 16,
+          }}>
             <TextInput
               value={title}
               onChangeText={setTitle}
               placeholder="Titre de l'entrée..."
-              placeholderTextColor="#6f787e66"
-              className="text-on-surface font-manrope border-b border-outline-variant/30 pb-3"
-              style={{ fontFamily: 'Manrope', fontSize: 20, fontWeight: '600' }}
+              placeholderTextColor="rgba(111,120,126,0.4)"
+              style={{ color: '#0b1c30', fontFamily: 'Manrope', borderBottomWidth: 1, borderBottomColor: 'rgba(190,200,206,0.3)', paddingBottom: 12, fontSize: 20, fontWeight: '600' }}
             />
-            <View className="gap-2">
-              <Text className="text-xs text-on-surface-variant font-manrope uppercase tracking-wider">Vos émotions</Text>
+            <View style={{ gap: 8 }}>
+              <Text style={{ fontSize: 12, color: '#3f484d', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Vos émotions</Text>
               <EmotionPicker selected={emotions} onToggle={toggleEmotion} />
             </View>
             <TextInput
               value={content}
               onChangeText={setContent}
               placeholder="Écrivez librement. Comment votre esprit traite-t-il la journée ?"
-              placeholderTextColor="#6f787e44"
+              placeholderTextColor="rgba(111,120,126,0.27)"
               multiline
-              className="text-base text-on-surface-variant font-manrope"
-              style={{ fontFamily: 'Manrope', minHeight: 180, textAlignVertical: 'top', lineHeight: 24 }}
+              style={{ fontSize: 16, color: '#3f484d', fontFamily: 'Manrope', minHeight: 180, textAlignVertical: 'top', lineHeight: 24 }}
             />
           </View>
-          <View className="bg-primary-fixed/30 rounded-2xl p-5 gap-3 border border-white/60">
-            <Text className="text-xs text-on-surface-variant font-manrope uppercase tracking-wider">Réflexions guidées</Text>
+          <View style={{
+            backgroundColor: 'rgba(190,233,255,0.3)',
+            borderRadius: 16,
+            padding: 20,
+            gap: 12,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.6)',
+          }}>
+            <Text style={{ fontSize: 12, color: '#3f484d', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Réflexions guidées</Text>
             {REFLECTION_PROMPTS.map((p, i) => (
               <TouchableOpacity
                 key={i}
                 onPress={() => setContent(prev => prev + (prev ? '\n\n' : '') + p + '\n')}
-                className="bg-white/50 rounded-xl p-4 border border-white/40"
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.5)',
+                  borderRadius: 12,
+                  padding: 16,
+                  borderWidth: 1,
+                  borderColor: 'rgba(255,255,255,0.4)',
+                }}
               >
-                <Text className="text-sm text-on-surface font-manrope">{p}</Text>
+                <Text style={{ fontSize: 14, color: '#0b1c30', fontFamily: 'Manrope' }}>{p}</Text>
               </TouchableOpacity>
             ))}
           </View>

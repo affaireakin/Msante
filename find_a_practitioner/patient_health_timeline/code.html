@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Patient Timeline</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-fixed": "#221b00",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "on-primary-fixed-variant": "#004d65",
+                        "surface-variant": "#d3e4fe",
+                        "on-primary-container": "#005e7a",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#e5eeff",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001f2a",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#544600",
+                        "on-surface-variant": "#3f484d",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "on-error": "#ffffff",
+                        "tertiary": "#5c5f61",
+                        "secondary-fixed": "#ffe170",
+                        "on-surface": "#0b1c30",
+                        "secondary-fixed-dim": "#e4c546",
+                        "primary": "#006685",
+                        "tertiary-fixed": "#e0e3e5",
+                        "surface": "#f8f9ff",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "on-background": "#0b1c30",
+                        "inverse-primary": "#7bd1f8",
+                        "tertiary-container": "#cbcdcf",
+                        "outline-variant": "#bec8ce",
+                        "secondary-container": "#ffde5c",
+                        "secondary": "#705d00",
+                        "inverse-on-surface": "#eaf1ff",
+                        "background": "#f8f9ff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-container": "#545759",
+                        "surface-tint": "#006685",
+                        "primary-fixed": "#bee9ff",
+                        "primary-container": "#82d8ff",
+                        "outline": "#6f787e",
+                        "inverse-surface": "#213145",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#756100",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-tertiary-fixed": "#191c1e",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f8f9ff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "unit": "8px",
+                        "card-padding": "20px",
+                        "stack-gap": "12px",
+                        "margin-page": "24px",
+                        "gutter": "16px"
+                    },
+                    fontFamily: {
+                        "label-caps": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "body-sm": ["Manrope"],
+                        "body-base": ["Manrope"]
+                    },
+                    fontSize: {
+                        "label-caps": ["12px", { lineHeight: "1.2", letterSpacing: "0.05em", fontWeight: "700" }],
+                        "headline-md": ["24px", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "display-lg": ["48px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-sm": ["14px", { lineHeight: "1.5", fontWeight: "400" }],
+                        "body-base": ["16px", { lineHeight: "1.6", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-base h-screen flex overflow-hidden">
+<!-- SideNavBar (Web) -->
+<nav class="hidden md:flex flex-col h-full p-4 gap-2 bg-white/60 backdrop-blur-2xl dark:bg-slate-900/60 h-screen w-64 border-r rounded-r-lg border-r border-sky-100/20 dark:border-slate-800 shadow-xl shadow-sky-900/5 transition-all duration-300 ease-in-out z-40 relative">
+<div class="flex items-center gap-3 px-4 mb-8 mt-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+<div>
+<h2 class="text-lg font-extrabold text-sky-600 font-headline-md text-sm">M-Santé Portal</h2>
+<p class="font-body-sm text-body-sm text-outline">Medical Futurism Systems</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 flex-1">
+<!-- Active Tab -->
+<a class="flex items-center gap-3 px-4 py-3 bg-sky-500/10 text-sky-600 dark:text-sky-300 rounded-lg border-l-4 border-sky-500 hover:bg-slate-50 dark:hover:bg-slate-800/50" href="#">
+<span class="material-symbols-outlined">event_note</span>
+<span class="font-manrope text-sm font-medium">Timeline</span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-manrope text-sm font-medium">Financials</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-manrope text-sm font-medium">Patients</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-sky-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg border-l-4 border-transparent" href="#">
+<span class="material-symbols-outlined">insights</span>
+<span class="font-manrope text-sm font-medium">Analytics</span>
+</a>
+</div>
+<button class="mt-auto mx-4 py-3 bg-primary/10 text-primary rounded-lg font-label-caps text-label-caps hover:bg-primary/20 transition-colors border border-primary/20 flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+            Export Reports
+        </button>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full relative overflow-hidden">
+<!-- TopAppBar -->
+<header class="bg-white/70 backdrop-blur-xl dark:bg-slate-900/70 font-manrope antialiased docked full-width top-0 sticky z-50 border-b border-white/20 dark:border-slate-800/50 shadow-[0_8px_32px_0_rgba(130,216,255,0.08)] flex justify-between items-center w-full px-6 py-3 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Icon (hidden on desktop) -->
+<button class="md:hidden text-sky-500">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="text-2xl font-bold tracking-tighter text-sky-500 dark:text-sky-400">M-Santé</h1>
+</div>
+<div class="flex items-center gap-4 text-sky-400 dark:text-sky-300">
+<button class="hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors p-2 rounded-full opacity-80 scale-[0.99] duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors p-2 rounded-full opacity-80 scale-[0.99] duration-200">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border-2 border-white">
+<img alt="Practitioner Profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a medical professional in a brightly lit, modern clinical environment. The lighting is soft and white, highlighting the clean, medical futurism aesthetic of the application. The background is a subtle, out-of-focus mix of clinical blues and stark whites. The mood is professional, calm, and reassuring." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfbG1LLzwgJ7nKy-OEjnSpe_KJu1xY7bcu8sEGmApujcBi8sUZwuBo_sT3JknmCmnLdyz1eALvvYh_q75wR2ZPbKlG6blNuVf4ik2FWgCwZclU9KyW9CNv06hOzFNccz6SdmGU2qSmHzX-GcxWp6gI3GRBOApZy2sEEKySS1NqNZk7TFU307s8kKc_tsbjIS4T6syD2HfRfN8GwZwFn86GxwaXKIeL0ypoqUfQ7ICpNgNREH9DDWQhosUsxvPd6E77kDLeiQqojW4S"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<div class="flex-1 overflow-y-auto p-margin-page pb-32 md:pb-margin-page">
+<div class="max-w-4xl mx-auto flex flex-col gap-stack-gap">
+<!-- Patient Summary Header (Bento/Glassmorphic) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-stack-gap mb-8">
+<div class="md:col-span-2 bg-surface-container/60 backdrop-blur-xl border border-white/40 p-card-padding rounded-xl shadow-[0_8px_40px_rgba(0,102,133,0.06)] relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+<div class="flex items-start gap-6 relative z-10">
+<img alt="Patient Avatar" class="w-20 h-20 rounded-full border-4 border-white shadow-sm object-cover" data-alt="A portrait of a serene young woman bathed in soft, natural daylight. The setting suggests a calm wellness sanctuary, aligning with a medical futurism aesthetic. The colors are muted and gentle, emphasizing a sense of health and tranquility against a clean, light background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrxlua3WP4wuoMY0tYytdS0BowfqvSU9JvJIwPiXvAefWeXrYPxc3kJyXirLO20OLZlG6SFNF1njec3FtE3K36YCbvXcKTFs8gj-6JmCyRGoT7qBVMINbeErXhENHQf2I_PiSHowcOqFxujenzn4uDHKgG3mToQg-fvRV4x49cKgu0Du14hzX-3X2Eh8ZjwoqkXiNDRLDAIT0xymvpDSEzXNH7-SeMrUN5kl5oeTG2c0WO7lGytP3lT9E0u3YVkfflaGTcv9DRpzET"/>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-1">Eleanor Vance</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Patient ID: #MS-8842 • 34 yrs • Female</p>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-white/80 rounded-full font-label-caps text-label-caps text-primary border border-primary/10 shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">water_drop</span> Blood: O+
+                                    </span>
+<span class="px-3 py-1 bg-error-container/50 rounded-full font-label-caps text-label-caps text-on-error-container border border-error/10 shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">warning</span> Penicillin Allergy
+                                    </span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-primary-container/30 backdrop-blur-xl border border-white/50 p-card-padding rounded-xl flex flex-col justify-center items-center shadow-[0_8px_40px_rgba(0,102,133,0.04)]">
+<span class="material-symbols-outlined text-4xl text-primary mb-2" style="font-variation-settings: 'FILL' 1;">monitor_heart</span>
+<p class="font-label-caps text-label-caps text-on-primary-container opacity-80">Overall Status</p>
+<p class="font-headline-md text-headline-md text-on-primary-container mt-1">Stable</p>
+</div>
+</section>
+<!-- Timeline Section -->
+<section class="relative pl-4 md:pl-8">
+<!-- Vertical Timeline Line -->
+<div class="absolute left-[27px] md:left-[43px] top-4 bottom-0 w-0.5 bg-outline-variant/30 rounded-full"></div>
+<!-- Timeline Item 1: Consultation -->
+<div class="relative flex gap-6 mb-8 group">
+<div class="w-10 h-10 rounded-full bg-surface border-2 border-primary flex items-center justify-center shrink-0 z-10 shadow-sm shadow-primary/20 relative">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">stethoscope</span>
+</div>
+<div class="flex-1 bg-white/80 backdrop-blur-lg border border-white p-card-padding rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] group-hover:shadow-[0_8px_30px_rgba(0,102,133,0.08)] transition-all duration-300">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-body-base text-body-base font-semibold text-on-surface">Cardiology Consultation</h3>
+<span class="font-label-caps text-label-caps text-on-surface-variant bg-surface-container px-2 py-1 rounded">Today, 10:30 AM</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Routine follow-up for mild palpitations. EKG shows normal sinus rhythm. Patient advised to reduce caffeine intake.</p>
+<div class="flex gap-3">
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-2 rounded-lg border border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-[18px]">description</span>
+<span class="font-body-sm text-body-sm text-on-surface">EKG_Report.pdf</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2: Prescription -->
+<div class="relative flex gap-6 mb-8 group">
+<div class="w-10 h-10 rounded-full bg-surface border-2 border-secondary flex items-center justify-center shrink-0 z-10 shadow-sm shadow-secondary/20 relative">
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">medication</span>
+</div>
+<div class="flex-1 bg-white/80 backdrop-blur-lg border border-white p-card-padding rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] group-hover:shadow-[0_8px_30px_rgba(112,93,0,0.08)] transition-all duration-300">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-body-base text-body-base font-semibold text-on-surface">Prescription Updated</h3>
+<span class="font-label-caps text-label-caps text-on-surface-variant bg-surface-container px-2 py-1 rounded">Oct 24, 2023</span>
+</div>
+<div class="flex items-center gap-4 bg-secondary-container/20 p-3 rounded-lg border border-secondary-container/30">
+<div class="w-12 h-12 bg-white rounded flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-secondary opacity-70">vaccines</span>
+</div>
+<div>
+<p class="font-body-base text-body-base font-semibold text-on-surface">Lisinopril 10mg</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">1 tablet daily in the morning.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Item 3: Mood Log -->
+<div class="relative flex gap-6 group">
+<div class="w-10 h-10 rounded-full bg-surface border-2 border-tertiary flex items-center justify-center shrink-0 z-10 shadow-sm shadow-tertiary/20 relative">
+<span class="material-symbols-outlined text-tertiary text-[20px]" style="font-variation-settings: 'FILL' 1;">mood_bad</span>
+</div>
+<div class="flex-1 bg-white/80 backdrop-blur-lg border border-white p-card-padding rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] group-hover:shadow-[0_8px_30px_rgba(92,95,97,0.08)] transition-all duration-300">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-body-base text-body-base font-semibold text-on-surface">Patient Mood Log</h3>
+<span class="font-label-caps text-label-caps text-on-surface-variant bg-surface-container px-2 py-1 rounded">Oct 20, 2023</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic border-l-2 border-tertiary/30 pl-3 py-1 my-2">"Feeling unusually fatigued the past few days, slight headache in the evenings."</p>
+<span class="inline-flex items-center gap-1 font-label-caps text-label-caps text-tertiary bg-tertiary-container/30 px-2 py-1 rounded">
+                                Status: Monitored
+                            </span>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-white/80 backdrop-blur-lg dark:bg-slate-950/80 font-manrope text-[10px] uppercase tracking-widest z-50 rounded-t-2xl border-t border-white/10 dark:border-slate-800 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+<!-- Active -->
+<a class="flex flex-col items-center justify-center text-sky-500 dark:text-sky-300 scale-110 active:bg-sky-50 dark:active:bg-sky-900/20 rounded-lg p-1 transition-all duration-150 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">timeline</span>
+<span>Timeline</span>
+</a>
+<!-- Inactive -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 opacity-60 active:bg-sky-50 dark:active:bg-sky-900/20 rounded-lg p-1 transition-all duration-150 ease-out hover:opacity-100" href="#">
+<span class="material-symbols-outlined mb-1">account_balance</span>
+<span>Finance</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 opacity-60 active:bg-sky-50 dark:active:bg-sky-900/20 rounded-lg p-1 transition-all duration-150 ease-out hover:opacity-100" href="#">
+<span class="material-symbols-outlined mb-1">folder_shared</span>
+<span>Records</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 opacity-60 active:bg-sky-50 dark:active:bg-sky-900/20 rounded-lg p-1 transition-all duration-150 ease-out hover:opacity-100" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span>Profile</span>
+</a>
+</nav>
+</body></html>

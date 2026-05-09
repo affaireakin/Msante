@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useMoodEntries } from '@/features/mental-health/mood/hooks/useMoodEntries'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 
@@ -22,28 +23,46 @@ export default function MoodHistory() {
   const maxH = 180
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <ScrollView className="flex-1 px-6" contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="pt-8 pb-6 flex-row items-center gap-3">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+      <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} contentContainerStyle={{ paddingBottom: 40 }}>
+        <View style={{ paddingTop: 32, paddingBottom: 24, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Text className="text-primary text-2xl">←</Text>
+            <MaterialIcons name="arrow-back" size={24} color="#006685" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-on-surface font-manrope">Historique humeur</Text>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Historique humeur</Text>
         </View>
-        <View
-          className="bg-white/60 rounded-3xl p-6 border border-white/50"
-          style={{ shadowColor: '#006685', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.05, shadowRadius: 30, elevation: 3 }}
-        >
-          <View className="flex-row items-end justify-between gap-2" style={{ height: maxH + 40 }}>
+        <View style={{
+          backgroundColor: 'rgba(255,255,255,0.6)',
+          borderRadius: 24,
+          padding: 24,
+          borderWidth: 1,
+          borderColor: 'rgba(255,255,255,0.5)',
+          shadowColor: '#006685',
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.05,
+          shadowRadius: 30,
+          elevation: 3,
+        }}>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', gap: 8, height: maxH + 40 }}>
             {last7.map((day, i) => {
               const barH = day.score ? (day.score / 10) * maxH : 6
               return (
-                <View key={i} className="flex-1 items-center gap-2">
+                <View key={i} style={{ flex: 1, alignItems: 'center', gap: 8 }}>
                   <View
-                    className={`w-full rounded-t-xl ${day.isToday ? 'bg-primary' : 'bg-primary-container/40'}`}
-                    style={{ height: barH }}
+                    style={{
+                      width: '100%',
+                      borderTopLeftRadius: 8,
+                      borderTopRightRadius: 8,
+                      height: barH,
+                      backgroundColor: day.isToday ? '#006685' : 'rgba(130,216,255,0.4)',
+                    }}
                   />
-                  <Text className={`text-xs font-manrope ${day.isToday ? 'text-primary font-bold' : 'text-outline'}`}>
+                  <Text style={{
+                    fontSize: 12,
+                    fontFamily: 'Manrope',
+                    color: day.isToday ? '#006685' : '#6f787e',
+                    fontWeight: day.isToday ? '700' : '400',
+                  }}>
                     {day.label}
                   </Text>
                 </View>
@@ -51,9 +70,17 @@ export default function MoodHistory() {
             })}
           </View>
           {entries.length > 0 && (
-            <View className="mt-4 bg-surface-container-low rounded-2xl p-4 flex-row items-center gap-3">
-              <Text className="text-xl">💡</Text>
-              <Text className="flex-1 text-sm text-on-surface font-manrope">
+            <View style={{
+              marginTop: 16,
+              backgroundColor: '#eff4ff',
+              borderRadius: 16,
+              padding: 16,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 12,
+            }}>
+              <MaterialIcons name="lightbulb" size={22} color="#006685" />
+              <Text style={{ flex: 1, fontSize: 14, color: '#0b1c30', fontFamily: 'Manrope' }}>
                 Score moyen 7j :{' '}
                 {(entries.slice(0, 7).reduce((a, e) => a + e.score, 0) / Math.min(entries.length, 7)).toFixed(1)}/10
               </Text>

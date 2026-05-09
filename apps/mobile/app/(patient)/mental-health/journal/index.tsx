@@ -1,6 +1,7 @@
 import { View, Text, FlatList, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useJournalEntries } from '@/features/mental-health/journal/hooks/useJournalEntries'
 import { JournalCard } from '@/features/mental-health/journal/components/JournalCard'
 import { useAuth } from '@/features/auth/hooks/useAuth'
@@ -11,14 +12,14 @@ export default function JournalList() {
   const { data: entries = [] } = useJournalEntries(profile?.id ?? '')
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="px-6 pt-8 pb-4 flex-row items-center justify-between">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+      <View style={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View>
-          <Text className="text-xs text-primary font-manrope uppercase tracking-wider">Wellness Space</Text>
-          <Text className="text-2xl font-bold text-on-surface font-manrope">Mon Journal</Text>
+          <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Wellness Space</Text>
+          <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Mon Journal</Text>
         </View>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text className="text-sm text-outline font-manrope">Retour</Text>
+          <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>Retour</Text>
         </TouchableOpacity>
       </View>
       <FlatList
@@ -32,9 +33,9 @@ export default function JournalList() {
           />
         )}
         ListEmptyComponent={
-          <View className="items-center py-16 gap-3">
-            <Text className="text-4xl">📓</Text>
-            <Text className="text-sm text-outline font-manrope text-center">
+          <View style={{ alignItems: 'center', paddingVertical: 64, gap: 12 }}>
+            <MaterialIcons name="book" size={40} color="#bec8ce" />
+            <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center' }}>
               Votre journal est vide.{'\n'}Commencez à écrire.
             </Text>
           </View>
@@ -42,10 +43,24 @@ export default function JournalList() {
       />
       <TouchableOpacity
         onPress={() => router.push('/(patient)/mental-health/journal/new')}
-        className="absolute bottom-8 right-6 w-14 h-14 bg-primary rounded-full items-center justify-center"
-        style={{ shadowColor: '#006685', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.3, shadowRadius: 30, elevation: 8 }}
+        style={{
+          position: 'absolute',
+          bottom: 32,
+          right: 24,
+          width: 56,
+          height: 56,
+          backgroundColor: '#006685',
+          borderRadius: 28,
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadowColor: '#006685',
+          shadowOffset: { width: 0, height: 12 },
+          shadowOpacity: 0.3,
+          shadowRadius: 30,
+          elevation: 8,
+        }}
       >
-        <Text className="text-white text-2xl font-bold">+</Text>
+        <MaterialIcons name="add" size={28} color="#ffffff" />
       </TouchableOpacity>
     </SafeAreaView>
   )

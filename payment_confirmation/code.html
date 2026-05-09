@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Secure Checkout</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#e4c546",
+                        "on-tertiary-container": "#545759",
+                        "tertiary": "#5c5f61",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-secondary-fixed": "#221b00",
+                        "outline": "#6f787e",
+                        "tertiary-container": "#cbcdcf",
+                        "outline-variant": "#bec8ce",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#cbdbf5",
+                        "surface-tint": "#006685",
+                        "primary": "#006685",
+                        "on-primary-container": "#005e7a",
+                        "surface-bright": "#f8f9ff",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9ff",
+                        "primary-fixed-dim": "#7bd1f8",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#213145",
+                        "secondary": "#705d00",
+                        "on-secondary-container": "#756100",
+                        "on-error": "#ffffff",
+                        "surface-container": "#e5eeff",
+                        "on-primary-fixed-variant": "#004d65",
+                        "on-secondary-fixed-variant": "#544600",
+                        "primary-container": "#82d8ff",
+                        "secondary-container": "#ffde5c",
+                        "on-primary-fixed": "#001f2a",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "on-background": "#0b1c30",
+                        "inverse-primary": "#7bd1f8",
+                        "surface-container-high": "#dce9ff",
+                        "surface-variant": "#d3e4fe",
+                        "surface-container-low": "#eff4ff",
+                        "background": "#f8f9ff",
+                        "on-surface-variant": "#3f484d",
+                        "secondary-fixed": "#ffe170",
+                        "on-surface": "#0b1c30",
+                        "primary-fixed": "#bee9ff",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#e0e3e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "margin-page": "24px",
+                        "gutter": "16px",
+                        "stack-gap": "12px",
+                        "card-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "body-base": ["Manrope"],
+                        "headline-md": ["Manrope"],
+                        "body-sm": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 102, 133, 0.05);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+        }
+        .glass-input:focus {
+            border-color: #006685;
+            box-shadow: 0 0 0 4px rgba(130, 216, 255, 0.2);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Suppressed: Linear/Transactional Screen -->
+<main class="max-w-2xl mx-auto px-margin-page pt-8 pb-32 md:pt-16 md:pb-16 space-y-stack-gap">
+<!-- 1. Header 'Secure Checkout' -->
+<header class="flex items-center gap-4 mb-8">
+<button aria-label="Go back" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/50 hover:bg-white shadow-sm border border-outline-variant/30 text-on-surface transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-on-surface">Secure Checkout</h1>
+</header>
+<!-- 2. Order Summary -->
+<section class="glass-card rounded-[24px] p-card-padding mb-6">
+<div class="flex items-start justify-between border-b border-outline-variant/20 pb-4 mb-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-primary overflow-hidden shrink-0">
+<img alt="Dr. Julian Vane" class="w-full h-full object-cover" data-alt="A professional headshot of a confident male doctor in his 40s wearing a crisp white lab coat over a light blue shirt. The background is a bright, softly blurred modern clinic setting with plenty of natural light. The lighting is high-key and serene, emphasizing trust and medical expertise in a light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC49jugWGG3uYqdKuR6Q9PROwCukNvQ6mqizUhzjdEEUHntZFIFTtWo9wRVeg79auDYnToJA4iIKQ_jYCp0p_fPivgClwKogZEdcUSAXK4PecqW2f_T-hX9M9-whzRxpKB26js5NK6fc8AZEMWyJYLClqrx1MthW6tGC54gt0_f2DhXfQ52qYbDA3J0kXZQGHa0bApn76Br5zMKH19-NROr_Sd12yR2qAX7RfSi-HolnEeKDDpzu_p1kzynqDh36Q172Rll40oZT1Zq"/>
+</div>
+<div>
+<h2 class="font-body-base text-body-base font-semibold text-on-surface">Dr. Julian Vane</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">calendar_month</span>
+                            15 Oct @ 02:00 PM
+                        </p>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Consultation Fee</span>
+<span class="font-body-base text-body-base text-on-surface">$110.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Platform Fee</span>
+<span class="font-body-base text-body-base text-on-surface">$15.00</span>
+</div>
+<div class="pt-3 border-t border-outline-variant/20 flex justify-between items-center mt-2">
+<span class="font-headline-md text-[20px] font-semibold text-on-surface">Total</span>
+<span class="font-headline-md text-[24px] font-bold text-primary">$125.00</span>
+</div>
+</div>
+</section>
+<!-- 3. Payment Method Selection -->
+<section class="space-y-4 mb-8">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant ml-2">PAYMENT METHOD</h3>
+<div class="grid grid-cols-3 gap-3">
+<!-- Mobile Money (Active) -->
+<label class="relative cursor-pointer group">
+<input checked="" class="peer sr-only" name="payment_method" type="radio" value="mobile"/>
+<div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 text-center h-28 border-2 border-transparent peer-checked:border-primary peer-checked:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-3xl text-primary mb-1">smartphone</span>
+<span class="font-label-caps text-label-caps text-on-surface peer-checked:text-primary">Mobile<br/>Money</span>
+</div>
+<div class="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white opacity-0 peer-checked:opacity-100 transition-opacity shadow-sm">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+</label>
+<!-- Card -->
+<label class="relative cursor-pointer group">
+<input class="peer sr-only" name="payment_method" type="radio" value="card"/>
+<div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 text-center h-28 border-2 border-transparent peer-checked:border-primary peer-checked:bg-surface-container-low transition-all opacity-80 hover:opacity-100">
+<span class="material-symbols-outlined text-3xl text-outline mb-1">credit_card</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant peer-checked:text-primary">Card</span>
+</div>
+</label>
+<!-- Bank Transfer -->
+<label class="relative cursor-pointer group">
+<input class="peer sr-only" name="payment_method" type="radio" value="bank"/>
+<div class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-2 text-center h-28 border-2 border-transparent peer-checked:border-primary peer-checked:bg-surface-container-low transition-all opacity-80 hover:opacity-100">
+<span class="material-symbols-outlined text-3xl text-outline mb-1">account_balance</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant peer-checked:text-primary">Bank<br/>Transfer</span>
+</div>
+</label>
+</div>
+</section>
+<!-- 4. Wave/Orange Money flow -->
+<section class="glass-card rounded-[24px] p-card-padding mb-8 animate-[fadeIn_0.3s_ease-out]">
+<div class="flex gap-4 mb-6">
+<button class="flex-1 py-2 px-4 rounded-lg bg-surface-container text-primary font-body-sm text-body-sm font-semibold border border-primary/20 flex items-center justify-center gap-2">
+<div class="w-6 h-6 rounded bg-[#1C1C1C] flex items-center justify-center text-white font-bold text-[10px]">W</div>
+                    Wave
+                </button>
+<button class="flex-1 py-2 px-4 rounded-lg bg-white/50 text-on-surface-variant font-body-sm text-body-sm border border-outline-variant/30 flex items-center justify-center gap-2 hover:bg-white/80 transition-colors">
+<div class="w-6 h-6 rounded bg-[#FF7900] flex items-center justify-center text-white font-bold text-[10px]">O</div>
+                    Orange
+                </button>
+</div>
+<div class="space-y-2">
+<label class="font-body-sm text-body-sm font-medium text-on-surface">Mobile Number</label>
+<div class="flex gap-2">
+<div class="relative w-24 shrink-0">
+<select class="glass-input w-full h-12 pl-3 pr-8 rounded-xl font-body-base text-body-base text-on-surface appearance-none cursor-pointer">
+<option>+221</option>
+<option>+225</option>
+<option>+223</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+<input class="glass-input w-full h-12 px-4 rounded-xl font-body-base text-body-base text-on-surface placeholder:text-outline" placeholder="77 123 45 67" required="" type="tel"/>
+</div>
+<p class="font-body-sm text-[12px] text-on-surface-variant mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                    You will receive a prompt on your phone to confirm.
+                </p>
+</div>
+</section>
+<!-- 5. 'Pay Now' button & 6. Trust Elements -->
+<div class="space-y-6 mt-8">
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-body-base text-body-base font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 active:scale-[0.98] transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">lock</span>
+                Pay $125.00
+            </button>
+<div class="flex flex-col items-center justify-center gap-3 text-center">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-green-600">verified_user</span>
+<span class="font-body-sm text-[13px] font-medium">256-bit Encrypted &amp; Secure Checkout</span>
+</div>
+<div class="flex items-center justify-center gap-4 opacity-60">
+<span class="font-body-sm text-[12px] font-medium text-on-surface">Official Partner of</span>
+<div class="flex gap-2">
+<span class="font-bold text-[12px] tracking-wider">WAVE</span>
+<span class="w-px h-4 bg-outline-variant"></span>
+<span class="font-bold text-[12px] tracking-wider text-[#FF7900]">ORANGE</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>M-Santé - Notification Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-primary": "#7bd1f8",
+                    "on-surface": "#0b1c30",
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#5c5f61",
+                    "surface-container-low": "#eff4ff",
+                    "secondary-fixed": "#ffe170",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "on-secondary-fixed": "#221b00",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#dce9ff",
+                    "secondary-container": "#ffde5c",
+                    "outline": "#6f787e",
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "surface-tint": "#006685",
+                    "primary-fixed-dim": "#7bd1f8",
+                    "on-secondary-container": "#756100",
+                    "on-surface-variant": "#3f484d",
+                    "tertiary-fixed": "#e0e3e5",
+                    "secondary": "#705d00",
+                    "on-primary-fixed-variant": "#004d65",
+                    "inverse-surface": "#213145",
+                    "surface-bright": "#f8f9ff",
+                    "primary-container": "#82d8ff",
+                    "on-tertiary-container": "#545759",
+                    "outline-variant": "#bec8ce",
+                    "tertiary-container": "#cbcdcf",
+                    "primary": "#006685",
+                    "background": "#f8f9ff",
+                    "secondary-fixed-dim": "#e4c546",
+                    "primary-fixed": "#bee9ff",
+                    "on-tertiary-fixed": "#191c1e",
+                    "on-secondary-fixed-variant": "#544600",
+                    "surface-variant": "#d3e4fe",
+                    "surface": "#f8f9ff",
+                    "surface-container": "#e5eeff",
+                    "on-error": "#ffffff",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "on-primary-container": "#005e7a",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed": "#001f2a",
+                    "surface-container-highest": "#d3e4fe",
+                    "on-background": "#0b1c30",
+                    "surface-dim": "#cbdbf5",
+                    "inverse-on-surface": "#eaf1ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "stack-gap": "12px",
+                    "margin-page": "24px",
+                    "card-padding": "20px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "body-base": ["Manrope"],
+                    "label-caps": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-base text-body-base min-h-screen pb-[100px] relative overflow-x-hidden">
+<!-- Ambient Background Glows for Medical Futurism aesthetic -->
+<div class="fixed top-0 right-0 w-96 h-96 bg-primary-container/20 rounded-full blur-3xl -z-10 pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
+<div class="fixed bottom-0 left-0 w-80 h-80 bg-surface-variant/40 rounded-full blur-3xl -z-10 pointer-events-none -translate-x-1/3 translate-y-1/3"></div>
+<!-- TopAppBar -->
+<header class="fixed top-0 full-width z-50 flex justify-between items-center w-full px-6 h-16 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-b border-white/20 dark:border-slate-800/50 shadow-[0_4px_20px_rgba(130,216,255,0.05)]">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container ring-2 ring-white cursor-pointer hover:scale-95 duration-200 ease-out transition-transform">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="A close-up, high-quality portrait of a professional healthcare practitioner looking serene and confident. The lighting is bright, soft, and modern, casting gentle highlights on their face, perfectly matching a clinical yet warm 'medical futurism' aesthetic. The background is a clean, bright, minimalist white space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCoDONpQvb5cxlDWkD0kLlM1bWKouzfbEX_bowF-HLlgz9l4g9cZPcmxhLJpEGEJoAKFMn80WkPF-nk-x252Vix1TAH0mJApVgVH2ifGtDsMThUayJpyxqwVWnvO_kE4pl2bwfBbO6HQUfKmSWd4inxEZidyUSLZEY2GDCHcVRIWFmJ_8WzD0IUJczxTFrBLuXm_pCU-JrFcKT9ODirxOwL9KFaQ_ARpzPicKr2OamsouS-_qtsPEmqgBeheqyzfYCaOmD1dOlMCZ_"/>
+</div>
+<div class="text-xl font-bold text-sky-600 dark:text-sky-300 font-manrope font-semibold tracking-tight">
+            M-Santé
+        </div>
+<div class="text-sky-500 dark:text-sky-400 hover:bg-sky-50/50 dark:hover:bg-sky-900/20 transition-colors w-10 h-10 rounded-full flex items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="pt-24 px-margin-page flex flex-col gap-stack-gap max-w-2xl mx-auto">
+<!-- Header Section -->
+<div class="flex items-center justify-between mb-2">
+<h1 class="font-headline-md text-headline-md text-on-surface">Notifications</h1>
+<span class="bg-primary-container text-on-primary-container font-label-caps text-label-caps px-2 py-1 rounded-full">4 New</span>
+</div>
+<!-- Filter Tabs -->
+<div class="flex gap-unit overflow-x-auto hide-scrollbar pb-2 -mx-margin-page px-margin-page">
+<button class="bg-primary text-on-primary font-label-caps text-label-caps px-5 py-2.5 rounded-full whitespace-nowrap shadow-[0_4px_12px_rgba(0,102,133,0.15)] transition-all">All</button>
+<button class="bg-surface-container-highest/50 backdrop-blur-md text-on-surface-variant font-label-caps text-label-caps px-5 py-2.5 rounded-full whitespace-nowrap hover:bg-surface-container transition-all border border-white/40">Appointments</button>
+<button class="bg-surface-container-highest/50 backdrop-blur-md text-on-surface-variant font-label-caps text-label-caps px-5 py-2.5 rounded-full whitespace-nowrap hover:bg-surface-container transition-all border border-white/40">Wellness</button>
+<button class="bg-surface-container-highest/50 backdrop-blur-md text-on-surface-variant font-label-caps text-label-caps px-5 py-2.5 rounded-full whitespace-nowrap hover:bg-surface-container transition-all border border-white/40">Security</button>
+</div>
+<!-- Notification List -->
+<div class="flex flex-col gap-stack-gap mt-2">
+<!-- Card 1: Upcoming Session (High Priority) -->
+<div class="bg-white/70 backdrop-blur-xl rounded-xl p-card-padding border border-white shadow-[0_8px_30px_rgba(0,102,133,0.06)] relative overflow-hidden group">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="absolute inset-0 bg-gradient-to-r from-white/40 to-transparent pointer-events-none"></div>
+<div class="flex items-start gap-4 relative z-10">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container shrink-0 shadow-sm border border-white">
+<img alt="Dr. Chen" class="w-full h-full object-cover" data-alt="A portrait of an Asian male doctor wearing a modern, crisp white medical coat and a subtle light blue shirt underneath. He has a warm, professional expression. The background is a clean, slightly frosted glass texture illuminated by soft, bright, high-key white light, fitting a premium telemedicine app aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDP0eKBGsdetVpnjvN699WWdV9LUSrvVZM97cVrzZTLJEqVwdOXbrSZBFooNVIobsQhID6gu_HRGmPXmAO1hjtXWY2l21tLfldkbM6uxlcSwDsYk2w-xgILh-2JFbiq95cmJo0xi38XgI90B6obdZgBSpSW9dyag37rsfX10TCTylMGiJq_9bWy9Fcek-4YF6dRcJ-RHs1-u18lnvX4effBhpoKvN6VSqouzW8XsqGnlw_dcWB3rlPYbetzpDKlAlh6YNGXN1ciqIbx"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-start mb-1">
+<span class="font-label-caps text-label-caps text-primary">Teleconsultation</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">15 min</span>
+</div>
+<h3 class="font-body-base text-body-base text-on-surface font-semibold truncate">Dr. Marcus Chen</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Cardiology Follow-up</p>
+</div>
+</div>
+<button class="w-full mt-4 bg-primary text-on-primary font-body-base text-body-base font-semibold py-3 rounded-lg shadow-[0_4px_12px_rgba(0,102,133,0.2)] hover:opacity-90 transition-opacity flex items-center justify-center gap-2 relative z-10">
+<span class="material-symbols-outlined text-[18px]">videocam</span>
+                    Join Session
+                </button>
+</div>
+<!-- Card 2: Wellness Alert -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-lg rounded-xl p-card-padding border border-white/50 shadow-[0_4px_20px_rgba(11,28,48,0.03)] flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">self_improvement</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-body-base text-body-base text-on-surface font-semibold">Daily Wellness</h3>
+<span class="font-body-sm text-body-sm text-outline text-[12px]">2h ago</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Your new guided breathing exercise to manage stress is ready. Take 5 minutes to center yourself.</p>
+</div>
+</div>
+<!-- Card 3: Security Alert -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-lg rounded-xl p-card-padding border border-white/50 shadow-[0_4px_20px_rgba(11,28,48,0.03)] flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-error-container/50 flex items-center justify-center text-error shrink-0">
+<span class="material-symbols-outlined">security</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-body-base text-body-base text-on-surface font-semibold">New Login Detected</h3>
+<span class="font-body-sm text-body-sm text-outline text-[12px]">4h ago</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">A new sign-in was noticed on an Apple device near San Francisco, CA.</p>
+</div>
+</div>
+<!-- Card 4: Billing Confirmation -->
+<div class="bg-surface-container-lowest/80 backdrop-blur-lg rounded-xl p-card-padding border border-white/50 shadow-[0_4px_20px_rgba(11,28,48,0.03)] flex gap-4 items-start">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined">receipt_long</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-body-base text-body-base text-on-surface font-semibold">Invoice Available</h3>
+<span class="font-body-sm text-body-sm text-outline text-[12px]">Yesterday</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">The billing statement for your recent laboratory tests is now available for review.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe-offset-2 bg-white/70 dark:bg-slate-950/70 backdrop-blur-2xl z-50 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.04)] md:hidden">
+<!-- Dashboard (Inactive) -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 hover:text-sky-400 dark:hover:text-sky-200 transition-all w-16 group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">grid_view</span>
+<span class="font-manrope text-[10px] font-medium uppercase tracking-widest mt-1">Dashboard</span>
+</a>
+<!-- Patients (Inactive) -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 hover:text-sky-400 dark:hover:text-sky-200 transition-all w-16 group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">group</span>
+<span class="font-manrope text-[10px] font-medium uppercase tracking-widest mt-1">Patients</span>
+</a>
+<!-- Alerts (Active) -->
+<a class="flex flex-col items-center justify-center text-sky-600 dark:text-sky-300 bg-sky-50/80 dark:bg-sky-900/40 rounded-xl px-4 py-1 scale-90 transition-transform w-20" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="font-manrope text-[10px] font-medium uppercase tracking-widest mt-1">Alerts</span>
+</a>
+<!-- Profile (Inactive) -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 hover:text-sky-400 dark:hover:text-sky-200 transition-all w-16 group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">person</span>
+<span class="font-manrope text-[10px] font-medium uppercase tracking-widest mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

@@ -1,5 +1,5 @@
 'use client'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
@@ -37,6 +37,131 @@ function useUsers(role: Role, search: string, page: number) {
   })
 }
 
+function InviteAdminModal({ onClose }: { onClose: () => void }) {
+  const queryClient = useQueryClient()
+  const [email, setEmail] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleInvite = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) { setError('Session expirée, reconnectez-vous.'); setLoading(false); return }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const res = await fetch(`${supabaseUrl}/functions/v1/invite-admin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ email, full_name: fullName }),
+    })
+
+    const json = await res.json() as { success?: boolean; error?: string }
+    if (!res.ok || json.error) {
+      setError(json.error ?? 'Erreur lors de l\'invitation')
+    } else {
+      setSuccess(true)
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+    }
+    setLoading(false)
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="relative w-full max-w-md rounded-2xl p-8 flex flex-col gap-5"
+        style={{
+          backgroundColor: 'rgba(255,255,255,0.97)',
+          boxShadow: '0 20px 60px rgba(0,102,133,0.15)',
+        }}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-black text-[#0b1c30]">Inviter un administrateur</h2>
+            <p className="text-sm text-[#6f787e] mt-0.5">Supabase enverra un lien de connexion sécurisé</p>
+          </div>
+          <button onClick={onClose} className="text-[#6f787e] hover:text-[#0b1c30] text-xl leading-none">✕</button>
+        </div>
+
+        {success ? (
+          <div className="flex flex-col items-center gap-4 py-4 text-center">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center text-3xl">✓</div>
+            <div>
+              <p className="font-semibold text-[#0b1c30]">Invitation envoyée !</p>
+              <p className="text-sm text-[#6f787e] mt-1"><strong>{email}</strong> recevra un lien pour créer son mot de passe.</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="px-6 py-2.5 bg-[#006685] text-white font-bold rounded-xl text-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all"
+            >
+              Fermer
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleInvite} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Nom complet</label>
+              <input
+                type="text"
+                value={fullName}
+                onChange={e => setFullName(e.target.value)}
+                placeholder="Prénom Nom"
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all text-sm"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Email administrateur</label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="admin@example.com"
+                required
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all text-sm"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
+
+            <div className="bg-[#e5eeff] rounded-xl px-4 py-3 text-xs text-[#005e7a]">
+              🔐 Un email avec un lien sécurisé sera envoyé. Le compte sera créé avec le rôle <strong>admin</strong>.
+            </div>
+
+            <div className="flex gap-3 mt-1">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 py-3 rounded-xl border border-slate-200 text-sm font-medium text-[#6f787e] hover:bg-slate-50 transition-all"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 py-3 bg-[#006685] text-white font-bold rounded-xl text-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50"
+              >
+                {loading ? 'Envoi...' : 'Envoyer l\'invitation'}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function initials(name: string) {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
 }
@@ -63,6 +188,7 @@ export default function UsersPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [page, setPage] = useState(0)
   const [selectedUser, setSelectedUser] = useState<UserRow | null>(null)
+  const [showInvite, setShowInvite] = useState(false)
 
   const handleSearch = (value: string) => {
     setSearch(value)
@@ -82,10 +208,21 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[#0b1c30]">Utilisateurs</h1>
-        <p className="text-sm text-[#6f787e] mt-1">{data?.total ?? 0} utilisateurs au total</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[#0b1c30]">Utilisateurs</h1>
+          <p className="text-sm text-[#6f787e] mt-1">{data?.total ?? 0} utilisateurs au total</p>
+        </div>
+        <button
+          onClick={() => setShowInvite(true)}
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all"
+        >
+          <span className="text-base leading-none">+</span>
+          Inviter un admin
+        </button>
       </div>
+
+      {showInvite && <InviteAdminModal onClose={() => setShowInvite(false)} />}
 
       {/* Filters + Search */}
       <div className="flex items-center gap-4 flex-wrap">

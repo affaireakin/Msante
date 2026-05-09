@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#004d65",
+            "on-tertiary-fixed": "#191c1e",
+            "on-surface": "#0b1c30",
+            "background": "#f8f9ff",
+            "surface": "#f8f9ff",
+            "tertiary": "#5c5f61",
+            "inverse-on-surface": "#eaf1ff",
+            "surface-container-lowest": "#ffffff",
+            "inverse-surface": "#213145",
+            "primary-fixed": "#bee9ff",
+            "on-surface-variant": "#3f484d",
+            "surface-container": "#e5eeff",
+            "surface-tint": "#006685",
+            "on-secondary-fixed": "#221b00",
+            "surface-bright": "#f8f9ff",
+            "tertiary-container": "#cbcdcf",
+            "primary-container": "#82d8ff",
+            "on-secondary-container": "#756100",
+            "on-tertiary-container": "#545759",
+            "on-tertiary-fixed-variant": "#444749",
+            "secondary-fixed-dim": "#e4c546",
+            "on-error-container": "#93000a",
+            "tertiary-fixed": "#e0e3e5",
+            "on-primary": "#ffffff",
+            "error": "#ba1a1a",
+            "secondary-container": "#ffde5c",
+            "outline-variant": "#bec8ce",
+            "outline": "#6f787e",
+            "surface-dim": "#cbdbf5",
+            "primary-fixed-dim": "#7bd1f8",
+            "on-tertiary": "#ffffff",
+            "on-secondary": "#ffffff",
+            "surface-container-highest": "#d3e4fe",
+            "on-primary-container": "#005e7a",
+            "tertiary-fixed-dim": "#c4c7c9",
+            "inverse-primary": "#7bd1f8",
+            "secondary": "#705d00",
+            "surface-variant": "#d3e4fe",
+            "on-error": "#ffffff",
+            "secondary-fixed": "#ffe170",
+            "surface-container-low": "#eff4ff",
+            "error-container": "#ffdad6",
+            "surface-container-high": "#dce9ff",
+            "primary": "#006685",
+            "on-primary-fixed": "#001f2a",
+            "on-background": "#0b1c30",
+            "on-secondary-fixed-variant": "#544600"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "unit": "8px",
+            "stack-gap": "12px",
+            "margin-page": "24px",
+            "gutter": "16px",
+            "card-padding": "20px"
+          },
+          "fontFamily": {
+            "headline-md": ["Manrope"],
+            "body-sm": ["Manrope"],
+            "label-caps": ["Manrope"],
+            "body-base": ["Manrope"],
+            "display-lg": ["Manrope"]
+          },
+          "fontSize": {
+            "headline-md": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+            "label-caps": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700"}],
+            "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+            "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .glass-card {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body class="bg-background font-body-base text-on-background min-h-screen pb-32">
+<!-- Shared Component: TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.05)] flex justify-between items-center px-6 py-4 w-full h-16">
+<div class="flex items-center gap-4">
+<button class="active:scale-95 duration-200 transition-transform text-slate-400">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<span class="text-xl font-bold tracking-tighter text-sky-500 font-['Manrope']">M-Santé</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="hidden md:flex items-center bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/30 mr-4">
+<span class="material-symbols-outlined text-slate-400 mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-48" placeholder="Search practitioners..." type="text"/>
+</div>
+<button class="p-2 hover:bg-white/40 transition-colors active:scale-95 duration-200 rounded-full text-slate-400">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 hover:bg-white/40 transition-colors active:scale-95 duration-200 rounded-full text-sky-600 font-bold">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</button>
+</div>
+</header>
+<main class="mt-20 px-margin-page max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- LEFT COLUMN: Profile Info -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Profile Header Bento Style -->
+<section class="glass-card rounded-[32px] p-8 overflow-hidden relative">
+<div class="flex flex-col md:flex-row gap-8 items-center md:items-end relative z-10">
+<div class="relative">
+<div class="w-40 h-40 rounded-[24px] overflow-hidden ring-4 ring-white/50 shadow-xl">
+<img alt="Dr. Julian Vane" class="w-full h-full object-cover" data-alt="A professional portrait of a medical practitioner in a clean, modern clinic setting. The lighting is bright and high-key, emphasizing a light-mode Medical Futurism aesthetic. The practitioner has a warm, confident smile, wearing a subtle stethoscope around their neck. The background features a soft-focus medical office with pristine white surfaces and calm blue glass accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK0OdtIh-cdiXscACF95Yf_io10X9FTx9rTiHt2ymqY_vb2O9TkE1n6IsL64Kj1YPcnWf-PSSFEU6qQO0nnI94lQ6OrGRWy2_YaJCf4z7ijydJq6vQqRFIFv9uqwbGPtPXDBOVgx9iF5zLZOxeoH-VfNM1cRPMz9gVPwXM2PYCnuGSVeU-Q_MDyZsStiz6yGaj0z3GvUr8RuZaiO3nxwU0-oTh12gy4LRgZuCmF-nsUc1iw77_BY82cVTPByr5rKVmVbbsiu7aBAX5"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-primary p-1.5 rounded-full border-4 border-white">
+<span class="material-symbols-outlined text-white text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="text-center md:text-left flex-1">
+<div class="flex items-center justify-center md:justify-start gap-2 mb-1">
+<span class="text-label-caps text-sky-500 bg-sky-50 px-3 py-1 rounded-full border border-sky-100">Senior Specialist</span>
+<div class="flex items-center text-secondary text-label-caps">
+<span class="material-symbols-outlined text-[14px] mr-1" style="font-variation-settings: 'FILL' 1;">star</span>
+                4.9 (240 reviews)
+              </div>
+</div>
+<h1 class="font-headline-md text-[32px] text-on-surface mb-2">Dr. Julian Vane</h1>
+<p class="text-on-surface-variant font-medium text-body-base">Cardiologist &amp; Preventive Health Researcher</p>
+</div>
+</div>
+</section>
+<!-- Statistics Grid -->
+<section class="grid grid-cols-3 gap-4">
+<div class="glass-card rounded-[24px] p-6 text-center">
+<span class="block text-primary text-[28px] font-bold mb-1">12+</span>
+<span class="text-label-caps text-slate-400 uppercase">Years Exp.</span>
+</div>
+<div class="glass-card rounded-[24px] p-6 text-center">
+<span class="block text-primary text-[28px] font-bold mb-1">2.4k</span>
+<span class="text-label-caps text-slate-400 uppercase">Patients</span>
+</div>
+<div class="glass-card rounded-[24px] p-6 text-center">
+<span class="block text-primary text-[28px] font-bold mb-1">98%</span>
+<span class="text-label-caps text-slate-400 uppercase">Trust Rate</span>
+</div>
+</section>
+<!-- Bio and Specialized Skills -->
+<section class="space-y-6">
+<div class="glass-card rounded-[24px] p-8">
+<h2 class="font-headline-md text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sky-400">clinical_notes</span>
+            About Practitioner
+          </h2>
+<p class="text-on-surface-variant leading-relaxed text-body-base">
+            Dr. Julian Vane is a pioneer in cardiac longevity and preventive screening. With a focus on integrating wearable biometric data into clinical practice, he provides a futurist approach to heart health. He believes that every patient deserves a personalized roadmap to wellness that transcends traditional symptom management.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="glass-card rounded-[24px] p-8">
+<h3 class="font-label-caps text-slate-400 mb-4 uppercase tracking-widest">Specializations</h3>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container text-on-primary-container px-4 py-1.5 rounded-full text-body-sm font-medium border border-white/20">Echocardiography</span>
+<span class="bg-surface-container text-on-primary-container px-4 py-1.5 rounded-full text-body-sm font-medium border border-white/20">Sports Cardiology</span>
+<span class="bg-surface-container text-on-primary-container px-4 py-1.5 rounded-full text-body-sm font-medium border border-white/20">Biometrics</span>
+</div>
+</div>
+<div class="glass-card rounded-[24px] p-8">
+<h3 class="font-label-caps text-slate-400 mb-4 uppercase tracking-widest">Languages</h3>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container text-on-primary-container px-4 py-1.5 rounded-full text-body-sm font-medium border border-white/20">English</span>
+<span class="bg-surface-container text-on-primary-container px-4 py-1.5 rounded-full text-body-sm font-medium border border-white/20">French</span>
+<span class="bg-surface-container text-on-primary-container px-4 py-1.5 rounded-full text-body-sm font-medium border border-white/20">German</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Security & Privacy Trust Element -->
+<section class="bg-sky-50/50 border border-sky-100 rounded-[24px] p-6 flex items-center gap-4">
+<div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-sky-500" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div>
+<h4 class="font-headline-md text-body-base font-bold text-on-surface">Security &amp; Privacy Guaranteed</h4>
+<p class="text-body-sm text-slate-500">M-Santé uses end-to-end encryption for all medical consultations and data storage.</p>
+</div>
+</section>
+</div>
+<!-- RIGHT COLUMN: Booking Sidebar -->
+<aside class="lg:col-span-4">
+<div class="lg:sticky lg:top-24 space-y-6">
+<div class="glass-card rounded-[32px] p-8 shadow-[0_20px_50px_rgba(130,216,255,0.1)] border-primary/10">
+<div class="flex justify-between items-start mb-8">
+<div>
+<span class="text-label-caps text-slate-400 uppercase mb-1 block">Consultation Fee</span>
+<div class="flex items-baseline gap-1">
+<span class="text-[32px] font-extrabold text-on-surface">$120</span>
+<span class="text-body-sm text-slate-400">/ session</span>
+</div>
+</div>
+<div class="bg-secondary-container/30 text-on-secondary-container p-2 rounded-xl">
+<span class="material-symbols-outlined">payments</span>
+</div>
+</div>
+<div class="space-y-6 mb-8">
+<div>
+<span class="font-label-caps text-on-surface block mb-3">Select Availability</span>
+<div class="grid grid-cols-3 gap-2">
+<button class="p-3 text-body-sm rounded-2xl border border-outline-variant hover:border-primary transition-all text-center">
+<span class="block font-bold">Mon</span>
+<span class="text-[11px] opacity-70">14 Oct</span>
+</button>
+<button class="p-3 text-body-sm rounded-2xl border-2 border-primary bg-sky-50 text-sky-700 text-center">
+<span class="block font-bold">Tue</span>
+<span class="text-[11px] opacity-70">15 Oct</span>
+</button>
+<button class="p-3 text-body-sm rounded-2xl border border-outline-variant hover:border-primary transition-all text-center">
+<span class="block font-bold">Wed</span>
+<span class="text-[11px] opacity-70">16 Oct</span>
+</button>
+</div>
+</div>
+<div>
+<span class="font-label-caps text-on-surface block mb-3">Available Slots</span>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2.5 px-4 rounded-xl border border-outline-variant text-body-sm text-center hover:bg-sky-50 transition-colors">09:00 AM</button>
+<button class="py-2.5 px-4 rounded-xl border border-outline-variant text-body-sm text-center hover:bg-sky-50 transition-colors">11:30 AM</button>
+<button class="py-2.5 px-4 rounded-xl bg-primary text-white text-body-sm font-bold text-center shadow-lg shadow-sky-400/20">02:00 PM</button>
+<button class="py-2.5 px-4 rounded-xl border border-outline-variant text-body-sm text-center hover:bg-sky-50 transition-colors">04:30 PM</button>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-body-base active:scale-95 duration-200 transition-all flex items-center justify-center gap-2">
+            Book a Consultation
+            <span class="material-symbols-outlined">calendar_month</span>
+</button>
+<p class="text-[12px] text-center text-slate-400 mt-4">No commitment required. Reschedule anytime up to 24h before.</p>
+</div>
+<!-- Secondary CTA Card -->
+<div class="bg-on-surface p-6 rounded-[24px] text-white">
+<h5 class="font-bold text-body-base mb-2">Message Dr. Vane</h5>
+<p class="text-body-sm opacity-70 mb-4">Have a quick question about his specialties or services?</p>
+<button class="w-full py-3 border border-white/20 rounded-xl font-medium text-body-sm hover:bg-white/10 transition-colors">
+            Send Inquiry
+          </button>
+</div>
+</div>
+</aside>
+</main>
+<!-- Shared Component: BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 rounded-t-[24px] border-t border-white/30 bg-white/60 backdrop-blur-2xl shadow-[0_-10px_40px_rgba(130,216,255,0.08)] flex justify-around items-center px-4 pt-3 pb-6 md:hidden">
+<div class="flex flex-col items-center justify-center text-slate-400 transition-all active:scale-90 duration-300">
+<span class="material-symbols-outlined">home_health</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 transition-all active:scale-90 duration-300">
+<span class="material-symbols-outlined">self_care</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Wellness</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 transition-all active:scale-90 duration-300">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Metrics</span>
+</div>
+<div class="flex flex-col items-center justify-center text-sky-600 bg-sky-50/50 rounded-xl px-3 py-1 transition-all active:scale-90 duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Consult</span>
+</div>
+<div class="flex flex-col items-center justify-center text-slate-400 transition-all active:scale-90 duration-300">
+<span class="material-symbols-outlined">sentiment_satisfied</span>
+<span class="font-['Manrope'] text-[10px] font-medium tracking-wide">Mood</span>
+</div>
+</nav>
+<!-- Mobile Floating FAB -->
+<div class="fixed bottom-28 right-6 md:hidden">
+<button class="w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 duration-200">
+<span class="material-symbols-outlined">add_comment</span>
+</button>
+</div>
+</body></html>

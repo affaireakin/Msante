@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { useQuery } from '@tanstack/react-query'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { supabase } from '@/services/supabase'
 import { AIInsightCard } from '@/features/mental-health/journal/components/AIInsightCard'
 import { useJournalAnalysis } from '@/features/mental-health/journal/hooks/useJournalAnalysis'
@@ -41,26 +42,34 @@ export default function JournalDetail() {
   }, [entry?.id])
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="px-6 pt-6 pb-3 flex-row items-center gap-3">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+      <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text className="text-primary text-2xl">←</Text>
+          <MaterialIcons name="arrow-back" size={24} color="#006685" />
         </TouchableOpacity>
-        <Text className="text-lg font-semibold text-on-surface font-manrope flex-1" numberOfLines={1}>
+        <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', flex: 1 }} numberOfLines={1}>
           {entry?.title ?? 'Entrée journal'}
         </Text>
       </View>
-      <ScrollView className="flex-1 px-6" contentContainerStyle={{ paddingBottom: 40, gap: 16 }}>
-        <View
-          className="bg-white/60 rounded-3xl p-6 border border-white/50"
-          style={{ shadowColor: '#006685', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.05, shadowRadius: 30, elevation: 3 }}
-        >
-          <Text className="text-sm text-outline font-manrope mb-4">
+      <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} contentContainerStyle={{ paddingBottom: 40, gap: 16 }}>
+        <View style={{
+          backgroundColor: 'rgba(255,255,255,0.6)',
+          borderRadius: 24,
+          padding: 24,
+          borderWidth: 1,
+          borderColor: 'rgba(255,255,255,0.5)',
+          shadowColor: '#006685',
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.05,
+          shadowRadius: 30,
+          elevation: 3,
+        }}>
+          <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', marginBottom: 16 }}>
             {entry
               ? new Date(entry.createdAt).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
               : ''}
           </Text>
-          <Text className="text-base text-on-surface font-manrope leading-relaxed">{entry?.content}</Text>
+          <Text style={{ fontSize: 16, color: '#0b1c30', fontFamily: 'Manrope', lineHeight: 26 }}>{entry?.content}</Text>
         </View>
         {entry?.aiSentiment && (
           <AIInsightCard
@@ -70,8 +79,9 @@ export default function JournalDetail() {
           />
         )}
         {analyze.isPending && (
-          <View className="bg-primary-fixed/20 rounded-2xl p-4 items-center">
-            <Text className="text-sm text-primary font-manrope">✨ Ami analyse votre entrée...</Text>
+          <View style={{ backgroundColor: 'rgba(190,233,255,0.2)', borderRadius: 16, padding: 16, alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'center' }}>
+            <MaterialIcons name="auto-awesome" size={16} color="#006685" />
+            <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope' }}>Ami analyse votre entrée...</Text>
           </View>
         )}
       </ScrollView>

@@ -1,42 +1,96 @@
-import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native'
+import { View, Text, TouchableOpacity, ImageBackground } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { PrimaryButton } from '@/components/ui'
+
+const FEATURES = [
+  { icon: 'psychology' as const, label: 'IA Bien-être' },
+  { icon: 'medical-services' as const, label: '500+ praticiens' },
+  { icon: 'videocam' as const, label: 'Téléconsultation' },
+]
 
 export default function WelcomeScreen() {
   const router = useRouter()
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="flex-1 px-6 justify-between pb-8 pt-16">
-        {/* Logo */}
-        <View className="items-center">
-          <View className="flex-row items-center gap-3">
-            <View className="w-12 h-12 bg-primary rounded-xl items-center justify-center">
-              <Text className="text-white text-2xl">⚕</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+      <View style={{ flex: 1, paddingHorizontal: 24, justifyContent: 'space-between', paddingTop: 24, paddingBottom: 32 }}>
+
+        {/* ── Logo ── */}
+        <View style={{ alignItems: 'center', paddingTop: 16 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <View style={{
+              width: 52, height: 52, borderRadius: 16,
+              backgroundColor: '#006685',
+              alignItems: 'center', justifyContent: 'center',
+              shadowColor: '#006685', shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.3, shadowRadius: 16, elevation: 8,
+            }}>
+              <MaterialIcons name="medical-services" size={28} color="#fff" />
             </View>
             <View>
-              <Text className="text-2xl font-black tracking-tight text-on-surface font-manrope">
+              <Text style={{ fontSize: 26, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5 }}>
                 M-Santé
               </Text>
-              <Text className="text-xs text-outline font-medium font-manrope">
+              <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', fontWeight: '500' }}>
                 Health Sanctuary
               </Text>
             </View>
           </View>
         </View>
 
-        {/* Tagline */}
-        <View className="items-center gap-4">
-          <Text className="text-3xl font-bold text-center text-on-surface font-manrope leading-tight">
-            Votre santé mentale,{'\n'}notre priorité
+        {/* ── Hero ── */}
+        <View style={{ alignItems: 'center', gap: 16 }}>
+          {/* Badge */}
+          <View style={{
+            flexDirection: 'row', alignItems: 'center', gap: 6,
+            backgroundColor: '#e5eeff', borderRadius: 20,
+            paddingHorizontal: 14, paddingVertical: 6,
+            borderWidth: 1, borderColor: '#82d8ff',
+          }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ade80' }} />
+            <Text style={{ fontSize: 11, fontWeight: '700', color: '#006685', fontFamily: 'Manrope', letterSpacing: 0.5 }}>
+              98% SATISFACTION PATIENT
+            </Text>
+          </View>
+
+          <Text style={{
+            fontSize: 36, fontWeight: '800', color: '#0b1c30',
+            fontFamily: 'Manrope', textAlign: 'center', letterSpacing: -0.8, lineHeight: 44,
+          }}>
+            Votre santé mentale,{'\n'}notre priorité.
           </Text>
-          <Text className="text-base text-center text-on-surface-variant font-manrope leading-relaxed">
-            Connectez-vous à des praticiens de confiance au Sénégal et en Afrique francophone.
+
+          <Text style={{
+            fontSize: 15, color: '#6f787e', fontFamily: 'Manrope',
+            textAlign: 'center', lineHeight: 24, paddingHorizontal: 8,
+          }}>
+            Connectez-vous à des praticiens certifiés au Sénégal et en Afrique francophone.
           </Text>
+
+          {/* Feature pills */}
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
+            {FEATURES.map(f => (
+              <View key={f.label} style={{
+                flexDirection: 'row', alignItems: 'center', gap: 6,
+                backgroundColor: '#fff', borderRadius: 20,
+                paddingHorizontal: 12, paddingVertical: 8,
+                borderWidth: 1, borderColor: '#e5eeff',
+                shadowColor: '#006685', shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.04, shadowRadius: 8, elevation: 1,
+              }}>
+                <MaterialIcons name={f.icon} size={14} color="#006685" />
+                <Text style={{ fontSize: 11, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>
+                  {f.label}
+                </Text>
+              </View>
+            ))}
+          </View>
         </View>
 
-        {/* Actions */}
-        <View className="gap-4">
+        {/* ── CTA ── */}
+        <View style={{ gap: 12 }}>
           <PrimaryButton
             label="Je suis patient"
             onPress={() => router.push('/(auth)/signup-patient')}
@@ -46,13 +100,14 @@ export default function WelcomeScreen() {
             onPress={() => router.push('/(auth)/signup-practitioner')}
             variant="outline"
           />
-          <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-            <Text className="text-center text-sm text-on-surface-variant font-manrope">
+          <TouchableOpacity onPress={() => router.push('/(auth)/login')} style={{ paddingVertical: 8 }}>
+            <Text style={{ textAlign: 'center', fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>
               Déjà un compte ?{' '}
-              <Text className="text-primary font-semibold">Se connecter</Text>
+              <Text style={{ color: '#006685', fontWeight: '700' }}>Se connecter</Text>
             </Text>
           </TouchableOpacity>
         </View>
+
       </View>
     </SafeAreaView>
   )
