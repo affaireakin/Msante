@@ -28,7 +28,11 @@ const STATUS_COLORS: Record<AptStatus, string> = {
   completed: 'bg-sky-100 text-sky-700',
   no_show: 'bg-red-100 text-red-700',
 }
-const TYPE_ICONS: Record<string, string> = { video: '📹', audio: '🎙️', chat: '💬' }
+function Icon({ name, size = 18 }: { name: string; size?: number }) {
+  return <span className="material-symbols-outlined" style={{ fontSize: `${size}px` }}>{name}</span>
+}
+
+const TYPE_ICONS: Record<string, string> = { video: 'videocam', audio: 'mic', chat: 'chat_bubble' }
 
 function useAppointments(filter: 'upcoming' | 'past') {
   return useQuery({
@@ -115,7 +119,7 @@ export default function AppointmentsPage() {
           className="rounded-2xl p-12 text-center"
           style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}
         >
-          <p className="text-4xl mb-3">{filter === 'upcoming' ? '📅' : '🗂️'}</p>
+          <Icon name={filter === 'upcoming' ? 'calendar_today' : 'history'} size={48} />
           <p className="font-semibold text-[#0b1c30]">
             {filter === 'upcoming' ? 'Aucun rendez-vous à venir' : 'Aucun rendez-vous passé'}
           </p>
@@ -148,7 +152,7 @@ export default function AppointmentsPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-semibold text-[#0b1c30]">{apt.users?.full_name ?? 'Patient'}</p>
-                    <span className="text-sm">{TYPE_ICONS[apt.type] ?? '📋'}</span>
+                    <Icon name={TYPE_ICONS[apt.type] ?? 'event'} size={15} />
                   </div>
                   <p className="text-sm text-[#6f787e]">{dateStr} · {timeStr} · {apt.duration_min} min</p>
                 </div>

@@ -12,7 +12,11 @@ interface Appointment {
   users: { full_name: string } | null
 }
 
-const TYPE_ICONS: Record<string, string> = { video: '📹', audio: '🎙️', chat: '💬' }
+function Icon({ name, size = 18 }: { name: string; size?: number }) {
+  return <span className="material-symbols-outlined" style={{ fontSize: `${size}px` }}>{name}</span>
+}
+
+const TYPE_ICONS: Record<string, string> = { video: 'videocam', audio: 'mic', chat: 'chat_bubble' }
 const STATUS_COLORS: Record<string, string> = {
   confirmed: 'bg-emerald-100 text-emerald-700',
   pending: 'bg-amber-100 text-amber-700',
@@ -101,7 +105,7 @@ export default function PractitionerDashboard() {
       {/* Statut */}
       {!pract.is_verified && (
         <div className="bg-amber-50 border border-amber-100 rounded-2xl px-5 py-4 flex items-center gap-3">
-          <span className="text-2xl">⏳</span>
+          <Icon name="hourglass_top" size={24} />
           <div>
             <p className="font-semibold text-amber-800">Validation en cours</p>
             <p className="text-sm text-amber-700 mt-0.5">Votre compte est en cours d&apos;examen. Vous serez notifié dès l&apos;approbation.</p>
@@ -112,17 +116,17 @@ export default function PractitionerDashboard() {
       {/* KPI row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
-          { label: "Aujourd'hui", value: todayApts.length, icon: '📅', color: '#006685', bg: '#e5eeff' },
-          { label: 'Cette semaine', value: appointments.length, icon: '📊', color: '#705d00', bg: '#fff8e1' },
-          { label: 'Total confirmés', value: totalConfirmed, icon: '✅', color: '#1d7a3a', bg: '#e8f5e9' },
+          { label: "Aujourd'hui", value: todayApts.length, icon: 'today', color: '#006685', bg: '#e5eeff' },
+          { label: 'Cette semaine', value: appointments.length, icon: 'calendar_month', color: '#705d00', bg: '#fff8e1' },
+          { label: 'Total confirmés', value: totalConfirmed, icon: 'check_circle', color: '#1d7a3a', bg: '#e8f5e9' },
         ].map(({ label, value, icon, color, bg }) => (
           <div
             key={label}
             className="rounded-2xl p-5 flex items-center gap-4"
             style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}
           >
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl" style={{ backgroundColor: bg }}>
-              {icon}
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: bg }}>
+              <Icon name={icon} size={22} />
             </div>
             <div>
               <p className="text-2xl font-black" style={{ color }}>{value}</p>
@@ -151,7 +155,10 @@ export default function PractitionerDashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-[#0b1c30]">{apt.users?.full_name ?? 'Patient'}</p>
-                    <p className="text-sm text-[#6f787e]">{apt.duration_min} min · {TYPE_ICONS[apt.type] ?? '📋'} {apt.type}</p>
+                    <p className="text-sm text-[#6f787e] flex items-center gap-1">
+                      <Icon name={TYPE_ICONS[apt.type] ?? 'event'} size={14} />
+                      {apt.duration_min} min · {apt.type}
+                    </p>
                   </div>
                   <span className={`text-xs font-semibold px-3 py-1 rounded-full ${STATUS_COLORS[apt.status] ?? 'bg-slate-100 text-slate-600'}`}>
                     {STATUS_LABELS[apt.status] ?? apt.status}
