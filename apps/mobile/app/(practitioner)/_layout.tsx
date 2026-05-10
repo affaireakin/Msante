@@ -87,6 +87,13 @@ export default function PractitionerLayout() {
           tabBarIcon: ({ focused }) => <TabIcon name="person" label="Profil" focused={focused} />,
         }}
       />
+      <Tabs.Screen
+        name="consultation"
+        options={{
+          tabBarButton: () => null,
+          tabBarStyle: { display: 'none' },
+        }}
+      />
     </Tabs>
   )
 }

@@ -359,6 +359,7 @@ export default function DashboardScreen() {
                       style={{ height: 1, backgroundColor: '#f1f5f9', marginBottom: 12 }}
                     />
                     <TouchableOpacity
+                      onPress={() => router.push(`/(practitioner)/consultation/${appt.id}` as never)}
                       style={{
                         width: '100%',
                         paddingVertical: 12,
