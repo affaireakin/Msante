@@ -146,7 +146,7 @@ export default function AppointmentsPage() {
                     {status.label}
                   </span>
                   {apt.status === 'confirmed' && !isPast && (
-                    <Link href={`/practitioner/consultation/${apt.id}/waiting`} className="text-xs font-bold text-[#006685] hover:underline">
+                    <Link href={`/patient/consultation/${apt.id}/waiting`} className="text-xs font-bold text-[#006685] hover:underline">
                       Rejoindre →
                     </Link>
                   )}
