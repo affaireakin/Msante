@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@daily-co/react-native-daily-js": "^0.84.1",
+    "@livekit/react-native": "^2.4.0",
+    "@livekit/react-native-webrtc": "^125.0.7",
     "@expo-google-fonts/manrope": "^0.3.0",
     "@expo/metro-runtime": "~6.1.2",
     "@hookform/resolvers": "^3.9.0",
@@ -59,8 +60,7 @@
     "doctor": {
       "reactNativeDirectoryCheck": {
         "exclude": [
-          "@daily-co/react-native-daily-js",
-          "@daily-co/react-native-webrtc",
+          "@livekit/react-native-webrtc",
           "react-native-background-timer"
         ],
         "listUnknownPackages": false

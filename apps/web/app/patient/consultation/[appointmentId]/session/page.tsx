@@ -1,26 +1,124 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
-import type { DailyCall } from '@daily-co/daily-js'
+import {
+  LiveKitRoom,
+  GridLayout,
+  ParticipantTile,
+  RoomAudioRenderer,
+  useTracks,
+  useLocalParticipant,
+} from '@livekit/components-react'
+import '@livekit/components-styles'
+import { Track } from 'livekit-client'
 import { supabase } from '@/lib/supabase'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import type { ChatMessage } from '@/types/consultation'
 
-function formatDuration(seconds: number): string {
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+function formatDuration(s: number) {
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
+}
+function initials(name: string) {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 }
 
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
+// ── Video area (must be inside LiveKitRoom context) ───────────────────────────
+
+function VideoArea({
+  isMuted, isCameraOn, onToggleMic, onToggleCamera, onLeave,
+  sessionSeconds, practitionerName, isLeaveOpen, setIsLeaveOpen,
+}: {
+  isMuted: boolean; isCameraOn: boolean
+  onToggleMic: () => void; onToggleCamera: () => void
+  onLeave: () => void; sessionSeconds: number; practitionerName: string
+  isLeaveOpen: boolean; setIsLeaveOpen: (v: boolean) => void
+}) {
+  const { localParticipant } = useLocalParticipant()
+  const tracks = useTracks([
+    { source: Track.Source.Camera, withPlaceholder: true },
+  ])
+
+  useEffect(() => {
+    localParticipant.setMicrophoneEnabled(!isMuted)
+  }, [isMuted, localParticipant])
+
+  useEffect(() => {
+    localParticipant.setCameraEnabled(isCameraOn)
+  }, [isCameraOn, localParticipant])
+
+  return (
+    <div className="relative w-full h-full bg-[#1a2a3a] rounded-xl overflow-hidden border border-white/10">
+      <GridLayout tracks={tracks} style={{ height: '100%' }}>
+        <ParticipantTile />
+      </GridLayout>
+      <RoomAudioRenderer />
+
+      {/* Praticien badge bas gauche */}
+      <div className="absolute bottom-20 left-4 z-10">
+        <div className="bg-[#213145]/70 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#005e7a] text-xs font-bold">
+            {initials(practitionerName)}
+          </div>
+          <div>
+            <p className="text-white text-sm font-semibold leading-tight">{practitionerName}</p>
+            <p className="text-white/60 text-[11px]">Praticien</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Timer overlay haut centre */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 text-center">
+        <span className="block text-[10px] font-bold uppercase tracking-widest text-white/50">Durée</span>
+        <span className="block text-lg font-black tabular-nums text-[#82d8ff]">{formatDuration(sessionSeconds)}</span>
+      </div>
+
+      {/* Contrôles bas */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-[#213145]/80 backdrop-blur-xl border border-white/15 px-6 py-3 rounded-full z-10 shadow-xl">
+        <button
+          onClick={onToggleMic}
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${isMuted ? 'bg-[#ba1a1a]/70 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
+        >
+          <span className="material-symbols-outlined select-none">{isMuted ? 'mic_off' : 'mic'}</span>
+        </button>
+        <button
+          onClick={onToggleCamera}
+          className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${!isCameraOn ? 'bg-[#ba1a1a]/70 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
+        >
+          <span className="material-symbols-outlined select-none">{isCameraOn ? 'videocam' : 'videocam_off'}</span>
+        </button>
+        <div className="w-px h-8 bg-white/20" />
+        <button
+          onClick={() => setIsLeaveOpen(true)}
+          className="flex items-center gap-2 px-6 h-12 rounded-full bg-[#ba1a1a] hover:bg-[#ba1a1a]/80 text-white text-sm font-semibold transition-all shadow-[0_0_20px_rgba(186,26,26,0.4)]"
+        >
+          <span className="material-symbols-outlined text-xl select-none">call_end</span>
+          Quitter
+        </button>
+      </div>
+
+      {/* Modal quitter */}
+      {isLeaveOpen && (
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-20 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 className="font-bold text-[#0b1c30] text-base mb-1">Quitter la consultation ?</h3>
+            <p className="text-sm text-[#6f787e] mb-5">La session restera active côté praticien.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setIsLeaveOpen(false)} className="flex-1 py-2.5 rounded-xl border-2 border-[#bec8ce] text-[#0b1c30] font-semibold text-sm hover:bg-slate-50 transition-colors">
+                Continuer
+              </button>
+              <button onClick={onLeave} className="flex-1 py-2.5 rounded-xl bg-[#ba1a1a] text-white font-semibold text-sm hover:bg-[#ba1a1a]/90 transition-colors">
+                Quitter
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
+
+// ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function PatientSessionPage() {
   const params = useParams()
@@ -32,8 +130,6 @@ export default function PatientSessionPage() {
   const roomUrl = searchParams.get('roomUrl') ?? ''
   const consultationId = searchParams.get('consultationId') ?? ''
 
-  const videoContainerRef = useRef<HTMLDivElement>(null)
-  const callFrameRef = useRef<DailyCall | null>(null)
   const channelRef = useRef<RealtimeChannel | null>(null)
 
   const [isMuted, setIsMuted] = useState(false)
@@ -54,334 +150,131 @@ export default function PatientSessionPage() {
       .single()
       .then(({ data }) => {
         if (!data) return
-        const pract = data.practitioners as unknown as {
-          users: { full_name: string }
-        }
+        const pract = data.practitioners as unknown as { users: { full_name: string } }
         setPractitionerName(pract?.users?.full_name ?? 'Praticien')
       })
   }, [appointmentId])
 
-  // Daily.co iframe
-  useEffect(() => {
-    if (!videoContainerRef.current || !roomUrl || !token) return
-
-    let callFrame: DailyCall | null = null
-
-    async function initDaily() {
-      const Daily = (await import('@daily-co/daily-js')).default
-      callFrame = Daily.createFrame(videoContainerRef.current!, {
-        iframeStyle: { width: '100%', height: '100%', border: 'none' },
-        showLeaveButton: false,
-        showFullscreenButton: false,
-      })
-      callFrameRef.current = callFrame
-      await callFrame.join({ url: roomUrl, token })
-    }
-
-    void initDaily()
-
-    return () => {
-      if (callFrame) void callFrame.destroy()
-    }
-  }, [roomUrl, token])
-
   // Session timer
   useEffect(() => {
-    const id = setInterval(() => setSessionSeconds((s) => s + 1), 1000)
+    const id = setInterval(() => setSessionSeconds(s => s + 1), 1000)
     return () => clearInterval(id)
   }, [])
 
   // Supabase Realtime chat
   useEffect(() => {
     if (!consultationId) return
-
     const channel = supabase
       .channel(`consultation:${consultationId}`)
-      .on(
-        'broadcast',
-        { event: 'chat_message' },
-        (payload: { payload: ChatMessage }) => {
-          const msg = payload.payload
-          setChatMessages((prev) => {
-            if (prev.some((m) => m.id === msg.id)) return prev
-            return [...prev, msg]
-          })
-        }
-      )
+      .on('broadcast', { event: 'chat_message' }, (payload: { payload: ChatMessage }) => {
+        const msg = payload.payload
+        setChatMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg])
+      })
       .subscribe()
-
     channelRef.current = channel
     return () => { void supabase.removeChannel(channel) }
   }, [consultationId])
 
-  function handleToggleMic() {
-    if (!callFrameRef.current) return
-    const nextMuted = !isMuted
-    setIsMuted(nextMuted)
-    callFrameRef.current.setLocalAudio(!nextMuted)
-  }
-
-  function handleToggleCamera() {
-    if (!callFrameRef.current) return
-    const nextOn = !isCameraOn
-    setIsCameraOn(nextOn)
-    callFrameRef.current.setLocalVideo(nextOn)
-  }
-
   const handleSendMessage = useCallback(async () => {
     const content = chatInput.trim()
     if (!content || !channelRef.current) return
-
-    const msg: ChatMessage = {
-      id: `pat-${Date.now()}-${Math.random()}`,
-      role: 'patient',
-      content,
-      timestamp: Date.now(),
-    }
-
-    setChatMessages((prev) => [...prev, msg])
+    const msg: ChatMessage = { id: `pat-${Date.now()}-${Math.random()}`, role: 'patient', content, timestamp: Date.now() }
+    setChatMessages(prev => [...prev, msg])
     setChatInput('')
-
-    await channelRef.current.send({
-      type: 'broadcast',
-      event: 'chat_message',
-      payload: msg,
-    })
+    await channelRef.current.send({ type: 'broadcast', event: 'chat_message', payload: msg })
   }, [chatInput])
 
-  function handleLeave() {
-    if (callFrameRef.current) {
-      void callFrameRef.current.destroy()
-      callFrameRef.current = null
-    }
-    router.push('/patient/appointments')
+  const handleLeave = () => router.push('/patient/appointments')
+
+  if (!token || !roomUrl) {
+    return (
+      <div className="h-screen bg-[#213145] flex items-center justify-center">
+        <p className="text-white/60 font-[Manrope]">Chargement de la salle…</p>
+      </div>
+    )
   }
 
   return (
     <div className="h-screen bg-[#213145] overflow-hidden flex flex-col font-[Manrope]">
-      <link
-        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-      />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
-        rel="stylesheet"
-      />
+      <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
 
       {/* Header */}
-      <header className="fixed top-0 w-full z-50 flex items-center justify-between px-6 py-4 bg-[#213145]/70 backdrop-blur-xl border-b border-white/10 h-[72px]">
-        <div className="flex items-center gap-4">
-          <span className="text-2xl font-bold bg-gradient-to-r from-white to-sky-300 bg-clip-text text-transparent tracking-tight select-none">
-            M-Santé
-          </span>
-          <div className="hidden md:flex items-center gap-2 bg-white/5 border border-white/15 px-3 py-1.5 rounded-full">
-            <span
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: '#006685', boxShadow: '0 0 8px rgba(0,102,133,0.5)' }}
-            />
-            <span className="text-[11px] font-bold uppercase tracking-[0.05em] text-white/70">
-              Connexion sécurisée
-            </span>
-          </div>
-        </div>
-
-        {/* Timer */}
-        <div className="text-center absolute left-1/2 -translate-x-1/2">
-          <span className="block text-[11px] font-bold uppercase tracking-[0.05em] text-white/50">
-            Durée
-          </span>
-          <span className="block text-xl font-bold tabular-nums text-[#006685]">
-            {formatDuration(sessionSeconds)}
-          </span>
-        </div>
-
-        {/* Practitioner badge */}
-        <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-          <div className="w-6 h-6 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#005e7a] text-[10px] font-bold">
-            {getInitials(practitionerName)}
-          </div>
-          <span className="text-[11px] text-white/70 font-medium">{practitionerName}</span>
+      <header className="flex-shrink-0 flex items-center justify-between px-6 py-3 bg-[#213145]/70 backdrop-blur-xl border-b border-white/10 h-[60px]">
+        <span className="text-lg font-black tracking-tighter bg-gradient-to-r from-white to-sky-300 bg-clip-text text-transparent">M-Santé</span>
+        <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1 rounded-full">
+          <div className="w-6 h-6 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#005e7a] text-[10px] font-bold">{initials(practitionerName)}</div>
+          <span className="text-[11px] text-white/70">{practitionerName}</span>
         </div>
       </header>
 
       {/* Main */}
-      <main className="flex flex-1 flex-col lg:flex-row gap-4 p-4 overflow-hidden pt-[72px]">
-        {/* Video area */}
-        <div className="flex-1 relative rounded-xl overflow-hidden bg-[#1a2a3a] border border-white/10">
-          <div ref={videoContainerRef} className="absolute inset-0 w-full h-full" />
+      <main className="flex flex-1 gap-4 p-4 overflow-hidden">
+        {/* LiveKit video */}
+        <LiveKitRoom
+          serverUrl={roomUrl}
+          token={token}
+          connect
+          className="flex-1 relative"
+        >
+          <VideoArea
+            isMuted={isMuted}
+            isCameraOn={isCameraOn}
+            onToggleMic={() => setIsMuted(m => !m)}
+            onToggleCamera={() => setIsCameraOn(c => !c)}
+            onLeave={handleLeave}
+            sessionSeconds={sessionSeconds}
+            practitionerName={practitionerName}
+            isLeaveOpen={isLeaveOpen}
+            setIsLeaveOpen={setIsLeaveOpen}
+          />
+        </LiveKitRoom>
 
-          {/* Self-view placeholder */}
-          <div className="absolute top-4 right-4 w-40 h-28 rounded-xl bg-[#1a2a3a] border border-white/20 flex items-center justify-center text-white/30 text-sm z-10 pointer-events-none select-none">
-            Vous
-          </div>
-
-          {/* Practitioner label */}
-          <div className="absolute bottom-20 left-4 z-10">
-            <div className="bg-[#213145]/60 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#005e7a] text-xs font-bold">
-                {getInitials(practitionerName)}
-              </div>
-              <div>
-                <p className="text-white text-sm font-semibold leading-tight">{practitionerName}</p>
-                <p className="text-white/60 text-[11px]">Praticien</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Controls */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-[#213145]/70 backdrop-blur-xl border border-white/15 px-6 py-3 rounded-full z-10 shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
-            <button
-              onClick={handleToggleMic}
-              title={isMuted ? 'Activer le micro' : 'Couper le micro'}
-              className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white transition-all duration-200"
-            >
-              <span className="material-symbols-outlined select-none">
-                {isMuted ? 'mic_off' : 'mic'}
-              </span>
-            </button>
-
-            <button
-              onClick={handleToggleCamera}
-              title={isCameraOn ? 'Éteindre la caméra' : 'Allumer la caméra'}
-              className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 text-white transition-all duration-200"
-            >
-              <span className="material-symbols-outlined select-none">
-                {isCameraOn ? 'videocam' : 'videocam_off'}
-              </span>
-            </button>
-
-            <div className="w-px h-8 bg-white/20" />
-
-            <button
-              onClick={() => setIsLeaveOpen(true)}
-              className="flex items-center gap-2 px-6 h-12 rounded-full bg-[#ba1a1a] hover:bg-[#ba1a1a]/90 text-white text-sm font-semibold transition-all duration-200 shadow-[0_0_15px_rgba(186,26,26,0.3)] select-none"
-            >
-              <span className="material-symbols-outlined text-xl select-none" style={{ fontVariationSettings: "'FILL' 1" }}>
-                call_end
-              </span>
-              Quitter
-            </button>
-          </div>
-        </div>
-
-        {/* Chat sidebar */}
-        <div className="w-full lg:w-80 flex flex-col">
-          <div className="flex-1 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 flex flex-col overflow-hidden">
+        {/* Chat */}
+        <div className="w-72 flex flex-col">
+          <div className="flex-1 bg-white/5 backdrop-blur-xl rounded-xl border border-white/15 flex flex-col overflow-hidden">
             <div className="px-4 py-3 border-b border-white/10 flex items-center gap-2">
-              <span
-                className="material-symbols-outlined text-[#006685] text-sm select-none"
-                style={{ fontVariationSettings: "'FILL' 0" }}
-              >
-                lock
-              </span>
+              <span className="material-symbols-outlined text-[#006685] text-base select-none">lock</span>
               <h3 className="text-white font-semibold text-sm">Chat sécurisé</h3>
             </div>
-
-            <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 min-h-0">
+            <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2 min-h-0">
               {chatMessages.length === 0 && (
-                <p className="text-white/30 text-xs text-center mt-4">
-                  Aucun message pour l&apos;instant.
-                </p>
+                <p className="text-white/30 text-xs text-center mt-4">Aucun message pour l&apos;instant.</p>
               )}
-              {chatMessages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex gap-2 ${msg.role === 'patient' ? 'flex-row-reverse' : 'flex-row'}`}
-                >
-                  {msg.role === 'practitioner' && (
-                    <div className="w-7 h-7 rounded-full bg-[#82d8ff] shrink-0 flex items-center justify-center text-[#005e7a] text-[10px] font-bold">
-                      {getInitials(practitionerName)}
-                    </div>
-                  )}
-                  <div
-                    className={`max-w-[80%] py-2 px-3 rounded-lg text-sm ${
-                      msg.role === 'patient'
-                        ? 'bg-[#006685] text-white rounded-tr-none'
-                        : 'bg-[#e5eeff]/20 text-white/90 border border-white/10 rounded-tl-none'
-                    }`}
-                  >
+              {chatMessages.map(msg => (
+                <div key={msg.id} className={`flex ${msg.role === 'patient' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] py-2 px-3 rounded-xl text-sm ${msg.role === 'patient' ? 'bg-[#006685] text-white rounded-tr-sm' : 'bg-white/10 text-white/90 border border-white/10 rounded-tl-sm'}`}>
                     <p>{msg.content}</p>
-                    <span className="text-[10px] mt-1 block opacity-60 text-right">
-                      {new Date(msg.timestamp).toLocaleTimeString('fr-FR', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
+                    <span className="text-[10px] mt-0.5 block opacity-50 text-right">
+                      {new Date(msg.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                 </div>
               ))}
             </div>
-
             <div className="p-3 border-t border-white/10 flex items-center gap-2">
               <input
                 type="text"
                 value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    void handleSendMessage()
-                  }
-                }}
-                placeholder="Envoyer un message..."
-                className="flex-1 bg-white/5 border border-white/20 rounded-full px-4 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#006685]/50 transition-all"
+                onChange={e => setChatInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void handleSendMessage() } }}
+                placeholder="Message…"
+                className="flex-1 bg-white/5 border border-white/15 rounded-full px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-[#006685]/50"
               />
               <button
                 onClick={() => void handleSendMessage()}
                 disabled={!chatInput.trim()}
-                className="w-8 h-8 rounded-full bg-[#006685] text-white flex items-center justify-center hover:bg-[#006685]/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-8 h-8 rounded-full bg-[#006685] text-white flex items-center justify-center hover:bg-[#006685]/80 transition-colors disabled:opacity-30"
               >
-                <span className="material-symbols-outlined text-sm select-none" style={{ fontVariationSettings: "'FILL' 0" }}>
-                  send
-                </span>
+                <span className="material-symbols-outlined text-sm select-none">send</span>
               </button>
             </div>
           </div>
-
-          {/* Clinical disclaimer */}
-          <p className="text-[10px] text-white/30 text-center mt-3 leading-relaxed px-2">
-            Cet outil ne remplace pas un professionnel de santé.<br />
-            Urgence : <strong className="text-white/50">15</strong> · SOS Amitié : <strong className="text-white/50">+221 33 823 8020</strong>
+          <p className="text-[10px] text-white/25 text-center mt-2 leading-relaxed px-2">
+            Urgence : <strong className="text-white/40">15</strong> · SOS Amitié : <strong className="text-white/40">+221 33 823 8020</strong>
           </p>
         </div>
       </main>
-
-      {/* Leave confirmation */}
-      {isLeaveOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-[#ffdad6] flex items-center justify-center">
-                <span
-                  className="material-symbols-outlined text-[#ba1a1a] text-xl select-none"
-                  style={{ fontVariationSettings: "'FILL' 1" }}
-                >
-                  call_end
-                </span>
-              </div>
-              <div>
-                <h3 className="font-bold text-[#0b1c30] text-base">Quitter la consultation ?</h3>
-                <p className="text-sm text-[#6f787e]">La session restera active côté praticien.</p>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setIsLeaveOpen(false)}
-                className="flex-1 py-2.5 rounded-xl border-2 border-[#bec8ce] text-[#0b1c30] font-semibold text-sm hover:bg-slate-50 transition-colors"
-              >
-                Continuer
-              </button>
-              <button
-                onClick={handleLeave}
-                className="flex-1 py-2.5 rounded-xl bg-[#ba1a1a] text-white font-semibold text-sm hover:bg-[#ba1a1a]/90 transition-colors shadow-[0_0_12px_rgba(186,26,26,0.2)]"
-              >
-                Quitter
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

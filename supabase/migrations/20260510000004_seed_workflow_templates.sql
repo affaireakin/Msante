@@ -1,0 +1,2 @@
+-- Workflow templates were already seeded in 20260503000003_workflows.sql.
+-- This migration is intentionally empty (kept for file ordering).

@@ -111,20 +111,21 @@ export default function WellnessPage() {
       {/* Tools */}
       <div>
         <h2 className="text-lg font-bold text-[#0b1c30] mb-4">Outils bien-être</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {[
-            { icon: 'mood', label: 'Check-in humeur', color: '#006685', bg: '#e5eeff', desc: 'Enregistrer votre état' },
-            { icon: 'book', label: 'Journal', color: '#705d00', bg: '#fff8e1', desc: 'Écrire vos pensées' },
-            { icon: 'self_improvement', label: 'Méditation', color: '#1d7a3a', bg: '#e8f5e9', desc: 'Sessions guidées' },
-            { icon: 'psychology', label: 'Ami IA', color: '#5c5f61', bg: '#e0e3e5', desc: 'Compagnon émotionnel' },
+            { href: '/patient/wellness/mood',              icon: 'mood',             label: 'Check-in humeur', color: '#006685', bg: '#e5eeff', desc: 'Enregistrer votre état' },
+            { href: '/patient/wellness/journal',           icon: 'book',             label: 'Journal',         color: '#705d00', bg: '#fff8e1', desc: 'Écrire vos pensées' },
+            { href: '/patient/wellness/mood/history',      icon: 'bar_chart',        label: 'Historique',      color: '#1d7a3a', bg: '#e8f5e9', desc: 'Tendances humeur' },
+            { href: '/patient/wellness/meditation',        icon: 'self_improvement', label: 'Méditation',      color: '#006685', bg: '#bee9ff', desc: 'Respiration guidée' },
+            { href: '/patient/assistant',                  icon: 'favorite',         label: 'Ami IA',          color: '#5c5f61', bg: '#e0e3e5', desc: 'Compagnon émotionnel' },
           ].map(t => (
-            <button key={t.label} className="rounded-2xl p-5 text-left hover:-translate-y-1 hover:shadow-lg transition-all" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
+            <Link key={t.label} href={t.href} className="rounded-2xl p-5 text-left hover:-translate-y-1 hover:shadow-lg transition-all block" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
               <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: t.bg }}>
                 <Icon name={t.icon} style={{ color: t.color, fontSize: '22px' }} />
               </div>
               <p className="font-bold text-[#0b1c30] text-sm">{t.label}</p>
               <p className="text-xs text-[#6f787e] mt-0.5">{t.desc}</p>
-            </button>
+            </Link>
           ))}
         </div>
       </div>
@@ -132,10 +133,15 @@ export default function WellnessPage() {
       {/* Recent journal entries */}
       {journals.length > 0 && (
         <div>
-          <h2 className="text-lg font-bold text-[#0b1c30] mb-4">Journal récent</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-[#0b1c30]">Journal récent</h2>
+            <Link href="/patient/wellness/journal" className="text-xs font-bold text-[#006685] hover:underline uppercase tracking-wide">
+              Voir tout →
+            </Link>
+          </div>
           <div className="space-y-3">
             {journals.map(j => (
-              <div key={j.id} className="rounded-2xl p-5" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
+              <Link key={j.id} href={`/patient/wellness/journal/${j.id}`} className="block rounded-2xl p-5 hover:shadow-md transition-all" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-semibold text-[#0b1c30]">{j.title || 'Sans titre'}</p>
                   <span className="text-xs text-[#6f787e]">
@@ -143,26 +149,29 @@ export default function WellnessPage() {
                   </span>
                 </div>
                 <p className="text-sm text-[#6f787e] line-clamp-2">{j.content}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       )}
 
-      {/* CTA if no data */}
+      {/* CTA si aucune donnée */}
       {moods.length === 0 && journals.length === 0 && (
         <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: '#e5eeff', border: '1px solid #82d8ff' }}>
           <Icon name="self_improvement" style={{ fontSize: '56px', color: '#006685' }} />
           <h3 className="text-xl font-bold text-[#0b1c30] mt-4">Commencez votre parcours bien-être</h3>
           <p className="text-sm text-[#6f787e] mt-2 max-w-md mx-auto">
-            Trackez votre humeur quotidiennement, écrivez dans votre journal et accédez à des exercices de méditation guidée.
+            Trackez votre humeur quotidiennement, écrivez dans votre journal et parlez à Ami.
           </p>
-          <p className="text-xs text-[#6f787e] mt-4">
-            Ces fonctionnalités sont disponibles dans l&apos;application mobile M-Santé
-          </p>
-          <div className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl">
-            <Icon name="smartphone" style={{ fontSize: '18px' }} />
-            Télécharger l&apos;app
+          <div className="flex items-center justify-center gap-3 mt-5">
+            <Link href="/patient/wellness/mood" className="flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg transition-all">
+              <Icon name="mood" style={{ fontSize: '18px', color: '#fff' }} />
+              Premier check-in
+            </Link>
+            <Link href="/patient/wellness/journal/new" className="flex items-center gap-2 px-5 py-2.5 bg-white text-[#006685] text-sm font-bold rounded-xl border border-[#bec8ce] hover:shadow-md transition-all">
+              <Icon name="edit" style={{ fontSize: '18px', color: '#006685' }} />
+              Écrire dans le journal
+            </Link>
           </div>
         </div>
       )}

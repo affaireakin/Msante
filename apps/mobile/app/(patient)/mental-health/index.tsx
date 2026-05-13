@@ -91,7 +91,7 @@ export default function WellnessHub() {
                 <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>Inspirez la sérénité, expirez la tension</Text>
               </View>
 
-              <BreathingRing isActive size={80} />
+              <BreathingRing phase="inhale" phaseDuration={5} isActive={false} size={80} />
 
               <View style={{ flexDirection: 'row', gap: 12, width: '100%' }}>
                 <TouchableOpacity

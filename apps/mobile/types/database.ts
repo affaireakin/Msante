@@ -30,6 +30,8 @@ export interface Practitioner {
   rating: number | null
   total_reviews: number
   timezone: string
+  stamp_url: string | null
+  signature_url: string | null
   created_at: string
 }
 

@@ -7,6 +7,7 @@ export interface WorkflowNodeData {
   label: string
   nodeType: string
   template?: string
+  [key: string]: unknown
 }
 
 export interface WorkflowNode {

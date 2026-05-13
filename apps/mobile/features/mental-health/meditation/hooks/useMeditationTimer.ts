@@ -1,78 +1,123 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 export type BreathPhase = 'inhale' | 'hold' | 'exhale' | 'hold2'
 
-interface PhaseConfig {
+export interface PhaseConfig {
   phase: BreathPhase
-  duration: number
+  duration: number  // seconds
   label: string
 }
 
-const TECHNIQUES: Record<string, PhaseConfig[]> = {
+export const TECHNIQUES: Record<string, PhaseConfig[]> = {
   coherence: [
     { phase: 'inhale', duration: 5, label: 'Inspirez' },
     { phase: 'exhale', duration: 5, label: 'Expirez' },
   ],
   box: [
     { phase: 'inhale', duration: 4, label: 'Inspirez' },
-    { phase: 'hold', duration: 4, label: 'Retenez' },
+    { phase: 'hold',   duration: 4, label: 'Retenez' },
     { phase: 'exhale', duration: 4, label: 'Expirez' },
-    { phase: 'hold2', duration: 4, label: 'Retenez' },
+    { phase: 'hold2',  duration: 4, label: 'Retenez' },
   ],
   '478': [
     { phase: 'inhale', duration: 4, label: 'Inspirez' },
-    { phase: 'hold', duration: 7, label: 'Retenez' },
+    { phase: 'hold',   duration: 7, label: 'Retenez' },
     { phase: 'exhale', duration: 8, label: 'Expirez' },
+  ],
+  triangle: [
+    { phase: 'inhale', duration: 4, label: 'Inspirez' },
+    { phase: 'hold',   duration: 4, label: 'Retenez' },
+    { phase: 'exhale', duration: 4, label: 'Expirez' },
   ],
 }
 
+interface TimerState {
+  isActive:     boolean
+  elapsed:      number
+  phaseIndex:   number
+  phaseElapsed: number
+  isComplete:   boolean
+}
+
+const INITIAL: TimerState = {
+  isActive: false, elapsed: 0, phaseIndex: 0, phaseElapsed: 0, isComplete: false,
+}
+
 export function useMeditationTimer(technique: string, totalSeconds: number) {
-  const [isActive, setIsActive] = useState(false)
-  const [elapsed, setElapsed] = useState(0)
-  const [phaseIndex, setPhaseIndex] = useState(0)
-  const [phaseElapsed, setPhaseElapsed] = useState(0)
+  const phases = TECHNIQUES[technique] ?? TECHNIQUES.coherence
+  const [s, setS] = useState<TimerState>(INITIAL)
+
+  // Use a ref to read state inside the interval without stale closure
+  const sRef = useRef(s)
+  sRef.current = s
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const phases = TECHNIQUES[technique] ?? TECHNIQUES.coherence
-
   useEffect(() => {
-    if (isActive) {
-      intervalRef.current = setInterval(() => {
-        setElapsed(e => {
-          if (e + 1 >= totalSeconds) {
-            setIsActive(false)
-            return totalSeconds
-          }
-          return e + 1
-        })
-        setPhaseElapsed(pe => {
-          const currentPhase = phases[phaseIndex]
-          if (pe + 1 >= currentPhase.duration) {
-            setPhaseIndex(i => (i + 1) % phases.length)
-            return 0
-          }
-          return pe + 1
-        })
-      }, 1000)
-    } else {
+    if (!s.isActive) {
       if (intervalRef.current) clearInterval(intervalRef.current)
+      return
     }
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [isActive, phaseIndex, totalSeconds])
 
-  const currentPhase = phases[phaseIndex]
-  const progress = elapsed / totalSeconds
-  const isComplete = elapsed >= totalSeconds
+    intervalRef.current = setInterval(() => {
+      const { elapsed, phaseIndex, phaseElapsed } = sRef.current
+      const newElapsed = elapsed + 1
+
+      if (newElapsed >= totalSeconds) {
+        clearInterval(intervalRef.current!)
+        setS(prev => ({ ...prev, isActive: false, elapsed: totalSeconds, isComplete: true }))
+        return
+      }
+
+      const cur = phases[phaseIndex]
+      const newPhaseElapsed = phaseElapsed + 1
+
+      if (newPhaseElapsed >= cur.duration) {
+        setS(prev => ({
+          ...prev,
+          elapsed: newElapsed,
+          phaseIndex: (phaseIndex + 1) % phases.length,
+          phaseElapsed: 0,
+        }))
+      } else {
+        setS(prev => ({ ...prev, elapsed: newElapsed, phaseElapsed: newPhaseElapsed }))
+      }
+    }, 1000)
+
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+  }, [s.isActive, totalSeconds])  // only re-subscribe when isActive changes
+
+  const currentPhase = phases[s.phaseIndex]
+  const phaseTimeLeft = currentPhase.duration - s.phaseElapsed
+
+  const start = useCallback(() => {
+    setS({ isActive: true, elapsed: 0, phaseIndex: 0, phaseElapsed: 0, isComplete: false })
+  }, [])
+
+  const resume = useCallback(() => {
+    setS(prev => ({ ...prev, isActive: true }))
+  }, [])
+
+  const pause = useCallback(() => {
+    setS(prev => ({ ...prev, isActive: false }))
+  }, [])
+
+  const reset = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    setS(INITIAL)
+  }, [])
 
   return {
-    isActive,
-    elapsed,
-    progress,
-    isComplete,
+    isActive:     s.isActive,
+    isComplete:   s.isComplete,
+    elapsed:      s.elapsed,
+    progress:     s.elapsed / totalSeconds,
+    // Current phase info
+    currentPhase: currentPhase.phase,
     currentLabel: currentPhase.label,
-    phaseProgress: phaseElapsed / currentPhase.duration,
-    start: () => { setElapsed(0); setPhaseIndex(0); setPhaseElapsed(0); setIsActive(true) },
-    stop: () => setIsActive(false),
-    reset: () => { setIsActive(false); setElapsed(0); setPhaseIndex(0); setPhaseElapsed(0) },
+    phaseDuration: currentPhase.duration,
+    phaseProgress: s.phaseElapsed / currentPhase.duration,
+    phaseTimeLeft,
+    // Controls
+    start, resume, pause, reset,
   }
 }

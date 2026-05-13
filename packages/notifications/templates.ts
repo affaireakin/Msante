@@ -34,9 +34,9 @@ const TEMPLATES: Record<
     route: () => '/(patient)/payment',
   },
   consultation_starting: {
-    title: 'Consultation prête 🎥',
-    body: "{patientName} a rejoint la salle d'attente.",
-    route: (data) => `/(practitioner)/consultation/${data.appointmentId}/waiting`,
+    title: 'Consultation dans 15 min 🎥',
+    body: 'Votre consultation est dans 15 minutes, à {time}.',
+    route: (data) => `/(patient)/consultation/${data.appointment_id}/session`,
   },
   practitioner_approved: {
     title: 'Compte approuvé ✓',

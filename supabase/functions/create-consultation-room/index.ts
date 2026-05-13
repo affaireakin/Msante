@@ -6,6 +6,61 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// ── LiveKit JWT (Deno crypto, no external SDK needed) ─────────────────────────
+
+async function createLiveKitToken(
+  apiKey: string,
+  apiSecret: string,
+  identity: string,
+  displayName: string,
+  roomName: string,
+  canPublish = true,
+  ttl = 7200,
+): Promise<string> {
+  const now = Math.floor(Date.now() / 1000)
+
+  const b64url = (obj: unknown) =>
+    btoa(JSON.stringify(obj))
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+
+  const header = b64url({ alg: 'HS256', typ: 'JWT' })
+  const payload = b64url({
+    iss: apiKey,
+    sub: identity,
+    iat: now,
+    nbf: now,
+    exp: now + ttl,
+    name: displayName,
+    video: {
+      room: roomName,
+      roomJoin: true,
+      canPublish,
+      canSubscribe: true,
+      canPublishData: true,
+    },
+  })
+
+  const signingInput = `${header}.${payload}`
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(apiSecret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  )
+  const sigBuf = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signingInput))
+  const sig = btoa(String.fromCharCode(...new Uint8Array(sigBuf)))
+    .replace(/=/g, '')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+
+  return `${signingInput}.${sig}`
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -14,7 +69,7 @@ Deno.serve(async (req) => {
   try {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     )
 
     const authHeader = req.headers.get('Authorization')
@@ -25,7 +80,7 @@ Deno.serve(async (req) => {
     }
 
     const { data: { user }, error: authError } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', '')
+      authHeader.replace('Bearer ', ''),
     )
     if (authError || !user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -34,14 +89,13 @@ Deno.serve(async (req) => {
     }
 
     const { appointmentId } = await req.json()
-
     if (!appointmentId || typeof appointmentId !== 'string') {
       return new Response(JSON.stringify({ error: 'appointmentId is required' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    // 1. Vérifie appointment confirmé + payé + appartient au patient
+    // 1. Vérifie appointment confirmé + appartient au patient
     const { data: appointment, error: aErr } = await supabase
       .from('appointments')
       .select('id, status, patient_id, practitioner_id')
@@ -61,7 +115,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    // 2. Vérifie si consultation déjà créée (idempotent)
+    // 2. Idempotent — retourne la consultation existante si déjà créée
     const { data: existing } = await supabase
       .from('consultations')
       .select('id, room_url, patient_token, status')
@@ -77,88 +131,25 @@ Deno.serve(async (req) => {
       }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
-    const DAILY_API_KEY = Deno.env.get('DAILY_API_KEY')!
+    // 3. Génère les tokens LiveKit
+    const LIVEKIT_API_KEY = Deno.env.get('LIVEKIT_API_KEY')!
+    const LIVEKIT_API_SECRET = Deno.env.get('LIVEKIT_API_SECRET')!
+    const LIVEKIT_WS_URL = Deno.env.get('LIVEKIT_WS_URL')! // ex: wss://msante.livekit.cloud
+
     const roomName = `msante-${appointmentId.replace(/-/g, '').slice(0, 20)}`
-    const expiry = Math.floor(Date.now() / 1000) + 7200 // 2h
 
-    // 3. Créer la room Daily.co
-    const roomRes = await fetch('https://api.daily.co/v1/rooms', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${DAILY_API_KEY}`,
-      },
-      body: JSON.stringify({
-        name: roomName,
-        properties: {
-          exp: expiry,
-          max_participants: 2,
-          enable_chat: false,
-          enable_screenshare: false,
-          start_video_off: false,
-          start_audio_off: false,
-        },
-      }),
-    })
+    const [patientToken, practitionerToken] = await Promise.all([
+      createLiveKitToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, `patient-${user.id}`, 'Patient', roomName, true),
+      createLiveKitToken(LIVEKIT_API_KEY, LIVEKIT_API_SECRET, `pract-${appointment.practitioner_id}`, 'Praticien', roomName, true),
+    ])
 
-    if (!roomRes.ok) {
-      const err = await roomRes.text()
-      throw new Error(`Daily.co room creation failed: ${err}`)
-    }
-
-    const room = await roomRes.json()
-
-    // 4. Générer patient_token (is_owner: false)
-    const patientTokenRes = await fetch('https://api.daily.co/v1/meeting-tokens', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${DAILY_API_KEY}`,
-      },
-      body: JSON.stringify({
-        properties: {
-          room_name: roomName,
-          exp: expiry,
-          is_owner: false,
-          user_name: 'Patient',
-        },
-      }),
-    })
-    if (!patientTokenRes.ok) {
-      const err = await patientTokenRes.text()
-      throw new Error(`Daily.co patient token failed: ${err}`)
-    }
-    const { token: patientToken } = await patientTokenRes.json()
-
-    // 5. Générer practitioner_token (is_owner: true)
-    const practTokenRes = await fetch('https://api.daily.co/v1/meeting-tokens', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${DAILY_API_KEY}`,
-      },
-      body: JSON.stringify({
-        properties: {
-          room_name: roomName,
-          exp: expiry,
-          is_owner: true,
-          user_name: 'Praticien',
-        },
-      }),
-    })
-    if (!practTokenRes.ok) {
-      const err = await practTokenRes.text()
-      throw new Error(`Daily.co practitioner token failed: ${err}`)
-    }
-    const { token: practitionerToken } = await practTokenRes.json()
-
-    // 6. INSERT consultation
+    // 4. Insert consultation
     const { data: consultation, error: cErr } = await supabase
       .from('consultations')
       .insert({
         appointment_id: appointmentId,
         room_name: roomName,
-        room_url: room.url,
+        room_url: LIVEKIT_WS_URL,
         patient_token: patientToken,
         practitioner_token: practitionerToken,
         status: 'waiting',
@@ -168,7 +159,7 @@ Deno.serve(async (req) => {
 
     if (cErr || !consultation) throw new Error('Failed to save consultation')
 
-    // Notify practitioner that patient entered the waiting room (fire-and-forget)
+    // 5. Notifie le praticien (fire-and-forget)
     try {
       const resendApiKey = Deno.env.get('RESEND_API_KEY') ?? ''
       const notifService = createNotificationService(supabase, resendApiKey)
@@ -180,17 +171,10 @@ Deno.serve(async (req) => {
         .single()
 
       if (practData?.user_id) {
-        const { data: practUser } = await supabase
-          .from('users')
-          .select('id, full_name, email, push_token')
-          .eq('id', practData.user_id)
-          .single()
-
-        const { data: patientData } = await supabase
-          .from('users')
-          .select('full_name')
-          .eq('id', user.id)
-          .single()
+        const [{ data: practUser }, { data: patientData }] = await Promise.all([
+          supabase.from('users').select('id, full_name, email, push_token').eq('id', practData.user_id).single(),
+          supabase.from('users').select('full_name').eq('id', user.id).single(),
+        ])
 
         if (practUser) {
           await notifService.send({
@@ -203,7 +187,7 @@ Deno.serve(async (req) => {
             },
             data: {
               patientName: patientData?.full_name ?? 'Votre patient',
-              appointmentId: appointmentId,
+              appointmentId,
             },
           })
         }
@@ -214,7 +198,7 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({
       consultationId: consultation.id,
-      roomUrl: room.url,
+      roomUrl: LIVEKIT_WS_URL,
       patientToken,
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
 

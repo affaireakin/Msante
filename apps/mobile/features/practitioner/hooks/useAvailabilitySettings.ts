@@ -120,3 +120,78 @@ export function useDeleteException(practitionerId: string) {
       qc.invalidateQueries({ queryKey: ['availability-settings', practitionerId] }),
   })
 }
+
+// ── Practitioner Services ────────────────────────────────────────────────────
+
+export interface PractitionerService {
+  id: string
+  name: string
+  type: 'video' | 'audio' | 'presentiel'
+  duration_min: number
+  price: number
+  currency: string
+  is_active: boolean
+}
+
+export type ServiceDraft = Omit<PractitionerService, 'id'>
+
+export function usePractitionerServices(practitionerId: string) {
+  return useQuery({
+    queryKey: ['practitioner-services', practitionerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('practitioner_services')
+        .select('id, name, type, duration_min, price, currency, is_active')
+        .eq('practitioner_id', practitionerId)
+        .order('created_at')
+      if (error) throw error
+      return (data ?? []) as PractitionerService[]
+    },
+    enabled: !!practitionerId,
+    staleTime: 60_000,
+  })
+}
+
+export function useCreateService(practitionerId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (draft: ServiceDraft) => {
+      const { error } = await supabase
+        .from('practitioner_services')
+        .insert({ ...draft, practitioner_id: practitionerId })
+      if (error) throw error
+    },
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ['practitioner-services', practitionerId] }),
+  })
+}
+
+export function useUpdateService(practitionerId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, ...patch }: Partial<PractitionerService> & { id: string }) => {
+      const { error } = await supabase
+        .from('practitioner_services')
+        .update(patch)
+        .eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ['practitioner-services', practitionerId] }),
+  })
+}
+
+export function useDeleteService(practitionerId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('practitioner_services')
+        .delete()
+        .eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ['practitioner-services', practitionerId] }),
+  })
+}

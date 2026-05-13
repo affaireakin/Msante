@@ -1,7 +1,8 @@
 import '../global.css'
 import { useEffect } from 'react'
 import { Stack, useRouter, useSegments, SplashScreen } from 'expo-router'
-import { useFonts,
+import {
+  useFonts,
   Manrope_400Regular,
   Manrope_500Medium,
   Manrope_600SemiBold,

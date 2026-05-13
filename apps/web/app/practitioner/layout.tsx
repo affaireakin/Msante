@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
 const navItems = [
@@ -56,6 +56,35 @@ const navItems = [
 export default function PractitionerLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
+  const [name, setName] = useState('')
+  const [initials, setInitials] = useState('P')
+  const [speciality, setSpeciality] = useState('')
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { router.push('/auth/login'); return }
+      supabase
+        .from('users')
+        .select('full_name, role')
+        .eq('id', user.id)
+        .single()
+        .then(({ data: userData }) => {
+          if (!userData || userData.role !== 'practitioner') {
+            router.push('/auth/login')
+            return
+          }
+          const fullName = userData.full_name ?? ''
+          setName(fullName)
+          setInitials(fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'P')
+          supabase
+            .from('practitioners')
+            .select('speciality')
+            .eq('user_id', user.id)
+            .single()
+            .then(({ data: pract }) => { if (pract) setSpeciality(pract.speciality ?? '') })
+        })
+    })
+  }, [router])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -83,6 +112,19 @@ export default function PractitionerLayout({ children }: { children: React.React
           <div>
             <h1 className="text-lg font-black tracking-tighter text-[#0b1c30]">M-Santé</h1>
             <p className="text-xs text-[#006685] font-semibold tracking-wide uppercase">Clinical Portal</p>
+          </div>
+        </div>
+
+        {/* Profil praticien */}
+        <div className="px-4 py-4 border-b border-slate-100/60">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#e5eeff]">
+            <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+              {initials}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-[#0b1c30] truncate">Dr. {name || 'Praticien'}</p>
+              <p className="text-xs text-[#6f787e] truncate">{speciality || 'Professionnel de santé'}</p>
+            </div>
           </div>
         </div>
 
@@ -128,9 +170,16 @@ export default function PractitionerLayout({ children }: { children: React.React
             borderBottom: '1px solid rgba(255,255,255,0.10)',
           }}
         >
-          <p className="text-sm font-medium text-[#6f787e]">Bienvenue sur votre espace praticien</p>
-          <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold shadow-sm">
-            P
+          <p className="text-sm font-medium text-[#6f787e]">
+            Bonjour, <span className="font-semibold text-[#0b1c30]">Dr. {name || 'Praticien'}</span>
+          </p>
+          <div className="flex items-center gap-3">
+            <button className="w-9 h-9 flex items-center justify-center rounded-full bg-white/60 border border-slate-200/50 text-[#6f787e] hover:bg-white transition-colors">
+              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>notifications</span>
+            </button>
+            <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold shadow-sm">
+              {initials}
+            </div>
           </div>
         </header>
         <main className="flex-1 mt-16 p-8 overflow-y-auto">{children}</main>

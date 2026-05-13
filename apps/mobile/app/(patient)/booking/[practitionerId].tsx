@@ -11,12 +11,12 @@ import { PrimaryButton } from '@/components/ui'
 import { useBookingStore } from '@/features/booking/store/bookingStore'
 import type { SessionType, TimeSlot } from '@/types/booking'
 
-type SessionTypeItem = { id: SessionType; label: string; iconName: 'videocam' | 'mic' | 'chat' }
+type SessionTypeItem = { id: SessionType; label: string; iconName: 'videocam' | 'mic' | 'location-on' }
 
 const SESSION_TYPES: SessionTypeItem[] = [
-  { id: 'video', label: 'Vidéo', iconName: 'videocam' },
-  { id: 'audio', label: 'Audio', iconName: 'mic' },
-  { id: 'chat', label: 'Chat', iconName: 'chat' },
+  { id: 'video',      label: 'Vidéo',       iconName: 'videocam' },
+  { id: 'audio',      label: 'Audio',        iconName: 'mic' },
+  { id: 'presentiel', label: 'Présentiel',   iconName: 'location-on' },
 ]
 
 export default function BookingScreen() {

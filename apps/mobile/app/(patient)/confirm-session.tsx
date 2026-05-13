@@ -10,7 +10,7 @@ import { PaymentSheet } from '@/features/booking/components/PaymentSheet'
 import { PrimaryButton, GlassCard } from '@/components/ui'
 import type { PaymentProvider } from '@/types/booking'
 
-const SESSION_LABELS: Record<string, string> = { video: 'Vidéo', audio: 'Audio', chat: 'Chat' }
+const SESSION_LABELS: Record<string, string> = { video: 'Vidéo', audio: 'Audio', presentiel: 'Présentiel' }
 
 export default function ConfirmSessionScreen() {
   const router = useRouter()

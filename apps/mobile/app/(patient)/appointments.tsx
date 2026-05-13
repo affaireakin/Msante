@@ -38,9 +38,9 @@ const STATUS_CONFIG: Record<AppointmentStatus, {
 }
 
 const TYPE_ICON: Record<SessionType, React.ComponentProps<typeof MaterialIcons>['name']> = {
-  video: 'videocam',
-  audio: 'mic',
-  chat:  'chat-bubble',
+  video:      'videocam',
+  audio:      'mic',
+  presentiel: 'location-on',
 }
 
 function initials(name: string) {

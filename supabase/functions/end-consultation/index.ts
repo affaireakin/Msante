@@ -108,12 +108,16 @@ Deno.serve(async (req) => {
       .update({ status: 'completed' })
       .eq('id', consultation.appointment_id)
 
-    // 5. Supprimer la room Daily.co (cleanup)
+    // 5. Supprimer la room LiveKit (cleanup optionnel — expire automatiquement)
     if (consultation.room_name) {
-      await fetch(`https://api.daily.co/v1/rooms/${consultation.room_name}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${Deno.env.get('DAILY_API_KEY')!}` },
-      }).catch(() => { /* ignore cleanup error */ })
+      const livekitUrl = Deno.env.get('LIVEKIT_WS_URL')?.replace('wss://', 'https://') ?? ''
+      if (livekitUrl) {
+        await fetch(`${livekitUrl}/twirp/livekit.RoomService/DeleteRoom`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${Deno.env.get('LIVEKIT_API_KEY')!}` },
+          body: JSON.stringify({ room: consultation.room_name }),
+        }).catch(() => { /* ignore cleanup error */ })
+      }
     }
 
     // 6. Audit log

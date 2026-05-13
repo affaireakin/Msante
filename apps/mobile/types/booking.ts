@@ -1,6 +1,6 @@
 export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
-export type SessionType = 'video' | 'audio' | 'chat'
-export type PaymentProvider = 'wave' | 'orange_money' | 'card' | 'simulated'
+export type SessionType = 'video' | 'audio' | 'presentiel'
+export type PaymentProvider = 'wave' | 'orange_money'
 export type PaymentStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'refunded'
 
 export interface Availability {
@@ -77,4 +77,17 @@ export interface ProcessPaymentRequest {
 export interface ProcessPaymentResponse {
   paymentId: string
   status: PaymentStatus
+  checkoutUrl?: string
+  paydunya_token?: string
+}
+
+export interface PractitionerService {
+  id: string
+  practitioner_id: string
+  name: string
+  type: SessionType
+  duration_min: number
+  price: number
+  currency: string
+  is_active: boolean
 }

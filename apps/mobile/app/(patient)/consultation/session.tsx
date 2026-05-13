@@ -1,18 +1,15 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   View, Text, TouchableOpacity, FlatList, TextInput,
   KeyboardAvoidingView, Platform, Alert, Dimensions, Modal,
 } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
-
-// Daily.co est une feature P2 — stub pour Expo Go
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type DailyCall = any
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type MediaStreamTrack = any
-const Daily = { createCallObject: () => null }
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DailyMediaView = (_props: unknown) => null
+import {
+  useRoom,
+  VideoView,
+  useLocalParticipant,
+  useRemoteParticipants,
+} from '@livekit/react-native'
 import { useConsultationStore } from '@/features/consultation/store/consultationStore'
 import { useSendChatMessage, useEndConsultation } from '@/features/consultation/hooks/useConsultation'
 import { ConsultationTimer } from '@/features/consultation/components/ConsultationTimer'
@@ -127,7 +124,7 @@ function ChatPanel({
 
       <FlatList
         data={messages}
-        keyExtractor={m => m.id}
+        keyExtractor={(m) => m.id}
         contentContainerStyle={{ padding: 16, gap: 8 }}
         renderItem={({ item }) => {
           const isPatient = item.role === 'patient'
@@ -184,56 +181,35 @@ export default function ConsultationSession() {
   const sendMessage = useSendChatMessage(consultationId)
   const { endSession } = useEndConsultation()
 
-  const callRef = useRef<DailyCall | null>(null)
-  const [remoteVideoTrack, setRemoteVideoTrack] = useState<MediaStreamTrack | null>(null)
-  const [remoteAudioTrack, setRemoteAudioTrack] = useState<MediaStreamTrack | null>(null)
-  const [localVideoTrack, setLocalVideoTrack] = useState<MediaStreamTrack | null>(null)
+  const room = useRoom()
+  const { localParticipant } = useLocalParticipant()
+  const remoteParticipants = useRemoteParticipants()
+
   const [isMuted, setIsMuted] = useState(false)
   const [isCameraOff, setIsCameraOff] = useState(false)
   const [showChat, setShowChat] = useState(false)
 
+  // Connect to LiveKit room
   useEffect(() => {
     if (!roomUrl || !patientToken) return
-
-    const call = Daily.createCallObject()
-    callRef.current = call
-
-    function handleParticipantUpdate(event: { participant: { local: boolean; tracks: { video: { persistentTrack?: MediaStreamTrack }; audio: { persistentTrack?: MediaStreamTrack } } } }) {
-      if (event.participant.local) {
-        setLocalVideoTrack(event.participant.tracks.video.persistentTrack ?? null)
-      } else {
-        setRemoteVideoTrack(event.participant.tracks.video.persistentTrack ?? null)
-        setRemoteAudioTrack(event.participant.tracks.audio.persistentTrack ?? null)
-      }
-    }
-
-    call.on('participant-joined', handleParticipantUpdate)
-    call.on('participant-updated', handleParticipantUpdate)
-    call.on('participant-left', (event) => {
-      if (!event.participant.local) {
-        setRemoteVideoTrack(null)
-        setRemoteAudioTrack(null)
-      }
+    void room.connect(roomUrl, patientToken, {
+      autoSubscribe: true,
     })
-
-    void call.join({ url: roomUrl, token: patientToken })
-
     return () => {
-      void call.destroy()
-      callRef.current = null
+      void room.disconnect()
     }
-  }, [roomUrl, patientToken])
+  }, [roomUrl, patientToken, room])
 
   const handleMute = () => {
     const nextMuted = !isMuted
     setIsMuted(nextMuted)
-    callRef.current?.setLocalAudio(!nextMuted)
+    void localParticipant.setMicrophoneEnabled(!nextMuted)
   }
 
   const handleCamera = () => {
     const nextOff = !isCameraOff
     setIsCameraOff(nextOff)
-    callRef.current?.setLocalVideo(!nextOff)
+    void localParticipant.setCameraEnabled(!nextOff)
   }
 
   const handleEnd = () => {
@@ -247,13 +223,19 @@ export default function ConsultationSession() {
           style: 'destructive',
           onPress: async () => {
             await endSession()
-            await callRef.current?.leave()
+            await room.disconnect()
             router.replace('/(patient)/consultation/summary')
           },
         },
       ]
     )
   }
+
+  const firstRemote = remoteParticipants[0]
+  const remoteVideoTrack = firstRemote
+    ? [...firstRemote.videoTrackPublications.values()].find((p) => p.track)?.track
+    : undefined
+  const localVideoTrack = [...localParticipant.videoTrackPublications.values()].find((p) => p.track)?.track
 
   if (!roomUrl || !patientToken) {
     return (
@@ -265,11 +247,10 @@ export default function ConsultationSession() {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#213145' }}>
-      {/* Vidéo praticien — plein écran */}
+      {/* Remote video — full screen */}
       {remoteVideoTrack ? (
-        <DailyMediaView
+        <VideoView
           videoTrack={remoteVideoTrack}
-          audioTrack={remoteAudioTrack}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}
           objectFit="cover"
         />
@@ -282,7 +263,7 @@ export default function ConsultationSession() {
         </View>
       )}
 
-      {/* Header — timer + nom praticien */}
+      {/* Header — practitioner badge + timer */}
       <View style={{ position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 52, paddingBottom: 16 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'rgba(33,49,69,0.6)', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
           <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: 'rgba(130,216,255,0.2)', alignItems: 'center', justifyContent: 'center' }}>
@@ -299,26 +280,25 @@ export default function ConsultationSession() {
         </View>
       </View>
 
-      {/* Self-view miniature — coin haut droit */}
-      <View style={{ position: 'absolute', top: 120, right: 16, width: 100, height: 130, borderRadius: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.3)', shadowColor: '#006685', shadowOpacity: 0.2, shadowRadius: 20, elevation: 6 }}>
-        {localVideoTrack && (
-          <DailyMediaView
+      {/* Local video PiP — top right */}
+      {localVideoTrack && (
+        <View style={{ position: 'absolute', top: 120, right: 16, width: 100, height: 130, borderRadius: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.3)', shadowColor: '#006685', shadowOpacity: 0.2, shadowRadius: 20, elevation: 6 }}>
+          <VideoView
             videoTrack={localVideoTrack}
-            audioTrack={null}
             style={{ width: '100%', height: '100%' }}
             objectFit="cover"
             mirror
           />
-        )}
-        <View style={{ position: 'absolute', bottom: 4, left: 6 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 }}>
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ade80' }} />
-            <Text style={{ color: '#fff', fontSize: 9, fontFamily: 'Manrope' }}>Vous</Text>
+          <View style={{ position: 'absolute', bottom: 4, left: 6 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 }}>
+              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ade80' }} />
+              <Text style={{ color: '#fff', fontSize: 9, fontFamily: 'Manrope' }}>Vous</Text>
+            </View>
           </View>
         </View>
-      </View>
+      )}
 
-      {/* Bouton chat slide droit */}
+      {/* Chat tab — right edge */}
       <TouchableOpacity
         onPress={() => setShowChat(true)}
         style={{
@@ -336,7 +316,7 @@ export default function ConsultationSession() {
         )}
       </TouchableOpacity>
 
-      {/* Contrôles bas */}
+      {/* Bottom controls */}
       <View style={{ position: 'absolute', bottom: 40, left: 0, right: 0 }}>
         <SessionControls
           onMute={handleMute}
@@ -348,7 +328,7 @@ export default function ConsultationSession() {
         />
       </View>
 
-      {/* Panel Chat (modal) */}
+      {/* Chat modal */}
       <Modal visible={showChat} animationType="slide" presentationStyle="pageSheet">
         <ChatPanel
           messages={chatMessages}

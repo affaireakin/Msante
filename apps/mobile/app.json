@@ -33,19 +33,37 @@
           "sounds": []
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-image-picker"
     ],
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#006685"
       },
-      "package": "com.msante.app"
+      "package": "com.msante.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ]
     },
     "ios": {
       "bundleIdentifier": "com.msante.app",
-      "supportsTablet": false
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSCameraUsageDescription": "M-Santé utilise la caméra pour les consultations vidéo.",
+        "NSMicrophoneUsageDescription": "M-Santé utilise le microphone pour les consultations audio et vidéo.",
+        "NSPhotoLibraryUsageDescription": "M-Santé accède à votre galerie pour importer votre photo de profil, cachet et signature."
+      }
     },
-    "extra": {}
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0fcafee7-a99b-4131-a889-59121bb34c87"
+      }
+    },
+    "owner": "max1982"
   }
 }

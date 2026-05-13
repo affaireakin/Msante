@@ -164,10 +164,12 @@ Deno.serve(async (req) => {
       trigger_type?: string
       workflow_id?: string
       trigger_data?: Record<string, unknown>
+      force?: boolean
     }
-    const { trigger_type, workflow_id, trigger_data = {} } = body
+    const { trigger_type, workflow_id, trigger_data = {}, force = false } = body
 
-    let query = supabase.from('workflows').select('*').eq('is_active', true)
+    let query = supabase.from('workflows').select('*')
+    if (!force) query = query.eq('is_active', true)
     if (trigger_type) query = query.eq('trigger_type', trigger_type)
     if (workflow_id) query = query.eq('id', workflow_id)
 
@@ -181,7 +183,7 @@ Deno.serve(async (req) => {
     let ran = 0
 
     for (const workflow of workflows) {
-      if (workflow.trigger_type === 'schedule.cron') {
+      if (!force && workflow.trigger_type === 'schedule.cron') {
         const sendHour = (workflow.trigger_config as Record<string, unknown>).send_hour as number | undefined
         const currentHour = new Date().getUTCHours()
         if (sendHour !== undefined && currentHour !== sendHour) continue
