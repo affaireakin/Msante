@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
 type VerifStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
+type AccountStatus = 'active' | 'suspended' | 'blocked'
 type PractType = 'doctor' | 'psychologist' | 'coach' | 'nutritionist' | 'other'
 
 interface Practitioner {
@@ -11,10 +12,22 @@ interface Practitioner {
   user_id: string
   speciality: string
   verification_status: VerifStatus
+  account_status: AccountStatus | null
   practitioner_type: PractType | null
   permissions: { can_prescribe: boolean; can_order_exams: boolean } | null
   created_at: string
   users: { full_name: string } | null
+}
+
+const ACCOUNT_STATUS_COLORS: Record<AccountStatus, string> = {
+  active: 'bg-emerald-100 text-emerald-700',
+  suspended: 'bg-amber-100 text-amber-700',
+  blocked: 'bg-red-100 text-red-700',
+}
+const ACCOUNT_STATUS_LABELS: Record<AccountStatus, string> = {
+  active: 'Actif',
+  suspended: 'Suspendu',
+  blocked: 'Bloqué',
 }
 
 const STATUS_ORDER: VerifStatus[] = ['pending', 'under_review', 'approved', 'rejected']
@@ -51,7 +64,7 @@ function usePractitioners() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, user_id, speciality, verification_status, practitioner_type, permissions, created_at, users!inner(full_name)')
+        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, users!inner(full_name)')
         .order('created_at', { ascending: false })
       if (error) throw error
       const sorted = (data ?? []) as unknown as Practitioner[]
@@ -69,6 +82,8 @@ export default function PractitionersPage() {
   const { data: practitioners, isLoading } = usePractitioners()
   const [rejectDialog, setRejectDialog] = useState<{ practId: string; userId: string } | null>(null)
   const [rejectReason, setRejectReason] = useState('')
+  const [statusDialog, setStatusDialog] = useState<{ practId: string; action: 'suspended' | 'blocked' | 'active' } | null>(null)
+  const [statusReason, setStatusReason] = useState('')
 
   const updateStatus = useMutation({
     mutationFn: async ({ practId, status, userId }: { practId: string; status: VerifStatus; userId: string }) => {
@@ -131,6 +146,31 @@ export default function PractitionersPage() {
     })
   }
 
+  const updateAccountStatus = useMutation({
+    mutationFn: async ({ practId, newStatus, reason }: { practId: string; newStatus: AccountStatus; reason: string }) => {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/update-practitioner-status`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+          body: JSON.stringify({ practitioner_id: practId, new_status: newStatus, reason }),
+        }
+      )
+      if (!res.ok) throw new Error('Erreur lors de la mise à jour du statut')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-practitioners'] })
+      setStatusDialog(null)
+      setStatusReason('')
+    },
+  })
+
+  const handleAccountStatus = () => {
+    if (!statusDialog || !statusReason.trim()) return
+    updateAccountStatus.mutate({ practId: statusDialog.practId, newStatus: statusDialog.action, reason: statusReason })
+  }
+
   const handlePermissionToggle = (
     pract: Practitioner,
     key: 'can_prescribe' | 'can_order_exams'
@@ -189,6 +229,11 @@ export default function PractitionersPage() {
                   <span className={`text-xs font-semibold px-3 py-1 rounded-full ${STATUS_COLORS[pract.verification_status]}`}>
                     {STATUS_LABELS[pract.verification_status]}
                   </span>
+                  {pract.account_status && pract.account_status !== 'active' && (
+                    <span className={`text-xs font-semibold px-3 py-1 rounded-full ${ACCOUNT_STATUS_COLORS[pract.account_status]}`}>
+                      {ACCOUNT_STATUS_LABELS[pract.account_status]}
+                    </span>
+                  )}
                   {pract.verification_status !== 'approved' && (
                     <button
                       onClick={() => handleApprove(pract.id, pract.user_id)}
@@ -213,6 +258,30 @@ export default function PractitionersPage() {
                       className="px-4 py-2 bg-red-100 text-red-700 text-sm font-semibold rounded-full hover:bg-red-200 transition-colors"
                     >
                       Rejeter
+                    </button>
+                  )}
+                  {(!pract.account_status || pract.account_status === 'active') && pract.verification_status === 'approved' && (
+                    <>
+                      <button
+                        onClick={() => { setStatusDialog({ practId: pract.id, action: 'suspended' }); setStatusReason('') }}
+                        className="px-4 py-2 bg-amber-100 text-amber-700 text-sm font-semibold rounded-full hover:bg-amber-200 transition-colors"
+                      >
+                        Suspendre
+                      </button>
+                      <button
+                        onClick={() => { setStatusDialog({ practId: pract.id, action: 'blocked' }); setStatusReason('') }}
+                        className="px-4 py-2 bg-red-100 text-red-700 text-sm font-semibold rounded-full hover:bg-red-200 transition-colors"
+                      >
+                        Bloquer
+                      </button>
+                    </>
+                  )}
+                  {pract.account_status && pract.account_status !== 'active' && (
+                    <button
+                      onClick={() => { setStatusDialog({ practId: pract.id, action: 'active' }); setStatusReason('Compte réactivé après vérification') }}
+                      className="px-4 py-2 bg-emerald-100 text-emerald-700 text-sm font-semibold rounded-full hover:bg-emerald-200 transition-colors"
+                    >
+                      Réactiver
                     </button>
                   )}
                 </div>
@@ -260,6 +329,44 @@ export default function PractitionersPage() {
               <p className="text-lg font-medium">Aucun praticien à afficher</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Account Status Dialog */}
+      {statusDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setStatusDialog(null)} />
+          <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+            <h3 className="text-lg font-bold text-[#0b1c30] mb-2">
+              {statusDialog.action === 'suspended' ? 'Suspendre le praticien' : statusDialog.action === 'blocked' ? 'Bloquer le praticien' : 'Réactiver le praticien'}
+            </h3>
+            <p className="text-sm text-[#6f787e] mb-4">Ce motif sera envoyé au praticien par notification.</p>
+            <textarea
+              value={statusReason}
+              onChange={(e) => setStatusReason(e.target.value)}
+              placeholder="Motif obligatoire..."
+              className="w-full h-28 px-4 py-3 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#006685] resize-none"
+            />
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setStatusDialog(null)}
+                className="flex-1 py-2.5 border border-slate-200 rounded-full text-sm font-medium text-[#6f787e] hover:bg-slate-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleAccountStatus}
+                disabled={!statusReason.trim() || updateAccountStatus.isPending}
+                className={`flex-1 py-2.5 text-white rounded-full text-sm font-semibold transition-colors disabled:opacity-50 ${
+                  statusDialog.action === 'active' ? 'bg-emerald-500 hover:bg-emerald-600' :
+                  statusDialog.action === 'suspended' ? 'bg-amber-500 hover:bg-amber-600' :
+                  'bg-red-500 hover:bg-red-600'
+                }`}
+              >
+                {updateAccountStatus.isPending ? 'Traitement...' : 'Confirmer'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

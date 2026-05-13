@@ -43,6 +43,16 @@ const navItems = [
     ),
   },
   {
+    href: '/practitioner/services',
+    label: 'Prestations',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
+      </svg>
+    ),
+  },
+  {
     href: '/practitioner/profile',
     label: 'Mon profil',
     icon: (
@@ -59,6 +69,12 @@ export default function PractitionerLayout({ children }: { children: React.React
   const [name, setName] = useState('')
   const [initials, setInitials] = useState('P')
   const [speciality, setSpeciality] = useState('')
+  const [accountStatus, setAccountStatus] = useState<string | null>(null)
+  const [statusReason, setStatusReasonText] = useState<string | null>(null)
+  const [practitionerId, setPractitionerId] = useState<string | null>(null)
+  const [showAppealForm, setShowAppealForm] = useState(false)
+  const [appealText, setAppealText] = useState('')
+  const [appealSent, setAppealSent] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -78,13 +94,31 @@ export default function PractitionerLayout({ children }: { children: React.React
           setInitials(fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'P')
           supabase
             .from('practitioners')
-            .select('speciality')
+            .select('id, speciality, account_status, status_reason')
             .eq('user_id', user.id)
             .single()
-            .then(({ data: pract }) => { if (pract) setSpeciality(pract.speciality ?? '') })
+            .then(({ data: pract }) => {
+              if (pract) {
+                setSpeciality(pract.speciality ?? '')
+                setAccountStatus(pract.account_status ?? null)
+                setStatusReasonText(pract.status_reason ?? null)
+                setPractitionerId(pract.id)
+              }
+            })
         })
     })
   }, [router])
+
+  const handleAppealSubmit = async () => {
+    if (!practitionerId || !appealText.trim()) return
+    await supabase.from('practitioner_appeals').insert({
+      practitioner_id: practitionerId,
+      message: appealText,
+    })
+    setAppealSent(true)
+    setShowAppealForm(false)
+    setAppealText('')
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -182,7 +216,62 @@ export default function PractitionerLayout({ children }: { children: React.React
             </div>
           </div>
         </header>
-        <main className="flex-1 mt-16 p-8 overflow-y-auto">{children}</main>
+        <main className="flex-1 mt-16 p-8 overflow-y-auto">
+          {(accountStatus === 'suspended' || accountStatus === 'blocked') && (
+            <div className={`mb-6 rounded-xl p-4 border flex items-start gap-3 ${
+              accountStatus === 'blocked'
+                ? 'bg-red-50 border-red-200 text-red-800'
+                : 'bg-amber-50 border-amber-200 text-amber-800'
+            }`}>
+              <span className="material-symbols-outlined text-xl flex-shrink-0">
+                {accountStatus === 'blocked' ? 'block' : 'warning'}
+              </span>
+              <div className="flex-1">
+                <p className="font-bold text-sm">
+                  {accountStatus === 'blocked' ? 'Votre compte est bloqué' : 'Votre compte est suspendu'}
+                </p>
+                {statusReason && <p className="text-sm mt-0.5">Motif : {statusReason}</p>}
+                {!appealSent ? (
+                  <button
+                    onClick={() => setShowAppealForm(!showAppealForm)}
+                    className="mt-2 text-sm font-semibold underline"
+                  >
+                    Contester cette décision
+                  </button>
+                ) : (
+                  <p className="mt-2 text-sm font-semibold">Appel soumis — en attente de révision.</p>
+                )}
+                {showAppealForm && (
+                  <div className="mt-3 space-y-2">
+                    <textarea
+                      value={appealText}
+                      onChange={e => setAppealText(e.target.value)}
+                      rows={3}
+                      placeholder="Expliquez votre situation..."
+                      className="w-full rounded-lg border border-current/30 bg-white/50 px-3 py-2 text-sm resize-none focus:outline-none"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setShowAppealForm(false)}
+                        className="px-3 py-1.5 text-xs font-semibold border border-current/30 rounded-lg"
+                      >
+                        Annuler
+                      </button>
+                      <button
+                        onClick={handleAppealSubmit}
+                        disabled={!appealText.trim()}
+                        className="px-3 py-1.5 text-xs font-semibold bg-current/20 rounded-lg disabled:opacity-50"
+                      >
+                        Envoyer l'appel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          {children}
+        </main>
       </div>
     </div>
   )
