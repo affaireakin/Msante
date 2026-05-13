@@ -36,6 +36,20 @@ export const forgotPasswordSchema = z.object({
   email: z.string().email('Email invalide'),
 })
 
+export const resetPasswordSchema = z.object({
+  password: z
+    .string()
+    .min(8, 'Minimum 8 caractères')
+    .regex(/[A-Z]/, 'Au moins une majuscule')
+    .regex(/[0-9]/, 'Au moins un chiffre')
+    .regex(/[^A-Za-z0-9]/, 'Au moins un caractère spécial'),
+  confirmPassword: z.string(),
+}).refine((d) => d.password === d.confirmPassword, {
+  message: 'Les mots de passe ne correspondent pas',
+  path: ['confirmPassword'],
+})
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>
+
 export type LoginFormData = z.infer<typeof loginSchema>
 export type SignupFormData = z.infer<typeof signupSchema>
 export type PatientOnboardingFormData = z.infer<typeof patientOnboardingSchema>

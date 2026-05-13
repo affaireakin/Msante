@@ -40,8 +40,10 @@ export const authService = {
   },
 
   async resetPassword(email: string): Promise<void> {
-    const { error } = await supabase.auth.resetPasswordForEmail(email)
-    if (error) throw new Error(error.message)
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'msante://reset-password',
+    })
+    if (error) throw error
   },
 
   async completePatientOnboarding(data: PatientOnboardingData): Promise<void> {
