@@ -9,7 +9,7 @@ import { useMoodEntries } from '@/features/mental-health/mood/hooks/useMoodEntri
 import { useJournalEntries } from '@/features/mental-health/journal/hooks/useJournalEntries'
 import { supabase } from '@/services/supabase'
 import { GlassCard } from '@/components/ui/GlassCard'
-import type { MoodEntry, JournalEntry } from '@/types/mentalHealth'
+import type { MoodEntry } from '@/types/mentalHealth'
 
 interface MeditationSession {
   session_date: string
@@ -54,17 +54,44 @@ export default function MoodAnalyticsScreen() {
     },
   })
 
+  const { data: extendedMoodEntries = [] } = useQuery({
+    queryKey: ['mood_entries_90', patientId],
+    enabled: !!patientId,
+    queryFn: async (): Promise<MoodEntry[]> => {
+      const { data, error } = await supabase
+        .from('mood_entries')
+        .select('id, patient_id, score, emotions, note, entry_date, created_at')
+        .eq('patient_id', patientId)
+        .order('entry_date', { ascending: false })
+        .limit(90)
+      if (error) throw error
+      // Map snake_case to camelCase to match MoodEntry type
+      return (data ?? []).map(e => ({
+        id: e.id,
+        patientId: e.patient_id,
+        score: e.score,
+        emotions: e.emotions,
+        note: e.note,
+        entryDate: e.entry_date,
+        createdAt: e.created_at,
+      })) as MoodEntry[]
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const todayDateStr = new Date().toISOString().split('T')[0]
+
   const stats = useMemo(() => {
-    const today = new Date()
+    const today = new Date(todayDateStr)
     const days30: DayStat[] = []
 
     for (let i = 29; i >= 0; i--) {
       const d = new Date(today)
       d.setDate(today.getDate() - i)
       const dateStr = d.toISOString().split('T')[0]
-      const entry = (moodEntries as MoodEntry[]).find(e => e.entryDate === dateStr)
+      const entry = moodEntries.find(e => e.entryDate === dateStr)
       const hasMeditation = meditationSessions.some(m => m.session_date === dateStr)
-      const hasJournal = (journalEntries as JournalEntry[]).some(j => j.createdAt?.startsWith(dateStr))
+      const hasJournal = journalEntries.some(j => j.createdAt.startsWith(dateStr))
       days30.push({ date: dateStr, score: entry?.score ?? null, hasMeditation, hasJournal })
     }
 
@@ -87,7 +114,7 @@ export default function MoodAnalyticsScreen() {
     const cutoff60 = new Date(today)
     cutoff60.setDate(today.getDate() - 60)
 
-    const prev30Entries = (moodEntries as MoodEntry[]).filter(e => {
+    const prev30Entries = extendedMoodEntries.filter(e => {
       if (!e.entryDate) return false
       const d = new Date(e.entryDate)
       return d >= cutoff60 && d < cutoff30
@@ -100,7 +127,7 @@ export default function MoodAnalyticsScreen() {
 
     // Top 3 emotions from last 30 entries
     const emotionCounts: Record<string, number> = {}
-    for (const e of (moodEntries as MoodEntry[]).slice(0, 30)) {
+    for (const e of moodEntries.slice(0, 30)) {
       for (const em of e.emotions ?? []) {
         emotionCounts[em] = (emotionCounts[em] ?? 0) + 1
       }
@@ -121,11 +148,11 @@ export default function MoodAnalyticsScreen() {
     const twoWeeksAgo = new Date(today)
     twoWeeksAgo.setDate(today.getDate() - 14)
 
-    const journalThisWeek = (journalEntries as JournalEntry[]).filter(j => {
+    const journalThisWeek = journalEntries.filter(j => {
       const d = new Date(j.createdAt)
       return d >= weekAgo
     }).length
-    const journalLastWeek = (journalEntries as JournalEntry[]).filter(j => {
+    const journalLastWeek = journalEntries.filter(j => {
       const d = new Date(j.createdAt)
       return d >= twoWeeksAgo && d < weekAgo
     }).length
@@ -158,7 +185,7 @@ export default function MoodAnalyticsScreen() {
       correlationDelta,
       daysWithMeditCount: daysWithMedit.length,
     }
-  }, [moodEntries, meditationSessions, journalEntries])
+  }, [moodEntries, extendedMoodEntries, meditationSessions, journalEntries, todayDateStr])
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
