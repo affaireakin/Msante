@@ -179,6 +179,34 @@ export default function WellnessHub() {
             </TouchableOpacity>
           </View>
 
+          {/* ─── Analytics CTA ─── */}
+          <TouchableOpacity
+            onPress={() => router.push('/(patient)/mental-health/mood-analytics')}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              paddingVertical: 12,
+              borderRadius: 999,
+              backgroundColor: 'rgba(0,102,133,0.08)',
+              borderWidth: 1,
+              borderColor: 'rgba(0,102,133,0.20)',
+            }}
+          >
+            <MaterialIcons name="bar-chart" size={18} color="#006685" />
+            <Text
+              style={{
+                fontFamily: 'Manrope',
+                fontSize: 14,
+                fontWeight: '600',
+                color: '#006685',
+              }}
+            >
+              Voir mes statistiques — 30 jours
+            </Text>
+          </TouchableOpacity>
+
           {/* ─── Quick Journal ─── */}
           <TouchableOpacity
             onPress={() => router.push('/(patient)/mental-health/journal/new')}
