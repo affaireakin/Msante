@@ -1,22 +1,36 @@
 import { useState, useMemo } from 'react'
-import { ScrollView, View, Text, TouchableOpacity, TextInput, StatusBar } from 'react-native'
+import { ScrollView, View, Text, TouchableOpacity, TextInput, StatusBar, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { usePatients, type PatientItem } from '@/features/practitioner/hooks/usePatients'
+import { usePatientBlocks, type PatientBlock } from '@/features/practitioner/hooks/usePatientBlocks'
 import { GlassCard } from '@/components/ui/GlassCard'
 
-type FilterTab = 'all' | 'follow-up' | 'stable'
+type FilterTab = 'all' | 'follow-up' | 'stable' | 'blocked'
 
 const TABS: { key: FilterTab; label: string }[] = [
-  { key: 'all', label: 'All Patients' },
-  { key: 'follow-up', label: 'Requires Follow-up' },
+  { key: 'all', label: 'Tous' },
+  { key: 'follow-up', label: 'Suivi requis' },
   { key: 'stable', label: 'Stable' },
+  { key: 'blocked', label: 'Bloqués' },
 ]
 
 const AVATAR_COLORS = ['#006685', '#705d00', '#1d7a3a', '#5c5f61', '#ba1a1a']
 
-function PatientCard({ patient }: { patient: PatientItem }) {
+function PatientCard({
+  patient,
+  noShowCount,
+  isBlocked,
+  onBlock,
+  onUnblock,
+}: {
+  patient: PatientItem
+  noShowCount: number
+  isBlocked: boolean
+  onBlock: () => void
+  onUnblock: () => void
+}) {
   const colorIndex = patient.shortId.charCodeAt(patient.shortId.length - 1) % AVATAR_COLORS.length
   const avatarColor = AVATAR_COLORS[colorIndex]
 
@@ -35,26 +49,15 @@ function PatientCard({ patient }: { patient: PatientItem }) {
               justifyContent: 'center',
             }}
           >
-            <Text
-              style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 16, color: '#fff' }}
-            >
+            <Text style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 16, color: '#fff' }}>
               {patient.patientInitials}
             </Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text
-              style={{
-                fontFamily: 'Manrope',
-                fontSize: 16,
-                fontWeight: '700',
-                color: '#0b1c30',
-              }}
-            >
+            <Text style={{ fontFamily: 'Manrope', fontSize: 16, fontWeight: '700', color: '#0b1c30' }}>
               {patient.patientName}
             </Text>
-            <Text
-              style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e', marginTop: 1 }}
-            >
+            <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e', marginTop: 1 }}>
               ID: {patient.shortId}
             </Text>
           </View>
@@ -75,10 +78,30 @@ function PatientCard({ patient }: { patient: PatientItem }) {
               color: patient.status === 'follow-up' ? '#ba1a1a' : '#1d7a3a',
             }}
           >
-            {patient.status === 'follow-up' ? 'Follow-up' : 'Stable'}
+            {patient.status === 'follow-up' ? 'Suivi requis' : 'Stable'}
           </Text>
         </View>
       </View>
+
+      {/* No-show warning */}
+      {noShowCount > 0 && (
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: 10,
+            backgroundColor: '#ffdad6',
+          }}
+        >
+          <MaterialIcons name="warning" size={14} color="#ba1a1a" />
+          <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '600', color: '#ba1a1a', flex: 1 }}>
+            {noShowCount} absence{noShowCount > 1 ? 's' : ''} non justifiée{noShowCount > 1 ? 's' : ''}
+          </Text>
+        </View>
+      )}
 
       {/* Last consultation */}
       {patient.lastConsultDate && (
@@ -105,12 +128,7 @@ function PatientCard({ patient }: { patient: PatientItem }) {
             </Text>
             {patient.lastConsultNotes ? (
               <Text
-                style={{
-                  fontFamily: 'Manrope',
-                  fontSize: 12,
-                  color: '#3f484d',
-                  marginTop: 2,
-                }}
+                style={{ fontFamily: 'Manrope', fontSize: 12, color: '#3f484d', marginTop: 2 }}
                 numberOfLines={2}
               >
                 {patient.lastConsultNotes}
@@ -137,10 +155,8 @@ function PatientCard({ patient }: { patient: PatientItem }) {
           }}
         >
           <MaterialIcons name="folder" size={15} color="#0b1c30" />
-          <Text
-            style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#0b1c30' }}
-          >
-            Records
+          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#0b1c30' }}>
+            Dossier
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -156,13 +172,137 @@ function PatientCard({ patient }: { patient: PatientItem }) {
           }}
         >
           <MaterialIcons name="chat-bubble" size={15} color="#fff" />
-          <Text
-            style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#fff' }}
-          >
+          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#fff' }}>
             Message
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* Block / Unblock */}
+      {isBlocked ? (
+        <TouchableOpacity
+          onPress={onUnblock}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            paddingVertical: 9,
+            borderRadius: 999,
+            borderWidth: 1,
+            borderColor: '#006685',
+            backgroundColor: 'rgba(0,102,133,0.06)',
+          }}
+        >
+          <MaterialIcons name="lock-open" size={14} color="#006685" />
+          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#006685' }}>
+            Débloquer ce patient
+          </Text>
+        </TouchableOpacity>
+      ) : noShowCount > 0 ? (
+        <TouchableOpacity
+          onPress={onBlock}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            paddingVertical: 9,
+            borderRadius: 999,
+            borderWidth: 1,
+            borderColor: '#ba1a1a',
+            backgroundColor: 'rgba(186,26,26,0.05)',
+          }}
+        >
+          <MaterialIcons name="block" size={14} color="#ba1a1a" />
+          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#ba1a1a' }}>
+            Bloquer ce patient
+          </Text>
+        </TouchableOpacity>
+      ) : null}
+    </GlassCard>
+  )
+}
+
+function BlockedCard({ block, onUnblock }: { block: PatientBlock; onUnblock: () => void }) {
+  const name = block.patient?.full_name ?? 'Patient inconnu'
+  const initials = name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
+
+  return (
+    <GlassCard style={{ gap: 12 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <View
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 24,
+            backgroundColor: '#ba1a1a',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 16, color: '#fff' }}>
+            {initials}
+          </Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#0b1c30' }}>
+            {name}
+          </Text>
+          {block.cooldown_until ? (
+            <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e', marginTop: 1 }}>
+              Jusqu'au{' '}
+              {new Date(block.cooldown_until).toLocaleDateString('fr-FR', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+              })}
+            </Text>
+          ) : (
+            <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#ba1a1a', marginTop: 1 }}>
+              Blocage permanent
+            </Text>
+          )}
+        </View>
+        <View
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            borderRadius: 999,
+            backgroundColor: '#ffdad6',
+          }}
+        >
+          <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#ba1a1a' }}>
+            Bloqué
+          </Text>
+        </View>
+      </View>
+
+      {block.reason ? (
+        <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#3f484d', fontStyle: 'italic' }}>
+          « {block.reason} »
+        </Text>
+      ) : null}
+
+      <TouchableOpacity
+        onPress={onUnblock}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+          paddingVertical: 9,
+          borderRadius: 999,
+          borderWidth: 1,
+          borderColor: '#006685',
+          backgroundColor: 'rgba(0,102,133,0.06)',
+        }}
+      >
+        <MaterialIcons name="lock-open" size={14} color="#006685" />
+        <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#006685' }}>
+          Débloquer
+        </Text>
+      </TouchableOpacity>
     </GlassCard>
   )
 }
@@ -170,21 +310,66 @@ function PatientCard({ patient }: { patient: PatientItem }) {
 export default function PatientsScreen() {
   const { practitioner } = useAuth()
   const { data: patients, isLoading } = usePatients(practitioner?.id ?? '')
+  const { noShowPatients, blocks, blockPatient, unblockPatient } = usePatientBlocks()
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState<FilterTab>('all')
 
+  const noShowMap = useMemo<Record<string, number>>(() => {
+    const map: Record<string, number> = {}
+    for (const p of noShowPatients.data ?? []) map[p.patient.id] = p.count
+    return map
+  }, [noShowPatients.data])
+
+  const blockedIds = useMemo<Set<string>>(() => {
+    return new Set((blocks.data ?? []).map((b) => b.patient_id))
+  }, [blocks.data])
+
   const filtered = useMemo(() => {
+    if (activeTab === 'blocked') return []
     let list = patients ?? []
     if (activeTab !== 'all') list = list.filter((p) => p.status === activeTab)
     if (search.trim()) {
       const q = search.toLowerCase()
       list = list.filter(
-        (p) =>
-          p.patientName.toLowerCase().includes(q) || p.shortId.toLowerCase().includes(q),
+        (p) => p.patientName.toLowerCase().includes(q) || p.shortId.toLowerCase().includes(q),
       )
     }
     return list
   }, [patients, activeTab, search])
+
+  const handleBlock = (patientId: string, patientName: string) => {
+    Alert.alert(
+      `Bloquer ${patientName}`,
+      'Choisissez la durée du blocage. Le patient ne pourra plus réserver de séance pendant cette période.',
+      [
+        {
+          text: '7 jours',
+          onPress: () => blockPatient.mutate({ patientId, cooldownDays: 7, reason: 'Absences répétées' }),
+        },
+        {
+          text: '30 jours',
+          onPress: () => blockPatient.mutate({ patientId, cooldownDays: 30, reason: 'Absences répétées' }),
+        },
+        {
+          text: 'Permanent',
+          style: 'destructive',
+          onPress: () => blockPatient.mutate({ patientId, cooldownDays: null, reason: 'Absences répétées' }),
+        },
+        { text: 'Annuler', style: 'cancel' },
+      ],
+    )
+  }
+
+  const handleUnblock = (patientId: string, patientName: string) => {
+    Alert.alert(
+      `Débloquer ${patientName}`,
+      'Ce patient pourra à nouveau réserver des séances.',
+      [
+        { text: 'Débloquer', onPress: () => unblockPatient.mutate(patientId) },
+        { text: 'Annuler', style: 'cancel' },
+      ],
+    )
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }} edges={['top']}>
@@ -203,9 +388,7 @@ export default function PatientsScreen() {
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text
-            style={{ fontFamily: 'Manrope', fontSize: 22, fontWeight: '700', color: '#0b1c30' }}
-          >
+          <Text style={{ fontFamily: 'Manrope', fontSize: 22, fontWeight: '700', color: '#0b1c30' }}>
             M-Santé
           </Text>
           <TouchableOpacity
@@ -225,28 +408,30 @@ export default function PatientsScreen() {
         </View>
 
         {/* Search bar */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 8,
-            paddingHorizontal: 16,
-            paddingVertical: 10,
-            borderRadius: 999,
-            borderWidth: 1,
-            borderColor: 'rgba(190,200,206,0.60)',
-            backgroundColor: 'rgba(255,255,255,0.70)',
-          }}
-        >
-          <MaterialIcons name="search" size={18} color="#6f787e" />
-          <TextInput
-            value={search}
-            onChangeText={setSearch}
-            placeholder="Search patients, IDs..."
-            placeholderTextColor="#6f787e"
-            style={{ flex: 1, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30' }}
-          />
-        </View>
+        {activeTab !== 'blocked' && (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+              paddingHorizontal: 16,
+              paddingVertical: 10,
+              borderRadius: 999,
+              borderWidth: 1,
+              borderColor: 'rgba(190,200,206,0.60)',
+              backgroundColor: 'rgba(255,255,255,0.70)',
+            }}
+          >
+            <MaterialIcons name="search" size={18} color="#6f787e" />
+            <TextInput
+              value={search}
+              onChangeText={setSearch}
+              placeholder="Rechercher un patient..."
+              placeholderTextColor="#6f787e"
+              style={{ flex: 1, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30' }}
+            />
+          </View>
+        )}
 
         {/* Filter tabs */}
         <ScrollView
@@ -276,6 +461,9 @@ export default function PatientsScreen() {
                 }}
               >
                 {tab.label}
+                {tab.key === 'blocked' && (blocks.data?.length ?? 0) > 0
+                  ? ` (${blocks.data!.length})`
+                  : ''}
               </Text>
             </TouchableOpacity>
           ))}
@@ -287,7 +475,25 @@ export default function PatientsScreen() {
         contentContainerStyle={{ padding: 24, gap: 16 }}
         showsVerticalScrollIndicator={false}
       >
-        {isLoading ? (
+        {activeTab === 'blocked' ? (
+          (blocks.data ?? []).length === 0 ? (
+            <View style={{ paddingVertical: 64, alignItems: 'center' }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 16, fontWeight: '600', color: '#6f787e' }}>
+                Aucun patient bloqué
+              </Text>
+            </View>
+          ) : (
+            (blocks.data ?? []).map((block) => (
+              <BlockedCard
+                key={block.id}
+                block={block}
+                onUnblock={() =>
+                  handleUnblock(block.patient_id, block.patient?.full_name ?? 'ce patient')
+                }
+              />
+            ))
+          )
+        ) : isLoading ? (
           [1, 2, 3].map((i) => (
             <View
               key={i}
@@ -296,20 +502,20 @@ export default function PatientsScreen() {
           ))
         ) : filtered.length === 0 ? (
           <View style={{ paddingVertical: 64, alignItems: 'center' }}>
-            <Text
-              style={{
-                fontFamily: 'Manrope',
-                fontSize: 16,
-                fontWeight: '600',
-                color: '#6f787e',
-              }}
-            >
+            <Text style={{ fontFamily: 'Manrope', fontSize: 16, fontWeight: '600', color: '#6f787e' }}>
               Aucun patient trouvé
             </Text>
           </View>
         ) : (
           filtered.map((patient) => (
-            <PatientCard key={patient.patientId} patient={patient} />
+            <PatientCard
+              key={patient.patientId}
+              patient={patient}
+              noShowCount={noShowMap[patient.patientId] ?? 0}
+              isBlocked={blockedIds.has(patient.patientId)}
+              onBlock={() => handleBlock(patient.patientId, patient.patientName)}
+              onUnblock={() => handleUnblock(patient.patientId, patient.patientName)}
+            />
           ))
         )}
         <View style={{ height: 16 }} />

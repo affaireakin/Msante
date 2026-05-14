@@ -1,19 +1,21 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { useQuery } from '@tanstack/react-query'
 import { usePractitioner } from '@/features/practitioners/hooks/usePractitioner'
 import { useAvailability } from '@/features/practitioners/hooks/useAvailability'
 import { WeekCalendar } from '@/features/practitioners/components/WeekCalendar'
 import { SlotPicker } from '@/features/practitioners/components/SlotPicker'
 import { PrimaryButton } from '@/components/ui'
 import { useBookingStore } from '@/features/booking/store/bookingStore'
+import { supabase } from '@/services/supabase'
 import type { SessionType, TimeSlot } from '@/types/booking'
 
 type SessionTypeItem = { id: SessionType; label: string; iconName: 'videocam' | 'mic' | 'location-on' }
 
-const SESSION_TYPES: SessionTypeItem[] = [
+const ALL_SESSION_TYPES: SessionTypeItem[] = [
   { id: 'video',      label: 'Vidéo',       iconName: 'videocam' },
   { id: 'audio',      label: 'Audio',        iconName: 'mic' },
   { id: 'presentiel', label: 'Présentiel',   iconName: 'location-on' },
@@ -28,10 +30,31 @@ export default function BookingScreen() {
     practitioner?.session_duration_min ?? 60
   )
 
+  const { data: dayRules = [] } = useQuery({
+    queryKey: ['day-rules-booking', practitionerId],
+    enabled: !!practitionerId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('availability_day_rules')
+        .select('day_of_week, allowed_types')
+        .eq('practitioner_id', practitionerId)
+      return data ?? []
+    },
+  })
+
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [selectedSlotKey, setSelectedSlotKey] = useState<string | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
   const [sessionType, setSessionType] = useState<SessionType>('video')
+
+  const availableTypes = useMemo<SessionType[]>(() => {
+    if (!selectedDate) return ALL_SESSION_TYPES.map(t => t.id)
+    const dow = new Date(selectedDate + 'T12:00:00').getDay()
+    const rule = dayRules.find(r => r.day_of_week === dow)
+    return (rule?.allowed_types ?? ALL_SESSION_TYPES.map(t => t.id)) as SessionType[]
+  }, [selectedDate, dayRules])
+
+  const SESSION_TYPES = ALL_SESSION_TYPES.filter(t => availableTypes.includes(t.id))
 
   const { setSlot, setSessionType: storeSetSessionType, setPractitioner, setAmount } = useBookingStore()
 

@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { useDayRules } from '@/features/practitioner/hooks/useDayRules'
 import {
   useAvailabilitySettings,
   useSaveSchedule,
@@ -288,6 +289,7 @@ export default function AvailabilityScreen() {
   const addException    = useAddException(pid)
   const deleteException = useDeleteException(pid)
 
+  const { dayRules, upsertDayRule } = useDayRules()
   const { data: services = [], isLoading: servicesLoading } = usePractitionerServices(pid)
   const createService = useCreateService(pid)
   const updateService = useUpdateService(pid)
@@ -409,7 +411,62 @@ export default function AvailabilityScreen() {
           )}
         </GlassCard>
 
-        {/* ── 2. Prestations ── */}
+        {/* ── 2. Types de consultation par jour ── */}
+        <GlassCard>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+              <MaterialIcons name="tune" size={20} color="#006685" />
+            </View>
+            <View>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#0b1c30' }}>Types par jour</Text>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e', marginTop: 1 }}>Vidéo / Audio / Présentiel autorisés</Text>
+            </View>
+          </View>
+
+          {DAY_ORDER.map(d => {
+            const slot = slots.find(s => s.day_of_week === d)
+            if (!slot?.is_active) return null
+            const rule = dayRules.data?.find(r => r.day_of_week === d)
+            const activeTypes: string[] = rule?.allowed_types ?? ['video', 'audio', 'presentiel']
+            const toggleType = (type: string) => {
+              const next = activeTypes.includes(type)
+                ? activeTypes.filter(t => t !== type)
+                : [...activeTypes, type]
+              if (next.length === 0) return
+              upsertDayRule.mutate({ dayOfWeek: d, allowedTypes: next })
+            }
+            return (
+              <View key={d} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: 'rgba(190,200,206,0.20)' }}>
+                <Text style={{ width: 32, fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#0b1c30' }}>
+                  {DAY_LABELS[d]}
+                </Text>
+                <View style={{ flex: 1, flexDirection: 'row', gap: 8 }}>
+                  {SESSION_TYPES.map(({ value, emoji }) => {
+                    const on = activeTypes.includes(value)
+                    return (
+                      <TouchableOpacity
+                        key={value}
+                        onPress={() => toggleType(value)}
+                        style={{
+                          flexDirection: 'row', alignItems: 'center', gap: 4,
+                          paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999,
+                          backgroundColor: on ? '#006685' : 'rgba(190,200,206,0.25)',
+                        }}
+                      >
+                        <Text style={{ fontSize: 12 }}>{emoji}</Text>
+                        <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: on ? '#fff' : '#6f787e' }}>
+                          {value === 'video' ? 'Vidéo' : value === 'audio' ? 'Audio' : 'Pres.'}
+                        </Text>
+                      </TouchableOpacity>
+                    )
+                  })}
+                </View>
+              </View>
+            )
+          })}
+        </GlassCard>
+
+        {/* ── 3. Prestations ── */}
         <GlassCard>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -458,7 +515,7 @@ export default function AvailabilityScreen() {
           )}
         </GlassCard>
 
-        {/* ── 3. Congés & exceptions ── */}
+        {/* ── 4. Congés & exceptions ── */}
         <GlassCard>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
