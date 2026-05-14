@@ -1,5 +1,4 @@
 'use client'
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -84,11 +83,11 @@ function useAnalytics(practId: string | null) {
       const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1).toISOString()
 
       const [
-        { data: allPayments },
-        { data: thisMonthPay },
-        { data: lastMonthPay },
-        { data: allAppts },
-        { data: thisMonthAppts },
+        { data: allPayments, error: e1 },
+        { data: thisMonthPay, error: e2 },
+        { data: lastMonthPay, error: e3 },
+        { data: allAppts, error: e4 },
+        { data: thisMonthAppts, error: e5 },
       ] = await Promise.all([
         supabase
           .from('payments')
@@ -120,6 +119,9 @@ function useAnalytics(practId: string | null) {
           .gte('scheduled_at', monthStart),
       ])
 
+      const firstError = e1 ?? e2 ?? e3 ?? e4 ?? e5
+      if (firstError) throw firstError
+
       // Revenue by month (6 months)
       const monthlyMap: Record<string, number> = {}
       for (let i = 5; i >= 0; i--) {
@@ -141,7 +143,7 @@ function useAnalytics(practId: string | null) {
       const avgPerSession = completedThisMonth > 0 ? Math.round(thisMonth / completedThisMonth) : 0
 
       // Session type breakdown
-      const typeMap: Record<string, number> = { video: 0, audio: 0, presentiel: 0 }
+      const typeMap: Record<string, number> = { video: 0, audio: 0, chat: 0 }
       for (const a of allAppts ?? []) {
         if (a.status === 'completed') {
           const t = a.type as string
@@ -151,7 +153,7 @@ function useAnalytics(practId: string | null) {
       const typeChart = [
         { name: 'Vidéo', value: typeMap['video'], color: '#006685' },
         { name: 'Audio', value: typeMap['audio'], color: '#82d8ff' },
-        { name: 'Présentiel', value: typeMap['presentiel'], color: '#ffde5c' },
+        { name: 'Chat',  value: typeMap['chat'],  color: '#ffde5c' },
       ].filter(t => t.value > 0)
 
       // No-show rate
@@ -208,11 +210,9 @@ function useAnalytics(practId: string | null) {
 }
 
 export default function PractitionerAnalyticsPage() {
-  const [practId, setPractId] = useState<string | null>(null)
-
-  useQuery({
+  const { data: practId } = useQuery({
     queryKey: ['my-pract-id-analytics'],
-    queryFn: async () => {
+    queryFn: async (): Promise<string | null> => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return null
       const { data } = await supabase
@@ -220,12 +220,29 @@ export default function PractitionerAnalyticsPage() {
         .select('id')
         .eq('user_id', user.id)
         .single()
-      if (data) setPractId(data.id as string)
-      return (data?.id as string) ?? null
+      return (data as { id: string } | null)?.id ?? null
     },
   })
 
-  const { data, isLoading } = useAnalytics(practId)
+  const { data, isLoading, isError } = useAnalytics(practId ?? null)
+
+  if (isError) {
+    return (
+      <div className="space-y-6 max-w-5xl">
+        <h1 className="text-2xl font-black text-[#0b1c30]">Analytics</h1>
+        <div
+          className="rounded-2xl p-6 text-center"
+          style={{
+            backgroundColor: 'rgba(255,255,255,0.60)',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255,255,255,0.80)',
+          }}
+        >
+          <p className="text-[#ba1a1a] font-medium">Impossible de charger les données. Réessayez plus tard.</p>
+        </div>
+      </div>
+    )
+  }
 
   if (isLoading || !data) {
     return (
@@ -292,7 +309,7 @@ export default function PractitionerAnalyticsPage() {
               tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`}
             />
             <Tooltip
-              formatter={(v: number) => [`${v.toLocaleString('fr-FR')} XOF`, 'Revenus']}
+              formatter={(v) => [`${Number(v ?? 0).toLocaleString('fr-FR')} XOF`, 'Revenus']}
             />
             <Area
               type="monotone"
@@ -320,15 +337,15 @@ export default function PractitionerAnalyticsPage() {
                     innerRadius={40}
                     outerRadius={65}
                   >
-                    {data.typeChart.map((entry, i) => (
-                      <Cell key={i} fill={entry.color} />
+                    {data.typeChart.map((entry) => (
+                      <Cell key={entry.name} fill={entry.color} />
                     ))}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
               <div className="space-y-2">
-                {data.typeChart.map((t, i) => (
-                  <div key={i} className="flex items-center gap-2">
+                {data.typeChart.map((t) => (
+                  <div key={t.name} className="flex items-center gap-2">
                     <div
                       className="w-3 h-3 rounded-full flex-shrink-0"
                       style={{ backgroundColor: t.color }}
@@ -383,7 +400,7 @@ export default function PractitionerAnalyticsPage() {
             {data.top5.map((p, i) => {
               const maxCount = data.top5[0]?.count ?? 1
               return (
-                <div key={i} className="flex items-center gap-3">
+                <div key={p.id} className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#006685] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                     {i + 1}
                   </div>
