@@ -4,6 +4,7 @@ import {
   FlatList, KeyboardAvoidingView, Platform,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { ChatBubble } from '@/features/mental-health/ai-companion/components/ChatBubble'
 import { ActionCards } from '@/features/mental-health/ai-companion/components/ActionCards'
@@ -11,6 +12,7 @@ import { useMounima } from '@/features/mental-health/ai-companion/hooks/useMouni
 import type { MounimaMessage } from '@/types/mentalHealth'
 
 export default function MounimaChat() {
+  const router = useRouter()
   const [input, setInput] = useState('')
   const { messages, isLoading, showCrisis, sendMessage } = useMounima()
   const listRef = useRef<FlatList<MounimaMessage>>(null)
@@ -36,6 +38,13 @@ export default function MounimaChat() {
               <MaterialIcons name="favorite" size={18} color="#006685" />
             </View>
           </View>
+          <TouchableOpacity
+            onPress={() => router.push('/(patient)/mental-health/mounima/voice')}
+            style={{ padding: 8 }}
+            accessibilityLabel="Session vocale"
+          >
+            <MaterialIcons name="mic" size={24} color="#006685" />
+          </TouchableOpacity>
         </View>
 
         <FlatList
