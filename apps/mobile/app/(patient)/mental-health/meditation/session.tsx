@@ -9,6 +9,8 @@ import Animated, {
 } from 'react-native-reanimated'
 import { BreathingRing } from '@/features/mental-health/meditation/components/BreathingRing'
 import { useMeditationTimer } from '@/features/mental-health/meditation/hooks/useMeditationTimer'
+import { supabase } from '@/services/supabase'
+import { useAuthStore } from '@/features/auth/store/authStore'
 
 // ── Progress bar ──────────────────────────────────────────────────────────────
 
@@ -105,6 +107,7 @@ function CompletionScreen({
 
 export default function MeditationSession() {
   const router = useRouter()
+  const { profile } = useAuthStore()
   const {
     technique = 'coherence',
     duration  = '300',
@@ -146,6 +149,19 @@ export default function MeditationSession() {
   const elapsedSec = (timer.elapsed % 60).toString().padStart(2, '0')
 
   const handleBack = () => { timer.reset(); router.back() }
+
+  // Save completed session to DB (fire-and-forget — never blocks navigation)
+  const handleComplete = () => {
+    if (profile?.id) {
+      supabase.from('meditation_sessions').insert({
+        patient_id:   profile.id,
+        title:        title as string,
+        duration_min: durationMin,
+        session_date: new Date().toISOString().split('T')[0],
+      }).then(() => {}).catch(() => {})
+    }
+    handleBack()
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: '#0b1c30' }}>
@@ -277,7 +293,7 @@ export default function MeditationSession() {
           emoji={emoji}
           durationMin={durationMin}
           accent={accent}
-          onBack={handleBack}
+          onBack={handleComplete}
           onRestart={() => timer.start()}
         />
       )}
