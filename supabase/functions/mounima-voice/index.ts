@@ -99,6 +99,7 @@ serve(async (req) => {
           transcript: '',
           response: "Je n'ai pas bien entendu. Pourrais-tu répéter ?",
           sentiment: { score: 5, stress: 30, emotion: 'neutre', crisis: false },
+          crisis: false,
           audio_url: null,
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -145,17 +146,18 @@ serve(async (req) => {
     const fullResponse = claudeData.content[0]?.text ?? ''
 
     // Parse SENTIMENT JSON from response tail
-    const sentimentMatch = fullResponse.match(/SENTIMENT:(\{[^}]+\})/)
     let sentiment: Sentiment = { score: 5, stress: 50, emotion: 'neutre', crisis: false }
     let responseText = fullResponse
 
-    if (sentimentMatch) {
+    const sentimentIdx = fullResponse.lastIndexOf('SENTIMENT:')
+    if (sentimentIdx !== -1) {
       try {
-        sentiment = JSON.parse(sentimentMatch[1]) as Sentiment
+        sentiment = JSON.parse(fullResponse.slice(sentimentIdx + 10)) as Sentiment
+        responseText = fullResponse.slice(0, sentimentIdx).trim()
       } catch {
-        // keep default sentiment on parse failure
+        // keep default sentiment, use full response as text
+        responseText = fullResponse.replace(/SENTIMENT:.*$/ms, '').trim()
       }
-      responseText = fullResponse.replace(/\nSENTIMENT:\{[^}]+\}/, '').trim()
     }
 
     // ── 3. ElevenLabs TTS ────────────────────────────────────────────────────
@@ -163,7 +165,7 @@ serve(async (req) => {
     if (!elevenLabsKey) {
       // TTS unavailable — return text response without audio
       return new Response(
-        JSON.stringify({ transcript, response: responseText, sentiment, audio_url: null }),
+        JSON.stringify({ transcript, response: responseText, sentiment, crisis: sentiment.crisis, audio_url: null }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -186,7 +188,7 @@ serve(async (req) => {
     if (!ttsRes.ok) {
       // TTS failure is non-fatal — return text without audio
       return new Response(
-        JSON.stringify({ transcript, response: responseText, sentiment, audio_url: null }),
+        JSON.stringify({ transcript, response: responseText, sentiment, crisis: sentiment.crisis, audio_url: null }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -206,7 +208,7 @@ serve(async (req) => {
     if (uploadError) {
       // Storage failure is non-fatal — return without signed URL
       return new Response(
-        JSON.stringify({ transcript, response: responseText, sentiment, audio_url: null }),
+        JSON.stringify({ transcript, response: responseText, sentiment, crisis: sentiment.crisis, audio_url: null }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -220,6 +222,7 @@ serve(async (req) => {
         transcript,
         response: responseText,
         sentiment,
+        crisis: sentiment.crisis,
         audio_url: signedUrlData?.signedUrl ?? null,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

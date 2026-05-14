@@ -17,6 +17,11 @@ CREATE POLICY "auth_users_voice_read" ON storage.objects
     AND bucket_id = 'voice-sessions'
   );
 
+-- Note: storage.objects RLS is enabled by default in Supabase managed projects
+
 -- Service role (edge function) can write voice files
 CREATE POLICY "service_role_voice_write" ON storage.objects
-  FOR INSERT WITH CHECK (bucket_id = 'voice-sessions');
+  FOR INSERT WITH CHECK (
+    bucket_id = 'voice-sessions'
+    AND auth.role() = 'service_role'
+  );
