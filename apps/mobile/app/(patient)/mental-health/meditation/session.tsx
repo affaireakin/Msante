@@ -162,7 +162,7 @@ export default function MeditationSession() {
         title:        title as string,
         duration_min: durationMin,
         session_date: new Date().toISOString().split('T')[0],
-      }).then(() => {}).catch((err) => { console.warn('[meditation] session save failed', err) })
+      }).then(() => {}, (err) => { console.warn('[meditation] session save failed', err) })
     }
     handleBack()
   }

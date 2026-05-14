@@ -37,7 +37,7 @@ export default function AppealsPage() {
         `)
         .eq('status', 'pending')
         .order('created_at', { ascending: false })
-      return (data ?? []) as Appeal[]
+      return (data ?? []) as unknown as Appeal[]
     },
   })
 

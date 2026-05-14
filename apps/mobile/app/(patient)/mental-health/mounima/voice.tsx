@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { View, Text, TouchableOpacity, Pressable, Linking } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
-import { Audio } from 'expo-av'
+import { Audio, AVPlaybackStatus } from 'expo-av'
 import Animated, {
   useSharedValue, useAnimatedStyle, withRepeat, withTiming,
   withSequence, Easing, cancelAnimation,
@@ -205,8 +205,8 @@ export default function VoiceSessionScreen() {
         soundRef.current = sound
         if (mountedRef.current) setIsPlaying(true)
         await sound.playAsync()
-        sound.setOnPlaybackStatusUpdate(status => {
-          if ('didJustFinish' in status && status.didJustFinish && mountedRef.current) {
+        sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
+          if (status.isLoaded && status.didJustFinish && mountedRef.current) {
             setIsPlaying(false)
           }
         })

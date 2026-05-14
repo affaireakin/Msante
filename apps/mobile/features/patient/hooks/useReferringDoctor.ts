@@ -22,7 +22,7 @@ export function useReferringDoctor() {
         .ilike('speciality', '%generaliste%')
         .eq('is_verified', true)
         .eq('account_status', 'active')
-      return (data ?? []) as GeneralPractitioner[]
+      return (data ?? []) as unknown as GeneralPractitioner[]
     },
   })
 

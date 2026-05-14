@@ -1,15 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import {
   View, Text, TouchableOpacity, FlatList, TextInput,
   KeyboardAvoidingView, Platform, Alert, Dimensions, Modal,
 } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import {
-  useRoom,
-  VideoView,
+  LiveKitRoom,
+  VideoTrack,
   useLocalParticipant,
   useRemoteParticipants,
+  useTracks,
+  useRoomContext,
 } from '@livekit/react-native'
+import { Track } from 'livekit-client'
 import { useConsultationStore } from '@/features/consultation/store/consultationStore'
 import { useSendChatMessage, useEndConsultation } from '@/features/consultation/hooks/useConsultation'
 import { ConsultationTimer } from '@/features/consultation/components/ConsultationTimer'
@@ -174,14 +177,18 @@ function ChatPanel({
   )
 }
 
-export default function ConsultationSession() {
-  const { practitionerName } = useLocalSearchParams<{ practitionerName: string }>()
+// Inner component that uses room context (must be inside LiveKitRoom)
+function ConsultationInner({
+  practitionerName,
+}: {
+  practitionerName: string
+}) {
   const router = useRouter()
-  const { roomUrl, patientToken, consultationId, chatMessages, startedAt } = useConsultationStore()
+  const room = useRoomContext()
+  const { consultationId, chatMessages, startedAt } = useConsultationStore()
   const sendMessage = useSendChatMessage(consultationId)
   const { endSession } = useEndConsultation()
 
-  const room = useRoom()
   const { localParticipant } = useLocalParticipant()
   const remoteParticipants = useRemoteParticipants()
 
@@ -189,16 +196,17 @@ export default function ConsultationSession() {
   const [isCameraOff, setIsCameraOff] = useState(false)
   const [showChat, setShowChat] = useState(false)
 
-  // Connect to LiveKit room
-  useEffect(() => {
-    if (!roomUrl || !patientToken) return
-    void room.connect(roomUrl, patientToken, {
-      autoSubscribe: true,
-    })
-    return () => {
-      void room.disconnect()
-    }
-  }, [roomUrl, patientToken, room])
+  const remoteTracks = useTracks([Track.Source.Camera], { onlySubscribed: true })
+  const localTracks = useTracks([Track.Source.Camera], { onlySubscribed: false })
+
+  const remoteVideoTrackRef = useMemo(
+    () => remoteTracks.find(t => t.participant.identity !== room.localParticipant.identity),
+    [remoteTracks, room.localParticipant.identity]
+  )
+  const localVideoTrackRef = useMemo(
+    () => localTracks.find(t => t.participant.identity === room.localParticipant.identity),
+    [localTracks, room.localParticipant.identity]
+  )
 
   const handleMute = () => {
     const nextMuted = !isMuted
@@ -231,26 +239,14 @@ export default function ConsultationSession() {
     )
   }
 
-  const firstRemote = remoteParticipants[0]
-  const remoteVideoTrack = firstRemote
-    ? [...firstRemote.videoTrackPublications.values()].find((p) => p.track)?.track
-    : undefined
-  const localVideoTrack = [...localParticipant.videoTrackPublications.values()].find((p) => p.track)?.track
-
-  if (!roomUrl || !patientToken) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#213145' }}>
-        <Text style={{ color: '#fff', fontFamily: 'Manrope' }}>Chargement de la salle…</Text>
-      </View>
-    )
-  }
+  void remoteParticipants // used for participant count awareness
 
   return (
     <View style={{ flex: 1, backgroundColor: '#213145' }}>
       {/* Remote video — full screen */}
-      {remoteVideoTrack ? (
-        <VideoView
-          videoTrack={remoteVideoTrack}
+      {remoteVideoTrackRef ? (
+        <VideoTrack
+          trackRef={remoteVideoTrackRef}
           style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}
           objectFit="cover"
         />
@@ -281,10 +277,10 @@ export default function ConsultationSession() {
       </View>
 
       {/* Local video PiP — top right */}
-      {localVideoTrack && (
+      {localVideoTrackRef && (
         <View style={{ position: 'absolute', top: 120, right: 16, width: 100, height: 130, borderRadius: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.3)', shadowColor: '#006685', shadowOpacity: 0.2, shadowRadius: 20, elevation: 6 }}>
-          <VideoView
-            videoTrack={localVideoTrack}
+          <VideoTrack
+            trackRef={localVideoTrackRef}
             style={{ width: '100%', height: '100%' }}
             objectFit="cover"
             mirror
@@ -337,5 +333,30 @@ export default function ConsultationSession() {
         />
       </Modal>
     </View>
+  )
+}
+
+export default function ConsultationSession() {
+  const { practitionerName } = useLocalSearchParams<{ practitionerName: string }>()
+  const { roomUrl, patientToken } = useConsultationStore()
+
+  if (!roomUrl || !patientToken) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#213145' }}>
+        <Text style={{ color: '#fff', fontFamily: 'Manrope' }}>Chargement de la salle…</Text>
+      </View>
+    )
+  }
+
+  return (
+    <LiveKitRoom
+      serverUrl={roomUrl}
+      token={patientToken}
+      connect
+      audio
+      video
+    >
+      <ConsultationInner practitionerName={practitionerName ?? 'Praticien'} />
+    </LiveKitRoom>
   )
 }
