@@ -81,7 +81,7 @@ export default function JournalDetail() {
         {analyze.isPending && (
           <View style={{ backgroundColor: 'rgba(190,233,255,0.2)', borderRadius: 16, padding: 16, alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'center' }}>
             <MaterialIcons name="auto-awesome" size={16} color="#006685" />
-            <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope' }}>Ami analyse votre entrée...</Text>
+            <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope' }}>Mounima analyse votre entrée...</Text>
           </View>
         )}
       </ScrollView>

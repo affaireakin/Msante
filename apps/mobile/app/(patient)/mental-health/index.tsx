@@ -309,7 +309,7 @@ export default function WellnessHub() {
             </TouchableOpacity>
           </View>
 
-          {/* ─── Ami CTA ─── */}
+          {/* ─── Mounima CTA ─── */}
           <TouchableOpacity
             onPress={() => router.push('/(patient)/mental-health/mounima')}
             style={{
