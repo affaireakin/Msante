@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
 function Icon({ name, size = 18, color }: { name: string; size?: number; color?: string }) {
@@ -70,10 +70,62 @@ function usePatients() {
   })
 }
 
+interface Designation {
+  patient_id: string
+  referring_doctor_status: 'pending' | 'accepted' | 'refused'
+  patient: { id: string; full_name: string; phone: string | null }
+}
+
+function useDesignations(practId: string | null) {
+  return useQuery<Designation[]>({
+    queryKey: ['referring-designations', practId],
+    enabled: !!practId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('users')
+        .select('id, full_name, phone, referring_doctor_status, practitioners!users_referring_doctor_id_fkey!inner(id)')
+        .eq('practitioners.id', practId!)
+        .in('referring_doctor_status', ['pending', 'accepted'])
+      return (data ?? []).map(u => ({
+        patient_id: u.id,
+        referring_doctor_status: u.referring_doctor_status as 'pending' | 'accepted',
+        patient: { id: u.id, full_name: u.full_name, phone: u.phone },
+      }))
+    },
+  })
+}
+
 export default function PatientsPage() {
   const { data: patients = [], isLoading } = usePatients()
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Patient | null>(null)
+  const qc = useQueryClient()
+
+  const [practId, setPractId] = useState<string | null>(null)
+  // fetch practitioner id once
+  useQuery({
+    queryKey: ['my-pract-id'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return null
+      const { data } = await supabase.from('practitioners').select('id').eq('user_id', user.id).single()
+      if (data) setPractId(data.id)
+      return data?.id ?? null
+    },
+  })
+
+  const { data: designations = [] } = useDesignations(practId)
+
+  const respondDesignation = useMutation({
+    mutationFn: async ({ patientId, accept }: { patientId: string; accept: boolean }) => {
+      await supabase.from('users').update({
+        referring_doctor_status: accept ? 'accepted' : 'refused',
+      }).eq('id', patientId)
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['referring-designations'] }),
+  })
+
+  const pendingDesignations = designations.filter(d => d.referring_doctor_status === 'pending')
 
   const filtered = patients.filter(p =>
     p.full_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -88,6 +140,52 @@ export default function PatientsPage() {
           <p className="text-sm text-[#6f787e] mt-1">{patients.length} patient{patients.length !== 1 ? 's' : ''} suivi{patients.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
+
+      {/* Désignations médecin traitant */}
+      {pendingDesignations.length > 0 && (
+        <div className="rounded-2xl p-5 space-y-3" style={{ backgroundColor: 'rgba(255,225,112,0.15)', border: '1px solid rgba(255,225,112,0.50)' }}>
+          <div className="flex items-center gap-2">
+            <Icon name="medical_information" size={16} color="#705d00" />
+            <p className="text-sm font-bold text-[#705d00]">
+              {pendingDesignations.length} demande{pendingDesignations.length > 1 ? 's' : ''} de désignation médecin traitant
+            </p>
+          </div>
+          <div className="space-y-2">
+            {pendingDesignations.map(d => {
+              const initials = d.patient.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+              return (
+                <div key={d.patient_id} className="flex items-center gap-3 bg-white/60 rounded-xl px-4 py-3">
+                  <div className="w-9 h-9 rounded-full bg-[#705d00] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                    {initials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-[#0b1c30] truncate">{d.patient.full_name}</p>
+                    {d.patient.phone && <p className="text-xs text-[#6f787e]">{d.patient.phone}</p>}
+                  </div>
+                  <div className="flex gap-2 flex-shrink-0">
+                    <button
+                      onClick={() => respondDesignation.mutate({ patientId: d.patient_id, accept: false })}
+                      disabled={respondDesignation.isPending}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold border border-[#ba1a1a] text-[#ba1a1a] hover:bg-[#ffdad6] transition-colors disabled:opacity-50"
+                    >
+                      <Icon name="close" size={13} color="#ba1a1a" />
+                      Refuser
+                    </button>
+                    <button
+                      onClick={() => respondDesignation.mutate({ patientId: d.patient_id, accept: true })}
+                      disabled={respondDesignation.isPending}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-[#006685] text-white hover:bg-[#005070] transition-colors disabled:opacity-50"
+                    >
+                      <Icon name="check" size={13} color="#fff" />
+                      Accepter
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Recherche */}
       <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/70 border border-white/80" style={{ boxShadow: '0 2px 8px rgba(0,102,133,0.04)' }}>
