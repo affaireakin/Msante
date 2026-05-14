@@ -152,13 +152,17 @@ export default function MeditationSession() {
 
   // Save completed session to DB (fire-and-forget — never blocks navigation)
   const handleComplete = () => {
+    if (!Number.isFinite(totalSec) || totalSec <= 0) {
+      handleBack()
+      return
+    }
     if (profile?.id) {
       supabase.from('meditation_sessions').insert({
         patient_id:   profile.id,
         title:        title as string,
         duration_min: durationMin,
         session_date: new Date().toISOString().split('T')[0],
-      }).then(() => {}).catch(() => {})
+      }).then(() => {}).catch((err) => { console.warn('[meditation] session save failed', err) })
     }
     handleBack()
   }
