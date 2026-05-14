@@ -7,12 +7,12 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { ChatBubble } from '@/features/mental-health/ai-companion/components/ChatBubble'
 import { ActionCards } from '@/features/mental-health/ai-companion/components/ActionCards'
-import { useAmiFriend } from '@/features/mental-health/ai-companion/hooks/useAmiFriend'
+import { useMounima } from '@/features/mental-health/ai-companion/hooks/useMounima'
 import type { AmiMessage } from '@/types/mentalHealth'
 
-export default function AmiChat() {
+export default function MounimaChat() {
   const [input, setInput] = useState('')
-  const { messages, isLoading, showCrisis, sendMessage } = useAmiFriend()
+  const { messages, isLoading, showCrisis, sendMessage } = useMounima()
   const listRef = useRef<FlatList<AmiMessage>>(null)
 
   const handleSend = async () => {
@@ -32,7 +32,7 @@ export default function AmiChat() {
           <View>
             <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>M-Santé</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Ami</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Mounima</Text>
               <MaterialIcons name="favorite" size={18} color="#006685" />
             </View>
           </View>
@@ -88,7 +88,7 @@ export default function AmiChat() {
                   borderLeftWidth: 4,
                   borderLeftColor: '#82d8ff',
                 }}>
-                  <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>Ami écrit...</Text>
+                  <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>Mounima écrit...</Text>
                 </View>
               )}
             </>

@@ -3,7 +3,7 @@ import { supabase } from '@/services/supabase'
 import type { AmiMessage } from '@/types/mentalHealth'
 import { CRISIS_KEYWORDS_REGEX } from '../constants/systemPrompt'
 
-export function useAmiFriend() {
+export function useMounima() {
   const [messages, setMessages] = useState<AmiMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showCrisis, setShowCrisis] = useState(false)
@@ -30,7 +30,7 @@ export function useAmiFriend() {
       const history = [...messages, userMsg].map(m => ({ role: m.role, content: m.content }))
 
       const res = await fetch(
-        `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/ami-chat`,
+        `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/mounima-chat`,
         {
           method: 'POST',
           headers: {
@@ -46,14 +46,14 @@ export function useAmiFriend() {
 
       if (isCrisis) setShowCrisis(true)
 
-      const amiMsg: AmiMessage = {
+      const mounimaMsg: AmiMessage = {
         id: `a_${Date.now()}`,
         role: 'assistant',
         content: replyText,
         timestamp: Date.now(),
         showCrisis: isCrisis,
       }
-      setMessages(prev => [...prev, amiMsg])
+      setMessages(prev => [...prev, mounimaMsg])
     } catch {
       const errMsg: AmiMessage = {
         id: `err_${Date.now()}`,
@@ -75,3 +75,6 @@ export function useAmiFriend() {
     reset: () => { setMessages([]); setShowCrisis(false) },
   }
 }
+
+// Backward-compatibility alias
+export { useMounima as useAmiFriend }

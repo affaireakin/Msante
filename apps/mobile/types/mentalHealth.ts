@@ -32,6 +32,9 @@ export interface AmiMessage {
   showCrisis?: boolean
 }
 
+// Renamed alias — prefer MounimaMessage in new code
+export type MounimaMessage = AmiMessage
+
 export const EMOTIONS = [
   { id: 'calm', label: 'Calme', icon: 'sentiment_satisfied' },
   { id: 'grateful', label: 'Reconnaissant', icon: 'sentiment_content' },

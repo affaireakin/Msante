@@ -311,7 +311,7 @@ export default function WellnessHub() {
 
           {/* ─── Ami CTA ─── */}
           <TouchableOpacity
-            onPress={() => router.push('/(patient)/mental-health/ami')}
+            onPress={() => router.push('/(patient)/mental-health/mounima')}
             style={{
               borderRadius: 24,
               padding: 20,
@@ -336,7 +336,7 @@ export default function WellnessHub() {
             </View>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Parler à Ami</Text>
+                <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Parler à Mounima</Text>
                 <MaterialIcons name="favorite" size={14} color="#006685" />
               </View>
               <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', marginTop: 2 }}>
