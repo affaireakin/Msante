@@ -7,7 +7,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const AMI_SYSTEM = `Tu es Mounima, l'assistant bien-être de M-Santé.
+const MOUNIMA_SYSTEM =`Tu es Mounima, l'assistant bien-être de M-Santé.
 Tu n'es PAS un médecin ou thérapeute.
 Tu offres un espace d'écoute bienveillant.
 RÈGLES : Ne diagnostique jamais. Ne prescris jamais.
@@ -41,7 +41,7 @@ serve(async (req) => {
     const response = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 512,
-      system: AMI_SYSTEM,
+      system: MOUNIMA_SYSTEM,
       messages: messages.slice(-10),
     })
 

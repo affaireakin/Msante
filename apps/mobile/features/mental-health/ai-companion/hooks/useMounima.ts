@@ -1,15 +1,15 @@
 import { useState, useCallback } from 'react'
 import { supabase } from '@/services/supabase'
-import type { AmiMessage } from '@/types/mentalHealth'
+import type { MounimaMessage } from '@/types/mentalHealth'
 import { CRISIS_KEYWORDS_REGEX } from '../constants/systemPrompt'
 
 export function useMounima() {
-  const [messages, setMessages] = useState<AmiMessage[]>([])
+  const [messages, setMessages] = useState<MounimaMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showCrisis, setShowCrisis] = useState(false)
 
   const sendMessage = useCallback(async (text: string) => {
-    const userMsg: AmiMessage = {
+    const userMsg: MounimaMessage = {
       id: `u_${Date.now()}`,
       role: 'user',
       content: text,
@@ -46,7 +46,7 @@ export function useMounima() {
 
       if (isCrisis) setShowCrisis(true)
 
-      const mounimaMsg: AmiMessage = {
+      const mounimaMsg: MounimaMessage = {
         id: `a_${Date.now()}`,
         role: 'assistant',
         content: replyText,
@@ -55,7 +55,7 @@ export function useMounima() {
       }
       setMessages(prev => [...prev, mounimaMsg])
     } catch {
-      const errMsg: AmiMessage = {
+      const errMsg: MounimaMessage = {
         id: `err_${Date.now()}`,
         role: 'assistant',
         content: 'Je suis temporairement indisponible. Réessayez dans quelques instants. 💙',
