@@ -9,7 +9,9 @@ import type { PaymentProvider } from '@/types/booking'
 
 type Stage = 'initiating' | 'redirect' | 'verifying' | 'failed'
 
-const PROVIDER_LABELS: Record<string, string> = {
+const VALID_PROVIDERS: PaymentProvider[] = ['wave', 'orange_money', 'card']
+
+const PROVIDER_LABELS: Record<PaymentProvider, string> = {
   wave: 'Wave',
   orange_money: 'Orange Money',
   card: 'Carte bancaire',
@@ -28,13 +30,20 @@ export default function PaymentProcessingScreen() {
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null)
   const paymentIdRef = useRef<string | null>(null)
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const mountedRef = useRef(true)
 
   useEffect(() => {
+    mountedRef.current = true
     const initiate = async () => {
+      if (!VALID_PROVIDERS.includes(provider as PaymentProvider)) {
+        setStage('failed')
+        return
+      }
+      const safeProvider = provider as PaymentProvider
       try {
         const result = await processPayment.mutateAsync({
           appointment_id: appointmentId,
-          provider: provider as PaymentProvider,
+          provider: safeProvider,
           phone: phone ?? '',
         })
         paymentIdRef.current = result.paymentId
@@ -57,7 +66,11 @@ export default function PaymentProcessingScreen() {
       }
     }
     void initiate()
-    return () => { if (pollRef.current) clearInterval(pollRef.current) }
+    return () => {
+      mountedRef.current = false
+      if (pollRef.current) clearInterval(pollRef.current)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleOpenPayDunya = async () => {
@@ -76,7 +89,8 @@ export default function PaymentProcessingScreen() {
 
   const startPolling = () => {
     let attempts = 0
-    pollRef.current = setInterval(async () => {
+    const interval = setInterval(async () => {
+      if (!mountedRef.current) { clearInterval(interval); return }
       attempts++
       if (!paymentIdRef.current) return
       const { data } = await supabase
@@ -86,10 +100,10 @@ export default function PaymentProcessingScreen() {
         .single()
 
       if (data?.status === 'completed') {
-        clearInterval(pollRef.current!)
+        clearInterval(interval)
         router.replace('/(patient)/booking-success')
       } else if (data?.status === 'failed' || attempts >= 24) {
-        clearInterval(pollRef.current!)
+        clearInterval(interval)
         setStage('failed')
         Alert.alert(
           'Paiement non confirmé',
@@ -98,6 +112,7 @@ export default function PaymentProcessingScreen() {
         )
       }
     }, 5000)
+    pollRef.current = interval
   }
 
   return (
@@ -115,12 +130,12 @@ export default function PaymentProcessingScreen() {
       <View style={{ alignItems: 'center', gap: 8 }}>
         <Text style={{ fontSize: 22, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center' }}>
           {stage === 'initiating' && 'Traitement en cours…'}
-          {stage === 'redirect'   && `Payer avec ${PROVIDER_LABELS[provider ?? 'wave']}`}
+          {stage === 'redirect'   && `Payer avec ${PROVIDER_LABELS[(provider ?? 'wave') as PaymentProvider]}`}
           {stage === 'verifying'  && 'Vérification en cours…'}
           {stage === 'failed'     && 'Paiement non confirmé'}
         </Text>
         <Text style={{ fontSize: 14, color: '#3f484d', fontFamily: 'Manrope', textAlign: 'center', lineHeight: 20 }}>
-          {stage === 'initiating' && `${PROVIDER_LABELS[provider ?? 'wave']} — veuillez patienter…`}
+          {stage === 'initiating' && `${PROVIDER_LABELS[(provider ?? 'wave') as PaymentProvider]} — veuillez patienter…`}
           {stage === 'redirect'   && 'Appuyez ci-dessous pour finaliser le paiement.\nVous recevrez une confirmation par SMS.'}
           {stage === 'verifying'  && 'En attente de confirmation PayDunya…\nCela peut prendre quelques secondes.'}
           {stage === 'failed'     && 'Vérifiez votre solde et réessayez.'}

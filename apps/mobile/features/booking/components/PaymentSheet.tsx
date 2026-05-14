@@ -7,7 +7,7 @@ interface PaymentSheetProps {
   visible: boolean
   amount: number
   currency: string
-  onConfirm: (provider: PaymentProvider, phone: string) => void
+  onConfirm: (provider: PaymentProvider, phone: string | undefined) => void
   onClose: () => void
 }
 
@@ -96,7 +96,7 @@ export function PaymentSheet({ visible, amount, currency, onConfirm, onClose }: 
 
         <PrimaryButton
           label={`Payer ${amount?.toLocaleString()} ${currency}`}
-          onPress={() => selected && onConfirm(selected, phone.trim())}
+          onPress={() => selected && onConfirm(selected, needsPhone ? phone.trim() : undefined)}
           disabled={!canPay}
         />
       </View>
