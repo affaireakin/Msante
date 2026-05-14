@@ -24,7 +24,7 @@ export interface JournalEntry {
   synced?: boolean
 }
 
-export interface AmiMessage {
+export interface MounimaMessage {
   id: string
   role: 'user' | 'assistant'
   content: string
@@ -32,8 +32,8 @@ export interface AmiMessage {
   showCrisis?: boolean
 }
 
-// Renamed alias — prefer MounimaMessage in new code
-export type MounimaMessage = AmiMessage
+/** @deprecated Use MounimaMessage instead */
+export type AmiMessage = MounimaMessage
 
 export const EMOTIONS = [
   { id: 'calm', label: 'Calme', icon: 'sentiment_satisfied' },
