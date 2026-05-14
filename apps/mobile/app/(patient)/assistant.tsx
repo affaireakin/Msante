@@ -5,12 +5,12 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { ChatBubble } from '@/features/mental-health/ai-companion/components/ChatBubble'
 import { ActionCards } from '@/features/mental-health/ai-companion/components/ActionCards'
 import { useMounima } from '@/features/mental-health/ai-companion/hooks/useMounima'
-import type { AmiMessage } from '@/types/mentalHealth'
+import type { MounimaMessage } from '@/types/mentalHealth'
 
 export default function AssistantTab() {
   const [input, setInput] = useState('')
   const { messages, isLoading, showCrisis, sendMessage } = useMounima()
-  const listRef = useRef<FlatList<AmiMessage>>(null)
+  const listRef = useRef<FlatList<MounimaMessage>>(null)
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return

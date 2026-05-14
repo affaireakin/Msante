@@ -1,8 +1,8 @@
 import { View, Text } from 'react-native'
-import type { AmiMessage } from '@/types/mentalHealth'
+import type { MounimaMessage } from '@/types/mentalHealth'
 
 interface Props {
-  message: AmiMessage
+  message: MounimaMessage
 }
 
 export function ChatBubble({ message }: Props) {

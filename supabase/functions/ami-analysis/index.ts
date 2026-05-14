@@ -30,7 +30,7 @@ serve(async (req) => {
     const message = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 300,
-      system: `Tu es Ami, un assistant bien-être bienveillant. Analyse cette entrée de journal.
+      system: `Tu es Mounima, l'assistante bien-être bienveillante. Analyse cette entrée de journal.
 Réponds UNIQUEMENT en JSON valide avec ce format exact :
 {"sentiment": "string", "themes": ["theme1", "theme2"], "suggestion": "string"}
 - sentiment: en 1-3 mots (ex: "anxieux", "serein", "reconnaissant")
