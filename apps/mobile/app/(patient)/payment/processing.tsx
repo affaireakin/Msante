@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { View, Text, ActivityIndicator, Alert, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import * as WebBrowser from 'expo-web-browser'
 import { supabase } from '@/services/supabase'
 import { usePayment } from '@/features/booking/hooks/usePayment'
 import type { PaymentProvider } from '@/types/booking'
@@ -11,6 +12,7 @@ type Stage = 'initiating' | 'redirect' | 'verifying' | 'failed'
 const PROVIDER_LABELS: Record<string, string> = {
   wave: 'Wave',
   orange_money: 'Orange Money',
+  card: 'Carte bancaire',
 }
 
 export default function PaymentProcessingScreen() {
@@ -60,11 +62,14 @@ export default function PaymentProcessingScreen() {
 
   const handleOpenPayDunya = async () => {
     if (!checkoutUrl) return
-    const { openBrowserAsync } = await import('expo-web-browser')
-    await openBrowserAsync(checkoutUrl, {
-      showTitle: true,
-      toolbarColor: '#006685',
-    })
+    if (provider === 'card') {
+      await WebBrowser.openAuthSessionAsync(checkoutUrl, 'msante://payment-return')
+    } else {
+      await WebBrowser.openBrowserAsync(checkoutUrl, {
+        showTitle: true,
+        toolbarColor: '#006685',
+      })
+    }
     setStage('verifying')
     startPolling()
   }
@@ -102,7 +107,7 @@ export default function PaymentProcessingScreen() {
         {stage === 'failed'
           ? <Text style={{ fontSize: 40 }}>❌</Text>
           : stage === 'redirect'
-            ? <Text style={{ fontSize: 40 }}>{provider === 'wave' ? '💙' : '🟠'}</Text>
+            ? <Text style={{ fontSize: 40 }}>{provider === 'wave' ? '💙' : provider === 'card' ? '💳' : '🟠'}</Text>
             : <ActivityIndicator color="#006685" size="large" />
         }
       </View>

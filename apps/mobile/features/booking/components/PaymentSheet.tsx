@@ -11,9 +11,15 @@ interface PaymentSheetProps {
   onClose: () => void
 }
 
-const PROVIDERS: Array<{ id: PaymentProvider; label: string; emoji: string; placeholder: string }> = [
-  { id: 'wave', label: 'Wave', emoji: '💙', placeholder: '+221 77 000 00 00' },
-  { id: 'orange_money', label: 'Orange Money', emoji: '🟠', placeholder: '+221 77 000 00 00' },
+const PROVIDERS: Array<{
+  id: PaymentProvider
+  label: string
+  emoji: string
+  placeholder: string | null
+}> = [
+  { id: 'wave',         label: 'Wave',          emoji: '💙', placeholder: '+221 77 000 00 00' },
+  { id: 'orange_money', label: 'Orange Money',   emoji: '🟠', placeholder: '+221 77 000 00 00' },
+  { id: 'card',         label: 'Carte bancaire', emoji: '💳', placeholder: null },
 ]
 
 export function PaymentSheet({ visible, amount, currency, onConfirm, onClose }: PaymentSheetProps) {
@@ -21,7 +27,8 @@ export function PaymentSheet({ visible, amount, currency, onConfirm, onClose }: 
   const [phone, setPhone] = useState('')
 
   const selectedProvider = PROVIDERS.find(p => p.id === selected)
-  const canPay = !!selected && phone.trim().length >= 9
+  const needsPhone = selected !== null && selected !== 'card'
+  const canPay = selected !== null && (needsPhone ? phone.trim().length >= 9 : true)
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
@@ -40,7 +47,7 @@ export function PaymentSheet({ visible, amount, currency, onConfirm, onClose }: 
           {PROVIDERS.map(p => (
             <TouchableOpacity
               key={p.id}
-              onPress={() => setSelected(p.id)}
+              onPress={() => { setSelected(p.id); setPhone('') }}
               className={`flex-row items-center gap-3 p-4 rounded-xl border ${
                 selected === p.id ? 'border-primary bg-primary-container/30' : 'border-outline-variant bg-white/60'
               }`}
@@ -58,8 +65,8 @@ export function PaymentSheet({ visible, amount, currency, onConfirm, onClose }: 
           ))}
         </View>
 
-        {/* Phone number — always required */}
-        {selected && (
+        {/* Phone number — required for Wave / Orange Money only */}
+        {needsPhone && (
           <View className="mb-6 gap-1.5">
             <Text className="text-sm font-manrope font-semibold text-on-surface-variant">
               Numéro {selectedProvider?.label}
@@ -67,13 +74,22 @@ export function PaymentSheet({ visible, amount, currency, onConfirm, onClose }: 
             <TextInput
               value={phone}
               onChangeText={setPhone}
-              placeholder={selectedProvider?.placeholder}
+              placeholder={selectedProvider?.placeholder ?? ''}
               keyboardType="phone-pad"
               className="border border-outline-variant rounded-xl px-4 py-3 text-base font-manrope text-on-surface bg-surface-container-low"
               placeholderTextColor="#6f787e"
             />
             <Text className="text-xs text-on-surface-variant font-manrope">
               Vous recevrez une invitation de paiement via PayDunya
+            </Text>
+          </View>
+        )}
+
+        {/* Card info banner */}
+        {selected === 'card' && (
+          <View className="mb-6 p-3 rounded-xl bg-primary-container/20">
+            <Text className="text-xs text-on-surface-variant font-manrope text-center">
+              Vous serez redirigé vers le formulaire sécurisé PayDunya pour saisir vos coordonnées bancaires (VISA / Mastercard).
             </Text>
           </View>
         )}
