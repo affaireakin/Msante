@@ -46,17 +46,6 @@ function fmtShort(iso: string): string {
   return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
 }
 
-const THIRTY_DAYS_AGO = (() => {
-  const d = new Date()
-  d.setDate(d.getDate() - 30)
-  return d.toISOString().slice(0, 10)
-})()
-
-const SEVEN_DAYS_AGO = (() => {
-  const d = new Date()
-  d.setDate(d.getDate() - 7)
-  return d.toISOString()
-})()
 
 // ─── data types ─────────────────────────────────────────────────────────────
 
@@ -95,6 +84,7 @@ interface JourneyData {
   appointments: Appointment[]
   journalFirst: JournalFirst | null
   meditationFirst: MeditationFirst | null
+  sevenDaysAgo: string
 }
 
 // ─── data hook ──────────────────────────────────────────────────────────────
@@ -104,6 +94,15 @@ function useJourneyData(patientId: string) {
     queryKey: ['wellness-journey', patientId],
     enabled: !!patientId,
     queryFn: async () => {
+      const now = new Date()
+      const thirtyDaysAgo = new Date(now)
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+      const THIRTY_DAYS_AGO = thirtyDaysAgo.toISOString().slice(0, 10)
+
+      const sevenDaysAgo = new Date(now)
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+      const SEVEN_DAYS_AGO = sevenDaysAgo.toISOString()
+
       const [
         { data: patientData, error: pErr },
         { data: moodData, error: mErr },
@@ -122,7 +121,8 @@ function useJourneyData(patientId: string) {
           .from('appointments')
           .select('id, scheduled_at, status, created_at')
           .eq('patient_id', patientId)
-          .order('scheduled_at', { ascending: true }),
+          .order('scheduled_at', { ascending: true })
+          .limit(200),
         supabase
           .from('journal_entries')
           .select('id, created_at')
@@ -147,8 +147,10 @@ function useJourneyData(patientId: string) {
         appointments: (aptsData ?? []) as Appointment[],
         journalFirst: journalData?.[0] ? (journalData[0] as JournalFirst) : null,
         meditationFirst: meditationData?.[0] ? (meditationData[0] as MeditationFirst) : null,
+        sevenDaysAgo: SEVEN_DAYS_AGO,
       }
     },
+    staleTime: 5 * 60 * 1000,
   })
 }
 
@@ -202,7 +204,8 @@ function computeMetrics(data: JourneyData) {
     }
   }
 
-  // Overall health score (weighted formula)
+  // Health score: adherence rate (40%) + mood score normalized (40%) + session engagement capped at 100% (20%)
+  // This is a non-clinical indicator for practitioner overview only — not a medical assessment.
   const healthScore = Math.min(
     100,
     Math.round(adherence * 0.4 + (avgMood / 10) * 100 * 0.4 + Math.min(completed * 10, 100) * 0.2)
@@ -211,14 +214,14 @@ function computeMetrics(data: JourneyData) {
   return { adherence, avgMood, completed, streak, healthScore }
 }
 
-function computeUrgent(data: JourneyData): string | null {
+function computeUrgent(data: JourneyData, sevenDaysAgo: string): string | null {
   const latestMood =
     data.moodEntries.length > 0 ? data.moodEntries[data.moodEntries.length - 1] : null
   if (latestMood && latestMood.score < 4) {
     return `Score d'humeur critique (${latestMood.score}/10) — Suivi recommandé`
   }
   const recentNoShow = data.appointments.find(
-    a => a.status === 'no_show' && new Date(a.scheduled_at) >= new Date(SEVEN_DAYS_AGO)
+    a => a.status === 'no_show' && new Date(a.scheduled_at) >= new Date(sevenDaysAgo)
   )
   if (recentNoShow) {
     return `Absence non signalée le ${fmtShort(recentNoShow.scheduled_at)} — Contacter le patient`
@@ -331,7 +334,7 @@ export default function WellnessJourneyPage() {
       <div className="max-w-5xl p-8 text-center rounded-2xl" style={{ fontFamily: 'Manrope, sans-serif', backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
         <Icon name="error_outline" size={40} color="#ba1a1a" />
         <p className="text-[#ba1a1a] font-bold mt-3">Impossible de charger les données</p>
-        <p className="text-sm text-[#6f787e] mt-1">{(error as Error)?.message ?? 'Erreur inconnue'}</p>
+        <p className="text-sm text-[#6f787e] mt-1">{error instanceof Error ? error.message : 'Erreur inconnue'}</p>
         <button
           onClick={() => router.back()}
           className="mt-4 px-4 py-2 rounded-full text-sm font-bold bg-[#006685] text-white hover:bg-[#005070] transition-colors"
@@ -343,7 +346,7 @@ export default function WellnessJourneyPage() {
   }
 
   const metrics = computeMetrics(data)
-  const urgentReason = computeUrgent(data)
+  const urgentReason = computeUrgent(data, data.sevenDaysAgo)
   const milestones = computeMilestones(data)
 
   // chart data
@@ -529,7 +532,7 @@ export default function WellnessJourneyPage() {
                   color: '#0b1c30',
                   boxShadow: '0 4px 16px rgba(0,102,133,0.10)',
                 }}
-                formatter={(value: number) => [`${value}/10`, 'Score humeur']}
+                formatter={(value) => [`${value ?? ''}/10`, 'Score humeur']}
               />
               <Line
                 type="monotone"
@@ -566,8 +569,8 @@ export default function WellnessJourneyPage() {
           />
 
           <div className="space-y-5">
-            {milestones.map((m, idx) => (
-              <div key={idx} className="flex items-start gap-4 relative">
+            {milestones.map((m) => (
+              <div key={m.label} className="flex items-start gap-4 relative">
                 {/* dot */}
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 z-10"
@@ -626,9 +629,9 @@ export default function WellnessJourneyPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {recentMood.map((entry, idx) => (
+            {recentMood.map((entry) => (
               <div
-                key={idx}
+                key={entry.entry_date}
                 className="flex items-start gap-4 py-3 px-4 rounded-xl"
                 style={{ backgroundColor: 'rgba(229,238,255,0.30)' }}
               >
@@ -701,14 +704,15 @@ export default function WellnessJourneyPage() {
 
           <button
             type="button"
-            onClick={() => {
-              // placeholder — message feature to be implemented
-            }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-colors hover:bg-[#e5eeff]"
+            disabled
+            title="Fonctionnalité à venir"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-colors"
             style={{
               backgroundColor: 'transparent',
               border: '1.5px solid #006685',
               color: '#006685',
+              opacity: 0.5,
+              cursor: 'not-allowed',
             }}
           >
             <Icon name="mail" size={16} color="#006685" />
