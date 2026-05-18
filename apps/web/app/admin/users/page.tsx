@@ -1,6 +1,6 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 
 type Role = 'all' | 'patient' | 'practitioner' | 'admin'
@@ -148,8 +148,6 @@ function initials(name: string) {
   return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-let debounceTimer: ReturnType<typeof setTimeout> | undefined
-
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
 function RoleBadge({ role }: { role: string }) {
@@ -218,36 +216,35 @@ function InviteAdminModal({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient()
   const [email, setEmail] = useState('')
   const [fullName, setFullName] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState('')
 
-  const handleInvite = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+  const inviteMutation = useMutation({
+    mutationFn: async (data: { email: string; fullName: string }) => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('Session expirée, reconnectez-vous.')
 
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) { setError('Session expirée, reconnectez-vous.'); setLoading(false); return }
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+      const res = await fetch(`${supabaseUrl}/functions/v1/invite-admin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ email: data.email, full_name: data.fullName }),
+      })
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-    const res = await fetch(`${supabaseUrl}/functions/v1/invite-admin`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({ email, full_name: fullName }),
-    })
-
-    const json = await res.json() as { success?: boolean; error?: string }
-    if (!res.ok || json.error) {
-      setError(json.error ?? 'Erreur lors de l\'invitation')
-    } else {
-      setSuccess(true)
+      const json = await res.json() as { success?: boolean; error?: string }
+      if (!res.ok || json.error) {
+        throw new Error(json.error ?? 'Erreur lors de l\'invitation')
+      }
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
-    }
-    setLoading(false)
+    },
+  })
+
+  const handleInvite = (e: React.FormEvent) => {
+    e.preventDefault()
+    inviteMutation.mutate({ email, fullName })
   }
 
   return (
@@ -265,10 +262,10 @@ function InviteAdminModal({ onClose }: { onClose: () => void }) {
             <h2 className="text-xl font-black text-[#0b1c30]">Inviter un administrateur</h2>
             <p className="text-sm text-[#6f787e] mt-0.5">Supabase enverra un lien de connexion sécurisé</p>
           </div>
-          <button onClick={onClose} className="text-[#6f787e] hover:text-[#0b1c30] text-xl leading-none">✕</button>
+          <button onClick={onClose} aria-label="Fermer" className="text-[#6f787e] hover:text-[#0b1c30] text-xl leading-none">✕</button>
         </div>
 
-        {success ? (
+        {inviteMutation.isSuccess ? (
           <div className="flex flex-col items-center gap-4 py-4 text-center">
             <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center text-3xl">✓</div>
             <div>
@@ -306,9 +303,9 @@ function InviteAdminModal({ onClose }: { onClose: () => void }) {
               />
             </div>
 
-            {error && (
+            {inviteMutation.isError && (
               <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-600">
-                {error}
+                {inviteMutation.error instanceof Error ? inviteMutation.error.message : 'Erreur lors de l\'invitation'}
               </div>
             )}
 
@@ -326,10 +323,10 @@ function InviteAdminModal({ onClose }: { onClose: () => void }) {
               </button>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={inviteMutation.isPending}
                 className="flex-1 py-3 bg-[#006685] text-white font-bold rounded-xl text-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50"
               >
-                {loading ? 'Envoi...' : 'Envoyer l\'invitation'}
+                {inviteMutation.isPending ? 'Envoi...' : 'Envoyer l\'invitation'}
               </button>
             </div>
           </form>
@@ -354,8 +351,19 @@ function PractitionerSection({ userId }: { userId: string }) {
         .update({ is_verified: true, verification_status: 'approved' })
         .eq('id', practitionerId)
       if (error) throw error
+      return practitionerId
     },
-    onSuccess: () => {
+    onSuccess: async (practitionerId: string) => {
+      try {
+        await supabase.from('audit_logs').insert({
+          action: 'practitioner.approved',
+          resource_type: 'practitioner',
+          resource_id: practitionerId,
+          new_values: { verification_status: 'approved', is_verified: true },
+        })
+      } catch {
+        // audit log failure is non-blocking
+      }
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       queryClient.invalidateQueries({ queryKey: ['practitioner-profile', userId] })
     },
@@ -368,8 +376,19 @@ function PractitionerSection({ userId }: { userId: string }) {
         .update({ verification_status: 'rejected' })
         .eq('id', practitionerId)
       if (error) throw error
+      return practitionerId
     },
-    onSuccess: () => {
+    onSuccess: async (practitionerId: string) => {
+      try {
+        await supabase.from('audit_logs').insert({
+          action: 'practitioner.rejected',
+          resource_type: 'practitioner',
+          resource_id: practitionerId,
+          new_values: { verification_status: 'rejected' },
+        })
+      } catch {
+        // audit log failure is non-blocking
+      }
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       queryClient.invalidateQueries({ queryKey: ['practitioner-profile', userId] })
     },
@@ -445,6 +464,13 @@ function PractitionerSection({ userId }: { userId: string }) {
           </button>
         </div>
       )}
+      {(approveMutation.isError || rejectMutation.isError) && (
+        <p style={{ color: '#ba1a1a', fontSize: '12px', marginTop: '6px' }}>
+          {approveMutation.isError
+            ? (approveMutation.error instanceof Error ? approveMutation.error.message : 'Erreur approbation')
+            : (rejectMutation.error instanceof Error ? rejectMutation.error.message : 'Erreur rejet')}
+        </p>
+      )}
 
       {/* Documents */}
       <div>
@@ -469,7 +495,7 @@ function PractitionerSection({ userId }: { userId: string }) {
                   <span className="material-symbols-outlined text-[#006685] text-sm flex-shrink-0">description</span>
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-[#0b1c30] truncate">
-                      {docTypeLabels[doc.document_type as DocumentType] ?? doc.document_type}
+                      {docTypeLabels[doc.document_type] ?? doc.document_type}
                     </p>
                     <p className="text-xs text-[#6f787e]">
                       {new Date(doc.created_at).toLocaleDateString('fr-FR')}
@@ -520,7 +546,17 @@ function UserProfilePanel({
       if (error) throw error
       return newStatus
     },
-    onSuccess: () => {
+    onSuccess: async (newStatus: AccountStatus) => {
+      try {
+        await supabase.from('audit_logs').insert({
+          action: newStatus === 'suspended' ? 'user.suspended' : 'user.unsuspended',
+          resource_type: 'user',
+          resource_id: user.id,
+          new_values: { account_status: newStatus },
+        })
+      } catch {
+        // audit log failure is non-blocking
+      }
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       queryClient.invalidateQueries({ queryKey: ['admin-users-suspended-count'] })
     },
@@ -547,6 +583,7 @@ function UserProfilePanel({
           <h2 className="text-base font-bold text-[#0b1c30]">Profil utilisateur</h2>
           <button
             onClick={onClose}
+            aria-label="Fermer le panneau"
             className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
           >
             <span className="material-symbols-outlined text-[#6f787e] text-lg">close</span>
@@ -642,7 +679,6 @@ function UserProfilePanel({
               style={{
                 backgroundColor: 'rgba(255,255,255,0.70)',
                 border: '1px solid rgba(255,255,255,0.80)',
-                borderRadius: '16px',
               }}
             >
               <PractitionerSection userId={user.id} />
@@ -663,11 +699,12 @@ export default function UsersPage() {
   const [page, setPage] = useState(0)
   const [selectedUser, setSelectedUser] = useState<UserRow | null>(null)
   const [showInvite, setShowInvite] = useState(false)
+  const debounceTimer = useRef<ReturnType<typeof setTimeout>>()
 
   const handleSearch = (value: string) => {
     setSearch(value)
-    clearTimeout(debounceTimer)
-    debounceTimer = setTimeout(() => { setDebouncedSearch(value); setPage(0) }, 300)
+    clearTimeout(debounceTimer.current)
+    debounceTimer.current = setTimeout(() => { setDebouncedSearch(value); setPage(0) }, 300)
   }
 
   const { data, isLoading } = useUsers(role, debouncedSearch, page)
@@ -825,7 +862,9 @@ export default function UsersPage() {
         {/* Pagination */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100/60">
           <p className="text-sm text-[#6f787e]">
-            Affichage {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, data?.total ?? 0)} sur {data?.total ?? 0}
+            {(data?.total ?? 0) === 0
+              ? 'Aucun résultat'
+              : `Affichage ${page * PAGE_SIZE + 1}–${Math.min((page + 1) * PAGE_SIZE, data!.total)} sur ${data!.total}`}
           </p>
           <div className="flex gap-2">
             <button
