@@ -1,5 +1,4 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { createNotificationService } from '../../packages/notifications/index.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -40,7 +39,7 @@ async function createPaydunyaInvoice(
     body: JSON.stringify({
       invoice: {
         total_amount: Math.round(amount),
-        description: `Consultation M-Santé — ${provider === 'wave' ? 'Wave' : 'Orange Money'}`,
+        description: `Consultation M-Santé — ${provider === 'wave' ? 'Wave' : provider === 'card' ? 'Carte bancaire' : 'Orange Money'}`,
       },
       store: { name: 'M-Santé', tagline: 'Votre santé, notre priorité', postal_address: 'Dakar, Sénégal' },
       actions: { cancel_url: returnUrl, return_url: returnUrl, callback_url: webhookUrl },
@@ -93,7 +92,7 @@ Deno.serve(async (req) => {
 
     const { appointment_id, provider, phone } = await req.json() as {
       appointment_id: string
-      provider: 'wave' | 'orange_money'
+      provider: 'wave' | 'orange_money' | 'card'
       phone?: string
     }
 
@@ -192,18 +191,21 @@ Deno.serve(async (req) => {
 
     // Notification (fire-and-forget)
     try {
-      const resendApiKey = Deno.env.get('RESEND_API_KEY') ?? ''
-      const notifService = createNotificationService(supabase, resendApiKey)
       const { data: patientUser } = await supabase
         .from('users')
-        .select('id, full_name, email, push_token')
+        .select('push_token')
         .eq('id', user.id)
         .single()
-      if (patientUser) {
-        await notifService.send({
-          type: 'payment_success',
-          recipient: { id: patientUser.id, full_name: patientUser.full_name, email: patientUser.email, push_token: patientUser.push_token },
-          data: { amount: String(amount), currency },
+      if (patientUser?.push_token) {
+        await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: patientUser.push_token,
+            title: 'Paiement confirmé ✓',
+            body: `Votre paiement de ${Math.round(amount).toLocaleString()} ${currency} a été reçu.`,
+            data: { route: '/(patient)/appointments' },
+          }),
         })
       }
     } catch (err) { console.error('notification failed', err) }
