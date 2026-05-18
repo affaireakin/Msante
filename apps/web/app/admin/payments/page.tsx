@@ -1,11 +1,24 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import type { ComponentProps } from 'react'
 import { supabase } from '@/lib/supabase'
 import Papa from 'papaparse'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
+import type { BarShapeProps } from 'recharts/types/cartesian/Bar'
+
+type TooltipFormatter = NonNullable<ComponentProps<typeof Tooltip>['formatter']>
+type TooltipLabelFormatter = NonNullable<ComponentProps<typeof Tooltip>['labelFormatter']>
 
 type PaymentStatus = 'all' | 'pending' | 'processing' | 'completed' | 'failed' | 'refunded'
-type Provider = 'all' | 'wave' | 'orange_money' | 'stripe' | 'simulated'
+type Provider = 'all' | 'wave' | 'orange_money' | 'stripe' | 'card' | 'simulated'
 
 interface PaymentRow {
   id: string
@@ -18,6 +31,11 @@ interface PaymentRow {
   practitioner_user: { full_name: string } | null
 }
 
+interface ProviderStat {
+  provider: string
+  total: number
+}
+
 const PAGE_SIZE = 10
 
 const STATUS_COLORS: Record<string, string> = {
@@ -28,9 +46,40 @@ const STATUS_COLORS: Record<string, string> = {
   refunded: 'bg-gray-100 text-gray-600',
 }
 
-function usePayments(status: PaymentStatus, provider: Provider, page: number) {
+const PROVIDER_BAR_COLORS: Record<string, string> = {
+  wave: '#006685',
+  orange_money: '#e65c00',
+  card: '#5c35d4',
+  stripe: '#635bff',
+  simulated: '#bec8ce',
+}
+
+const PROVIDERS: { key: Provider; label: string }[] = [
+  { key: 'all', label: 'Tous providers' },
+  { key: 'wave', label: 'Wave' },
+  { key: 'orange_money', label: 'Orange Money' },
+  { key: 'stripe', label: 'Stripe' },
+  { key: 'card', label: 'Carte (PayDunya)' },
+  { key: 'simulated', label: 'Simulé' },
+]
+
+const PROVIDER_LABELS: Record<string, string> = {
+  wave: 'Wave',
+  orange_money: 'Orange Money',
+  card: 'Carte (PayDunya)',
+  stripe: 'Stripe',
+  simulated: 'Simulation',
+}
+
+function usePayments(
+  status: PaymentStatus,
+  provider: Provider,
+  page: number,
+  dateFrom: string,
+  dateTo: string,
+) {
   return useQuery({
-    queryKey: ['admin-payments', status, provider, page],
+    queryKey: ['admin-payments', status, provider, page, dateFrom, dateTo],
     queryFn: async () => {
       let query = supabase
         .from('payments')
@@ -45,6 +94,8 @@ function usePayments(status: PaymentStatus, provider: Provider, page: number) {
 
       if (status !== 'all') query = query.eq('status', status)
       if (provider !== 'all') query = query.eq('provider', provider)
+      if (dateFrom) query = query.gte('created_at', `${dateFrom}T00:00:00`)
+      if (dateTo) query = query.lte('created_at', `${dateTo}T23:59:59`)
 
       const { data, count, error } = await query
       if (error) throw error
@@ -76,15 +127,47 @@ function useTotals() {
   })
 }
 
+function useProviderStats() {
+  return useQuery({
+    queryKey: ['admin-payment-stats'],
+    queryFn: async () => {
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+      const { data, error } = await supabase
+        .from('payments')
+        .select('provider, amount')
+        .eq('status', 'completed')
+        .gte('created_at', thirtyDaysAgo.toISOString())
+
+      if (error) throw error
+
+      const totals: Record<string, number> = {}
+      for (const row of data ?? []) {
+        const p = row.provider as string
+        totals[p] = (totals[p] ?? 0) + ((row.amount as number) ?? 0)
+      }
+
+      return Object.entries(totals).map(([provider, total]): ProviderStat => ({ provider, total }))
+    },
+    staleTime: 60_000,
+  })
+}
+
 export default function PaymentsPage() {
   const queryClient = useQueryClient()
   const [status, setStatus] = useState<PaymentStatus>('all')
   const [provider, setProvider] = useState<Provider>('all')
   const [page, setPage] = useState(0)
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
 
-  const { data, isLoading } = usePayments(status, provider, page)
+  const { data, isLoading } = usePayments(status, provider, page, dateFrom, dateTo)
   const { data: totals } = useTotals()
+  const { data: providerStats } = useProviderStats()
   const totalPages = Math.ceil((data?.total ?? 0) / PAGE_SIZE)
+
+  const pageTotal = (data?.payments ?? []).reduce((sum, p) => sum + (p.amount ?? 0), 0)
 
   const refund = useMutation({
     mutationFn: async (paymentId: string) => {
@@ -107,7 +190,7 @@ export default function PaymentsPage() {
       Praticien: p.practitioner_user?.full_name ?? '—',
       Montant: p.amount,
       Devise: p.currency,
-      Provider: p.provider,
+      Provider: PROVIDER_LABELS[p.provider] ?? p.provider,
       Statut: p.status,
       ID: p.id,
     }))
@@ -125,7 +208,7 @@ export default function PaymentsPage() {
     new Intl.NumberFormat('fr-SN', { maximumFractionDigits: 0 }).format(amount) + ' XOF'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ fontFamily: 'Manrope' }}>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#0b1c30]">Paiements</h1>
@@ -160,38 +243,180 @@ export default function PaymentsPage() {
         ))}
       </div>
 
+      {/* Revenus par provider (bar chart) */}
+      <div
+        className="rounded-2xl p-5"
+        style={{
+          backgroundColor: 'rgba(255,255,255,0.70)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.80)',
+          borderRadius: '16px',
+          boxShadow: '0 10px 30px -10px rgba(0,102,133,0.05)',
+        }}
+      >
+        <p className="text-xs font-bold text-[#006685] uppercase tracking-widest mb-4">
+          Revenus par provider (30 derniers jours)
+        </p>
+        {providerStats && providerStats.length > 0 ? (
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={providerStats} margin={{ top: 4, right: 16, left: 0, bottom: 24 }}>
+              <XAxis
+                dataKey="provider"
+                tick={{ fontSize: 12, fill: '#6f787e', fontFamily: 'Manrope' }}
+                tickFormatter={(v: string) => PROVIDER_LABELS[v] ?? v}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`}
+                tick={{ fontSize: 11, fill: '#6f787e', fontFamily: 'Manrope' }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <Tooltip
+                formatter={((value: number | string) => [
+                  formatXOF(Number(value)),
+                  'Revenus',
+                ]) as unknown as TooltipFormatter}
+                labelFormatter={((label: string) =>
+                  PROVIDER_LABELS[label] ?? label
+                ) as unknown as TooltipLabelFormatter}
+                contentStyle={{
+                  fontFamily: 'Manrope',
+                  fontSize: 13,
+                  border: '1px solid #bec8ce',
+                  borderRadius: 8,
+                  background: '#fff',
+                }}
+              />
+              <Bar
+                dataKey="total"
+                shape={(props: BarShapeProps) => {
+                  const fill =
+                    PROVIDER_BAR_COLORS[(props as BarShapeProps & { provider?: string }).provider ?? ''] ?? '#bec8ce'
+                  const { x, y, width, height } = props as BarShapeProps & {
+                    x: number; y: number; width: number; height: number
+                  }
+                  if (!width || !height) return <g />
+                  const r = 6
+                  return (
+                    <path
+                      d={`M${x},${y + r} Q${x},${y} ${x + r},${y} L${x + width - r},${y} Q${x + width},${y} ${x + width},${y + r} L${x + width},${y + height} L${x},${y + height} Z`}
+                      fill={fill}
+                    />
+                  )
+                }}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="flex items-center justify-center h-[220px] text-sm text-[#6f787e]">
+            Aucune donnée pour les 30 derniers jours
+          </div>
+        )}
+        {providerStats && providerStats.length > 0 && (
+          <div className="flex flex-wrap gap-4 mt-2">
+            {providerStats.map((s) => (
+              <div key={s.provider} className="flex items-center gap-1.5">
+                <span
+                  className="inline-block w-2.5 h-2.5 rounded-sm"
+                  style={{ backgroundColor: PROVIDER_BAR_COLORS[s.provider] ?? '#bec8ce' }}
+                />
+                <span className="text-xs text-[#6f787e]">{PROVIDER_LABELS[s.provider] ?? s.provider}</span>
+                <span className="text-xs font-semibold text-[#0b1c30]">{formatXOF(s.total)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Filtres */}
-      <div className="flex items-center gap-4 flex-wrap">
-        <div className="flex gap-2">
-          {(['all', 'completed', 'pending', 'failed', 'refunded'] as PaymentStatus[]).map((s) => (
-            <button
-              key={s}
-              onClick={() => { setStatus(s); setPage(0) }}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                status === s ? 'bg-[#006685] text-white' : 'bg-white/60 text-[#3f484d] border border-slate-200/50 hover:bg-white'
-              }`}
-            >
-              {s === 'all' ? 'Tous' : s}
-            </button>
-          ))}
+      <div className="flex flex-col gap-3">
+        {/* Status + provider filters */}
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex gap-2">
+            {(['all', 'completed', 'pending', 'failed', 'refunded'] as PaymentStatus[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => { setStatus(s); setPage(0) }}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  status === s ? 'bg-[#006685] text-white' : 'bg-white/60 text-[#3f484d] border border-slate-200/50 hover:bg-white'
+                }`}
+              >
+                {s === 'all' ? 'Tous' : s}
+              </button>
+            ))}
+          </div>
+          <select
+            value={provider}
+            onChange={(e) => { setProvider(e.target.value as Provider); setPage(0) }}
+            className="px-4 py-2 rounded-full text-sm bg-white/60 border border-slate-200/50 text-[#0b1c30] outline-none focus:border-[#006685]"
+          >
+            {PROVIDERS.map(({ key, label }) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+          </select>
         </div>
-        <select
-          value={provider}
-          onChange={(e) => { setProvider(e.target.value as Provider); setPage(0) }}
-          className="px-4 py-2 rounded-full text-sm bg-white/60 border border-slate-200/50 text-[#0b1c30] outline-none focus:border-[#006685]"
-        >
-          <option value="all">Tous providers</option>
-          <option value="wave">Wave</option>
-          <option value="orange_money">Orange Money</option>
-          <option value="stripe">Stripe</option>
-          <option value="simulated">Simulé</option>
-        </select>
+
+        {/* Date range filter */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-semibold text-[#6f787e]">Du</label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => { setDateFrom(e.target.value); setPage(0) }}
+              style={{
+                border: '1px solid #bec8ce',
+                borderRadius: '8px',
+                padding: '6px 12px',
+                fontSize: '13px',
+                fontFamily: 'Manrope',
+                color: '#0b1c30',
+                background: 'rgba(255,255,255,0.70)',
+                outline: 'none',
+              }}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-semibold text-[#6f787e]">Au</label>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => { setDateTo(e.target.value); setPage(0) }}
+              style={{
+                border: '1px solid #bec8ce',
+                borderRadius: '8px',
+                padding: '6px 12px',
+                fontSize: '13px',
+                fontFamily: 'Manrope',
+                color: '#0b1c30',
+                background: 'rgba(255,255,255,0.70)',
+                outline: 'none',
+              }}
+            />
+          </div>
+          {(dateFrom || dateTo) && (
+            <button
+              onClick={() => { setDateFrom(''); setDateTo(''); setPage(0) }}
+              className="px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-200/50 bg-white/60 text-[#6f787e] hover:bg-white transition-colors"
+            >
+              Réinitialiser
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Table */}
       <div
         className="rounded-2xl overflow-hidden"
-        style={{ backgroundColor: 'rgba(255,255,255,0.60)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.80)', boxShadow: '0 10px 30px -10px rgba(0,102,133,0.05)' }}
+        style={{
+          backgroundColor: 'rgba(255,255,255,0.70)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.80)',
+          borderRadius: '16px',
+          boxShadow: '0 10px 30px -10px rgba(0,102,133,0.05)',
+        }}
       >
         <table className="w-full">
           <thead>
@@ -216,7 +441,7 @@ export default function PaymentsPage() {
                 <td className="px-6 py-4 text-sm font-medium text-[#0b1c30]">{payment.patient?.full_name ?? '—'}</td>
                 <td className="px-6 py-4 text-sm text-[#6f787e]">{payment.practitioner_user?.full_name ?? '—'}</td>
                 <td className="px-6 py-4 text-sm font-semibold text-[#0b1c30]">{formatXOF(payment.amount)}</td>
-                <td className="px-6 py-4 text-sm text-[#6f787e] capitalize">{payment.provider}</td>
+                <td className="px-6 py-4 text-sm text-[#6f787e]">{PROVIDER_LABELS[payment.provider] ?? payment.provider}</td>
                 <td className="px-6 py-4">
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${STATUS_COLORS[payment.status] ?? 'bg-gray-100 text-gray-600'}`}>
                     {payment.status}
@@ -236,6 +461,20 @@ export default function PaymentsPage() {
               </tr>
             ))}
           </tbody>
+          {/* Total row footer */}
+          {!isLoading && (data?.payments ?? []).length > 0 && (
+            <tfoot>
+              <tr className="border-t border-slate-200/60 bg-[#f8f9ff]/60">
+                <td colSpan={3} className="px-6 py-3 text-xs font-bold text-[#006685] uppercase tracking-widest">
+                  Total affiché
+                </td>
+                <td className="px-6 py-3 text-sm font-bold text-[#0b1c30]">
+                  {formatXOF(pageTotal)}
+                </td>
+                <td colSpan={3} />
+              </tr>
+            </tfoot>
+          )}
         </table>
 
         {/* Pagination */}
