@@ -4,10 +4,10 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import * as WebBrowser from 'expo-web-browser'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { supabase } from '@/services/supabase'
+import { useConsultationStore } from '@/features/consultation/store/consultationStore'
 
 interface AppointmentInfo {
   patientName: string
@@ -47,9 +47,8 @@ export default function PractitionerConsultationScreen() {
   const [consultation, setConsultation] = useState<ConsultationInfo | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isJoining, setIsJoining] = useState(false)
-  const [isEnding, setIsEnding] = useState(false)
-  const [sessionStarted, setSessionStarted] = useState(false)
   const channelRef = useRef<RealtimeChannel | null>(null)
+  const { setPractitionerConsultation } = useConsultationStore()
 
   useEffect(() => {
     let channel: RealtimeChannel | null = null
@@ -142,58 +141,23 @@ export default function PractitionerConsultationScreen() {
         throw new Error(body.message ?? 'Erreur de connexion')
       }
 
-      const body = await res.json() as { practitionerToken: string; roomUrl: string }
-      const url = `${body.roomUrl}?t=${body.practitionerToken}`
+      const body = await res.json() as { practitionerToken: string; roomUrl: string; consultationId: string }
 
-      setIsJoining(false)
-      setSessionStarted(true)
-
-      // Open Daily.co in in-app browser
-      await WebBrowser.openBrowserAsync(url, {
-        dismissButtonStyle: 'close',
-        toolbarColor: '#213145',
+      setPractitionerConsultation({
+        consultationId: body.consultationId ?? consultation.id,
+        roomUrl: body.roomUrl,
+        practitionerToken: body.practitionerToken,
       })
 
-      // Browser closed — offer to end session
+      setIsJoining(false)
+
+      router.push({
+        pathname: '/(practitioner)/consultation/session',
+        params: { patientName: appointment?.patientName ?? 'Patient' },
+      })
     } catch (err) {
       Alert.alert('Erreur', err instanceof Error ? err.message : 'Une erreur est survenue')
       setIsJoining(false)
-    }
-  }
-
-  async function handleEndSession() {
-    if (!consultation) return
-    setIsEnding(true)
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) throw new Error('Non connecté')
-
-      await fetch(
-        `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/end-consultation`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            consultationId: consultation.id,
-            chatHistory: [],
-            notes: '',
-          }),
-        }
-      )
-
-      Alert.alert(
-        'Session terminée',
-        'La consultation a été enregistrée et le récapitulatif IA généré.',
-        [{ text: 'OK', onPress: () => router.back() }]
-      )
-    } catch {
-      Alert.alert('Erreur', 'Impossible de terminer la session.')
-    } finally {
-      setIsEnding(false)
     }
   }
 
@@ -289,68 +253,40 @@ export default function PractitionerConsultationScreen() {
             </View>
 
             {/* Actions */}
-            <View style={{ gap: 12 }}>
-              {!sessionStarted ? (
-                <TouchableOpacity
-                  onPress={handleJoin}
-                  disabled={!consultation || isJoining}
-                  style={{
-                    backgroundColor: consultation ? '#006685' : '#bec8ce',
-                    paddingVertical: 18,
-                    borderRadius: 16,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 10,
-                    opacity: isJoining ? 0.7 : 1,
-                    shadowColor: '#006685',
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: consultation ? 0.20 : 0,
-                    shadowRadius: 16,
-                    elevation: consultation ? 4 : 0,
-                  }}
-                >
-                  {isJoining ? (
-                    <ActivityIndicator color="#fff" size="small" />
-                  ) : (
-                    <MaterialIcons name="videocam" size={22} color="#fff" />
-                  )}
-                  <Text style={{ color: '#fff', fontFamily: 'Manrope', fontWeight: '700', fontSize: 16 }}>
-                    {isJoining ? 'Connexion…' : consultation ? 'Démarrer la consultation' : 'En attente du patient'}
-                  </Text>
-                </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleJoin}
+              disabled={!consultation || isJoining}
+              style={{
+                backgroundColor: consultation ? '#006685' : '#bec8ce',
+                paddingVertical: 18,
+                borderRadius: 16,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
+                opacity: isJoining ? 0.7 : 1,
+                shadowColor: '#006685',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: consultation ? 0.20 : 0,
+                shadowRadius: 16,
+                elevation: consultation ? 4 : 0,
+              }}
+            >
+              {isJoining ? (
+                <ActivityIndicator color="#fff" size="small" />
               ) : (
-                <TouchableOpacity
-                  onPress={handleEndSession}
-                  disabled={isEnding}
-                  style={{
-                    backgroundColor: '#ba1a1a',
-                    paddingVertical: 18,
-                    borderRadius: 16,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 10,
-                    opacity: isEnding ? 0.7 : 1,
-                  }}
-                >
-                  {isEnding ? (
-                    <ActivityIndicator color="#fff" size="small" />
-                  ) : (
-                    <MaterialIcons name="call-end" size={22} color="#fff" />
-                  )}
-                  <Text style={{ color: '#fff', fontFamily: 'Manrope', fontWeight: '700', fontSize: 16 }}>
-                    {isEnding ? 'Fermeture…' : 'Terminer la session'}
-                  </Text>
-                </TouchableOpacity>
+                <MaterialIcons name="videocam" size={22} color="#fff" />
               )}
-            </View>
+              <Text style={{ color: '#fff', fontFamily: 'Manrope', fontWeight: '700', fontSize: 16 }}>
+                {isJoining ? 'Connexion…' : consultation ? 'Démarrer la consultation' : 'En attente du patient'}
+              </Text>
+            </TouchableOpacity>
 
             {/* Disclaimer */}
             <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8, paddingHorizontal: 4 }}>
               <MaterialIcons name="lock" size={13} color="#6f787e" style={{ marginTop: 1 }} />
               <Text style={{ fontSize: 11, color: '#6f787e', fontFamily: 'Manrope', flex: 1, lineHeight: 16 }}>
-                Session chiffrée · Daily.co · Données conformes RGPD
+                Session chiffrée · LiveKit · Données conformes RGPD
               </Text>
             </View>
           </>
