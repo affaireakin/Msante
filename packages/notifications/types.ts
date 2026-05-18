@@ -9,6 +9,8 @@ export type NotificationEventType =
   | 'payment_failed'
   | 'consultation_starting'
   | 'practitioner_approved'
+  | 'mood_low_streak'
+  | 'mood_check_in'
 
 export interface NotificationUser {
   id: string

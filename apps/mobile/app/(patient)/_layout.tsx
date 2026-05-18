@@ -99,6 +99,7 @@ export default function PatientLayout() {
       />
 
       {/* Hidden screens */}
+      <Tabs.Screen name="notifications" options={{ href: null }} />
       <Tabs.Screen name="support" options={{ href: null }} />
       <Tabs.Screen name="booking" options={{ href: null }} />
       <Tabs.Screen name="booking-success" options={{ href: null }} />

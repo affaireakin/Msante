@@ -4,7 +4,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '@/features/auth/store/authStore'
+import { supabase } from '@/services/supabase'
 
 const FEATURES: {
   icon: React.ComponentProps<typeof MaterialIcons>['name']
@@ -64,6 +66,20 @@ export default function PatientHome() {
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir'
 
+  const { data: unreadCount = 0 } = useQuery<number>({
+    queryKey: ['notifications-unread', profile?.id],
+    enabled: !!profile?.id,
+    refetchInterval: 60_000,
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('notifications')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', profile!.id)
+        .is('read_at', null)
+      return count ?? 0
+    },
+  })
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
       <ScrollView
@@ -80,9 +96,18 @@ export default function PatientHome() {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <TouchableOpacity
+              onPress={() => router.push('/(patient)/notifications')}
               style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#e5eeff' }}
             >
-              <MaterialIcons name="notifications-none" size={22} color="#0b1c30" />
+              <MaterialIcons name={unreadCount > 0 ? 'notifications' : 'notifications-none'} size={22} color="#0b1c30" />
+              {unreadCount > 0 && (
+                <View style={{
+                  position: 'absolute', top: 6, right: 6,
+                  width: 8, height: 8, borderRadius: 4,
+                  backgroundColor: '#ba1a1a',
+                  borderWidth: 1.5, borderColor: '#f8f9ff',
+                }} />
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => signOut()}

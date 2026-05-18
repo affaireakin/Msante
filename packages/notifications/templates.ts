@@ -43,6 +43,16 @@ const TEMPLATES: Record<
     body: 'Votre profil praticien a été validé. Vous pouvez recevoir des patients.',
     route: () => '/(practitioner)/home',
   },
+  mood_low_streak: {
+    title: 'Prenez soin de vous 💙',
+    body: 'Votre humeur est basse depuis quelques jours. Parler à un praticien peut aider.',
+    route: () => '/(patient)/mental-health',
+  },
+  mood_check_in: {
+    title: 'Comment vous sentez-vous ? 🌤️',
+    body: 'Prenez 30 secondes pour noter votre humeur du jour.',
+    route: () => '/(patient)/mental-health',
+  },
 }
 
 function interpolate(template: string, data: TemplateData): string {
