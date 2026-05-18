@@ -1,9 +1,13 @@
 'use client'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
 type Role = 'all' | 'patient' | 'practitioner' | 'admin'
+type AccountStatus = 'active' | 'suspended' | 'blocked'
+type VerificationStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
+type DocumentStatus = 'pending' | 'approved' | 'rejected'
+type DocumentType = 'diploma' | 'license' | 'id_card' | 'other'
 
 interface UserRow {
   id: string
@@ -12,9 +16,59 @@ interface UserRow {
   country: string | null
   onboarding_completed: boolean
   created_at: string
+  account_status: AccountStatus | null
+}
+
+interface PractitionerProfile {
+  id: string
+  speciality: string
+  is_verified: boolean
+  verification_status: VerificationStatus
+  bio: string | null
+  rating: number | null
+  total_reviews: number
+}
+
+interface VerificationDocument {
+  id: string
+  document_type: DocumentType
+  file_url: string
+  status: DocumentStatus
+  created_at: string
 }
 
 const PAGE_SIZE = 10
+
+// ─── Role colors ────────────────────────────────────────────────────────────
+const roleColors: Record<string, { bg: string; text: string }> = {
+  admin:        { bg: '#ede9fe', text: '#7c3aed' },
+  practitioner: { bg: '#e5eeff', text: '#006685' },
+  patient:      { bg: '#e8f5e9', text: '#1d7a3a' },
+}
+
+// ─── Verification status style ───────────────────────────────────────────────
+const verificationColors: Record<VerificationStatus, { bg: string; text: string }> = {
+  pending:      { bg: '#fff8e1', text: '#705d00' },
+  under_review: { bg: '#e5eeff', text: '#006685' },
+  approved:     { bg: '#e8f5e9', text: '#1d7a3a' },
+  rejected:     { bg: '#ffdad6', text: '#ba1a1a' },
+}
+
+// ─── Account status style ────────────────────────────────────────────────────
+const accountStatusColors: Record<string, { bg: string; text: string }> = {
+  active:    { bg: '#e8f5e9', text: '#1d7a3a' },
+  suspended: { bg: '#ffdad6', text: '#ba1a1a' },
+  blocked:   { bg: '#fce4ec', text: '#880e4f' },
+}
+
+const docTypeLabels: Record<DocumentType, string> = {
+  diploma:  'Diplôme',
+  license:  'Licence professionnelle',
+  id_card:  'Carte d\'identité',
+  other:    'Autre document',
+}
+
+// ─── Hooks ───────────────────────────────────────────────────────────────────
 
 function useUsers(role: Role, search: string, page: number) {
   return useQuery({
@@ -22,7 +76,7 @@ function useUsers(role: Role, search: string, page: number) {
     queryFn: async () => {
       let query = supabase
         .from('users')
-        .select('id, full_name, role, country, onboarding_completed, created_at', { count: 'exact' })
+        .select('id, full_name, role, country, onboarding_completed, created_at, account_status', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
 
@@ -36,6 +90,129 @@ function useUsers(role: Role, search: string, page: number) {
     staleTime: 30_000,
   })
 }
+
+function useSuspendedCount() {
+  return useQuery({
+    queryKey: ['admin-users-suspended-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('users')
+        .select('id', { count: 'exact', head: true })
+        .eq('account_status', 'suspended')
+      if (error) throw error
+      return count ?? 0
+    },
+    staleTime: 60_000,
+  })
+}
+
+function usePractitionerProfile(userId: string | null) {
+  return useQuery({
+    queryKey: ['practitioner-profile', userId],
+    queryFn: async () => {
+      if (!userId) return null
+      const { data, error } = await supabase
+        .from('practitioners')
+        .select('id, speciality, is_verified, verification_status, bio, rating, total_reviews')
+        .eq('user_id', userId)
+        .single()
+      if (error) return null
+      return data as PractitionerProfile
+    },
+    enabled: !!userId,
+    staleTime: 30_000,
+  })
+}
+
+function useVerificationDocuments(practitionerId: string | null) {
+  return useQuery({
+    queryKey: ['verification-documents', practitionerId],
+    queryFn: async () => {
+      if (!practitionerId) return []
+      const { data, error } = await supabase
+        .from('verification_documents')
+        .select('id, document_type, file_url, status, created_at')
+        .eq('practitioner_id', practitionerId)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return (data ?? []) as VerificationDocument[]
+    },
+    enabled: !!practitionerId,
+    staleTime: 30_000,
+  })
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function initials(name: string) {
+  return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
+let debounceTimer: ReturnType<typeof setTimeout> | undefined
+
+// ─── Sub-components ──────────────────────────────────────────────────────────
+
+function RoleBadge({ role }: { role: string }) {
+  const c = roleColors[role] ?? { bg: '#f1f5f9', text: '#64748b' }
+  return (
+    <span
+      className="text-xs font-semibold px-2 py-0.5 rounded-full"
+      style={{ backgroundColor: c.bg, color: c.text }}
+    >
+      {role}
+    </span>
+  )
+}
+
+function AccountStatusBadge({ status }: { status: AccountStatus | null }) {
+  const resolved = status ?? 'active'
+  const c = accountStatusColors[resolved] ?? accountStatusColors.active
+  return (
+    <span
+      className="text-xs font-semibold px-2 py-0.5 rounded-full"
+      style={{ backgroundColor: c.bg, color: c.text }}
+    >
+      {resolved === 'active' ? 'Actif' : resolved === 'suspended' ? 'Suspendu' : 'Bloqué'}
+    </span>
+  )
+}
+
+function VerificationBadge({ status }: { status: VerificationStatus }) {
+  const c = verificationColors[status]
+  const labels: Record<VerificationStatus, string> = {
+    pending:      'En attente',
+    under_review: 'En révision',
+    approved:     'Approuvé',
+    rejected:     'Rejeté',
+  }
+  return (
+    <span
+      className="text-xs font-semibold px-2 py-0.5 rounded-full"
+      style={{ backgroundColor: c.bg, color: c.text }}
+    >
+      {labels[status]}
+    </span>
+  )
+}
+
+function DocStatusBadge({ status }: { status: DocumentStatus }) {
+  const map: Record<DocumentStatus, { bg: string; text: string; label: string }> = {
+    pending:  { bg: '#fff8e1', text: '#705d00', label: 'En attente' },
+    approved: { bg: '#e8f5e9', text: '#1d7a3a', label: 'Approuvé' },
+    rejected: { bg: '#ffdad6', text: '#ba1a1a', label: 'Rejeté' },
+  }
+  const s = map[status]
+  return (
+    <span
+      className="text-xs font-semibold px-2 py-0.5 rounded-full"
+      style={{ backgroundColor: s.bg, color: s.text }}
+    >
+      {s.label}
+    </span>
+  )
+}
+
+// ─── Invite Admin Modal ───────────────────────────────────────────────────────
 
 function InviteAdminModal({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient()
@@ -162,25 +339,322 @@ function InviteAdminModal({ onClose }: { onClose: () => void }) {
   )
 }
 
-function initials(name: string) {
-  return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-}
+// ─── Practitioner Panel Section ───────────────────────────────────────────────
 
-function RoleBadge({ role }: { role: string }) {
-  const colors: Record<string, string> = {
-    admin: 'bg-purple-100 text-purple-700',
-    practitioner: 'bg-sky-100 text-sky-700',
-    patient: 'bg-emerald-100 text-emerald-700',
+function PractitionerSection({ userId }: { userId: string }) {
+  const queryClient = useQueryClient()
+
+  const { data: practitioner, isLoading: loadingPrac } = usePractitionerProfile(userId)
+  const { data: documents, isLoading: loadingDocs } = useVerificationDocuments(practitioner?.id ?? null)
+
+  const approveMutation = useMutation({
+    mutationFn: async (practitionerId: string) => {
+      const { error } = await supabase
+        .from('practitioners')
+        .update({ is_verified: true, verification_status: 'approved' })
+        .eq('id', practitionerId)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      queryClient.invalidateQueries({ queryKey: ['practitioner-profile', userId] })
+    },
+  })
+
+  const rejectMutation = useMutation({
+    mutationFn: async (practitionerId: string) => {
+      const { error } = await supabase
+        .from('practitioners')
+        .update({ verification_status: 'rejected' })
+        .eq('id', practitionerId)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      queryClient.invalidateQueries({ queryKey: ['practitioner-profile', userId] })
+    },
+  })
+
+  if (loadingPrac) {
+    return (
+      <div className="space-y-2">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="h-4 bg-slate-100 rounded animate-pulse" />
+        ))}
+      </div>
+    )
   }
+
+  if (!practitioner) {
+    return (
+      <div className="text-sm text-[#6f787e] italic">Profil praticien introuvable.</div>
+    )
+  }
+
+  const canAct = practitioner.verification_status === 'pending' || practitioner.verification_status === 'under_review'
+  const isBusy = approveMutation.isPending || rejectMutation.isPending
+
   return (
-    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${colors[role] ?? 'bg-gray-100 text-gray-600'}`}>
-      {role}
-    </span>
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex items-center gap-2">
+        <span className="material-symbols-outlined text-[#006685] text-base">medical_services</span>
+        <span className="text-sm font-bold text-[#0b1c30] uppercase tracking-wide">Vérification praticien</span>
+      </div>
+
+      {/* Status + Speciality */}
+      <div className="space-y-3 rounded-xl p-4" style={{ backgroundColor: '#f8f9ff', border: '1px solid #e5eeff' }}>
+        <div className="flex justify-between items-center">
+          <span className="text-xs text-[#6f787e]">Statut vérification</span>
+          <VerificationBadge status={practitioner.verification_status} />
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-xs text-[#6f787e]">Spécialité</span>
+          <span className="text-xs font-medium text-[#0b1c30]">{practitioner.speciality}</span>
+        </div>
+        {practitioner.rating !== null && (
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-[#6f787e]">Note</span>
+            <span className="text-xs font-medium text-[#0b1c30]">
+              ★ {practitioner.rating.toFixed(1)} ({practitioner.total_reviews} avis)
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Approve / Reject actions */}
+      {canAct && (
+        <div className="flex gap-2">
+          <button
+            onClick={() => approveMutation.mutate(practitioner.id)}
+            disabled={isBusy}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+            style={{ backgroundColor: '#e8f5e9', color: '#1d7a3a' }}
+          >
+            <span className="material-symbols-outlined text-sm">check_circle</span>
+            {approveMutation.isPending ? 'Approbation…' : 'Approuver'}
+          </button>
+          <button
+            onClick={() => rejectMutation.mutate(practitioner.id)}
+            disabled={isBusy}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+            style={{ backgroundColor: '#ffdad6', color: '#ba1a1a' }}
+          >
+            <span className="material-symbols-outlined text-sm">cancel</span>
+            {rejectMutation.isPending ? 'Rejet…' : 'Rejeter'}
+          </button>
+        </div>
+      )}
+
+      {/* Documents */}
+      <div>
+        <p className="text-xs font-bold text-[#6f787e] uppercase tracking-wide mb-2">
+          Documents ({documents?.length ?? 0})
+        </p>
+        {loadingDocs ? (
+          <div className="space-y-2">
+            {[1, 2].map(i => <div key={i} className="h-10 bg-slate-100 rounded-xl animate-pulse" />)}
+          </div>
+        ) : (documents ?? []).length === 0 ? (
+          <p className="text-xs text-[#6f787e] italic">Aucun document soumis.</p>
+        ) : (
+          <div className="space-y-2">
+            {(documents ?? []).map((doc) => (
+              <div
+                key={doc.id}
+                className="flex items-center justify-between p-3 rounded-xl"
+                style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="material-symbols-outlined text-[#006685] text-sm flex-shrink-0">description</span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-[#0b1c30] truncate">
+                      {docTypeLabels[doc.document_type as DocumentType] ?? doc.document_type}
+                    </p>
+                    <p className="text-xs text-[#6f787e]">
+                      {new Date(doc.created_at).toLocaleDateString('fr-FR')}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <DocStatusBadge status={doc.status as DocumentStatus} />
+                  <a
+                    href={doc.file_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#006685] hover:text-[#004d65] transition-colors"
+                    title="Ouvrir le document"
+                  >
+                    <span className="material-symbols-outlined text-sm">open_in_new</span>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
-// Debounce timer stored outside component to avoid closure issues
-let debounceTimer: ReturnType<typeof setTimeout> | undefined
+// ─── User Profile Slide-out ───────────────────────────────────────────────────
+
+function UserProfilePanel({
+  user,
+  onClose,
+}: {
+  user: UserRow
+  onClose: () => void
+}) {
+  const queryClient = useQueryClient()
+
+  const isSuspended = user.account_status === 'suspended'
+
+  const suspendMutation = useMutation({
+    mutationFn: async () => {
+      const newStatus: AccountStatus = isSuspended ? 'active' : 'suspended'
+      const { error } = await supabase
+        .from('users')
+        .update({ account_status: newStatus })
+        .eq('id', user.id)
+      if (error) throw error
+      return newStatus
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-users-suspended-count'] })
+    },
+  })
+
+  const avatarBg = roleColors[user.role]?.bg ?? '#e5eeff'
+  const avatarText = roleColors[user.role]?.text ?? '#006685'
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end">
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="relative w-80 h-full flex flex-col overflow-y-auto"
+        style={{
+          backgroundColor: 'rgba(255,255,255,0.97)',
+          backdropFilter: 'blur(20px)',
+          borderLeft: '1px solid rgba(255,255,255,0.80)',
+          boxShadow: '-10px 0 40px rgba(0,102,133,0.08)',
+          fontFamily: 'Manrope',
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+          <h2 className="text-base font-bold text-[#0b1c30]">Profil utilisateur</h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
+          >
+            <span className="material-symbols-outlined text-[#6f787e] text-lg">close</span>
+          </button>
+        </div>
+
+        <div className="flex-1 px-6 py-5 space-y-6">
+          {/* Avatar + Name */}
+          <div className="flex items-center gap-4">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold flex-shrink-0"
+              style={{ backgroundColor: avatarBg, color: avatarText }}
+            >
+              {initials(user.full_name)}
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-base font-semibold text-[#0b1c30] leading-tight">{user.full_name}</p>
+              <div className="flex items-center gap-2">
+                <RoleBadge role={user.role} />
+                <AccountStatusBadge status={user.account_status} />
+              </div>
+            </div>
+          </div>
+
+          {/* Info fields */}
+          <div
+            className="rounded-xl overflow-hidden"
+            style={{ border: '1px solid #e5eeff' }}
+          >
+            {[
+              { label: 'ID', value: user.id.slice(0, 8) + '…' },
+              { label: 'Pays', value: user.country ?? '—' },
+              {
+                label: 'Onboarding',
+                value: user.onboarding_completed ? 'Complété' : 'En cours',
+              },
+              {
+                label: 'Inscrit le',
+                value: new Date(user.created_at).toLocaleDateString('fr-FR', {
+                  day: '2-digit', month: 'long', year: 'numeric',
+                }),
+              },
+            ].map(({ label, value }, idx, arr) => (
+              <div
+                key={label}
+                className="flex justify-between items-center px-4 py-3"
+                style={{
+                  borderBottom: idx < arr.length - 1 ? '1px solid #f0f4ff' : 'none',
+                  backgroundColor: idx % 2 === 0 ? 'rgba(255,255,255,0.60)' : '#f8f9ff',
+                }}
+              >
+                <span className="text-xs text-[#6f787e]">{label}</span>
+                <span className="text-xs font-medium text-[#0b1c30]">{value}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Suspend / Unsuspend */}
+          {user.role !== 'admin' && (
+            <div>
+              <p className="text-xs font-bold text-[#6f787e] uppercase tracking-wide mb-2">Actions compte</p>
+              <button
+                onClick={() => suspendMutation.mutate()}
+                disabled={suspendMutation.isPending}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
+                style={
+                  isSuspended
+                    ? { backgroundColor: '#e8f5e9', color: '#1d7a3a' }
+                    : { backgroundColor: '#ffdad6', color: '#ba1a1a' }
+                }
+              >
+                <span className="material-symbols-outlined text-base">
+                  {isSuspended ? 'lock_open' : 'lock'}
+                </span>
+                {suspendMutation.isPending
+                  ? 'Mise à jour…'
+                  : isSuspended
+                  ? 'Réactiver le compte'
+                  : 'Suspendre le compte'}
+              </button>
+              {suspendMutation.isError && (
+                <p className="text-xs text-[#ba1a1a] mt-1.5">
+                  Erreur : {(suspendMutation.error as Error).message}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Practitioner verification section */}
+          {user.role === 'practitioner' && (
+            <div
+              className="rounded-xl p-4 space-y-4"
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.70)',
+                border: '1px solid rgba(255,255,255,0.80)',
+                borderRadius: '16px',
+              }}
+            >
+              <PractitionerSection userId={user.id} />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function UsersPage() {
   const [role, setRole] = useState<Role>('all')
@@ -197,6 +671,7 @@ export default function UsersPage() {
   }
 
   const { data, isLoading } = useUsers(role, debouncedSearch, page)
+  const { data: suspendedCount } = useSuspendedCount()
   const totalPages = Math.ceil((data?.total ?? 0) / PAGE_SIZE)
 
   const filters: { label: string; value: Role }[] = [
@@ -207,17 +682,30 @@ export default function UsersPage() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ fontFamily: 'Manrope' }}>
+      {/* Page header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#0b1c30]">Utilisateurs</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-[#0b1c30]">Utilisateurs</h1>
+            {(suspendedCount ?? 0) > 0 && (
+              <span
+                className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full"
+                style={{ backgroundColor: '#ffdad6', color: '#ba1a1a' }}
+                title="Comptes suspendus"
+              >
+                <span className="material-symbols-outlined text-xs">lock</span>
+                {suspendedCount} suspendu{(suspendedCount ?? 0) > 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
           <p className="text-sm text-[#6f787e] mt-1">{data?.total ?? 0} utilisateurs au total</p>
         </div>
         <button
           onClick={() => setShowInvite(true)}
           className="flex items-center gap-2 px-4 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all"
         >
-          <span className="text-base leading-none">+</span>
+          <span className="material-symbols-outlined text-base">person_add</span>
           Inviter un admin
         </button>
       </div>
@@ -231,11 +719,12 @@ export default function UsersPage() {
             <button
               key={f.value}
               onClick={() => { setRole(f.value); setPage(0) }}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              className="px-4 py-2 rounded-full text-sm font-medium transition-all"
+              style={
                 role === f.value
-                  ? 'bg-[#006685] text-white'
-                  : 'bg-white/60 text-[#3f484d] border border-slate-200/50 hover:bg-white'
-              }`}
+                  ? { backgroundColor: '#006685', color: '#ffffff' }
+                  : { backgroundColor: 'rgba(255,255,255,0.60)', color: '#3f484d', border: '1px solid rgba(203,216,254,0.50)' }
+              }
             >
               {f.label}
             </button>
@@ -245,8 +734,13 @@ export default function UsersPage() {
           type="text"
           value={search}
           onChange={(e) => handleSearch(e.target.value)}
-          placeholder="Rechercher par nom..."
-          className="px-4 py-2 rounded-full text-sm bg-white/60 border border-slate-200/50 outline-none text-[#0b1c30] placeholder-[#6f787e] focus:border-[#006685] transition-colors"
+          placeholder="Rechercher par nom…"
+          className="px-4 py-2 rounded-full text-sm outline-none transition-colors"
+          style={{
+            backgroundColor: 'rgba(255,255,255,0.60)',
+            border: '1px solid rgba(203,216,254,0.50)',
+            color: '#0b1c30',
+          }}
         />
       </div>
 
@@ -267,6 +761,7 @@ export default function UsersPage() {
               <th className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">Rôle</th>
               <th className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">Pays</th>
               <th className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">Onboarding</th>
+              <th className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">Statut</th>
               <th className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">Inscrit le</th>
             </tr>
           </thead>
@@ -274,7 +769,7 @@ export default function UsersPage() {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i} className="border-b border-slate-50/60">
-                  {Array.from({ length: 5 }).map((__, j) => (
+                  {Array.from({ length: 6 }).map((__, j) => (
                     <td key={j} className="px-6 py-4">
                       <div className="h-4 bg-slate-100 rounded animate-pulse" />
                     </td>
@@ -286,10 +781,17 @@ export default function UsersPage() {
                 key={user.id}
                 onClick={() => setSelectedUser(user)}
                 className="border-b border-slate-50/60 hover:bg-white/40 cursor-pointer transition-colors"
+                style={selectedUser?.id === user.id ? { backgroundColor: 'rgba(0,102,133,0.04)' } : undefined}
               >
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                      style={{
+                        backgroundColor: roleColors[user.role]?.bg ?? '#e5eeff',
+                        color: roleColors[user.role]?.text ?? '#006685',
+                      }}
+                    >
                       {initials(user.full_name)}
                     </div>
                     <span className="text-sm font-medium text-[#0b1c30]">{user.full_name}</span>
@@ -298,11 +800,19 @@ export default function UsersPage() {
                 <td className="px-6 py-4"><RoleBadge role={user.role} /></td>
                 <td className="px-6 py-4 text-sm text-[#6f787e]">{user.country ?? '—'}</td>
                 <td className="px-6 py-4">
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                    user.onboarding_completed ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-                  }`}>
+                  <span
+                    className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                    style={
+                      user.onboarding_completed
+                        ? { backgroundColor: '#e8f5e9', color: '#1d7a3a' }
+                        : { backgroundColor: '#fff8e1', color: '#705d00' }
+                    }
+                  >
                     {user.onboarding_completed ? 'Complété' : 'En cours'}
                   </span>
+                </td>
+                <td className="px-6 py-4">
+                  <AccountStatusBadge status={user.account_status} />
                 </td>
                 <td className="px-6 py-4 text-sm text-[#6f787e]">
                   {new Date(user.created_at).toLocaleDateString('fr-FR')}
@@ -337,47 +847,12 @@ export default function UsersPage() {
         </div>
       </div>
 
-      {/* Sheet slide-out profil */}
+      {/* Profile slide-out panel */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 flex justify-end">
-          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setSelectedUser(null)} />
-          <div
-            className="relative w-96 h-full p-8 flex flex-col gap-6 overflow-y-auto"
-            style={{ backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)' }}
-          >
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-[#0b1c30]">Profil utilisateur</h2>
-              <button onClick={() => setSelectedUser(null)} className="text-[#6f787e] hover:text-[#0b1c30] text-xl">✕</button>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-[#006685] flex items-center justify-center text-white text-2xl font-bold">
-                {initials(selectedUser.full_name)}
-              </div>
-              <div>
-                <p className="text-lg font-semibold text-[#0b1c30]">{selectedUser.full_name}</p>
-                <RoleBadge role={selectedUser.role} />
-              </div>
-            </div>
-            <div className="space-y-4">
-              {[
-                { label: 'ID', value: selectedUser.id.slice(0, 8) + '…' },
-                { label: 'Pays', value: selectedUser.country ?? '—' },
-                { label: 'Onboarding', value: selectedUser.onboarding_completed ? 'Complété' : 'En cours' },
-                {
-                  label: 'Inscrit le',
-                  value: new Date(selectedUser.created_at).toLocaleDateString('fr-FR', {
-                    day: '2-digit', month: 'long', year: 'numeric',
-                  }),
-                },
-              ].map(({ label, value }) => (
-                <div key={label} className="flex justify-between py-3 border-b border-slate-100">
-                  <span className="text-sm text-[#6f787e]">{label}</span>
-                  <span className="text-sm font-medium text-[#0b1c30]">{value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <UserProfilePanel
+          user={selectedUser}
+          onClose={() => setSelectedUser(null)}
+        />
       )}
     </div>
   )
