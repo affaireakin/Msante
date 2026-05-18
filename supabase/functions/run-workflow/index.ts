@@ -5,10 +5,20 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+interface NodeConfig {
+  template?: string
+  message?: string
+  subject?: string
+  hours?: number
+  field?: string
+  operator?: string
+  value?: string
+}
+
 interface WorkflowNodeDef {
   id: string
   type: string
-  data: { nodeType: string; template?: string }
+  data: { nodeType: string; template?: string; config?: NodeConfig }
 }
 
 interface RunContext {
@@ -74,8 +84,97 @@ async function handleSendPush(
 }
 
 async function handleSendSms(_ctx: RunContext): Promise<Record<string, unknown>> {
-  // SMS provider not configured in V1 — log only
   return { status: 'sms_skipped_v1' }
+}
+
+async function handleSendEmail(
+  ctx: RunContext,
+  config: NodeConfig,
+  inputData: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const resendApiKey = Deno.env.get('RESEND_API_KEY')
+  if (!resendApiKey) return { status: 'email_skipped_no_key' }
+
+  const appointments = (inputData.appointments as { patient_id: string }[] | undefined) ?? []
+  const sent: string[] = []
+
+  const subjects: Record<string, string> = {
+    appointment_confirm: 'Votre RDV M-Santé est confirmé',
+    appointment_reminder: 'Rappel : votre RDV M-Santé demain',
+    payment_failed: 'Votre paiement M-Santé a échoué',
+  }
+
+  const bodies: Record<string, string> = {
+    appointment_confirm: 'Votre rendez-vous a bien été confirmé sur M-Santé.',
+    appointment_reminder: 'Rappel : vous avez un rendez-vous demain sur M-Santé.',
+    payment_failed: 'Votre paiement a échoué. Reconnectez-vous pour réessayer.',
+  }
+
+  const template = config.template ?? 'appointment_reminder'
+  const subject = config.subject || subjects[template] || 'Notification M-Santé'
+  const body = bodies[template] ?? 'Notification de M-Santé.'
+
+  for (const apt of appointments) {
+    const { data: user } = await ctx.supabase
+      .from('users')
+      .select('email:id, full_name')
+      .eq('id', apt.patient_id)
+      .single()
+
+    if (!user) continue
+
+    const { data: authUser } = await ctx.supabase.auth.admin.getUserById(apt.patient_id)
+    const email = authUser?.user?.email
+    if (!email) continue
+
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${resendApiKey}`,
+      },
+      body: JSON.stringify({
+        from: 'M-Santé <no-reply@m-sante.app>',
+        to: [email],
+        subject,
+        html: `<p>${body}</p><p style="color:#6f787e;font-size:12px">M-Santé · Votre santé mentale, réinventée.</p>`,
+      }),
+    })
+    sent.push(apt.patient_id)
+  }
+
+  return { sent_count: sent.length }
+}
+
+async function handleDelay(
+  _ctx: RunContext,
+  config: NodeConfig
+): Promise<Record<string, unknown>> {
+  const hours = config.hours ?? 2
+  const executeAt = new Date(Date.now() + hours * 3600 * 1000).toISOString()
+  return { delayed: true, hours, execute_after: executeAt }
+}
+
+async function handleCondition(
+  _ctx: RunContext,
+  config: NodeConfig,
+  inputData: Record<string, unknown>
+): Promise<{ should_continue: boolean }> {
+  const { field, operator = 'eq', value } = config
+  if (!field || value === undefined) return { should_continue: false }
+
+  const actual = inputData[field]
+  const expected = isNaN(Number(value)) ? value : Number(value)
+
+  let result = false
+  switch (operator) {
+    case 'eq':  result = actual == expected; break
+    case 'lt':  result = Number(actual) <  Number(expected); break
+    case 'lte': result = Number(actual) <= Number(expected); break
+    case 'gt':  result = Number(actual) >  Number(expected); break
+    case 'gte': result = Number(actual) >= Number(expected); break
+  }
+  return { should_continue: result }
 }
 
 async function handleCheckMoodStreak(
@@ -235,16 +334,29 @@ Deno.serve(async (req) => {
         let errorDetails: Record<string, unknown> | null = null
 
         try {
+          const nodeConfig = node.data.config ?? {}
           switch (node.data.nodeType) {
             case 'query_upcoming_appointments':
               output = await handleQueryUpcomingAppointments(ctx)
               break
             case 'send_push':
-              output = await handleSendPush(ctx, node.data.template ?? '', prevOutput)
+              output = await handleSendPush(ctx, nodeConfig.template ?? node.data.template ?? '', prevOutput)
               break
             case 'send_sms':
               output = await handleSendSms(ctx)
               break
+            case 'send_email':
+              output = await handleSendEmail(ctx, nodeConfig, prevOutput)
+              break
+            case 'delay':
+              output = await handleDelay(ctx, nodeConfig)
+              break
+            case 'condition': {
+              const result = await handleCondition(ctx, nodeConfig, prevOutput)
+              output = result
+              if (!result.should_continue) status = 'skipped'
+              break
+            }
             case 'check_mood_streak': {
               const result = await handleCheckMoodStreak(ctx, prevOutput)
               output = result

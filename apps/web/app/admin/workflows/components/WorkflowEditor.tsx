@@ -1,5 +1,5 @@
 'use client'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -19,10 +19,28 @@ import {
 import '@xyflow/react/dist/style.css'
 import type { WorkflowNode, WorkflowEdge } from '@/types/workflows'
 
-// ── Custom nodes (selectable, with selection highlight) ───────────────────────
+// ── Node data types ───────────────────────────────────────────────────────────
+
+interface NodeConfig {
+  template?: string       // send_push / send_email
+  message?: string        // send_push custom message
+  subject?: string        // send_email subject
+  hours?: number          // delay hours
+  field?: string          // condition field
+  operator?: string       // condition operator
+  value?: string          // condition value
+}
+
+interface NodeData {
+  label: string
+  nodeType: string
+  config?: NodeConfig
+}
+
+// ── Custom nodes ──────────────────────────────────────────────────────────────
 
 function TriggerNode({ data, selected }: NodeProps) {
-  const d = data as { label: string; nodeType: string }
+  const d = data as NodeData
   return (
     <div
       className={`px-4 py-3 rounded-xl border-2 min-w-[140px] text-center transition-all ${selected ? 'border-sky-500 shadow-lg' : 'border-sky-400'}`}
@@ -37,7 +55,7 @@ function TriggerNode({ data, selected }: NodeProps) {
 }
 
 function ActionNode({ data, selected }: NodeProps) {
-  const d = data as { label: string; nodeType: string }
+  const d = data as NodeData
   return (
     <div
       className={`px-4 py-3 rounded-xl border-2 min-w-[140px] text-center transition-all ${selected ? 'border-[#006685] shadow-lg' : 'border-slate-200'}`}
@@ -45,7 +63,15 @@ function ActionNode({ data, selected }: NodeProps) {
     >
       <p className="text-xs font-bold text-[#006685] uppercase tracking-widest mb-1">Action</p>
       <p className="text-sm font-semibold text-[#0b1c30]">{d.label}</p>
-      <p className="text-xs text-[#6f787e] mt-0.5">{d.nodeType}</p>
+      {d.config?.template && (
+        <p className="text-xs text-[#006685] mt-0.5 font-medium">{d.config.template}</p>
+      )}
+      {d.config?.hours && (
+        <p className="text-xs text-[#006685] mt-0.5 font-medium">{d.config.hours}h</p>
+      )}
+      {!d.config?.template && !d.config?.hours && (
+        <p className="text-xs text-[#6f787e] mt-0.5">{d.nodeType}</p>
+      )}
       <Handle type="target" position={Position.Left} className="!bg-slate-300 !w-3 !h-3" />
       <Handle type="source" position={Position.Right} className="!bg-slate-300 !w-3 !h-3" />
     </div>
@@ -53,7 +79,7 @@ function ActionNode({ data, selected }: NodeProps) {
 }
 
 function EndNode({ data, selected }: NodeProps) {
-  const d = data as { label: string }
+  const d = data as NodeData
   return (
     <div
       className={`px-4 py-3 rounded-xl border-2 min-w-[100px] text-center transition-all ${selected ? 'border-emerald-500 shadow-lg' : 'border-emerald-400'}`}
@@ -121,7 +147,199 @@ function PaletteItem({ item }: { item: (typeof PALETTE_SECTIONS)[0]['items'][0] 
   )
 }
 
-// ── Inner editor (needs ReactFlow context) ────────────────────────────────────
+// ── Node config panel ─────────────────────────────────────────────────────────
+
+const PUSH_TEMPLATES = [
+  { value: 'appointment_reminder', label: 'Rappel RDV' },
+  { value: 'wellness_check', label: 'Check bien-être' },
+  { value: 'payment_retry', label: 'Retry paiement' },
+  { value: 'mood_low_streak', label: 'Alerte mood bas' },
+]
+
+const EMAIL_TEMPLATES = [
+  { value: 'appointment_confirm', label: 'Confirmation RDV' },
+  { value: 'appointment_reminder', label: 'Rappel RDV' },
+  { value: 'payment_failed', label: 'Paiement échoué' },
+]
+
+const CONDITION_OPERATORS = [
+  { value: 'eq', label: '= égal' },
+  { value: 'lt', label: '< inférieur à' },
+  { value: 'lte', label: '≤ inf. ou égal' },
+  { value: 'gt', label: '> supérieur à' },
+  { value: 'gte', label: '≥ sup. ou égal' },
+]
+
+const inputCls = "w-full px-3 py-2 rounded-lg border border-slate-200/60 bg-white/60 text-xs text-[#0b1c30] outline-none focus:border-[#006685] transition-colors"
+const selectCls = inputCls
+
+interface NodeConfigPanelProps {
+  node: RFNode
+  onUpdate: (id: string, config: NodeConfig) => void
+  onClose: () => void
+}
+
+function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
+  const data = node.data as NodeData
+  const [config, setConfig] = useState<NodeConfig>(data.config ?? {})
+
+  const handleSave = () => {
+    onUpdate(node.id, config)
+    onClose()
+  }
+
+  const set = (partial: Partial<NodeConfig>) => setConfig(c => ({ ...c, ...partial }))
+
+  return (
+    <div
+      className="w-52 flex-shrink-0 flex flex-col border-l overflow-y-auto"
+      style={{ backgroundColor: 'rgba(248,249,255,0.98)', borderColor: 'rgba(190,200,206,0.35)' }}
+    >
+      <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b" style={{ borderColor: 'rgba(190,200,206,0.35)' }}>
+        <p className="text-[9px] font-bold text-[#006685] uppercase tracking-widest">Config nœud</p>
+        <button onClick={onClose} className="text-[#6f787e] hover:text-[#0b1c30] transition-colors text-xs leading-none">✕</button>
+      </div>
+
+      <div className="p-3 space-y-4 flex-1">
+        <div>
+          <p className="text-xs font-semibold text-[#0b1c30] mb-0.5">{data.label}</p>
+          <p className="text-[10px] text-[#6f787e]">{data.nodeType}</p>
+        </div>
+
+        {/* send_push config */}
+        {data.nodeType === 'send_push' && (
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Template</label>
+              <select
+                value={config.template ?? ''}
+                onChange={e => set({ template: e.target.value })}
+                className={selectCls}
+              >
+                <option value="">Choisir…</option>
+                {PUSH_TEMPLATES.map(t => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Message personnalisé</label>
+              <textarea
+                value={config.message ?? ''}
+                onChange={e => set({ message: e.target.value })}
+                placeholder="Laisser vide pour le template par défaut"
+                rows={3}
+                className={inputCls + ' resize-none'}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* send_email config */}
+        {data.nodeType === 'send_email' && (
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Template</label>
+              <select
+                value={config.template ?? ''}
+                onChange={e => set({ template: e.target.value })}
+                className={selectCls}
+              >
+                <option value="">Choisir…</option>
+                {EMAIL_TEMPLATES.map(t => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Sujet</label>
+              <input
+                type="text"
+                value={config.subject ?? ''}
+                onChange={e => set({ subject: e.target.value })}
+                placeholder="Ex : Votre RDV M-Santé"
+                className={inputCls}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* delay config */}
+        {data.nodeType === 'delay' && (
+          <div className="space-y-1">
+            <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Délai (heures)</label>
+            <input
+              type="number"
+              min={1}
+              max={168}
+              value={config.hours ?? 2}
+              onChange={e => set({ hours: Number(e.target.value) })}
+              className={inputCls}
+            />
+            <p className="text-[10px] text-[#6f787e]">Le nœud suivant s'exécutera après ce délai.</p>
+          </div>
+        )}
+
+        {/* condition config */}
+        {data.nodeType === 'condition' && (
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Champ</label>
+              <input
+                type="text"
+                value={config.field ?? ''}
+                onChange={e => set({ field: e.target.value })}
+                placeholder="Ex : retry_count"
+                className={inputCls}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Opérateur</label>
+              <select
+                value={config.operator ?? 'eq'}
+                onChange={e => set({ operator: e.target.value })}
+                className={selectCls}
+              >
+                {CONDITION_OPERATORS.map(op => (
+                  <option key={op.value} value={op.value}>{op.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Valeur</label>
+              <input
+                type="text"
+                value={config.value ?? ''}
+                onChange={e => set({ value: e.target.value })}
+                placeholder="Ex : 3"
+                className={inputCls}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Nodes without config */}
+        {!['send_push', 'send_email', 'delay', 'condition'].includes(data.nodeType) && (
+          <p className="text-[10px] text-[#6f787e] leading-relaxed">
+            Ce nœud n'a pas de configuration supplémentaire.
+          </p>
+        )}
+      </div>
+
+      <div className="p-3 border-t" style={{ borderColor: 'rgba(190,200,206,0.35)' }}>
+        <button
+          onClick={handleSave}
+          className="w-full py-2 text-xs font-bold text-white rounded-full transition-colors"
+          style={{ backgroundColor: '#006685' }}
+        >
+          Appliquer
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── Inner editor ──────────────────────────────────────────────────────────────
 
 let _nodeId = 2000
 
@@ -135,6 +353,7 @@ interface EditorInnerProps {
 function EditorInner({ initialNodes, initialEdges, onSave, isSaving }: EditorInnerProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes as RFNode[])
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges as RFEdge[])
+  const [selectedNode, setSelectedNode] = useState<RFNode | null>(null)
   const { screenToFlowPosition } = useReactFlow()
 
   useEffect(() => {
@@ -165,12 +384,23 @@ function EditorInner({ initialNodes, initialEdges, onSave, isSaving }: EditorInn
         id: `n${++_nodeId}`,
         type: rfType,
         position,
-        data: { label, nodeType },
+        data: { label, nodeType, config: {} },
       }
       setNodes((nds) => [...nds, newNode])
     },
     [screenToFlowPosition, setNodes],
   )
+
+  const onNodeClick = useCallback((_: React.MouseEvent, node: RFNode) => {
+    setSelectedNode(prev => prev?.id === node.id ? null : node)
+  }, [])
+
+  const handleUpdateNodeConfig = useCallback((id: string, config: NodeConfig) => {
+    setNodes(nds => nds.map(n =>
+      n.id === id ? { ...n, data: { ...n.data, config } } : n
+    ))
+    setSelectedNode(prev => prev?.id === id ? { ...prev, data: { ...prev.data, config } } : prev)
+  }, [setNodes])
 
   const handleSave = () => {
     onSave(nodes as unknown as WorkflowNode[], edges as unknown as WorkflowEdge[])
@@ -199,13 +429,13 @@ function EditorInner({ initialNodes, initialEdges, onSave, isSaving }: EditorInn
           ))}
           <p className="text-[9px] text-[#6f787e] leading-tight pt-1">
             Glissez vers le canvas →<br />
-            Sélectionnez + Suppr pour retirer
+            Cliquez un nœud pour configurer
           </p>
         </div>
 
         {/* Canvas */}
         <div
-          className="flex-1"
+          className="flex-1 min-w-0"
           style={{ backgroundColor: 'rgba(248,249,255,0.8)' }}
           onDrop={onDrop}
           onDragOver={onDragOver}
@@ -216,6 +446,7 @@ function EditorInner({ initialNodes, initialEdges, onSave, isSaving }: EditorInn
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onNodeClick={onNodeClick}
             nodeTypes={nodeTypes}
             deleteKeyCode="Backspace"
             fitView
@@ -226,12 +457,21 @@ function EditorInner({ initialNodes, initialEdges, onSave, isSaving }: EditorInn
             <Controls />
           </ReactFlow>
         </div>
+
+        {/* Node config panel */}
+        {selectedNode && (
+          <NodeConfigPanel
+            node={selectedNode}
+            onUpdate={handleUpdateNodeConfig}
+            onClose={() => setSelectedNode(null)}
+          />
+        )}
       </div>
 
       {/* Save bar */}
       <div className="flex items-center justify-between px-1">
         <p className="text-xs text-[#6f787e]">
-          <span className="font-semibold">Astuce :</span> glissez des blocs, connectez les handles, sélectionnez + Suppr pour retirer.
+          <span className="font-semibold">Astuce :</span> glissez des blocs, connectez les handles, cliquez pour configurer, Suppr pour retirer.
         </p>
         <button
           onClick={handleSave}
