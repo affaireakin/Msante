@@ -181,6 +181,9 @@ export default function PaymentsPage() {
       void queryClient.invalidateQueries({ queryKey: ['admin-payments'] })
       void queryClient.invalidateQueries({ queryKey: ['admin-payment-totals'] })
     },
+    onError: (err) => {
+      console.error('refund error', err)
+    },
   })
 
   const handleExportCSV = () => {
@@ -448,7 +451,7 @@ export default function PaymentsPage() {
                   </span>
                 </td>
                 <td className="px-6 py-4">
-                  {payment.status === 'failed' && (
+                  {payment.status === 'completed' && (
                     <button
                       onClick={() => refund.mutate(payment.id)}
                       disabled={refund.isPending}
@@ -456,6 +459,11 @@ export default function PaymentsPage() {
                     >
                       Rembourser
                     </button>
+                  )}
+                  {refund.isError && (
+                    <p style={{ color: '#ba1a1a', fontSize: '11px', marginTop: '4px' }}>
+                      {refund.error instanceof Error ? refund.error.message : 'Erreur remboursement'}
+                    </p>
                   )}
                 </td>
               </tr>
