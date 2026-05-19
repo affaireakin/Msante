@@ -1,5 +1,4 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { createNotificationService } from '../../packages/notifications/index.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -161,9 +160,6 @@ Deno.serve(async (req) => {
 
     // 5. Notifie le praticien (fire-and-forget)
     try {
-      const resendApiKey = Deno.env.get('RESEND_API_KEY') ?? ''
-      const notifService = createNotificationService(supabase, resendApiKey)
-
       const { data: practData } = await supabase
         .from('practitioners')
         .select('user_id')
@@ -172,23 +168,20 @@ Deno.serve(async (req) => {
 
       if (practData?.user_id) {
         const [{ data: practUser }, { data: patientData }] = await Promise.all([
-          supabase.from('users').select('id, full_name, email, push_token').eq('id', practData.user_id).single(),
+          supabase.from('users').select('push_token').eq('id', practData.user_id).single(),
           supabase.from('users').select('full_name').eq('id', user.id).single(),
         ])
 
-        if (practUser) {
-          await notifService.send({
-            type: 'consultation_starting',
-            recipient: {
-              id: practUser.id,
-              full_name: practUser.full_name,
-              email: practUser.email,
-              push_token: practUser.push_token,
-            },
-            data: {
-              patientName: patientData?.full_name ?? 'Votre patient',
-              appointmentId,
-            },
+        if (practUser?.push_token) {
+          await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: practUser.push_token,
+              title: 'Votre patient est prêt',
+              body: `${patientData?.full_name ?? 'Votre patient'} attend dans la salle de consultation.`,
+              data: { route: '/(practitioner)/appointments' },
+            }),
           })
         }
       }
