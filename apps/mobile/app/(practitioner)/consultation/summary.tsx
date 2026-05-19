@@ -10,9 +10,10 @@ import { useConsultationStore } from '@/features/consultation/store/consultation
 export default function PractitionerConsultationSummary() {
   const router = useRouter()
   const { aiSummary, durationMin, prescriptionUrl, consultationId, reset } = useConsultationStore()
-  const [notes, setNotes] = useState('')
+  const [notesDraft, setNotesDraft] = useState('')
   const [notesSaved, setNotesSaved] = useState(false)
   const [isSavingNotes, setIsSavingNotes] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const handleDownloadPrescription = async () => {
     if (!consultationId) return
@@ -24,21 +25,43 @@ export default function PractitionerConsultationSummary() {
         await WebBrowser.openBrowserAsync(data.signedUrl)
       }
     } catch {
-      // ignore
+      // ignore download errors — user can retry
     }
   }
 
-  const handleSaveNotes = async () => {
-    if (!consultationId || !notes.trim()) return
+  /** Auto-save on blur — only if there's content */
+  const handleNoteBlur = async () => {
+    if (!consultationId || !notesDraft.trim()) return
     setIsSavingNotes(true)
+    setSaveError(null)
     try {
-      await supabase
+      const { error } = await supabase
         .from('consultations')
-        .update({ notes: notes.trim() } as never)
+        .update({ practitioner_notes: notesDraft.trim() })
         .eq('id', consultationId)
+      if (error) throw error
       setNotesSaved(true)
-    } catch {
-      // ignore — notes are best-effort
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : 'Erreur lors de la sauvegarde')
+    } finally {
+      setIsSavingNotes(false)
+    }
+  }
+
+  /** Manual save button — same logic as blur */
+  const handleSaveNotes = async () => {
+    if (!consultationId || !notesDraft.trim() || isSavingNotes) return
+    setIsSavingNotes(true)
+    setSaveError(null)
+    try {
+      const { error } = await supabase
+        .from('consultations')
+        .update({ practitioner_notes: notesDraft.trim() })
+        .eq('id', consultationId)
+      if (error) throw error
+      setNotesSaved(true)
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : 'Erreur lors de la sauvegarde')
     } finally {
       setIsSavingNotes(false)
     }
@@ -111,7 +134,7 @@ export default function PractitionerConsultationSummary() {
           </View>
         )}
 
-        {/* Practitioner notes */}
+        {/* Practitioner notes — auto-save on blur */}
         <View style={{ gap: 12, borderRadius: 12, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.60)' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <MaterialIcons name="edit-note" size={18} color="#006685" />
@@ -120,8 +143,9 @@ export default function PractitionerConsultationSummary() {
             </Text>
           </View>
           <TextInput
-            value={notes}
-            onChangeText={(t) => { setNotes(t); setNotesSaved(false) }}
+            value={notesDraft}
+            onChangeText={(t) => { setNotesDraft(t); setNotesSaved(false); setSaveError(null) }}
+            onBlur={handleNoteBlur}
             placeholder="Observations, diagnostic, suivi recommandé…"
             placeholderTextColor="#6f787e"
             multiline
@@ -135,12 +159,18 @@ export default function PractitionerConsultationSummary() {
               minHeight: 100,
               textAlignVertical: 'top',
               borderWidth: 1,
-              borderColor: 'rgba(190,200,206,0.4)',
+              borderColor: saveError ? '#ba1a1a' : 'rgba(190,200,206,0.4)',
             }}
           />
+          {/* Save error */}
+          {saveError ? (
+            <Text style={{ color: '#ba1a1a', fontSize: 12, fontFamily: 'Manrope' }}>
+              {saveError}
+            </Text>
+          ) : null}
           <TouchableOpacity
             onPress={handleSaveNotes}
-            disabled={!notes.trim() || isSavingNotes || notesSaved}
+            disabled={!notesDraft.trim() || isSavingNotes || notesSaved}
             style={{
               borderRadius: 8,
               paddingVertical: 10,
@@ -148,7 +178,7 @@ export default function PractitionerConsultationSummary() {
               backgroundColor: notesSaved ? 'rgba(29,122,58,0.1)' : 'rgba(0,102,133,0.08)',
               borderWidth: 1,
               borderColor: notesSaved ? '#bbf7d0' : 'rgba(0,102,133,0.2)',
-              opacity: !notes.trim() || isSavingNotes ? 0.5 : 1,
+              opacity: !notesDraft.trim() || isSavingNotes ? 0.5 : 1,
             }}
           >
             {isSavingNotes ? (
@@ -162,7 +192,7 @@ export default function PractitionerConsultationSummary() {
         </View>
 
         {/* Prescription download */}
-        {prescriptionUrl && (
+        {prescriptionUrl ? (
           <View style={{ gap: 12, borderRadius: 12, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.60)' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
               <MaterialIcons name="description" size={18} color="#006685" />
@@ -179,7 +209,7 @@ export default function PractitionerConsultationSummary() {
               </Text>
             </TouchableOpacity>
           </View>
-        )}
+        ) : null}
 
         {/* CTA */}
         <TouchableOpacity
