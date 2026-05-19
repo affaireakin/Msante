@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell,
+  ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar,
 } from 'recharts'
 import { supabase } from '@/lib/supabase'
 
@@ -69,6 +69,8 @@ interface AnalyticsData {
   top5: { id: string; count: number }[]
   newCount: number
   recurringCount: number
+  occupancyRate: number
+  occupancyByDay: { day: string; count: number }[]
 }
 
 function useAnalytics(practId: string | null) {
@@ -88,6 +90,7 @@ function useAnalytics(practId: string | null) {
         { data: lastMonthPay, error: e3 },
         { data: allAppts, error: e4 },
         { data: thisMonthAppts, error: e5 },
+        { data: avails, error: e6 },
       ] = await Promise.all([
         supabase
           .from('payments')
@@ -117,9 +120,14 @@ function useAnalytics(practId: string | null) {
           .select('patient_id, status, type')
           .eq('practitioner_id', practId!)
           .gte('scheduled_at', monthStart),
+        supabase
+          .from('availabilities')
+          .select('day_of_week, start_time, end_time')
+          .eq('practitioner_id', practId!)
+          .eq('is_active', true),
       ])
 
-      const firstError = e1 ?? e2 ?? e3 ?? e4 ?? e5
+      const firstError = e1 ?? e2 ?? e3 ?? e4 ?? e5 ?? e6
       if (firstError) throw firstError
 
       // Revenue by month (6 months)
@@ -192,6 +200,30 @@ function useAnalytics(practId: string | null) {
         else newCount++
       })
 
+      // Occupancy rate — count available slots this month vs booked
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+      let totalSlots = 0
+      for (let day = 1; day <= daysInMonth; day++) {
+        const d = new Date(now.getFullYear(), now.getMonth(), day)
+        const dow = d.getDay() // 0=Sunday
+        const matching = (avails ?? []).filter(a => a.day_of_week === dow)
+        totalSlots += matching.length
+      }
+      const bookedThisMonth = (thisMonthAppts ?? []).filter(a =>
+        ['confirmed', 'completed', 'pending'].includes(a.status as string)
+      ).length
+      const occupancyRate = totalSlots > 0 ? Math.round((bookedThisMonth / totalSlots) * 100) : 0
+
+      // Booked appointments by day of week (all time, confirmed + completed)
+      const DAYS_FR = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
+      const byDow: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }
+      for (const a of allAppts ?? []) {
+        if (['confirmed', 'completed'].includes(a.status as string)) {
+          byDow[new Date(a.scheduled_at as string).getDay()]++
+        }
+      }
+      const occupancyByDay = DAYS_FR.map((day, i) => ({ day, count: byDow[i] }))
+
       return {
         thisMonth,
         lastMonth,
@@ -204,27 +236,29 @@ function useAnalytics(practId: string | null) {
         top5,
         newCount,
         recurringCount,
+        occupancyRate,
+        occupancyByDay,
       }
     },
   })
 }
 
 export default function PractitionerAnalyticsPage() {
-  const { data: practId } = useQuery({
-    queryKey: ['my-pract-id-analytics'],
-    queryFn: async (): Promise<string | null> => {
+  const { data: practInfo } = useQuery({
+    queryKey: ['my-pract-info-analytics'],
+    queryFn: async (): Promise<{ id: string; rating: number | null } | null> => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return null
       const { data } = await supabase
         .from('practitioners')
-        .select('id')
+        .select('id, rating')
         .eq('user_id', user.id)
         .single()
-      return (data as { id: string } | null)?.id ?? null
+      return (data as { id: string; rating: number | null } | null) ?? null
     },
   })
 
-  const { data, isLoading, isError } = useAnalytics(practId ?? null)
+  const { data, isLoading, isError } = useAnalytics(practInfo?.id ?? null)
 
   if (isError) {
     return (
@@ -250,8 +284,8 @@ export default function PractitionerAnalyticsPage() {
         <div>
           <h1 className="text-2xl font-black text-[#0b1c30]">Analytics</h1>
         </div>
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map(i => (
+        <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map(i => (
             <div key={i} className="h-24 rounded-2xl bg-white/40 animate-pulse" />
           ))}
         </div>
@@ -267,7 +301,7 @@ export default function PractitionerAnalyticsPage() {
       </div>
 
       {/* KPI cards */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
         <KpiCard
           label="CA ce mois"
           value={`${data.thisMonth.toLocaleString('fr-FR')} XOF`}
@@ -289,6 +323,18 @@ export default function PractitionerAnalyticsPage() {
           value={`${data.rebookingRate}%`}
           icon="replay"
           sub="patients ayant reconsulté"
+        />
+        <KpiCard
+          label="Taux d'occupation"
+          value={`${data.occupancyRate}%`}
+          icon="event_available"
+          sub="créneaux réservés / disponibles"
+        />
+        <KpiCard
+          label="Note moyenne"
+          value={practInfo?.rating != null ? `${Number(practInfo.rating).toFixed(1)} / 5` : '—'}
+          icon="star"
+          sub="évaluation patients"
         />
       </div>
 
@@ -319,6 +365,19 @@ export default function PractitionerAnalyticsPage() {
               fill="url(#revGradient)"
             />
           </AreaChart>
+        </ResponsiveContainer>
+      </ChartCard>
+
+      {/* Day-of-week occupancy bar chart */}
+      <ChartCard title="Occupation par jour de semaine">
+        <ResponsiveContainer width="100%" height={180}>
+          <BarChart data={data.occupancyByDay} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
+            <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#6f787e' }} />
+            <YAxis tick={{ fontSize: 11, fill: '#6f787e' }} allowDecimals={false} />
+            <Tooltip formatter={(v) => [v, 'Séances']} />
+            <Bar dataKey="count" fill="#006685" radius={[4, 4, 0, 0]} />
+          </BarChart>
         </ResponsiveContainer>
       </ChartCard>
 
@@ -365,6 +424,7 @@ export default function PractitionerAnalyticsPage() {
             {[
               { label: 'Taux de no-show', value: data.noShowRate, color: '#ba1a1a' },
               { label: 'Taux de rebooking', value: data.rebookingRate, color: '#1d7a3a' },
+              { label: "Taux d'occupation", value: data.occupancyRate, color: '#006685' },
             ].map(m => (
               <div key={m.label} className="space-y-1.5">
                 <div className="flex items-center justify-between">
@@ -374,7 +434,7 @@ export default function PractitionerAnalyticsPage() {
                 <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all"
-                    style={{ width: `${m.value}%`, backgroundColor: m.color }}
+                    style={{ width: `${Math.min(m.value, 100)}%`, backgroundColor: m.color }}
                   />
                 </div>
               </div>
