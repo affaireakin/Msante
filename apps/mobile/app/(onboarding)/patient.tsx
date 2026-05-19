@@ -11,6 +11,13 @@ import { supabase } from '@/services/supabase'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
+const NOTIF_ROWS: Array<{ key: 'reminders' | 'dailyCheckin' | 'tips' | 'community'; icon: string; label: string; subtitle: string }> = [
+  { key: 'reminders', icon: 'alarm', label: 'Rappels rendez-vous', subtitle: 'Recevez des rappels avant chaque séance' },
+  { key: 'dailyCheckin', icon: 'mood', label: 'Check-in bien-être quotidien', subtitle: 'Un petit moment pour vous chaque matin' },
+  { key: 'tips', icon: 'lightbulb', label: 'Conseils & astuces bien-être', subtitle: 'Contenus sélectionnés par nos praticiens' },
+  { key: 'community', icon: 'groups', label: 'Nouvelles de la communauté', subtitle: 'Actualités et mises à jour M-Santé' },
+]
+
 const COUNTRIES = [
   { label: 'Sénégal', flag: '🇸🇳', value: 'SN' as const },
   { label: "Côte d'Ivoire", flag: '🇨🇮', value: 'CI' as const },
@@ -220,8 +227,8 @@ export default function PatientOnboardingScreen() {
             notif_prefs: notifPrefs,
           })
           .eq('id', user.id)
-          .then(() => {
-            // intentionally ignored — non-blocking
+          .then(({ error }) => {
+            if (error) console.error('profile metadata update failed', error.message)
           })
       }
     } catch {
@@ -416,7 +423,11 @@ export default function PatientOnboardingScreen() {
             </View>
           </GlassCard>
 
-          <SkipButton onPress={() => setStep(3)} />
+          <SkipButton onPress={() => {
+              setHealthConditions([])
+              setWellnessGoals([])
+              setStep(3)
+            }} />
         </ScrollView>
       </SafeAreaView>
     )
@@ -425,18 +436,6 @@ export default function PatientOnboardingScreen() {
   // ── Step 3 — Préférences notifications ───────────────────────────────────
 
   if (step === 3) {
-    const notifRows: Array<{
-      key: keyof NotifPrefs
-      icon: string
-      label: string
-      subtitle: string
-    }> = [
-      { key: 'reminders', icon: 'alarm', label: 'Rappels rendez-vous', subtitle: 'Recevez des rappels avant chaque séance' },
-      { key: 'dailyCheckin', icon: 'mood', label: 'Check-in bien-être quotidien', subtitle: 'Un petit moment pour vous chaque matin' },
-      { key: 'tips', icon: 'lightbulb', label: 'Conseils & astuces bien-être', subtitle: 'Contenus sélectionnés par nos praticiens' },
-      { key: 'community', icon: 'groups', label: 'Nouvelles de la communauté', subtitle: 'Actualités et mises à jour M-Santé' },
-    ]
-
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
         <ScrollView
@@ -455,7 +454,7 @@ export default function PatientOnboardingScreen() {
           </View>
 
           <GlassCard style={{ gap: 0 }}>
-            {notifRows.map((row, index) => (
+            {NOTIF_ROWS.map((row, index) => (
               <View
                 key={row.key}
                 style={{
@@ -463,7 +462,7 @@ export default function PatientOnboardingScreen() {
                   alignItems: 'center',
                   gap: 14,
                   paddingVertical: 16,
-                  borderBottomWidth: index < notifRows.length - 1 ? 1 : 0,
+                  borderBottomWidth: index < NOTIF_ROWS.length - 1 ? 1 : 0,
                   borderBottomColor: '#e5eeff',
                 }}
               >
@@ -508,14 +507,14 @@ export default function PatientOnboardingScreen() {
       subtitle: 'Suivez votre humeur chaque jour et identifiez vos tendances émotionnelles.',
     },
     {
-      icon: 'self_improvement',
+      icon: 'self-improvement',
       iconColor: '#7c3aed',
       iconBg: '#ede9fe',
       title: 'Méditation guidée',
       subtitle: 'Séances audio adaptées à votre niveau, dès 5 minutes par jour.',
     },
     {
-      icon: 'smart_toy',
+      icon: 'smart-toy',
       iconColor: '#705d00',
       iconBg: '#fef9c3',
       title: 'Assistant Mounima',
@@ -534,7 +533,7 @@ export default function PatientOnboardingScreen() {
           <BackButton onPress={() => setStep(3)} />
           <ProgressBar step={4} total={4} />
           <StepHeader
-            icon="auto_awesome"
+            icon="auto-awesome"
             title="Votre boîte à outils"
             subtitle="Découvrez tout ce que M-Santé met à votre disposition pour prendre soin de vous."
             iconColor="#705d00"
