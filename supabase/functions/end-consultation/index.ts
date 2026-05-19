@@ -1,6 +1,8 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import Anthropic from 'https://esm.sh/@anthropic-ai/sdk@0.24.3'
 
+const AI_MODEL = Deno.env.get('ANTHROPIC_MODEL') ?? 'claude-3-5-haiku-20241022'
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -69,11 +71,11 @@ Deno.serve(async (req) => {
     const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')! })
 
     const chatText = Array.isArray(chatHistory) && chatHistory.length > 0
-      ? chatHistory.map((m: any) => `${m.role}: ${m.content}`).join('\n')
+      ? (chatHistory as { role: string; content: string }[]).map((m) => `${m.role}: ${m.content}`).join('\n')
       : 'Aucun message échangé.'
 
     const completion = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: AI_MODEL,
       max_tokens: 400,
       system: `Tu es un assistant médical. Génère un compte-rendu factuel et bienveillant
                d'une session de téléconsultation à partir du chat et des notes du praticien.
@@ -88,7 +90,8 @@ Deno.serve(async (req) => {
       }],
     })
 
-    const aiSummary = (completion.content[0] as any).text as string
+    const firstBlock = completion.content[0]
+    const aiSummary = firstBlock.type === 'text' ? firstBlock.text : ''
 
     // 3. Update consultation
     await supabase
