@@ -248,6 +248,169 @@ async function handleRetryPayment(
   return { retried: true, payment_id: paymentId }
 }
 
+async function handleAiAnalysis(
+  ctx: RunContext,
+  inputData: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const claudeApiKey = Deno.env.get('ANTHROPIC_API_KEY')
+  if (!claudeApiKey) return { skipped: true, reason: 'no_api_key', sentiment: 'unknown' }
+
+  const appointments = (inputData.appointments as { patient_id: string }[] | undefined) ?? []
+  if (appointments.length === 0) return { sentiment: 'unknown', skipped: true }
+
+  const patientId = appointments[0].patient_id
+
+  // Get last 7 mood entries
+  const { data: moodEntries } = await ctx.supabase
+    .from('mood_entries')
+    .select('score, note, entry_date')
+    .eq('patient_id', patientId)
+    .order('entry_date', { ascending: false })
+    .limit(7)
+
+  if (!moodEntries || moodEntries.length === 0) return { sentiment: 'unknown' }
+
+  const avgScore = moodEntries.reduce((s, e) => s + e.score, 0) / moodEntries.length
+  const notes = moodEntries.map(e => e.note).filter(Boolean).join('. ')
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': claudeApiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 200,
+      messages: [{
+        role: 'user',
+        content: `Patient mood data (7 days): avg score ${avgScore.toFixed(1)}/10. Notes: "${notes}".
+Classify emotional state in one word: positive, neutral, concerning, or critical.
+Then give a brief 1-sentence actionable insight for the practitioner.
+Format: {"sentiment": "...", "insight": "..."}. Only JSON, no other text.`
+      }]
+    }),
+  })
+
+  const data = await res.json() as { content?: Array<{ text?: string }> }
+  const text = data.content?.[0]?.text ?? '{}'
+  try {
+    const parsed = JSON.parse(text) as { sentiment?: string; insight?: string }
+    return {
+      sentiment: parsed.sentiment ?? 'unknown',
+      insight: parsed.insight ?? '',
+      avg_score: avgScore,
+      patient_id: patientId,
+      appointments: appointments,
+    }
+  } catch {
+    return { sentiment: 'unknown', avg_score: avgScore, patient_id: patientId, appointments }
+  }
+}
+
+async function handleRecommendAppointment(
+  ctx: RunContext,
+  inputData: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const patientId = (inputData.patient_id as string | undefined) ??
+    ((inputData.appointments as { patient_id: string }[] | undefined)?.[0]?.patient_id)
+
+  if (!patientId) return { skipped: true, reason: 'no_patient_id' }
+
+  // Check if patient already has a pending/confirmed appointment in next 7 days
+  const in7days = new Date(Date.now() + 7 * 24 * 3600 * 1000).toISOString()
+  const { data: existing } = await ctx.supabase
+    .from('appointments')
+    .select('id')
+    .eq('patient_id', patientId)
+    .in('status', ['pending', 'confirmed'])
+    .gte('scheduled_at', new Date().toISOString())
+    .lte('scheduled_at', in7days)
+    .limit(1)
+
+  if (existing && existing.length > 0) {
+    return { skipped: true, reason: 'appointment_exists', patient_id: patientId }
+  }
+
+  // Send push notification recommending to book
+  const { data: user } = await ctx.supabase
+    .from('users')
+    .select('push_token, full_name')
+    .eq('id', patientId)
+    .single()
+
+  if (user?.push_token) {
+    await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: user.push_token,
+        title: 'M-Santé vous recommande une consultation',
+        body: 'Votre bien-être mérite une attention particulière. Prenez rendez-vous avec votre praticien.',
+        data: { route: '/(patient)/find-practitioners' },
+      }),
+    })
+  }
+
+  return { recommended: true, patient_id: patientId, notification_sent: !!user?.push_token }
+}
+
+async function handleSendWhatsApp(
+  ctx: RunContext,
+  config: NodeConfig,
+  inputData: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const twilioSid = Deno.env.get('TWILIO_ACCOUNT_SID')
+  const twilioToken = Deno.env.get('TWILIO_AUTH_TOKEN')
+  const twilioWhatsApp = Deno.env.get('TWILIO_WHATSAPP_FROM') ?? 'whatsapp:+14155238886'
+
+  if (!twilioSid || !twilioToken) return { status: 'whatsapp_skipped_no_credentials' }
+
+  const appointments = (inputData.appointments as { patient_id: string }[] | undefined) ?? []
+  const sent: string[] = []
+
+  const messages: Record<string, string> = {
+    appointment_reminder: '🗓️ Rappel M-Santé : vous avez un rendez-vous demain. Consultez l\'app pour les détails.',
+    wellness_check: '💙 Comment allez-vous ? Votre équipe M-Santé pense à vous.',
+    payment_retry: '⚠️ M-Santé : votre paiement nécessite votre attention. Ouvrez l\'app.',
+  }
+
+  const template = config.template ?? 'appointment_reminder'
+  const messageBody = config.message || messages[template] || '📱 Notification M-Santé'
+
+  for (const apt of appointments) {
+    const { data: user } = await ctx.supabase
+      .from('users')
+      .select('phone, full_name')
+      .eq('id', apt.patient_id)
+      .single()
+
+    if (!user?.phone) continue
+
+    const phoneE164 = user.phone.startsWith('+') ? user.phone : `+${user.phone}`
+
+    const body = new URLSearchParams({
+      From: twilioWhatsApp,
+      To: `whatsapp:${phoneE164}`,
+      Body: messageBody,
+    })
+
+    await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${btoa(`${twilioSid}:${twilioToken}`)}`,
+      },
+      body: body.toString(),
+    })
+
+    sent.push(apt.patient_id)
+  }
+
+  return { sent_count: sent.length }
+}
+
 // ── Orchestrator ──────────────────────────────────────────────────────────────
 
 Deno.serve(async (req) => {
@@ -371,6 +534,15 @@ Deno.serve(async (req) => {
             }
             case 'retry_payment':
               output = await handleRetryPayment(ctx, prevOutput)
+              break
+            case 'ai_analysis':
+              output = await handleAiAnalysis(ctx, prevOutput)
+              break
+            case 'recommend_appointment':
+              output = await handleRecommendAppointment(ctx, prevOutput)
+              break
+            case 'send_whatsapp':
+              output = await handleSendWhatsApp(ctx, nodeConfig, prevOutput)
               break
             default:
               output = { skipped: true, reason: 'unknown_node_type' }

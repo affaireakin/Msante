@@ -40,7 +40,7 @@ interface NodeData {
 // ── Custom nodes ──────────────────────────────────────────────────────────────
 
 function TriggerNode({ data, selected }: NodeProps) {
-  const d = data as NodeData
+  const d = data as unknown as NodeData
   return (
     <div
       className={`px-4 py-3 rounded-xl border-2 min-w-[140px] text-center transition-all ${selected ? 'border-sky-500 shadow-lg' : 'border-sky-400'}`}
@@ -55,7 +55,7 @@ function TriggerNode({ data, selected }: NodeProps) {
 }
 
 function ActionNode({ data, selected }: NodeProps) {
-  const d = data as NodeData
+  const d = data as unknown as NodeData
   return (
     <div
       className={`px-4 py-3 rounded-xl border-2 min-w-[140px] text-center transition-all ${selected ? 'border-[#006685] shadow-lg' : 'border-slate-200'}`}
@@ -79,7 +79,7 @@ function ActionNode({ data, selected }: NodeProps) {
 }
 
 function EndNode({ data, selected }: NodeProps) {
-  const d = data as NodeData
+  const d = data as unknown as NodeData
   return (
     <div
       className={`px-4 py-3 rounded-xl border-2 min-w-[100px] text-center transition-all ${selected ? 'border-emerald-500 shadow-lg' : 'border-emerald-400'}`}
@@ -113,6 +113,9 @@ const PALETTE_SECTIONS = [
       { rfType: 'actionNode', nodeType: 'send_email', label: 'Email', icon: 'email' },
       { rfType: 'actionNode', nodeType: 'delay', label: 'Délai', icon: 'timer' },
       { rfType: 'actionNode', nodeType: 'condition', label: 'Condition', icon: 'call_split' },
+      { rfType: 'actionNode', nodeType: 'ai_analysis', label: 'Analyse IA', icon: 'psychology' },
+      { rfType: 'actionNode', nodeType: 'recommend_appointment', label: 'Reco. RDV', icon: 'event_available' },
+      { rfType: 'actionNode', nodeType: 'send_whatsapp', label: 'WhatsApp', icon: 'chat' },
     ],
   },
   {
@@ -180,7 +183,7 @@ interface NodeConfigPanelProps {
 }
 
 function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
-  const data = node.data as NodeData
+  const data = node.data as unknown as NodeData
   const [config, setConfig] = useState<NodeConfig>(data.config ?? {})
 
   const handleSave = () => {
@@ -318,8 +321,51 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
           </div>
         )}
 
+        {/* send_whatsapp config */}
+        {data.nodeType === 'send_whatsapp' && (
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Template</label>
+              <select
+                value={config.template ?? ''}
+                onChange={e => set({ template: e.target.value })}
+                className={selectCls}
+              >
+                <option value="">Choisir…</option>
+                {PUSH_TEMPLATES.map(t => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Message personnalisé</label>
+              <textarea
+                value={config.message ?? ''}
+                onChange={e => set({ message: e.target.value })}
+                placeholder="Laisser vide pour le template par défaut"
+                rows={3}
+                className={inputCls + ' resize-none'}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ai_analysis info */}
+        {data.nodeType === 'ai_analysis' && (
+          <p className="text-[10px] text-[#6f787e] leading-relaxed">
+            Analyse les entrées humeur via Claude Haiku. Lit les 7 dernières entrées du patient et retourne un sentiment (positive / neutral / concerning / critical) + une recommandation praticien.
+          </p>
+        )}
+
+        {/* recommend_appointment info */}
+        {data.nodeType === 'recommend_appointment' && (
+          <p className="text-[10px] text-[#6f787e] leading-relaxed">
+            Recommande un RDV si aucun RDV prévu dans 7 jours. Envoie une notification push au patient pour l'inciter à réserver.
+          </p>
+        )}
+
         {/* Nodes without config */}
-        {!['send_push', 'send_email', 'delay', 'condition'].includes(data.nodeType) && (
+        {!['send_push', 'send_email', 'delay', 'condition', 'send_whatsapp', 'ai_analysis', 'recommend_appointment'].includes(data.nodeType) && (
           <p className="text-[10px] text-[#6f787e] leading-relaxed">
             Ce nœud n'a pas de configuration supplémentaire.
           </p>
