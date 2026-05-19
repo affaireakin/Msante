@@ -1,6 +1,8 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+const AI_MODEL = Deno.env.get('ANTHROPIC_MODEL') ?? 'claude-3-5-haiku-20241022'
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -125,7 +127,7 @@ serve(async (req) => {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: AI_MODEL,
         max_tokens: 300,
         system: MOUNIMA_SYSTEM,
         messages,
