@@ -159,6 +159,12 @@ const PUSH_TEMPLATES = [
   { value: 'mood_low_streak', label: 'Alerte mood bas' },
 ]
 
+const WHATSAPP_TEMPLATES = [
+  { value: 'appointment_reminder', label: 'Rappel RDV' },
+  { value: 'wellness_check',       label: 'Check bien-être' },
+  { value: 'payment_retry',        label: 'Relance paiement' },
+]
+
 const EMAIL_TEMPLATES = [
   { value: 'appointment_confirm', label: 'Confirmation RDV' },
   { value: 'appointment_reminder', label: 'Rappel RDV' },
@@ -332,7 +338,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
                 className={selectCls}
               >
                 <option value="">Choisir…</option>
-                {PUSH_TEMPLATES.map(t => (
+                {WHATSAPP_TEMPLATES.map(t => (
                   <option key={t.value} value={t.value}>{t.label}</option>
                 ))}
               </select>

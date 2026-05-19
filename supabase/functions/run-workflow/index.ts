@@ -5,6 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const AI_MODEL = Deno.env.get('ANTHROPIC_MODEL') ?? 'claude-3-5-haiku-20241022'
+
 interface NodeConfig {
   template?: string
   message?: string
@@ -281,7 +283,7 @@ async function handleAiAnalysis(
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
+      model: AI_MODEL,
       max_tokens: 200,
       messages: [{
         role: 'user',
@@ -292,6 +294,11 @@ Format: {"sentiment": "...", "insight": "..."}. Only JSON, no other text.`
       }]
     }),
   })
+
+  if (!res.ok) {
+    const errText = await res.text()
+    throw new Error(`Anthropic API error ${res.status}: ${errText}`)
+  }
 
   const data = await res.json() as { content?: Array<{ text?: string }> }
   const text = data.content?.[0]?.text ?? '{}'
@@ -341,7 +348,7 @@ async function handleRecommendAppointment(
     .single()
 
   if (user?.push_token) {
-    await fetch('https://exp.host/--/api/v2/push/send', {
+    const pushRes = await fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -351,6 +358,10 @@ async function handleRecommendAppointment(
         data: { route: '/(patient)/find-practitioners' },
       }),
     })
+    if (!pushRes.ok) {
+      console.error('Expo push error', pushRes.status, await pushRes.text())
+      // don't throw — best-effort notification
+    }
   }
 
   return { recommended: true, patient_id: patientId, notification_sent: !!user?.push_token }
@@ -396,7 +407,7 @@ async function handleSendWhatsApp(
       Body: messageBody,
     })
 
-    await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
+    const twilioRes = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${twilioSid}/Messages.json`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -404,6 +415,11 @@ async function handleSendWhatsApp(
       },
       body: body.toString(),
     })
+
+    if (!twilioRes.ok) {
+      const errText = await twilioRes.text()
+      throw new Error(`Twilio error ${twilioRes.status}: ${errText}`)
+    }
 
     sent.push(apt.patient_id)
   }
