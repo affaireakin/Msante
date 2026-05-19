@@ -4,6 +4,18 @@ import Link from 'next/link'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
+interface AppointmentWithUser {
+  patient_id: string
+  scheduled_at: string
+  users: {
+    id: string
+    full_name: string
+    phone: string | null
+    country: string | null
+    created_at: string
+  } | null
+}
+
 function Icon({ name, size = 18, color }: { name: string; size?: number; color?: string }) {
   return <span className="material-symbols-outlined" style={{ fontSize: `${size}px`, color }}>{name}</span>
 }
@@ -42,7 +54,7 @@ function moodStyle(score: number): { bg: string; text: string } {
 }
 
 function usePatients() {
-  return useQuery<Patient[]>({
+  return useQuery<Patient[], Error>({
     queryKey: ['practitioner-patients'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
@@ -64,8 +76,8 @@ function usePatients() {
       if (error) throw error
 
       const patientMap: Record<string, { user: { id: string; full_name: string; phone: string | null; country: string | null; created_at: string }; apts: string[] }> = {}
-      for (const a of apts ?? []) {
-        const u = (a as { patient_id: string; scheduled_at: string; users: { id: string; full_name: string; phone: string | null; country: string | null; created_at: string } | null }).users
+      for (const a of (apts ?? []) as unknown as AppointmentWithUser[]) {
+        const u = a.users
         if (!u) continue
         if (!patientMap[u.id]) patientMap[u.id] = { user: u, apts: [] }
         patientMap[u.id].apts.push(a.scheduled_at)
@@ -200,24 +212,31 @@ function fmtDayTime(iso: string): string {
 }
 
 export default function PatientsPage() {
-  const { data: patients = [], isLoading } = usePatients()
+  const { data: patients = [], isLoading, isError, error } = usePatients()
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Patient | null>(null)
   const qc = useQueryClient()
 
-  const [practId, setPractId] = useState<string | null>(null)
-  useQuery({
-    queryKey: ['my-pract-id'],
+  const { data: userId } = useQuery({
+    queryKey: ['auth-user-id'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return null
-      const { data } = await supabase.from('practitioners').select('id').eq('user_id', user.id).single()
-      if (data) setPractId(data.id)
-      return data?.id ?? null
+      return user?.id ?? null
     },
+    staleTime: 10 * 60 * 1000,
   })
 
-  const { data: designations = [] } = useDesignations(practId)
+  const { data: practId } = useQuery({
+    queryKey: ['my-pract-id', userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data } = await supabase.from('practitioners').select('id').eq('user_id', userId!).single()
+      return data?.id ?? null
+    },
+    staleTime: 10 * 60 * 1000,
+  })
+
+  const { data: designations = [] } = useDesignations(practId ?? null)
 
   const respondDesignation = useMutation({
     mutationFn: async ({ patientId, accept }: { patientId: string; accept: boolean }) => {
@@ -313,6 +332,14 @@ export default function PatientsPage() {
             <div className="space-y-2">
               {[1, 2, 3, 4].map(i => <div key={i} className="h-16 rounded-xl bg-white/40 animate-pulse" />)}
             </div>
+          ) : isError ? (
+            <div style={{ textAlign: 'center', padding: '48px 0', color: '#ba1a1a' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '40px', color: '#bec8ce' }}>error</span>
+              <p style={{ marginTop: '12px', fontWeight: 600, color: '#0b1c30' }}>Impossible de charger les patients</p>
+              <p style={{ fontSize: '13px', color: '#6f787e', marginTop: '4px' }}>
+                {error instanceof Error ? error.message : 'Erreur inconnue'}
+              </p>
+            </div>
           ) : filtered.length === 0 ? (
             <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
               <Icon name="group" size={48} color="#bec8ce" />
@@ -337,7 +364,6 @@ export default function PatientsPage() {
                   {filtered.map(p => {
                     const initials = p.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
                     const isSelected = selected?.id === p.id
-                    const mood = moodStyle(p.moodAvg ?? 0)
                     return (
                       <tr
                         key={p.id}
@@ -367,7 +393,7 @@ export default function PatientsPage() {
                             <div className="flex items-center gap-1.5">
                               <div
                                 className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                                style={{ backgroundColor: mood.bg, color: mood.text }}
+                                style={{ backgroundColor: moodStyle(p.moodAvg!).bg, color: moodStyle(p.moodAvg!).text }}
                               >
                                 {p.moodAvg}
                               </div>
