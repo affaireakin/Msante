@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
@@ -16,6 +17,28 @@ interface Patient {
   lastAppt: string | null
   totalAppts: number
   medicalProfile: { blood_type: string | null; allergies: string[] } | null
+  // enriched fields
+  moodAvg: number | null
+  lastSessionDate: string | null   // ISO string of last completed appointment
+  nextApptDate: string | null      // ISO string of next upcoming confirmed/pending appointment
+}
+
+interface MoodRow {
+  patient_id: string
+  score: number
+}
+
+interface ApptRow {
+  patient_id: string
+  scheduled_at: string
+  status?: string
+}
+
+/** Color coding for mood badge */
+function moodStyle(score: number): { bg: string; text: string } {
+  if (score >= 7) return { bg: '#e8f5e9', text: '#1d7a3a' }
+  if (score >= 4) return { bg: '#fff8e1', text: '#705d00' }
+  return { bg: '#ffdad6', text: '#ba1a1a' }
 }
 
 function usePatients() {
@@ -29,43 +52,111 @@ function usePatients() {
         .from('practitioners').select('id').eq('user_id', user.id).single()
       if (!pract) throw new Error('Profil praticien introuvable')
 
+      const practitionerId: string = pract.id
+
       const { data: apts, error } = await supabase
         .from('appointments')
         .select('patient_id, scheduled_at, users!patient_id(id, full_name, phone, country, created_at)')
-        .eq('practitioner_id', pract.id)
+        .eq('practitioner_id', practitionerId)
         .not('status', 'in', '("cancelled")')
         .order('scheduled_at', { ascending: false })
 
       if (error) throw error
 
-      const patientMap: Record<string, { user: any; apts: string[] }> = {}
+      const patientMap: Record<string, { user: { id: string; full_name: string; phone: string | null; country: string | null; created_at: string }; apts: string[] }> = {}
       for (const a of apts ?? []) {
-        const u = (a as any).users
+        const u = (a as { patient_id: string; scheduled_at: string; users: { id: string; full_name: string; phone: string | null; country: string | null; created_at: string } | null }).users
         if (!u) continue
         if (!patientMap[u.id]) patientMap[u.id] = { user: u, apts: [] }
         patientMap[u.id].apts.push(a.scheduled_at)
       }
 
       const patientIds = Object.keys(patientMap)
-      const { data: medProfiles } = patientIds.length
-        ? await supabase.from('patient_medical_profiles')
-            .select('patient_id, blood_type, allergies')
-            .in('patient_id', patientIds)
-        : { data: [] }
 
-      const medMap: Record<string, any> = {}
-      for (const m of medProfiles ?? []) medMap[m.patient_id] = m
+      if (!patientIds.length) {
+        return []
+      }
 
-      return Object.values(patientMap).map(({ user: u, apts: dates }) => ({
-        id: u.id,
-        full_name: u.full_name ?? '—',
-        phone: u.phone,
-        country: u.country,
-        created_at: u.created_at,
-        lastAppt: dates[0] ?? null,
-        totalAppts: dates.length,
-        medicalProfile: medMap[u.id] ? { blood_type: medMap[u.id].blood_type, allergies: medMap[u.id].allergies ?? [] } : null,
-      })) as Patient[]
+      // Parallel batch queries
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      const nowIso = new Date().toISOString()
+
+      const [medResult, moodResult, lastSessionResult, nextApptResult] = await Promise.all([
+        patientIds.length
+          ? supabase.from('patient_medical_profiles')
+              .select('patient_id, blood_type, allergies')
+              .in('patient_id', patientIds)
+          : Promise.resolve({ data: [] as Array<{ patient_id: string; blood_type: string | null; allergies: string[] }>, error: null }),
+
+        supabase.from('mood_entries')
+          .select('patient_id, score')
+          .in('patient_id', patientIds)
+          .gte('entry_date', sevenDaysAgo),
+
+        supabase.from('appointments')
+          .select('patient_id, scheduled_at')
+          .in('patient_id', patientIds)
+          .eq('practitioner_id', practitionerId)
+          .eq('status', 'completed')
+          .order('scheduled_at', { ascending: false })
+          .limit(patientIds.length * 3),
+
+        supabase.from('appointments')
+          .select('patient_id, scheduled_at, status')
+          .in('patient_id', patientIds)
+          .eq('practitioner_id', practitionerId)
+          .in('status', ['confirmed', 'pending'])
+          .gte('scheduled_at', nowIso)
+          .order('scheduled_at', { ascending: true })
+          .limit(patientIds.length * 3),
+      ])
+
+      // Build lookup maps
+      const medMap: Record<string, { blood_type: string | null; allergies: string[] }> = {}
+      for (const m of (medResult.data ?? [])) {
+        medMap[m.patient_id] = { blood_type: m.blood_type, allergies: m.allergies ?? [] }
+      }
+
+      // Mood average per patient
+      const moodSumMap: Record<string, { sum: number; count: number }> = {}
+      for (const row of ((moodResult.data ?? []) as MoodRow[])) {
+        if (!moodSumMap[row.patient_id]) moodSumMap[row.patient_id] = { sum: 0, count: 0 }
+        moodSumMap[row.patient_id].sum += row.score
+        moodSumMap[row.patient_id].count += 1
+      }
+
+      // Last completed session per patient (results already ordered desc, take first seen)
+      const lastSessionMap: Record<string, string> = {}
+      for (const row of ((lastSessionResult.data ?? []) as ApptRow[])) {
+        if (!lastSessionMap[row.patient_id]) {
+          lastSessionMap[row.patient_id] = row.scheduled_at
+        }
+      }
+
+      // Next upcoming appointment per patient (results already ordered asc, take first seen)
+      const nextApptMap: Record<string, string> = {}
+      for (const row of ((nextApptResult.data ?? []) as ApptRow[])) {
+        if (!nextApptMap[row.patient_id]) {
+          nextApptMap[row.patient_id] = row.scheduled_at
+        }
+      }
+
+      return Object.values(patientMap).map(({ user: u, apts: dates }) => {
+        const moodEntry = moodSumMap[u.id]
+        return {
+          id: u.id,
+          full_name: u.full_name ?? '—',
+          phone: u.phone,
+          country: u.country,
+          created_at: u.created_at,
+          lastAppt: dates[0] ?? null,
+          totalAppts: dates.length,
+          medicalProfile: medMap[u.id] ?? null,
+          moodAvg: moodEntry ? Math.round((moodEntry.sum / moodEntry.count) * 10) / 10 : null,
+          lastSessionDate: lastSessionMap[u.id] ?? null,
+          nextApptDate: nextApptMap[u.id] ?? null,
+        }
+      }) satisfies Patient[]
     },
   })
 }
@@ -95,6 +186,19 @@ function useDesignations(practId: string | null) {
   })
 }
 
+/** Format ISO date as "dd MMM" in French */
+function fmtDay(iso: string): string {
+  return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+}
+
+/** Format ISO datetime as "dd MMM à HH:mm" in French */
+function fmtDayTime(iso: string): string {
+  const d = new Date(iso)
+  const day = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+  const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  return `${day} à ${time}`
+}
+
 export default function PatientsPage() {
   const { data: patients = [], isLoading } = usePatients()
   const [search, setSearch] = useState('')
@@ -102,7 +206,6 @@ export default function PatientsPage() {
   const qc = useQueryClient()
 
   const [practId, setPractId] = useState<string | null>(null)
-  // fetch practitioner id once
   useQuery({
     queryKey: ['my-pract-id'],
     queryFn: async () => {
@@ -133,7 +236,7 @@ export default function PatientsPage() {
   )
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-6 max-w-6xl" style={{ fontFamily: 'Manrope' }}>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-[#0b1c30]">Mes patients</h1>
@@ -205,7 +308,7 @@ export default function PatientsPage() {
 
       <div className="flex gap-6">
         {/* Liste */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 overflow-x-auto">
           {isLoading ? (
             <div className="space-y-2">
               {[1, 2, 3, 4].map(i => <div key={i} className="h-16 rounded-xl bg-white/40 animate-pulse" />)}
@@ -214,7 +317,7 @@ export default function PatientsPage() {
             <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
               <Icon name="group" size={48} color="#bec8ce" />
               <p className="font-semibold text-[#0b1c30] mt-3">
-                {search ? 'Aucun résultat' : 'Aucun patient pour l\'instant'}
+                {search ? 'Aucun résultat' : "Aucun patient pour l'instant"}
               </p>
               <p className="text-sm text-[#6f787e] mt-1">
                 {search ? 'Essayez un autre terme de recherche' : 'Vos patients apparaîtront ici après leurs premières réservations'}
@@ -225,8 +328,8 @@ export default function PatientsPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-slate-100">
-                    {['Patient', 'Contact', 'Consultations', 'Dernier RDV', 'Infos médicales'].map(h => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-bold text-[#6f787e] uppercase tracking-wide">{h}</th>
+                    {['Patient', 'Contact', 'Humeur moy.', 'Dernière session', 'Prochain RDV', 'Consultations', 'Infos médicales', ''].map(h => (
+                      <th key={h} className="text-left px-4 py-3 text-xs font-bold text-[#6f787e] uppercase tracking-wide whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -234,6 +337,7 @@ export default function PatientsPage() {
                   {filtered.map(p => {
                     const initials = p.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
                     const isSelected = selected?.id === p.id
+                    const mood = moodStyle(p.moodAvg ?? 0)
                     return (
                       <tr
                         key={p.id}
@@ -241,6 +345,7 @@ export default function PatientsPage() {
                         className="border-b border-slate-50 hover:bg-sky-50/30 transition-colors cursor-pointer"
                         style={{ backgroundColor: isSelected ? 'rgba(229,238,255,0.5)' : undefined }}
                       >
+                        {/* Patient */}
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -252,18 +357,53 @@ export default function PatientsPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm text-[#6f787e]">{p.phone ?? '—'}</td>
+
+                        {/* Contact */}
+                        <td className="px-4 py-3 text-sm text-[#6f787e] whitespace-nowrap">{p.phone ?? '—'}</td>
+
+                        {/* Humeur moyenne */}
+                        <td className="px-4 py-3">
+                          {p.moodAvg !== null ? (
+                            <div className="flex items-center gap-1.5">
+                              <div
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                                style={{ backgroundColor: mood.bg, color: mood.text }}
+                              >
+                                {p.moodAvg}
+                              </div>
+                              <span className="text-xs text-[#6f787e]">/10</span>
+                            </div>
+                          ) : (
+                            <span className="text-sm text-[#6f787e]">—</span>
+                          )}
+                        </td>
+
+                        {/* Dernière session */}
+                        <td className="px-4 py-3 text-xs text-[#6f787e] whitespace-nowrap">
+                          {p.lastSessionDate ? fmtDay(p.lastSessionDate) : '—'}
+                        </td>
+
+                        {/* Prochain RDV */}
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          {p.nextApptDate ? (
+                            <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-[#e5eeff] text-[#006685]">
+                              <Icon name="calendar_clock" size={12} color="#006685" />
+                              {fmtDayTime(p.nextApptDate)}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-[#6f787e]">—</span>
+                          )}
+                        </td>
+
+                        {/* Consultations */}
                         <td className="px-4 py-3">
                           <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-[#e5eeff] text-[#006685]">
                             <Icon name="event" size={12} color="#006685" />
                             {p.totalAppts}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-xs text-[#6f787e]">
-                          {p.lastAppt
-                            ? new Date(p.lastAppt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
-                            : '—'}
-                        </td>
+
+                        {/* Infos médicales */}
                         <td className="px-4 py-3">
                           {p.medicalProfile ? (
                             <div className="flex flex-wrap gap-1">
@@ -282,6 +422,17 @@ export default function PatientsPage() {
                           ) : (
                             <span className="text-xs text-[#6f787e]">Non renseigné</span>
                           )}
+                        </td>
+
+                        {/* Wellness Journey link */}
+                        <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                          <Link
+                            href={`/practitioner/patients/${p.id}/journey`}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold border border-[#006685] text-[#006685] hover:bg-[#e5eeff] transition-colors whitespace-nowrap"
+                          >
+                            <Icon name="route" size={13} color="#006685" />
+                            Parcours
+                          </Link>
                         </td>
                       </tr>
                     )
@@ -314,12 +465,34 @@ export default function PatientsPage() {
                 </span>
               </div>
 
+              {/* Mood badge in detail panel */}
+              {selected.moodAvg !== null && (
+                <div className="flex items-center gap-2 justify-center">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
+                    style={{ backgroundColor: moodStyle(selected.moodAvg).bg, color: moodStyle(selected.moodAvg).text }}
+                  >
+                    {selected.moodAvg}
+                  </div>
+                  <p className="text-xs text-[#6f787e]">Humeur moy. 7 jours</p>
+                </div>
+              )}
+
               {/* Infos */}
               <div className="space-y-3 border-t border-slate-100 pt-3">
                 {[
                   { icon: 'phone', label: 'Téléphone', value: selected.phone ?? '—' },
                   { icon: 'public', label: 'Pays', value: selected.country ?? '—' },
-                  { icon: 'calendar_today', label: 'Dernier RDV', value: selected.lastAppt ? new Date(selected.lastAppt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) : '—' },
+                  {
+                    icon: 'event_available',
+                    label: 'Dernière session',
+                    value: selected.lastSessionDate ? fmtDay(selected.lastSessionDate) : '—',
+                  },
+                  {
+                    icon: 'calendar_clock',
+                    label: 'Prochain RDV',
+                    value: selected.nextApptDate ? fmtDayTime(selected.nextApptDate) : '—',
+                  },
                   { icon: 'person_add', label: 'Patient depuis', value: new Date(selected.created_at).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) },
                 ].map(row => (
                   <div key={row.label} className="flex items-start gap-2.5">
@@ -368,6 +541,17 @@ export default function PatientsPage() {
                   </p>
                 </div>
               )}
+
+              {/* Journey CTA */}
+              <div className="border-t border-slate-100 pt-3">
+                <Link
+                  href={`/practitioner/patients/${selected.id}/journey`}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border-2 border-[#006685] text-[#006685] hover:bg-[#e5eeff] transition-colors"
+                >
+                  <Icon name="route" size={16} color="#006685" />
+                  Voir le parcours bien-être
+                </Link>
+              </div>
             </div>
           </div>
         )}
