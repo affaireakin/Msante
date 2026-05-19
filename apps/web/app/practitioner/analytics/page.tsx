@@ -326,7 +326,7 @@ export default function PractitionerAnalyticsPage() {
         />
         <KpiCard
           label="Taux d'occupation"
-          value={`${data.occupancyRate}%`}
+          value={`${Math.min(data.occupancyRate, 100)}%`}
           icon="event_available"
           sub="créneaux réservés / disponibles"
         />
