@@ -70,6 +70,8 @@ const CARD_STYLE = {
   border: '1px solid rgba(255,255,255,0.80)',
   borderRadius: '16px',
   boxShadow: '0 10px 30px -10px rgba(0,102,133,0.05)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -104,9 +106,10 @@ function useMonthlyPayments() {
         )
         .eq('status', 'completed')
         .gte('created_at', startOfMonth.toISOString())
+        .returns<PaymentRow[]>()
 
-      if (error) throw error
-      return (data ?? []) as unknown as PaymentRow[]
+      if (error) throw new Error(error.message)
+      return data ?? []
     },
     staleTime: 2 * 60 * 1000,
   })
@@ -153,7 +156,7 @@ function KpiCard({
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function FinancePage() {
-  const { data: payments = [], isLoading } = useMonthlyPayments()
+  const { data: payments = [], isLoading, isError } = useMonthlyPayments()
 
   // ── KPIs ──
   const grossRevenue = payments.reduce((sum, p) => sum + (p.amount ?? 0), 0)
@@ -229,6 +232,19 @@ export default function FinancePage() {
           <div className="h-64 bg-white/60 rounded-2xl animate-pulse border border-white/80" />
           <div className="h-64 bg-white/60 rounded-2xl animate-pulse border border-white/80" />
         </div>
+      </div>
+    )
+  }
+
+  // ─── Error ──────────────────────────────────────────────────────────────────
+  if (isError) {
+    return (
+      <div style={{ padding: '48px', textAlign: 'center', fontFamily: 'Manrope', color: '#ba1a1a' }}>
+        <span className="material-symbols-outlined" style={{ fontSize: '40px', color: '#bec8ce' }}>error</span>
+        <p style={{ marginTop: '12px', fontWeight: 600, color: '#0b1c30' }}>Erreur de chargement</p>
+        <p style={{ fontSize: '13px', color: '#6f787e', marginTop: '4px' }}>
+          Impossible de charger les données financières. Actualisez la page.
+        </p>
       </div>
     )
   }
@@ -325,44 +341,51 @@ export default function FinancePage() {
           </p>
           {grossRevenue > 0 ? (
             <>
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={62}
-                    outerRadius={88}
-                    paddingAngle={3}
-                    dataKey="value"
-                    labelLine={false}
-                  >
-                    {pieData.map((entry) => (
-                      <Cell key={entry.name} fill={entry.color} stroke="none" />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={((value: number | string) => [
-                      formatXOF(Number(value)),
-                      '',
-                    ]) as unknown as TooltipFormatter}
-                    contentStyle={{
-                      fontFamily: 'Manrope',
-                      fontSize: 12,
-                      border: '1px solid #bec8ce',
-                      borderRadius: 8,
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              {/* Center label workaround — absolute overlay */}
-              <div className="flex justify-center -mt-[196px] mb-[152px] pointer-events-none">
-                <div className="flex flex-col items-center justify-center w-[124px] h-[124px]">
-                  <span className="text-[11px] text-[#6f787e]">Total</span>
-                  <span className="text-[14px] font-bold text-[#0b1c30] leading-tight">
-                    {new Intl.NumberFormat('fr-SN', { maximumFractionDigits: 0 }).format(grossRevenue)}
-                  </span>
-                  <span className="text-[11px] text-[#6f787e]">XOF</span>
+              <div style={{ position: 'relative' }}>
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={62}
+                      outerRadius={88}
+                      paddingAngle={3}
+                      dataKey="value"
+                      labelLine={false}
+                    >
+                      {pieData.map((entry) => (
+                        <Cell key={entry.name} fill={entry.color} stroke="none" />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={((value: number | string) => [
+                        formatXOF(Number(value)),
+                        '',
+                      ]) as unknown as TooltipFormatter}
+                      contentStyle={{
+                        fontFamily: 'Manrope',
+                        fontSize: 12,
+                        border: '1px solid #bec8ce',
+                        borderRadius: 8,
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                {/* Center label — absolutely positioned over the donut hole */}
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  textAlign: 'center',
+                  pointerEvents: 'none',
+                }}>
+                  <p style={{ fontSize: '11px', color: '#6f787e', fontFamily: 'Manrope' }}>Total</p>
+                  <p style={{ fontSize: '15px', fontWeight: 800, color: '#0b1c30', fontFamily: 'Manrope' }}>
+                    {formatXOF(grossRevenue)}
+                  </p>
+                  <p style={{ fontSize: '10px', color: '#6f787e', fontFamily: 'Manrope' }}>XOF</p>
                 </div>
               </div>
               {/* Legend */}
