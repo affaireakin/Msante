@@ -113,9 +113,9 @@ const PALETTE_SECTIONS = [
       { rfType: 'actionNode', nodeType: 'send_email', label: 'Email', icon: 'email' },
       { rfType: 'actionNode', nodeType: 'delay', label: 'Délai', icon: 'timer' },
       { rfType: 'actionNode', nodeType: 'condition', label: 'Condition', icon: 'call_split' },
-      { rfType: 'actionNode', nodeType: 'ai_analysis', label: 'Analyse IA', icon: 'psychology' },
+      { rfType: 'actionNode', nodeType: 'ai_analysis', label: 'Analyse IA', icon: 'psychology', color: '#7c3aed' },
       { rfType: 'actionNode', nodeType: 'recommend_appointment', label: 'Reco. RDV', icon: 'event_available' },
-      { rfType: 'actionNode', nodeType: 'send_whatsapp', label: 'WhatsApp', icon: 'chat' },
+      { rfType: 'actionNode', nodeType: 'send_whatsapp', label: 'WhatsApp', icon: 'chat', color: '#1d7a3a' },
     ],
   },
   {
@@ -144,7 +144,7 @@ function PaletteItem({ item }: { item: (typeof PALETTE_SECTIONS)[0]['items'][0] 
       className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border cursor-grab active:cursor-grabbing hover:shadow-sm transition-shadow select-none"
       style={{ backgroundColor: bg, borderColor: border, fontSize: 12, fontWeight: 600, color: '#0b1c30' }}
     >
-      <span className="material-symbols-outlined" style={{ fontSize: 13, color: '#006685' }}>{item.icon}</span>
+      <span className="material-symbols-outlined" style={{ fontSize: 13, color: item.color ?? '#006685' }}>{item.icon}</span>
       {item.label}
     </div>
   )
