@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useWorkflows, useWorkflowRuns } from './useWorkflows'
 import { WorkflowCard } from './components/WorkflowCard'
 import { CreateWorkflowModal } from './components/CreateWorkflowModal'
+import { WorkflowTemplatesSection } from './components/WorkflowTemplatesSection'
 import type { Workflow } from '@/types/workflows'
 
 function WorkflowCardWithRun({ workflow }: { workflow: Workflow }) {
@@ -31,27 +32,38 @@ export default function WorkflowsPage() {
         </button>
       </div>
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-2xl h-48 animate-pulse bg-white/40" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {(workflows ?? []).map((wf) => (
-            <WorkflowCardWithRun key={wf.id} workflow={wf} />
-          ))}
-        </div>
-      )}
+      {/* Pre-configured templates */}
+      <WorkflowTemplatesSection installedWorkflows={workflows ?? []} />
 
-      {!isLoading && (workflows ?? []).length === 0 && (
-        <div className="text-center py-20 text-[#6f787e]">
-          <span className="material-symbols-outlined" style={{ fontSize: 48, opacity: 0.3, display: 'block', marginBottom: 12 }}>account_tree</span>
-          <p className="text-lg font-medium">Aucun workflow</p>
-          <p className="text-sm mt-1">Créez votre premier workflow ci-dessus.</p>
+      {/* Divider */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <span className="material-symbols-outlined text-[#6f787e]" style={{ fontSize: 18 }}>account_tree</span>
+          <h2 className="text-base font-bold text-[#0b1c30]">Mes workflows</h2>
         </div>
-      )}
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-2xl h-48 animate-pulse bg-white/40" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {(workflows ?? []).map((wf) => (
+              <WorkflowCardWithRun key={wf.id} workflow={wf} />
+            ))}
+          </div>
+        )}
+
+        {!isLoading && (workflows ?? []).length === 0 && (
+          <div className="text-center py-12 text-[#6f787e]">
+            <span className="material-symbols-outlined" style={{ fontSize: 40, opacity: 0.3, display: 'block', marginBottom: 10 }}>account_tree</span>
+            <p className="text-base font-medium">Aucun workflow personnalisé</p>
+            <p className="text-sm mt-1">Activez un template ci-dessus ou créez le vôtre.</p>
+          </div>
+        )}
+      </div>
 
       {showCreate && <CreateWorkflowModal onClose={() => setShowCreate(false)} />}
     </div>

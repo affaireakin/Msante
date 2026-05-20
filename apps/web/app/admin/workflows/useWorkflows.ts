@@ -136,6 +136,7 @@ export function useCreateWorkflow() {
       trigger_config,
       nodes,
       edges,
+      is_active = false,
     }: {
       name: string
       description: string
@@ -143,10 +144,11 @@ export function useCreateWorkflow() {
       trigger_config: TriggerConfig
       nodes: Workflow['nodes']
       edges: Workflow['edges']
+      is_active?: boolean
     }) => {
       const { data, error } = await supabase
         .from('workflows')
-        .insert({ name, description, trigger_type, trigger_config, nodes, edges, is_active: false })
+        .insert({ name, description, trigger_type, trigger_config, nodes, edges, is_active })
         .select('id')
         .single()
       if (error) throw error
