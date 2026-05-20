@@ -6,6 +6,70 @@ function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
   return <span className="material-symbols-outlined" style={style}>{name}</span>
 }
 
+// ── Platform KPIs ─────────────────────────────────────────────────────────────
+
+interface PlatformData {
+  totalPatients: number
+  totalPractitioners: number
+  newUsersThisMonth: number
+  newUsersGrowth: number
+  onboardingRate: number
+  noShowRate: number
+  pendingPractitioners: number
+  totalAppointments: number
+}
+
+function usePlatformAnalytics() {
+  return useQuery<PlatformData>({
+    queryKey: ['admin-platform-analytics'],
+    queryFn: async () => {
+      const now = new Date()
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0).toISOString()
+
+      const [
+        { count: totalPatients },
+        { count: totalPractitioners },
+        { count: newUsersThisMonth },
+        { count: newUsersLastMonth },
+        { count: onboardingCompleted },
+        { count: noShowCount },
+        { count: totalAppts },
+        { count: pendingPractitioners },
+      ] = await Promise.all([
+        supabase.from('users').select('id', { count: 'exact', head: true }).eq('role', 'patient'),
+        supabase.from('users').select('id', { count: 'exact', head: true }).eq('role', 'practitioner'),
+        supabase.from('users').select('id', { count: 'exact', head: true }).gte('created_at', monthStart),
+        supabase.from('users').select('id', { count: 'exact', head: true }).gte('created_at', lastMonthStart).lte('created_at', lastMonthEnd),
+        supabase.from('users').select('id', { count: 'exact', head: true }).eq('onboarding_completed', true).eq('role', 'patient'),
+        supabase.from('appointments').select('id', { count: 'exact', head: true }).eq('status', 'no_show'),
+        supabase.from('appointments').select('id', { count: 'exact', head: true }).not('status', 'in', '("pending","cancelled")'),
+        supabase.from('practitioners').select('id', { count: 'exact', head: true }).eq('verification_status', 'pending'),
+      ])
+
+      const nm = newUsersThisMonth ?? 0
+      const nl = newUsersLastMonth ?? 0
+      const newUsersGrowth = nl > 0 ? Math.round(((nm - nl) / nl) * 100) : 0
+      const tp = totalPatients ?? 0
+      const onboardingRate = tp > 0 ? Math.round(((onboardingCompleted ?? 0) / tp) * 100) : 0
+      const ta = totalAppts ?? 0
+      const noShowRate = ta > 0 ? Math.round(((noShowCount ?? 0) / ta) * 100) : 0
+
+      return {
+        totalPatients: tp,
+        totalPractitioners: totalPractitioners ?? 0,
+        newUsersThisMonth: nm,
+        newUsersGrowth,
+        onboardingRate,
+        noShowRate,
+        pendingPractitioners: pendingPractitioners ?? 0,
+        totalAppointments: ta,
+      }
+    },
+  })
+}
+
 interface FinancialData {
   totalRevenue: number
   thisMonthRevenue: number
@@ -91,24 +155,103 @@ const PROVIDER_LABELS: Record<string, string> = {
 
 export default function AnalyticsPage() {
   const { data, isLoading } = useAnalytics()
+  const { data: platform, isLoading: platformLoading } = usePlatformAnalytics()
 
-  if (isLoading) return (
+  if (isLoading || platformLoading) return (
     <div className="space-y-4">
-      {[1,2,3].map(i => <div key={i} className="h-32 rounded-2xl bg-white/40 animate-pulse" />)}
+      {[1,2,3,4].map(i => <div key={i} className="h-32 rounded-2xl bg-white/40 animate-pulse" />)}
     </div>
   )
 
   const d = data!
+  const p = platform!
   const maxRevenue = Math.max(...d.byProvider.map(p => p.amount), 1)
 
   return (
     <div className="space-y-8 max-w-6xl">
       <div>
-        <h1 className="text-2xl font-bold text-[#0b1c30]">Analytiques financières</h1>
-        <p className="text-sm text-[#6f787e] mt-1">Revenus, transactions et performance par provider</p>
+        <h1 className="text-2xl font-bold text-[#0b1c30]">Analytiques plateforme</h1>
+        <p className="text-sm text-[#6f787e] mt-1">KPIs utilisateurs, revenus et performance opérationnelle</p>
       </div>
 
-      {/* KPIs */}
+      {/* Platform KPIs */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <Icon name="monitor_heart" style={{ fontSize: '18px', color: '#006685' }} />
+          <h2 className="text-base font-bold text-[#0b1c30]">Santé plateforme</h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            {
+              label: 'Patients inscrits',
+              value: p.totalPatients.toLocaleString('fr-FR'),
+              sub: `${p.totalPractitioners} praticiens`,
+              icon: 'group',
+              color: '#006685',
+              bg: '#e5eeff',
+            },
+            {
+              label: 'Nouveaux ce mois',
+              value: p.newUsersThisMonth.toLocaleString('fr-FR'),
+              sub: `${p.newUsersGrowth >= 0 ? '+' : ''}${p.newUsersGrowth}% vs mois dernier`,
+              icon: p.newUsersGrowth >= 0 ? 'trending_up' : 'trending_down',
+              color: p.newUsersGrowth >= 0 ? '#1d7a3a' : '#ba1a1a',
+              bg: p.newUsersGrowth >= 0 ? '#e8f5e9' : '#ffdad6',
+            },
+            {
+              label: 'Taux d\'onboarding',
+              value: `${p.onboardingRate}%`,
+              sub: `${p.totalPatients - Math.round(p.totalPatients * p.onboardingRate / 100)} patients incomplets`,
+              icon: 'checklist',
+              color: p.onboardingRate >= 70 ? '#1d7a3a' : '#705d00',
+              bg: p.onboardingRate >= 70 ? '#e8f5e9' : '#fff8e1',
+            },
+            {
+              label: 'Taux de no-show',
+              value: `${p.noShowRate}%`,
+              sub: `sur ${p.totalAppointments.toLocaleString('fr-FR')} RDV`,
+              icon: 'event_busy',
+              color: p.noShowRate > 10 ? '#ba1a1a' : '#1d7a3a',
+              bg: p.noShowRate > 10 ? '#ffdad6' : '#e8f5e9',
+            },
+          ].map((kpi) => (
+            <div key={kpi.label} className="rounded-2xl p-5" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: kpi.bg }}>
+                  <Icon name={kpi.icon} style={{ color: kpi.color, fontSize: '20px' }} />
+                </div>
+              </div>
+              <p className="text-2xl font-black" style={{ color: kpi.color }}>{kpi.value}</p>
+              <p className="text-xs font-semibold text-[#0b1c30] mt-0.5">{kpi.label}</p>
+              <p className="text-xs text-[#6f787e] mt-0.5">{kpi.sub}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Pending practitioners alert */}
+        {p.pendingPractitioners > 0 && (
+          <div className="mt-4 flex items-center gap-3 px-5 py-3.5 rounded-2xl" style={{ backgroundColor: '#fff8e1', border: '1px solid #e4c546' }}>
+            <Icon name="pending_actions" style={{ color: '#705d00', fontSize: '20px' }} />
+            <div className="flex-1">
+              <p className="text-sm font-bold text-[#705d00]">
+                {p.pendingPractitioners} praticien{p.pendingPractitioners > 1 ? 's' : ''} en attente de validation
+              </p>
+              <p className="text-xs text-[#705d00] opacity-75">À traiter depuis le panneau de gestion des praticiens</p>
+            </div>
+            <a href="/admin/practitioners" className="text-xs font-bold text-[#705d00] hover:underline">
+              Voir →
+            </a>
+          </div>
+        )}
+      </div>
+
+      {/* Financial KPIs */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <Icon name="payments" style={{ fontSize: '18px', color: '#006685' }} />
+          <h2 className="text-base font-bold text-[#0b1c30]">Performance financière</h2>
+        </div>
+        {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Revenus totaux', value: `${d.totalRevenue.toLocaleString('fr-FR')} XOF`, icon: 'payments', color: '#006685', bg: '#e5eeff' },
@@ -222,6 +365,8 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
+
+      </div>{/* /Financial KPIs section */}
 
       {/* Recent transactions */}
       <div>

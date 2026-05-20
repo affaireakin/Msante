@@ -97,10 +97,16 @@ export default function PatientLayout() {
           tabBarIcon: ({ focused }) => <TabIcon name="calendar-today" label="Rendez-vous" focused={focused} />,
         }}
       />
+      <Tabs.Screen
+        name="support"
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon name="support-agent" label="Support" focused={focused} />,
+        }}
+      />
 
       {/* Hidden screens */}
+      <Tabs.Screen name="profile" options={{ href: null }} />
       <Tabs.Screen name="notifications" options={{ href: null }} />
-      <Tabs.Screen name="support" options={{ href: null }} />
       <Tabs.Screen name="booking" options={{ href: null }} />
       <Tabs.Screen name="booking-success" options={{ href: null }} />
       <Tabs.Screen name="confirm-session" options={{ href: null }} />

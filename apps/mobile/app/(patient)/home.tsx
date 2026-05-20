@@ -110,10 +110,12 @@ export default function PatientHome() {
               )}
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => signOut()}
-              style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#e5eeff' }}
+              onPress={() => router.push('/(patient)/profile' as never)}
+              style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center' }}
             >
-              <MaterialIcons name="logout" size={20} color="#6f787e" />
+              <Text style={{ fontFamily: 'Manrope', fontWeight: '800', fontSize: 14, color: '#fff' }}>
+                {firstName.slice(0, 1).toUpperCase()}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
