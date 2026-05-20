@@ -249,10 +249,28 @@ export default function PatientsPage() {
 
   const pendingDesignations = designations.filter(d => d.referring_doctor_status === 'pending')
 
-  const filtered = patients.filter(p =>
+  type StatusFilter = 'tous' | 'rdv_prochain' | 'humeur_basse' | 'a_recontacter'
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('tous')
+
+  const searched = patients.filter(p =>
     p.full_name.toLowerCase().includes(search.toLowerCase()) ||
     (p.phone ?? '').includes(search)
   )
+
+  const filtered = searched.filter(p => {
+    if (statusFilter === 'tous') return true
+    if (statusFilter === 'rdv_prochain') return !!p.nextApptDate
+    if (statusFilter === 'humeur_basse') return p.moodAvg !== null && p.moodAvg < 4
+    if (statusFilter === 'a_recontacter') return !p.nextApptDate && !!p.lastSessionDate
+    return true
+  })
+
+  const STATUS_TABS: { id: StatusFilter; label: string; icon: string; count: number }[] = [
+    { id: 'tous', label: 'Tous', icon: 'group', count: searched.length },
+    { id: 'rdv_prochain', label: 'RDV à venir', icon: 'calendar_clock', count: searched.filter(p => !!p.nextApptDate).length },
+    { id: 'humeur_basse', label: 'Humeur basse', icon: 'sentiment_dissatisfied', count: searched.filter(p => p.moodAvg !== null && p.moodAvg < 4).length },
+    { id: 'a_recontacter', label: 'À recontacter', icon: 'person_search', count: searched.filter(p => !p.nextApptDate && !!p.lastSessionDate).length },
+  ]
 
   return (
     <div className="space-y-6 max-w-6xl" style={{ fontFamily: 'Manrope' }}>
@@ -325,6 +343,35 @@ export default function PatientsPage() {
         )}
       </div>
 
+      {/* Status filter tabs */}
+      <div className="flex gap-2 flex-wrap">
+        {STATUS_TABS.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setStatusFilter(tab.id)}
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all"
+            style={{
+              backgroundColor: statusFilter === tab.id ? '#006685' : 'rgba(255,255,255,0.70)',
+              color: statusFilter === tab.id ? '#fff' : '#6f787e',
+              border: `1px solid ${statusFilter === tab.id ? '#006685' : 'rgba(255,255,255,0.80)'}`,
+              boxShadow: statusFilter === tab.id ? '0 4px 12px rgba(0,102,133,0.25)' : 'none',
+            }}
+          >
+            <Icon name={tab.icon} size={14} color={statusFilter === tab.id ? '#fff' : '#6f787e'} />
+            {tab.label}
+            <span
+              className="ml-1 px-1.5 py-0.5 rounded-full text-xs"
+              style={{
+                backgroundColor: statusFilter === tab.id ? 'rgba(255,255,255,0.25)' : '#e5eeff',
+                color: statusFilter === tab.id ? '#fff' : '#006685',
+              }}
+            >
+              {tab.count}
+            </span>
+          </button>
+        ))}
+      </div>
+
       <div className="flex gap-6">
         {/* Liste */}
         <div className="flex-1 min-w-0 overflow-x-auto">
@@ -344,10 +391,10 @@ export default function PatientsPage() {
             <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
               <Icon name="group" size={48} color="#bec8ce" />
               <p className="font-semibold text-[#0b1c30] mt-3">
-                {search ? 'Aucun résultat' : "Aucun patient pour l'instant"}
+                {search ? 'Aucun résultat' : statusFilter !== 'tous' ? 'Aucun patient dans ce filtre' : "Aucun patient pour l'instant"}
               </p>
               <p className="text-sm text-[#6f787e] mt-1">
-                {search ? 'Essayez un autre terme de recherche' : 'Vos patients apparaîtront ici après leurs premières réservations'}
+                {search ? 'Essayez un autre terme de recherche' : statusFilter !== 'tous' ? 'Essayez un autre filtre' : 'Vos patients apparaîtront ici après leurs premières réservations'}
               </p>
             </div>
           ) : (
