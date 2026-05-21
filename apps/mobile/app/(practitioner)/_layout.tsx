@@ -88,6 +88,10 @@ export default function PractitionerLayout() {
         }}
       />
       <Tabs.Screen
+        name="services"
+        options={{ tabBarButton: () => null }}
+      />
+      <Tabs.Screen
         name="consultation"
         options={{
           tabBarButton: () => null,
