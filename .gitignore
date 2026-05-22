@@ -2,8 +2,11 @@ node_modules/
 .expo/
 dist/
 build/
+.next/
 *.env.local
 *.env
+.env.production
 .DS_Store
 apps/mobile/android/
 apps/mobile/ios/
+supabase/.temp/
