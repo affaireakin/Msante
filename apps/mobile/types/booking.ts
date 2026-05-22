@@ -79,6 +79,7 @@ export interface ProcessPaymentResponse {
   status: PaymentStatus
   checkoutUrl?: string
   paydunya_token?: string
+  mockCheckout?: boolean
 }
 
 export interface PractitionerService {

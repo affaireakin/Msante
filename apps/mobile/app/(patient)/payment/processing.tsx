@@ -52,8 +52,20 @@ export default function PaymentProcessingScreen() {
           // PayDunya live mode — show redirect button
           setCheckoutUrl(result.checkoutUrl)
           setStage('redirect')
+        } else if (result.mockCheckout) {
+          // Sandbox mode — show fake checkout UI in-app
+          router.replace({
+            pathname: '/(patient)/payment/mock-checkout' as never,
+            params: {
+              paymentId:    result.paymentId,
+              provider:     provider ?? 'wave',
+              phone:        phone ?? '',
+              amount:       String((result as { amount?: number }).amount ?? 0),
+              currency:     (result as { currency?: string }).currency ?? 'XOF',
+              appointmentId,
+            },
+          })
         } else {
-          // Simulation mode — payment already completed
           router.replace('/(patient)/booking-success')
         }
       } catch (e) {

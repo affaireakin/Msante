@@ -59,8 +59,6 @@ async function createPaydunyaInvoice(
   return { token: data.token, checkoutUrl }
 }
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-
 // ─────────────────────────────────────────────────────────────────────────────
 
 Deno.serve(async (req) => {
@@ -177,42 +175,15 @@ Deno.serve(async (req) => {
       }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
-    // ── Simulation fallback (no PayDunya credentials) ─────────────────────────
-    await delay(1500)
-    await supabase
-      .from('payments')
-      .update({ status: 'completed', provider_ref: `SIM-${Date.now()}`, updated_at: new Date().toISOString() })
-      .eq('id', payment.id)
-
-    await supabase
-      .from('appointments')
-      .update({ status: 'confirmed', payment_id: payment.id })
-      .eq('id', appointment_id)
-
-    // Notification (fire-and-forget)
-    try {
-      const { data: patientUser } = await supabase
-        .from('users')
-        .select('push_token')
-        .eq('id', user.id)
-        .single()
-      if (patientUser?.push_token) {
-        await fetch('https://exp.host/--/api/v2/push/send', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: patientUser.push_token,
-            title: 'Paiement confirmé ✓',
-            body: `Votre paiement de ${Math.round(amount).toLocaleString()} ${currency} a été reçu.`,
-            data: { route: '/(patient)/appointments' },
-          }),
-        })
-      }
-    } catch (err) { console.error('notification failed', err) }
-
+    // ── Mock checkout (no PayDunya credentials — sandbox UI in the app) ────────
+    // Payment stays in 'processing' state — the mock-checkout screen will
+    // confirm it client-side once the user taps "Payer".
     return new Response(JSON.stringify({
       paymentId: payment.id,
-      status: 'completed',
+      status: 'processing',
+      mockCheckout: true,
+      amount,
+      currency,
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
 
   } catch (e) {
