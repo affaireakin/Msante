@@ -13,8 +13,6 @@ const SPECIALITIES = ['Tous', 'Psychologue', 'Psychiatre', 'Coach de vie', 'Thé
 interface Practitioner {
   id: string
   speciality: string
-  session_price: number | null
-  session_currency: string | null
   session_duration_min: number
   rating: number | null
   total_reviews: number
@@ -28,7 +26,7 @@ function usePractitioners(speciality: string, search: string) {
     queryFn: async () => {
       let q = supabase
         .from('practitioners')
-        .select('id, speciality, session_price, session_currency, session_duration_min, rating, total_reviews, bio, users!inner(full_name)')
+        .select('id, speciality, session_duration_min, rating, total_reviews, bio, users!inner(full_name)')
         .eq('verification_status', 'approved')
         .order('rating', { ascending: false })
 
@@ -116,7 +114,6 @@ export default function PractitionersPage() {
                   ) : null}
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="font-black text-[#006685] text-sm">{p.session_price ? `${p.session_price.toLocaleString('fr-FR')} ${p.session_currency ?? 'XOF'}` : '—'}</p>
                   <p className="text-xs text-[#6f787e]">{p.session_duration_min} min</p>
                 </div>
               </div>

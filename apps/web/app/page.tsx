@@ -133,14 +133,14 @@ export default function LandingPage() {
               Allier la technologie de pointe à la chaleur humaine pour transformer votre expérience de santé.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               {
                 icon: 'psychology',
                 iconBg: '#82d8ff',
                 iconColor: '#006685',
                 title: 'Compagnon Bien-être IA',
-                desc: "Un assistant émotionnel intelligent disponible 24/7 pour vous écouter, analyser vos humeurs et proposer des exercices de respiration adaptés.",
+                desc: "Un assistant émotionnel intelligent disponible 24/7 pour vous écouter, analyser vos humeurs et proposer des exercices adaptés.",
                 gradient: 'from-[#e5eeff] to-[#bee9ff]',
               },
               {
@@ -148,7 +148,7 @@ export default function LandingPage() {
                 iconBg: '#ffde5c',
                 iconColor: '#705d00',
                 title: "Réseau d'Experts",
-                desc: "Accédez à un panel de psychologues, psychiatres et coachs de vie certifiés, sélectionnés pour leur excellence et leur bienveillance.",
+                desc: "Accédez à un panel de psychologues, psychiatres et coachs de vie certifiés, sélectionnés pour leur excellence.",
                 gradient: 'from-[#fff8e1] to-[#ffde5c]/30',
               },
               {
@@ -156,8 +156,16 @@ export default function LandingPage() {
                 iconBg: '#82d8ff',
                 iconColor: '#006685',
                 title: 'Téléconsultation Sécurisée',
-                desc: "Des sessions vidéo chiffrées de bout en bout pour garantir une confidentialité totale. Consultez depuis le confort de votre foyer.",
+                desc: "Des sessions vidéo chiffrées de bout en bout pour garantir une confidentialité totale. Consultez depuis chez vous.",
                 gradient: 'from-[#e5eeff] to-[#82d8ff]/20',
+              },
+              {
+                icon: 'location_on',
+                iconBg: '#fce4ec',
+                iconColor: '#c2185b',
+                title: 'Consultation en présentiel',
+                desc: "Rencontrez votre praticien dans son cabinet ou à domicile. Une présence humaine quand vous en avez besoin.",
+                gradient: 'from-[#fce4ec] to-[#f8bbd0]/30',
               },
             ].map(card => (
               <div
@@ -252,9 +260,9 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { name: 'Dr. Aminata Diallo', spec: 'Psychologue Clinicienne', price: '15 000', rating: 4.9, sessions: 142, initials: 'AD', color: '#006685' },
-              { name: 'Dr. Moussa Sow', spec: 'Psychiatre', price: '25 000', rating: 4.8, sessions: 98, initials: 'MS', color: '#705d00' },
-              { name: 'Dr. Fatou Ndiaye', spec: 'Coach de vie certifiée', price: '12 000', rating: 5.0, sessions: 203, initials: 'FN', color: '#1d7a3a' },
+              { name: 'Dr. Aminata Diallo', spec: 'Psychologue Clinicienne', rating: 4.9, sessions: 142, initials: 'AD', color: '#006685' },
+              { name: 'Dr. Moussa Sow', spec: 'Psychiatre', rating: 4.8, sessions: 98, initials: 'MS', color: '#705d00' },
+              { name: 'Dr. Fatou Ndiaye', spec: 'Coach de vie certifiée', rating: 5.0, sessions: 203, initials: 'FN', color: '#1d7a3a' },
             ].map(p => (
               <div key={p.name} className="rounded-2xl p-6 hover:shadow-xl hover:-translate-y-1 transition-all" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
                 <div className="flex items-center gap-4 mb-4">
@@ -272,8 +280,7 @@ export default function LandingPage() {
                   ))}
                   <span className="text-xs text-[#6f787e] ml-1">{p.rating} · {p.sessions} sessions</span>
                 </div>
-                <div className="flex items-center justify-between mt-4">
-                  <span className="font-black text-[#006685]">{p.price} XOF</span>
+                <div className="flex items-center justify-end mt-4">
                   <Link href="/auth/signup" className="px-4 py-2 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#006685]/20 transition-all">
                     Réserver
                   </Link>
