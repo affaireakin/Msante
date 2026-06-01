@@ -12,8 +12,14 @@ export default function LandingPage() {
       {/* ── Topbar ── */}
       <header className="sticky top-0 z-50 bg-[#f8f9ff]/80 backdrop-blur-xl border-b border-white/10 shadow-sm">
         <div className="flex justify-between items-center h-20 px-6 max-w-7xl mx-auto w-full">
-          <div className="text-xl font-bold text-[#006685] tracking-tight py-2 px-5 bg-[#006685]/5 rounded-full border border-[#006685]/10 shadow-sm">
-            M-Santé
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#006685] flex items-center justify-center shadow-md">
+              <Icon name="medical_services" className="text-white" style={{ fontSize: '20px' }} />
+            </div>
+            <div>
+              <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
+              <p className="text-[10px] text-[#006685] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
+            </div>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
             <a className="text-[#006685] font-bold border-b-2 border-[#006685] py-1 text-sm" href="#">Accueil</a>
@@ -320,7 +326,15 @@ export default function LandingPage() {
       <footer className="bg-[#dce9ff] border-t border-[#bec8ce]/30">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 px-6 py-12 max-w-7xl mx-auto w-full">
           <div className="space-y-5">
-            <div className="text-2xl font-black text-[#006685] tracking-tighter">M-Santé</div>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#006685] flex items-center justify-center shadow-sm">
+                <Icon name="medical_services" className="text-white" style={{ fontSize: '18px' }} />
+              </div>
+              <div>
+                <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
+                <p className="text-[10px] text-[#006685] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
+              </div>
+            </div>
             <p className="text-sm text-[#6f787e] max-w-xs leading-relaxed">
               Votre partenaire de confiance pour une santé mentale épanouie, alliant innovation et humanité.
             </p>
