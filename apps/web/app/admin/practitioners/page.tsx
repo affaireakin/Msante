@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 
 type VerifStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
 type AccountStatus = 'active' | 'suspended' | 'blocked'
-type PractType = 'doctor' | 'psychologist' | 'coach' | 'nutritionist' | 'other'
+type PractType = 'healthcare' | 'wellness'
 
 interface Practitioner {
   id: string
@@ -44,18 +44,12 @@ const STATUS_COLORS: Record<VerifStatus, string> = {
   rejected: 'bg-red-100 text-red-700',
 }
 const TYPE_LABELS: Record<PractType, string> = {
-  doctor: 'Médecin',
-  psychologist: 'Psychologue',
-  coach: 'Coach',
-  nutritionist: 'Nutritionniste',
-  other: 'Autre',
+  healthcare: 'Professionnel de santé',
+  wellness: 'Praticien bien-être',
 }
 const DEFAULT_PERMISSIONS: Record<PractType, { can_prescribe: boolean; can_order_exams: boolean }> = {
-  doctor: { can_prescribe: true, can_order_exams: true },
-  psychologist: { can_prescribe: false, can_order_exams: false },
-  coach: { can_prescribe: false, can_order_exams: false },
-  nutritionist: { can_prescribe: false, can_order_exams: false },
-  other: { can_prescribe: false, can_order_exams: false },
+  healthcare: { can_prescribe: true, can_order_exams: true },
+  wellness: { can_prescribe: false, can_order_exams: false },
 }
 
 function usePractitioners() {
@@ -64,7 +58,7 @@ function usePractitioners() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, users!inner(full_name)')
+        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, users(full_name)')
         .order('created_at', { ascending: false })
       if (error) throw error
       const sorted = (data ?? []) as unknown as Practitioner[]
@@ -175,10 +169,10 @@ export default function PractitionersPage() {
     pract: Practitioner,
     key: 'can_prescribe' | 'can_order_exams'
   ) => {
-    const current = pract.permissions ?? DEFAULT_PERMISSIONS[pract.practitioner_type ?? 'doctor']
+    const current = pract.permissions ?? DEFAULT_PERMISSIONS[pract.practitioner_type ?? 'healthcare']
     updatePermissions.mutate({
       practId: pract.id,
-      practType: pract.practitioner_type ?? 'doctor',
+      practType: pract.practitioner_type ?? 'healthcare',
       permissions: { ...current, [key]: !current[key] },
     })
   }
@@ -292,7 +286,7 @@ export default function PractitionersPage() {
                 <div className="flex items-center gap-2">
                   <label className="text-xs font-bold text-[#6f787e] uppercase tracking-widest">Type</label>
                   <select
-                    value={pract.practitioner_type ?? 'doctor'}
+                    value={pract.practitioner_type ?? 'healthcare'}
                     onChange={(e) => handleTypeChange(pract, e.target.value as PractType)}
                     className="text-sm border border-slate-200/50 rounded-lg px-3 py-1.5 bg-white/60 text-[#0b1c30] outline-none focus:border-[#006685]"
                   >
@@ -303,7 +297,7 @@ export default function PractitionersPage() {
                 </div>
 
                 {(['can_prescribe', 'can_order_exams'] as const).map((key) => {
-                  const perms = pract.permissions ?? DEFAULT_PERMISSIONS[pract.practitioner_type ?? 'doctor']
+                  const perms = pract.permissions ?? DEFAULT_PERMISSIONS[pract.practitioner_type ?? 'healthcare']
                   const enabled = perms[key]
                   return (
                     <button

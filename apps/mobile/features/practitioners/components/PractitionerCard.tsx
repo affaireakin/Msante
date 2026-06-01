@@ -39,7 +39,7 @@ export function PractitionerCard({ practitioner, onPress }: PractitionerCardProp
 
         <Text className="text-sm text-on-surface-variant font-manrope">{practitioner.speciality}</Text>
 
-        <View className="flex-row items-center justify-between mt-1">
+        <View className="flex-row items-center mt-1">
           <View className="flex-row items-center gap-1">
             <Text className="text-amber-400 text-sm">★</Text>
             <Text className="text-sm text-on-surface-variant font-manrope">
@@ -49,9 +49,6 @@ export function PractitionerCard({ practitioner, onPress }: PractitionerCardProp
               ({practitioner.total_reviews})
             </Text>
           </View>
-          <Text className="text-sm font-semibold text-primary font-manrope">
-            {practitioner.session_price?.toLocaleString()} {practitioner.session_currency}
-          </Text>
         </View>
       </View>
     </TouchableOpacity>

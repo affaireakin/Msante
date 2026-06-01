@@ -26,12 +26,18 @@ export default function AssistantTab() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View>
-            <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>M-Santé</Text>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>
-              Mounima{' '}
-              <MaterialIcons name="favorite" size={18} color="#006685" />
-            </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center' }}>
+              <MaterialIcons name="medical-services" size={20} color="#fff" />
+            </View>
+            <View>
+              <Text style={{ fontSize: 16, fontWeight: '900', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.3 }}>M-Santé</Text>
+              <Text style={{ fontSize: 10, color: '#006685', fontFamily: 'Manrope', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8 }}>Health Sanctuary</Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Text style={{ fontSize: 15, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>Mounima</Text>
+            <MaterialIcons name="favorite" size={16} color="#006685" />
           </View>
         </View>
 

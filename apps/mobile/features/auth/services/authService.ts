@@ -18,12 +18,13 @@ export const authService = {
     email: string,
     password: string,
     role: 'patient' | 'practitioner',
-    full_name: string
+    full_name: string,
+    extra?: { practitioner_type?: string; speciality?: string }
   ): Promise<AuthResult> {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { role, full_name } },
+      options: { data: { role, full_name, ...extra } },
     })
     if (error) return { user: null, error: error.message }
     return { user: data.user, error: null }
@@ -73,6 +74,8 @@ export const authService = {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
 
+    const practitionerType = (user.user_metadata?.practitioner_type as string | undefined) ?? 'healthcare'
+
     const { data: practitioner, error: pErr } = await supabase
       .from('practitioners')
       .insert({
@@ -84,6 +87,7 @@ export const authService = {
         session_currency: data.session_currency,
         session_duration_min: data.session_duration_min,
         verification_status: 'pending',
+        practitioner_type: practitionerType,
       })
       .select()
       .single()

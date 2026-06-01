@@ -12,12 +12,19 @@ import { signupSchema, type SignupFormData } from '@/features/auth/schemas/authS
 export default function SignupPatientScreen() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [acceptedCgu, setAcceptedCgu] = useState(false)
 
   const { control, handleSubmit, formState: { errors } } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
   })
 
   const onSubmit = async (data: SignupFormData) => {
+    if (!acceptedCgu) {
+      Alert.alert('Conditions requises', 'Veuillez accepter les CGU pour continuer.')
+      return
+    }
     setLoading(true)
     const result = await authService.signUpWithEmail(data.email, data.password, 'patient', data.full_name)
     setLoading(false)
@@ -71,13 +78,51 @@ export default function SignupPatientScreen() {
           <Controller control={control} name="password"
             render={({ field: { onChange, value } }) => (
               <AppTextInput label="Mot de passe" value={value} onChangeText={onChange}
-                secureTextEntry error={errors.password?.message} placeholder="••••••••" />
+                secureTextEntry={!showPassword} error={errors.password?.message} placeholder="••••••••"
+                rightElement={
+                  <TouchableOpacity onPress={() => setShowPassword(p => !p)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <MaterialIcons name={showPassword ? 'visibility-off' : 'visibility'} size={20} color="#6f787e" />
+                  </TouchableOpacity>
+                }
+              />
             )} />
           <Controller control={control} name="confirmPassword"
             render={({ field: { onChange, value } }) => (
               <AppTextInput label="Confirmer le mot de passe" value={value} onChangeText={onChange}
-                secureTextEntry error={errors.confirmPassword?.message} placeholder="••••••••" />
+                secureTextEntry={!showConfirmPassword} error={errors.confirmPassword?.message} placeholder="••••••••"
+                rightElement={
+                  <TouchableOpacity onPress={() => setShowConfirmPassword(p => !p)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <MaterialIcons name={showConfirmPassword ? 'visibility-off' : 'visibility'} size={20} color="#6f787e" />
+                  </TouchableOpacity>
+                }
+              />
             )} />
+
+          {/* CGU */}
+          <TouchableOpacity
+            onPress={() => setAcceptedCgu(v => !v)}
+            style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}
+            activeOpacity={0.7}
+          >
+            <View style={{
+              width: 20, height: 20, borderRadius: 5, borderWidth: 2,
+              borderColor: acceptedCgu ? '#006685' : '#bec8ce',
+              backgroundColor: acceptedCgu ? '#006685' : 'transparent',
+              alignItems: 'center', justifyContent: 'center', marginTop: 1, flexShrink: 0,
+            }}>
+              {acceptedCgu && <MaterialIcons name="check" size={13} color="#fff" />}
+            </View>
+            <Text style={{ fontSize: 12, color: '#3f484d', fontFamily: 'Manrope', flex: 1, lineHeight: 18 }}>
+              J'accepte les{' '}
+              <Text
+                style={{ color: '#006685', fontWeight: '700' }}
+                onPress={() => router.push('/(auth)/cgu' as never)}
+              >
+                Conditions Générales d'Utilisation
+              </Text>
+              {' '}et la politique de confidentialité de M-Santé.
+            </Text>
+          </TouchableOpacity>
 
           <PrimaryButton label="Créer mon compte" onPress={handleSubmit(onSubmit)} loading={loading} />
         </GlassCard>

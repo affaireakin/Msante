@@ -13,6 +13,7 @@ export default function LoginScreen() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -71,7 +72,12 @@ export default function LoginScreen() {
             render={({ field: { onChange, value } }) => (
               <AppTextInput
                 label="Mot de passe" value={value} onChangeText={onChange}
-                secureTextEntry error={errors.password?.message} placeholder="••••••••"
+                secureTextEntry={!showPassword} error={errors.password?.message} placeholder="••••••••"
+                rightElement={
+                  <TouchableOpacity onPress={() => setShowPassword(p => !p)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <MaterialIcons name={showPassword ? 'visibility-off' : 'visibility'} size={20} color="#6f787e" />
+                  </TouchableOpacity>
+                }
               />
             )} />
 

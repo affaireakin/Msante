@@ -44,6 +44,15 @@ const FEATURES: {
     route: '/(patient)/find-practitioners',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB3FbpHzBwtGIPcoVoliz8dIKQ0C59v5cJAUezNbcXASar35AL6iY1mp9breIqfRqAT-RWVe47lgfTp4N5wp2pcxqpz5oq_kN6ZcHXfnWr_V4QEZrT8Qo_XbefziKoh9D6VHofL23QJXBlq7LsAxXkR6hbpQMTbWgfmTriWrTLdryn2-aB7gNKRZffQow1ihgb3oTDyoKrUmGeRoMYl4rf4HdLcVvRIBhx4CViBUDguSrh65IRIENHusdkZrVPW2wNnBu_wVmjRz61r',
   },
+  {
+    icon: 'location-on',
+    title: 'Consultation en présentiel',
+    desc: 'Rencontrez votre praticien dans son cabinet ou à domicile.',
+    bg: '#fce4ec',
+    accent: '#c2185b',
+    route: '/(patient)/find-practitioners',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAM6TBzewiJgWqmsibg9IuY14FbBSXBLNMtOYagP_lhYGq6vZMGfZsQmp2J5-GLzmQeufDzL5ewf3myh5maCMmjorFSPu3-M6Ii7Y6MHv6Ay5lMcQ4Nv_bcMuMyx8UvRAJsJNlPnGh3iSQJZ9FnQU2HOHrtkkm4pJk2EVslNEX-UyDXAo1SmuZOZzg1U33PaSdRlxsGMLjWzUwbXo1aG-mgUb4mELpadEedwC0Jdc_BHJUGfvPYTGjwOR1EPLuYeLKu029_elD83J5E',
+  },
 ]
 
 const QUICK_ACTIONS: {
@@ -86,8 +95,19 @@ export default function PatientHome() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
+        {/* ── Logo Bar ── */}
+        <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 4, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View style={{ width: 32, height: 32, borderRadius: 9, backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center' }}>
+            <MaterialIcons name="medical-services" size={18} color="#fff" />
+          </View>
+          <View>
+            <Text style={{ fontSize: 15, fontWeight: '900', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.3 }}>M-Santé</Text>
+            <Text style={{ fontSize: 9, color: '#006685', fontFamily: 'Manrope', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8 }}>Health Sanctuary</Text>
+          </View>
+        </View>
+
         {/* ── Header ── */}
-        <View style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
             <Text style={{ fontSize: 13, color: '#6f787e', fontFamily: 'Manrope' }}>{greeting},</Text>
             <Text style={{ fontSize: 24, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5 }}>

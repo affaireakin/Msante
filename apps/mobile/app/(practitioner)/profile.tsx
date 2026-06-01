@@ -189,7 +189,7 @@ function EditProfileModal({ visible, onClose }: { visible: boolean; onClose: () 
               <Controller control={control} name="full_name"
                 render={({ field: { onChange, value } }) => (
                   <AppTextInput label="Nom complet" value={value} onChangeText={onChange}
-                    placeholder="Dr. Prénom Nom" error={errors.full_name?.message} />
+                    placeholder="Prénom Nom" error={errors.full_name?.message} />
                 )} />
 
               <Controller control={control} name="phone"
@@ -376,7 +376,7 @@ export default function ProfileScreen() {
 
           <View style={{ alignItems: 'center', gap: 2 }}>
             <Text style={{ fontFamily: 'Manrope', fontSize: 20, fontWeight: '700', color: '#0b1c30' }}>
-              Dr. {profile?.full_name ?? '—'}
+              {profile?.full_name ?? '—'}
             </Text>
             <Text style={{ fontFamily: 'Manrope', fontSize: 14, color: '#6f787e' }}>
               {practitioner?.speciality ?? '—'}

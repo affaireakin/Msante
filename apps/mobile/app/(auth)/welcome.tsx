@@ -97,7 +97,7 @@ export default function WelcomeScreen() {
           />
           <PrimaryButton
             label="Je suis praticien"
-            onPress={() => router.push('/(auth)/signup-practitioner')}
+            onPress={() => router.push('/(auth)/practitioner-type')}
             variant="outline"
           />
           <TouchableOpacity onPress={() => router.push('/(auth)/login')} style={{ paddingVertical: 8 }}>

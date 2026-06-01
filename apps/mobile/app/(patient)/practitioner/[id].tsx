@@ -1,10 +1,13 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { useState } from 'react'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { usePractitioner } from '@/features/practitioners/hooks/usePractitioner'
 import { RatingStars } from '@/features/practitioners/components/RatingStars'
 import { PrimaryButton } from '@/components/ui'
+import { useAuthStore } from '@/features/auth/store/authStore'
+import { supabase } from '@/services/supabase'
 
 function getInitials(name: string) {
   return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
@@ -13,7 +16,25 @@ function getInitials(name: string) {
 export default function PractitionerProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
+  const { profile } = useAuthStore()
   const { data: practitioner, isLoading } = usePractitioner(id)
+  const [joiningWaitlist, setJoiningWaitlist] = useState(false)
+  const [onWaitlist, setOnWaitlist] = useState(false)
+
+  const handleJoinWaitlist = async () => {
+    if (!profile) return
+    setJoiningWaitlist(true)
+    const { error } = await supabase
+      .from('waiting_list')
+      .upsert({ patient_id: profile.id, practitioner_id: id, status: 'waiting' })
+    setJoiningWaitlist(false)
+    if (error) {
+      Alert.alert('Erreur', error.message)
+    } else {
+      setOnWaitlist(true)
+      Alert.alert('Liste d\'attente', 'Vous serez notifié(e) dès qu\'un créneau se libère.')
+    }
+  }
 
   if (isLoading) {
     return (
@@ -94,11 +115,37 @@ export default function PractitionerProfileScreen() {
         </View>
       </ScrollView>
 
-      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 24, paddingBottom: 32, paddingTop: 16, backgroundColor: 'rgba(248,249,255,0.9)' }}>
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, paddingHorizontal: 24, paddingBottom: 32, paddingTop: 16, backgroundColor: 'rgba(248,249,255,0.9)', gap: 10 }}>
         <PrimaryButton
           label="Réserver une séance"
           onPress={() => router.push(`/(patient)/booking/${id}`)}
         />
+        <TouchableOpacity
+          onPress={() => void handleJoinWaitlist()}
+          disabled={joiningWaitlist || onWaitlist}
+          style={{
+            flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+            paddingVertical: 13, borderRadius: 12,
+            borderWidth: 1.5,
+            borderColor: onWaitlist ? '#1d7a3a' : '#006685',
+            backgroundColor: onWaitlist ? '#f0fdf4' : 'transparent',
+            opacity: joiningWaitlist ? 0.6 : 1,
+          }}
+        >
+          {joiningWaitlist
+            ? <ActivityIndicator size="small" color="#006685" />
+            : <>
+                <MaterialIcons
+                  name={onWaitlist ? 'check-circle' : 'notifications-none'}
+                  size={18}
+                  color={onWaitlist ? '#1d7a3a' : '#006685'}
+                />
+                <Text style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 14, color: onWaitlist ? '#1d7a3a' : '#006685' }}>
+                  {onWaitlist ? 'Sur liste d\'attente' : 'Rejoindre la liste d\'attente'}
+                </Text>
+              </>
+          }
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   )

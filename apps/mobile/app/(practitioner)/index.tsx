@@ -85,7 +85,7 @@ export default function DashboardScreen() {
                 color: '#0284c7',
               }}
             >
-              Dr. {firstName}
+              {firstName}
             </Text>
             <Text
               style={{
