@@ -36,7 +36,7 @@ jobs:
             cd apps/web && npm run build
 
             echo "→ Restart PM2..."
-            pm2 restart msante-web 2>/dev/null || pm2 start npm --name msante-web --cwd /var/www/m-sante/apps/web -- start
+            pm2 restart m-sante-web
             pm2 save
 
             echo "✓ Done"
