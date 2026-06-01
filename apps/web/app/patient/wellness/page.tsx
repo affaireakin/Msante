@@ -117,7 +117,7 @@ export default function WellnessPage() {
             { href: '/patient/wellness/journal',           icon: 'book',             label: 'Journal',         color: '#705d00', bg: '#fff8e1', desc: 'Écrire vos pensées' },
             { href: '/patient/wellness/mood/history',      icon: 'bar_chart',        label: 'Historique',      color: '#1d7a3a', bg: '#e8f5e9', desc: 'Tendances humeur' },
             { href: '/patient/wellness/meditation',        icon: 'self_improvement', label: 'Méditation',      color: '#006685', bg: '#bee9ff', desc: 'Respiration guidée' },
-            { href: '/patient/assistant',                  icon: 'favorite',         label: 'Ami IA',          color: '#5c5f61', bg: '#e0e3e5', desc: 'Compagnon émotionnel' },
+            { href: '/patient/assistant',                  icon: 'favorite',         label: 'Mounima',         color: '#5c5f61', bg: '#e0e3e5', desc: 'Compagnon émotionnel' },
           ].map(t => (
             <Link key={t.label} href={t.href} className="rounded-2xl p-5 text-left hover:-translate-y-1 hover:shadow-lg transition-all block" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
               <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: t.bg }}>
@@ -161,7 +161,7 @@ export default function WellnessPage() {
           <Icon name="self_improvement" style={{ fontSize: '56px', color: '#006685' }} />
           <h3 className="text-xl font-bold text-[#0b1c30] mt-4">Commencez votre parcours bien-être</h3>
           <p className="text-sm text-[#6f787e] mt-2 max-w-md mx-auto">
-            Trackez votre humeur quotidiennement, écrivez dans votre journal et parlez à Ami.
+            Trackez votre humeur quotidiennement, écrivez dans votre journal et parlez à Mounima.
           </p>
           <div className="flex items-center justify-center gap-3 mt-5">
             <Link href="/patient/wellness/mood" className="flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg transition-all">

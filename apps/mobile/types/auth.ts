@@ -17,6 +17,7 @@ export interface PractitionerOnboardingData extends PractitionerOnboardingStep1D
     uri: string
     name: string
   }>
+  profilePhotoUri?: string
 }
 
 export type { User, UserProfile, Practitioner, DocumentType }

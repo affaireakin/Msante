@@ -222,7 +222,7 @@ export default function AssistantPage() {
             M-Santé
           </p>
           <h1 className="text-2xl font-black text-[#0b1c30] flex items-center gap-2" style={{ fontFamily: 'Manrope' }}>
-            Ami
+            Mounima
             <Icon name="favorite" style={{ fontSize: '22px', color: '#006685' }} />
           </h1>
         </div>

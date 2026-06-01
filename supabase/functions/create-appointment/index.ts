@@ -90,8 +90,12 @@ Deno.serve(async (req) => {
 
     // Send appointment_confirm notification to patient (fire-and-forget)
     try {
-      const resendApiKey = Deno.env.get('RESEND_API_KEY') ?? ''
-      const notifService = createNotificationService(supabase, resendApiKey)
+      const notifService = createNotificationService(
+        supabase,
+        Deno.env.get('RESEND_API_KEY') ?? '',
+        Deno.env.get('WHATSAPP_TOKEN') ?? '',
+        Deno.env.get('WHATSAPP_PHONE_NUMBER_ID') ?? '',
+      )
 
       const { data: patientUser } = await supabase
         .from('users')

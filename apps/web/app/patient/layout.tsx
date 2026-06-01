@@ -12,7 +12,8 @@ const navItems = [
   { href: '/patient', label: 'Accueil', icon: 'home', exact: true },
   { href: '/patient/practitioners', label: 'Praticiens', icon: 'medical_services', exact: false },
   { href: '/patient/appointments', label: 'Rendez-vous', icon: 'calendar_today', exact: false },
-  { href: '/patient/assistant', label: 'Ami', icon: 'favorite', exact: false },
+  { href: '/patient/messages', label: 'Messages', icon: 'chat_bubble_outline', exact: false },
+  { href: '/patient/assistant', label: 'Mounima', icon: 'favorite', exact: false },
   { href: '/patient/wellness', label: 'Bien-être', icon: 'self_improvement', exact: false },
   { href: '/patient/profile', label: 'Mon profil', icon: 'manage_accounts', exact: false },
 ]

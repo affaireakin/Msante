@@ -1,19 +1,44 @@
-import { useState } from 'react'
-import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native'
+import { useState, useEffect } from 'react'
+import { View, Text, TouchableOpacity, ScrollView, Alert, Image, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import * as ImagePicker from 'expo-image-picker'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { GlassCard, AppTextInput, PrimaryButton, StepIndicator, DocumentUploader } from '@/components/ui'
 import { authService } from '@/features/auth/services/authService'
 import { practitionerStep1Schema, type PractitionerStep1FormData } from '@/features/auth/schemas/authSchemas'
+import { supabase } from '@/services/supabase'
 import type { PractitionerOnboardingData } from '@/types/auth'
+import type { DocumentType } from '@/types/database'
 
 type UploadedDoc = {
   uri: string
   name: string
-  document_type: 'diploma' | 'license' | 'id_card' | 'other'
+  document_type: DocumentType
 }
+
+type DocConfig = {
+  key: DocumentType
+  label: string
+  hint: string
+}
+
+const HEALTHCARE_DOCS: DocConfig[] = [
+  { key: 'diploma', label: 'Diplôme', hint: 'Médecine, psychologie, psychiatrie...' },
+  { key: 'license', label: 'Autorisation d\'exercer', hint: 'Numéro RPPS, ordre, ou équivalent' },
+  { key: 'professional_card', label: 'Carte de l\'Ordre professionnel', hint: 'Ordre des médecins, des psychologues...' },
+  { key: 'id_card', label: 'Pièce d\'identité officielle', hint: 'CNI, passeport ou titre de séjour' },
+  { key: 'address_proof', label: 'Justificatif adresse professionnelle', hint: 'Bail, facture récente...' },
+]
+
+const WELLNESS_DOCS: DocConfig[] = [
+  { key: 'training_certificate', label: 'Certificat de formation', hint: 'Diplôme bien-être, coaching certifié...' },
+  { key: 'insurance', label: 'Attestation d\'assurance pro', hint: 'Responsabilité civile professionnelle' },
+  { key: 'id_card', label: 'Pièce d\'identité officielle', hint: 'CNI, passeport ou titre de séjour' },
+  { key: 'address_proof', label: 'Justificatif adresse professionnelle', hint: 'Bail, facture récente...' },
+  { key: 'portfolio', label: 'Portfolio ou références', hint: 'PDF de témoignages, certifications, références' },
+]
 
 const DURATIONS = [30, 45, 60, 90]
 const LANGUAGES = [
@@ -22,7 +47,6 @@ const LANGUAGES = [
   { label: 'Wolof', value: 'wo' },
   { label: 'Arabic', value: 'ar' },
 ]
-
 const STEP_LABELS = ['Profil', 'Documents', 'Récap']
 
 export default function PractitionerOnboardingScreen() {
@@ -30,6 +54,17 @@ export default function PractitionerOnboardingScreen() {
   const [loading, setLoading] = useState(false)
   const [documents, setDocuments] = useState<UploadedDoc[]>([])
   const [step1Data, setStep1Data] = useState<PractitionerStep1FormData | null>(null)
+  const [practitionerType, setPractitionerType] = useState<'healthcare' | 'wellness'>('healthcare')
+  const [profilePhoto, setProfilePhoto] = useState<{ uri: string } | null>(null)
+  const [pickingPhoto, setPickingPhoto] = useState(false)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user?.user_metadata?.practitioner_type === 'wellness') {
+        setPractitionerType('wellness')
+      }
+    })
+  }, [])
 
   const { control, handleSubmit, watch, formState: { errors } } = useForm<PractitionerStep1FormData>({
     resolver: zodResolver(practitionerStep1Schema),
@@ -38,6 +73,7 @@ export default function PractitionerOnboardingScreen() {
 
   const selectedLanguages = watch('languages') ?? []
   const selectedDuration = watch('session_duration_min')
+  const requiredDocs = practitionerType === 'healthcare' ? HEALTHCARE_DOCS : WELLNESS_DOCS
 
   const handleStep1 = (data: PractitionerStep1FormData) => {
     setStep1Data(data)
@@ -45,8 +81,16 @@ export default function PractitionerOnboardingScreen() {
   }
 
   const handleStep2 = () => {
-    if (documents.length === 0) {
-      Alert.alert('Documents requis', 'Uploadez au moins un document de vérification.')
+    if (!profilePhoto) {
+      Alert.alert('Photo requise', 'Ajoutez votre photo de profil professionnelle.')
+      return
+    }
+    const missing = requiredDocs.filter(d => !documents.find(doc => doc.document_type === d.key))
+    if (missing.length > 0) {
+      Alert.alert(
+        'Documents manquants',
+        `Veuillez uploader les ${requiredDocs.length} documents requis :\n• ${missing.map(d => d.label).join('\n• ')}`,
+      )
       return
     }
     setStep(2)
@@ -56,7 +100,11 @@ export default function PractitionerOnboardingScreen() {
     if (!step1Data) return
     setLoading(true)
     try {
-      const data: PractitionerOnboardingData = { ...step1Data, documents }
+      const data: PractitionerOnboardingData = {
+        ...step1Data,
+        documents,
+        profilePhotoUri: profilePhoto?.uri,
+      }
       await authService.completePractitionerOnboarding(data)
     } catch {
       Alert.alert('Erreur', 'Impossible de soumettre. Réessayez.')
@@ -72,6 +120,28 @@ export default function PractitionerOnboardingScreen() {
     ])
   }
 
+  const pickProfilePhoto = async () => {
+    setPickingPhoto(true)
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (!perm.granted) {
+      Alert.alert('Permission requise', 'Autorisez l\'accès à la galerie pour choisir votre photo.')
+      setPickingPhoto(false)
+      return
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    })
+    setPickingPhoto(false)
+    if (!result.canceled && result.assets[0]) {
+      setProfilePhoto({ uri: result.assets[0].uri })
+    }
+  }
+
+  const uploadedCount = requiredDocs.filter(d => documents.find(doc => doc.document_type === d.key)).length
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
       <ScrollView
@@ -81,10 +151,7 @@ export default function PractitionerOnboardingScreen() {
       >
         {/* Header */}
         <View style={{ marginTop: 40, marginBottom: 28 }}>
-          {/* Step indicator */}
           <StepIndicator total={3} current={step} />
-
-          {/* Step labels */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, marginBottom: 20, paddingHorizontal: 4 }}>
             {STEP_LABELS.map((label, i) => (
               <Text key={label} style={{
@@ -225,30 +292,112 @@ export default function PractitionerOnboardingScreen() {
         {/* ── STEP 1 — Documents ── */}
         {step === 1 && (
           <GlassCard style={{ gap: 16 }}>
+            {/* Header */}
             <View>
               <Text style={{ fontSize: 16, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: 4 }}>
                 Documents de vérification
               </Text>
               <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', lineHeight: 18 }}>
-                Stockés de façon sécurisée · Examinés sous 48h · PDF ou image
+                {uploadedCount + (profilePhoto ? 1 : 0)}/{requiredDocs.length + 1} · Stockés de façon sécurisée · Examinés sous 48h
               </Text>
             </View>
 
-            <DocumentUploader
-              label="Diplôme" documentType="diploma"
-              value={documents.find(d => d.document_type === 'diploma')}
-              onUpload={toggleDoc}
-            />
-            <DocumentUploader
-              label="Licence professionnelle" documentType="license"
-              value={documents.find(d => d.document_type === 'license')}
-              onUpload={toggleDoc}
-            />
-            <DocumentUploader
-              label="Pièce d'identité" documentType="id_card"
-              value={documents.find(d => d.document_type === 'id_card')}
-              onUpload={toggleDoc}
-            />
+            {/* Progress bar */}
+            <View style={{ height: 4, backgroundColor: '#e5eeff', borderRadius: 2 }}>
+              <View style={{
+                height: 4,
+                borderRadius: 2,
+                backgroundColor: '#006685',
+                width: `${Math.round(((uploadedCount + (profilePhoto ? 1 : 0)) / (requiredDocs.length + 1)) * 100)}%`,
+              }} />
+            </View>
+
+            {/* Profile photo */}
+            <View style={{ gap: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <MaterialIcons name="person" size={15} color="#006685" />
+                <Text style={{ fontSize: 13, fontWeight: '700', color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                  Photo de profil
+                </Text>
+                <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: '#ba1a1a' }}>
+                  <Text style={{ fontSize: 10, fontWeight: '700', color: '#fff', fontFamily: 'Manrope' }}>OBLIGATOIRE</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                onPress={pickProfilePhoto}
+                disabled={pickingPhoto}
+                activeOpacity={0.7}
+                style={{
+                  borderWidth: 1.5,
+                  borderStyle: profilePhoto ? 'solid' : 'dashed',
+                  borderColor: profilePhoto ? '#006685' : '#bec8ce',
+                  borderRadius: 14,
+                  padding: 16,
+                  alignItems: 'center',
+                  backgroundColor: profilePhoto ? '#f0f9ff' : 'transparent',
+                  flexDirection: 'row',
+                  gap: 16,
+                }}
+              >
+                {profilePhoto ? (
+                  <Image
+                    source={{ uri: profilePhoto.uri }}
+                    style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#e5eeff' }}
+                  />
+                ) : (
+                  <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+                    {pickingPhoto
+                      ? <ActivityIndicator size="small" color="#006685" />
+                      : <MaterialIcons name="add-a-photo" size={24} color="#006685" />
+                    }
+                  </View>
+                )}
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text style={{ fontSize: 14, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>
+                    {profilePhoto ? 'Photo sélectionnée' : 'Choisir ma photo'}
+                  </Text>
+                  <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>
+                    {profilePhoto ? 'Appuyer pour changer' : 'Photo professionnelle visible par les patients'}
+                  </Text>
+                </View>
+                {profilePhoto && (
+                  <MaterialIcons name="check-circle" size={22} color="#006685" />
+                )}
+              </TouchableOpacity>
+            </View>
+
+            {/* Separator */}
+            <View style={{ height: 1, backgroundColor: '#e5eeff' }} />
+
+            {/* Required documents */}
+            <View style={{ gap: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <MaterialIcons name="folder-open" size={15} color="#006685" />
+                <Text style={{ fontSize: 13, fontWeight: '700', color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                  {practitionerType === 'healthcare' ? 'Pièces professionnelles' : 'Justificatifs requis'} ({uploadedCount}/{requiredDocs.length})
+                </Text>
+              </View>
+
+              {requiredDocs.map((docConf) => {
+                const uploaded = documents.find(d => d.document_type === docConf.key)
+                return (
+                  <View key={docConf.key} style={{ gap: 4 }}>
+                    <DocumentUploader
+                      label={docConf.label}
+                      documentType={docConf.key}
+                      value={uploaded}
+                      onUpload={toggleDoc}
+                    />
+                    {!uploaded && (
+                      <Text style={{ fontSize: 11, color: '#6f787e', fontFamily: 'Manrope', paddingLeft: 4 }}>
+                        {docConf.hint}
+                      </Text>
+                    )}
+                  </View>
+                )
+              })}
+            </View>
 
             <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
               <TouchableOpacity
@@ -267,9 +416,16 @@ export default function PractitionerOnboardingScreen() {
         {/* ── STEP 2 — Récap ── */}
         {step === 2 && (
           <GlassCard style={{ gap: 20, alignItems: 'center' }}>
-            <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-              <MaterialIcons name="verified" size={36} color="#006685" />
-            </View>
+            {profilePhoto ? (
+              <Image
+                source={{ uri: profilePhoto.uri }}
+                style={{ width: 80, height: 80, borderRadius: 40, borderWidth: 3, borderColor: '#006685' }}
+              />
+            ) : (
+              <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+                <MaterialIcons name="verified" size={36} color="#006685" />
+              </View>
+            )}
 
             <View style={{ alignItems: 'center', gap: 6 }}>
               <Text style={{ fontSize: 20, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope' }}>
@@ -282,10 +438,12 @@ export default function PractitionerOnboardingScreen() {
 
             <View style={{ width: '100%', gap: 12, backgroundColor: '#eff4ff', borderRadius: 14, padding: 16 }}>
               {[
+                { label: 'Type', value: practitionerType === 'healthcare' ? 'Professionnel de santé' : 'Praticien bien-être' },
                 { label: 'Spécialité', value: step1Data?.speciality },
                 { label: 'Tarif', value: `${step1Data?.session_price?.toLocaleString()} ${step1Data?.session_currency}` },
                 { label: 'Durée', value: `${step1Data?.session_duration_min} min` },
-                { label: 'Documents', value: `${documents.length} fichier${documents.length > 1 ? 's' : ''}` },
+                { label: 'Photo', value: profilePhoto ? 'Ajoutée ✓' : '—' },
+                { label: 'Documents', value: `${documents.length} / ${requiredDocs.length} fichiers` },
               ].map(row => (
                 <View key={row.label} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                   <MaterialIcons name="check-circle" size={16} color="#006685" />

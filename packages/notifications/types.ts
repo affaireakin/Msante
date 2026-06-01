@@ -17,6 +17,7 @@ export interface NotificationUser {
   full_name: string
   email?: string | null
   push_token?: string | null
+  whatsapp_number?: string | null
 }
 
 export interface NotificationEvent {

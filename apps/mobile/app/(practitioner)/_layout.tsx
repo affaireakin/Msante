@@ -82,6 +82,12 @@ export default function PractitionerLayout() {
         }}
       />
       <Tabs.Screen
+        name="messages"
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon name="chat-bubble-outline" label="Messages" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           tabBarIcon: ({ focused }) => <TabIcon name="person" label="Profil" focused={focused} />,

@@ -105,6 +105,7 @@ export default function PatientLayout() {
       />
 
       {/* Hidden screens */}
+      <Tabs.Screen name="messages" options={{ href: null }} />
       <Tabs.Screen name="profile" options={{ href: null }} />
       <Tabs.Screen name="notifications" options={{ href: null }} />
       <Tabs.Screen name="booking" options={{ href: null }} />

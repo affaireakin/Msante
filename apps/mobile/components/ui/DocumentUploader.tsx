@@ -1,11 +1,12 @@
 import { Text, TouchableOpacity } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import type { DocumentType } from '@/types/database'
 
 interface UploadedDoc {
   uri: string
   name: string
-  document_type: 'diploma' | 'license' | 'id_card' | 'other'
+  document_type: DocumentType
 }
 
 interface DocumentUploaderProps {

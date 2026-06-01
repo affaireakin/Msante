@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, Linking, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name']
@@ -44,6 +45,7 @@ const CONTACT_CHANNELS = [
 ]
 
 export default function SupportScreen() {
+  const router = useRouter()
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   const handleCall = (number: string) => {
@@ -106,6 +108,21 @@ export default function SupportScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* Messages praticiens */}
+        <TouchableOpacity
+          onPress={() => router.push('/(patient)/messages')}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: 'rgba(255,255,255,0.70)', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.80)', padding: 16 }}
+        >
+          <View style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+            <MaterialIcons name="chat-bubble-outline" size={24} color="#006685" />
+          </View>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ fontSize: 15, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>Messagerie sécurisée</Text>
+            <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>Échangez avec vos praticiens</Text>
+          </View>
+          <MaterialIcons name="arrow-forward-ios" size={16} color="#006685" />
+        </TouchableOpacity>
 
         {/* FAQ */}
         <View style={{ gap: 8 }}>

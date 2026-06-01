@@ -1,6 +1,15 @@
 export type UserRole = 'patient' | 'practitioner' | 'admin'
 export type VerificationStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
-export type DocumentType = 'diploma' | 'license' | 'id_card' | 'other'
+export type DocumentType =
+  | 'diploma'
+  | 'license'
+  | 'id_card'
+  | 'other'
+  | 'professional_card'
+  | 'address_proof'
+  | 'training_certificate'
+  | 'insurance'
+  | 'portfolio'
 
 export interface UserProfile {
   id: string

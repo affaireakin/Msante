@@ -94,6 +94,20 @@ export const authService = {
 
     if (pErr) throw pErr
 
+    if (data.profilePhotoUri) {
+      const photoExt = data.profilePhotoUri.split('.').pop() ?? 'jpg'
+      const photoPath = `${user.id}/avatar.${photoExt}`
+      const photoResponse = await fetch(data.profilePhotoUri)
+      const photoBlob = await photoResponse.blob()
+      const { error: photoUploadErr } = await supabase.storage
+        .from('avatars')
+        .upload(photoPath, photoBlob, { upsert: true })
+      if (!photoUploadErr) {
+        const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(photoPath)
+        await supabase.from('users').update({ avatar_url: publicUrl }).eq('id', user.id)
+      }
+    }
+
     for (const doc of data.documents) {
       const fileExt = doc.name.split('.').pop() ?? 'pdf'
       const filePath = `${user.id}/${doc.document_type}.${fileExt}`

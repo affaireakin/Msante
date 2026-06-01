@@ -9,10 +9,12 @@ import type {
 } from './types.ts'
 import { ExpoAdapter, DeviceNotRegisteredError } from './adapters/ExpoAdapter.ts'
 import { ResendAdapter } from './adapters/ResendAdapter.ts'
+import { WhatsAppAdapter } from './adapters/WhatsAppAdapter.ts'
 
 interface NotificationServiceOptions {
   expoAdapter: NotificationAdapter
   resendAdapter: NotificationAdapter
+  whatsappAdapter: NotificationAdapter
   supabase: SupabaseClient
 }
 
@@ -24,15 +26,18 @@ export class NotificationService {
     this.adapters = {
       push: opts.expoAdapter,
       email: opts.resendAdapter,
-      whatsapp: { send: async () => { throw new Error('WhatsApp not implemented — use workflow engine') } },
+      whatsapp: opts.whatsappAdapter,
       sms: { send: async () => { throw new Error('SMS not implemented — use workflow engine') } },
     }
     this.supabase = opts.supabase
   }
 
   resolveChannels(user: NotificationUser): NotificationChannel[] {
-    if (user.push_token) return ['push']
-    return ['email']
+    const channels: NotificationChannel[] = []
+    if (user.push_token) channels.push('push')
+    if (user.email) channels.push('email')
+    if (user.whatsapp_number) channels.push('whatsapp')
+    return channels.length > 0 ? channels : ['email']
   }
 
   async send(event: NotificationEvent): Promise<void> {
@@ -82,11 +87,14 @@ export class NotificationService {
 
 export function createNotificationService(
   supabase: SupabaseClient,
-  resendApiKey: string
+  resendApiKey: string,
+  whatsappToken = '',
+  whatsappPhoneId = '',
 ): NotificationService {
   return new NotificationService({
     expoAdapter: new ExpoAdapter(),
     resendAdapter: new ResendAdapter(resendApiKey),
+    whatsappAdapter: new WhatsAppAdapter(whatsappToken, whatsappPhoneId),
     supabase,
   })
 }
