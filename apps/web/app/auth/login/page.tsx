@@ -5,12 +5,21 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
+function translateError(msg: string): string {
+  if (msg.includes('Invalid login credentials'))   return 'Email ou mot de passe incorrect.'
+  if (msg.includes('Email not confirmed'))          return 'Confirmez votre email avant de vous connecter.'
+  if (msg.includes('Too many requests'))            return 'Trop de tentatives. Réessayez dans quelques minutes.'
+  if (msg.includes('User not found'))               return 'Aucun compte associé à cet email.'
+  return msg
+}
+
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
+  const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [showPwd, setShowPwd]   = useState(false)
+  const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,12 +29,11 @@ export default function LoginPage() {
     const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
     if (authError) {
-      setError(authError.message)
+      setError(translateError(authError.message))
       setLoading(false)
       return
     }
 
-    // Vérifie le rôle et l'onboarding en base (source de vérité)
     const { data: profile, error: profileError } = await supabase
       .from('users')
       .select('role, onboarding_completed')
@@ -56,23 +64,28 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
       <div className="w-full max-w-md">
+
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex flex-col items-center gap-1">
-            <span className="text-3xl font-black tracking-tighter text-[#0b1c30]">M-Santé</span>
-            <span className="text-xs text-slate-400 font-medium">Admin Console</span>
+          <Link href="/" className="inline-flex items-center gap-3 justify-center">
+            <div className="w-10 h-10 rounded-xl bg-[#006685] flex items-center justify-center shadow-md">
+              <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>medical_services</span>
+            </div>
+            <div className="text-left">
+              <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
+              <p className="text-[10px] text-[#006685] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
+            </div>
           </Link>
         </div>
 
         {/* Card */}
-        <div
-          className="bg-white/60 backdrop-blur-xl border border-white/80 rounded-2xl p-8"
-          style={{ boxShadow: '0 20px 60px rgba(0,102,133,0.08)' }}
-        >
+        <div className="bg-white/60 backdrop-blur-xl border border-white/80 rounded-2xl p-8" style={{ boxShadow: '0 20px 60px rgba(0,102,133,0.08)' }}>
           <h1 className="text-2xl font-black text-[#0b1c30] mb-1">Connexion</h1>
           <p className="text-sm text-slate-400 mb-8">Connectez-vous à votre espace M-Santé</p>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
+
+            {/* Email */}
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Email</label>
               <input
@@ -85,20 +98,37 @@ export default function LoginPage() {
               />
             </div>
 
+            {/* Mot de passe + œil */}
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Mot de passe</label>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all"
-              />
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Mot de passe</label>
+                <Link href="/auth/forgot-password" className="text-xs text-[#006685] hover:underline">Mot de passe oublié ?</Link>
+              </div>
+              <div className="relative">
+                <input
+                  type={showPwd ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  className="w-full px-4 py-3 pr-12 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPwd(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6f787e] hover:text-[#006685] transition-colors"
+                  tabIndex={-1}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                    {showPwd ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-600">
+              <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-600 flex items-center gap-2">
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>error</span>
                 {error}
               </div>
             )}
@@ -108,16 +138,14 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full py-3.5 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
-              {loading ? 'Connexion...' : 'Se connecter'}
+              {loading ? 'Connexion en cours...' : 'Se connecter'}
             </button>
           </form>
 
           <div className="mt-6 pt-6 border-t border-slate-100 text-center">
             <p className="text-sm text-slate-400">
               Pas encore de compte ?{' '}
-              <Link href="/auth/signup" className="text-[#006685] font-semibold hover:underline">
-                S&apos;inscrire
-              </Link>
+              <Link href="/auth/signup" className="text-[#006685] font-semibold hover:underline">S&apos;inscrire</Link>
             </p>
           </div>
         </div>
