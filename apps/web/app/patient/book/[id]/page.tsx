@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase'
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface RawAvailability {
-  day_of_week: number
+  slot_date: string
   start_time: string
   end_time: string
   session_type: 'video' | 'presentiel'
@@ -34,30 +34,24 @@ interface Practitioner {
 
 // ── Slot generation ───────────────────────────────────────────────────────────
 
-function generateSlots(availabilities: RawAvailability[], takenSlots: string[], daysAhead = 21): TimeSlot[] {
+function generateSlots(availabilities: RawAvailability[], takenSlots: string[]): TimeSlot[] {
   const slots: TimeSlot[] = []
-  const today = new Date()
-  for (let d = 0; d < daysAhead; d++) {
-    const date = new Date(today)
-    date.setDate(today.getDate() + d)
-    const dayOfWeek = date.getDay()
-    const dateStr = date.toISOString().split('T')[0]
-    for (const avail of availabilities.filter(a => a.day_of_week === dayOfWeek)) {
-      const [sh, sm] = avail.start_time.split(':').map(Number)
-      const [eh, em] = avail.end_time.split(':').map(Number)
-      let cur = sh * 60 + sm
-      const end = eh * 60 + em
-      const dur = avail.duration_min
-      while (cur + dur <= end) {
-        const s = `${String(Math.floor(cur / 60)).padStart(2, '0')}:${String(cur % 60).padStart(2, '0')}`
-        const eMin = cur + dur
-        const e = `${String(Math.floor(eMin / 60)).padStart(2, '0')}:${String(eMin % 60).padStart(2, '0')}`
-        const key = `${dateStr}T${s}:00`
-        if (!takenSlots.includes(key)) {
-          slots.push({ date: dateStr, start_time: s, end_time: e, session_type: avail.session_type, duration_min: dur, price: avail.price, currency: avail.currency })
-        }
-        cur += dur
+  for (const avail of availabilities) {
+    const dateStr = avail.slot_date
+    const [sh, sm] = avail.start_time.split(':').map(Number)
+    const [eh, em] = avail.end_time.split(':').map(Number)
+    let cur = sh * 60 + sm
+    const end = eh * 60 + em
+    const dur = avail.duration_min
+    while (cur + dur <= end) {
+      const s = `${String(Math.floor(cur / 60)).padStart(2, '0')}:${String(cur % 60).padStart(2, '0')}`
+      const eMin = cur + dur
+      const e = `${String(Math.floor(eMin / 60)).padStart(2, '0')}:${String(eMin % 60).padStart(2, '0')}`
+      const key = `${dateStr}T${s}:00`
+      if (!takenSlots.includes(key)) {
+        slots.push({ date: dateStr, start_time: s, end_time: e, session_type: avail.session_type, duration_min: dur, price: avail.price, currency: avail.currency })
       }
+      cur += dur
     }
   }
   return slots
@@ -71,7 +65,7 @@ function usePractitionerBooking(id: string) {
     queryFn: async () => {
       const [{ data: pract }, { data: avails }, { data: appointments }] = await Promise.all([
         supabase.from('practitioners').select('id, speciality, users!inner(full_name)').eq('id', id).single(),
-        supabase.from('availabilities').select('day_of_week, start_time, end_time, session_type, duration_min, price, currency').eq('practitioner_id', id).eq('is_active', true),
+        supabase.from('availabilities').select('slot_date, start_time, end_time, session_type, duration_min, price, currency').eq('practitioner_id', id).eq('is_active', true).gte('slot_date', new Date().toISOString().split('T')[0]).order('slot_date'),
         supabase.from('appointments').select('scheduled_at').eq('practitioner_id', id).not('status', 'in', '("cancelled","no_show")').gte('scheduled_at', new Date().toISOString()),
       ])
       const taken = (appointments ?? []).map(a => a.scheduled_at.substring(0, 19))
