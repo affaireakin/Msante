@@ -157,7 +157,7 @@ export default function AssistantPage() {
       const history = [...messages, userMsg].map(m => ({ role: m.role, content: m.content }))
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/ami-chat`,
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/mounima-chat`,
         {
           method: 'POST',
           headers: {

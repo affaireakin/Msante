@@ -101,7 +101,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
         {/* Sign out */}
         <div className="px-4 py-4 border-t border-slate-100/60 space-y-2">
-          <Link href="/patient/book" className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#006685] hover:shadow-lg hover:shadow-[#006685]/20 transition-all">
+          <Link href="/patient/practitioners" className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#006685] hover:shadow-lg hover:shadow-[#006685]/20 transition-all">
             <Icon name="add_circle" />
             Nouveau rendez-vous
           </Link>
