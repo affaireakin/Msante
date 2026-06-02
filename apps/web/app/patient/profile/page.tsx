@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
@@ -26,7 +26,7 @@ function useProfile() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Non connecté')
       const [{ data: profile }, { data: med }] = await Promise.all([
-        supabase.from('users').select('full_name, phone, country, language, reminder_email').eq('id', user.id).single(),
+        supabase.from('users').select('full_name, phone, country, language, reminder_email, avatar_url').eq('id', user.id).single(),
         supabase.from('patient_medical_profiles').select('*').eq('patient_id', user.id).maybeSingle(),
       ])
       return { user, profile, med }
@@ -40,6 +40,9 @@ export default function PatientProfilePage() {
 
   const [tab, setTab] = useState<'personal' | 'medical' | 'emergency'>('personal')
   const [saved, setSaved] = useState(false)
+  const [avatarUrl, setAvatarUrl]       = useState<string | null>(null)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const avatarInputRef = useRef<HTMLInputElement>(null)
 
   // Personal
   const [fullName, setFullName]         = useState('')
@@ -69,6 +72,7 @@ export default function PatientProfilePage() {
     const { profile, med } = data
     if (profile) {
       setFullName(profile.full_name ?? '')
+      setAvatarUrl((profile as { avatar_url?: string | null }).avatar_url ?? null)
       setReminderEmail(profile.reminder_email ?? '')
       setCountry(profile.country ?? 'SN')
       setLanguage(profile.language ?? 'fr')
@@ -121,6 +125,24 @@ export default function PatientProfilePage() {
     },
   })
 
+  const handleAvatarUpload = async (file: File) => {
+    const userId = data?.user.id
+    if (!userId) return
+    setAvatarUploading(true)
+    try {
+      const ext = file.name.split('.').pop() ?? 'jpg'
+      const path = `${userId}/avatar.${ext}`
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+      if (uploadError) throw uploadError
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+      await supabase.from('users').update({ avatar_url: publicUrl }).eq('id', userId)
+      setAvatarUrl(publicUrl)
+      queryClient.invalidateQueries({ queryKey: ['patient-full-profile'] })
+    } finally {
+      setAvatarUploading(false)
+    }
+  }
+
   const toggle = <T,>(arr: T[], item: T): T[] => arr.includes(item) ? arr.filter(x => x !== item) : [...arr, item]
 
   const addCustomAllergy = () => {
@@ -162,12 +184,35 @@ export default function PatientProfilePage() {
 
       {/* Avatar + nom */}
       <div className="rounded-2xl p-6 flex items-center gap-5" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
-        <div className="w-16 h-16 rounded-full bg-[#006685] flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
-          {initials}
-        </div>
+        <button
+          type="button"
+          onClick={() => avatarInputRef.current?.click()}
+          disabled={avatarUploading}
+          className="relative w-16 h-16 rounded-full flex-shrink-0 group"
+          title="Changer la photo de profil"
+        >
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="avatar" className="w-16 h-16 rounded-full object-cover" />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-[#006685] flex items-center justify-center text-white text-2xl font-bold">{initials}</div>
+          )}
+          <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            {avatarUploading
+              ? <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+              : <Icon name="photo_camera" size={20} color="#fff" />}
+          </div>
+        </button>
+        <input
+          ref={avatarInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={e => { const f = e.target.files?.[0]; if (f) handleAvatarUpload(f) }}
+        />
         <div>
           <p className="text-lg font-bold text-[#0b1c30]">{fullName || '—'}</p>
           <p className="text-sm text-[#6f787e]">Compte patient · {country}</p>
+          <p className="text-xs text-[#6f787e] mt-0.5">Cliquez sur l&apos;avatar pour changer la photo</p>
         </div>
       </div>
 

@@ -30,7 +30,7 @@ function usePractitionerProfile() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Non connecté')
       const [{ data: profile }, { data: pract }] = await Promise.all([
-        supabase.from('users').select('full_name, phone, country').eq('id', user.id).single(),
+        supabase.from('users').select('full_name, phone, country, avatar_url').eq('id', user.id).single(),
         supabase.from('practitioners').select('*, verification_documents(*)').eq('user_id', user.id).single(),
       ])
       return { user, profile, pract }
@@ -43,6 +43,9 @@ export default function PractitionerProfilePage() {
   const queryClient = useQueryClient()
   const [tab, setTab] = useState<'profile' | 'practice' | 'documents'>('profile')
   const [saved, setSaved] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const avatarInputRef = useRef<HTMLInputElement>(null)
 
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
@@ -65,7 +68,11 @@ export default function PractitionerProfilePage() {
   useEffect(() => {
     if (!data) return
     const { profile, pract } = data
-    if (profile) { setFullName(profile.full_name ?? ''); setPhone(profile.phone ?? '') }
+    if (profile) {
+      setFullName(profile.full_name ?? '')
+      setPhone(profile.phone ?? '')
+      setAvatarUrl((profile as { avatar_url?: string | null }).avatar_url ?? null)
+    }
     if (pract) {
       setBio(pract.bio ?? '')
       setSpeciality(pract.speciality ?? '')
@@ -100,6 +107,24 @@ export default function PractitionerProfilePage() {
       setTimeout(() => setSaved(false), 3000)
     },
   })
+
+  const handleAvatarUpload = async (file: File) => {
+    const userId = data?.user.id
+    if (!userId) return
+    setAvatarUploading(true)
+    try {
+      const ext = file.name.split('.').pop() ?? 'jpg'
+      const path = `${userId}/avatar.${ext}`
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+      if (uploadError) throw uploadError
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+      await supabase.from('users').update({ avatar_url: publicUrl }).eq('id', userId)
+      setAvatarUrl(publicUrl)
+      queryClient.invalidateQueries({ queryKey: ['practitioner-full-profile'] })
+    } finally {
+      setAvatarUploading(false)
+    }
+  }
 
   const uploadDoc = async (file: File, type: 'diploma' | 'id_card' | 'license') => {
     const practId = data?.pract?.id
@@ -161,12 +186,42 @@ export default function PractitionerProfilePage() {
 
       {/* Header card */}
       <div className="rounded-2xl p-6 flex items-center gap-5" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
-        <div className="w-16 h-16 rounded-full bg-[#006685] flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
-          {initials}
+        <div className="relative flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => avatarInputRef.current?.click()}
+            disabled={avatarUploading}
+            className="relative w-16 h-16 rounded-full group"
+            title="Photo obligatoire — cliquez pour modifier"
+          >
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="avatar" className="w-16 h-16 rounded-full object-cover" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-[#006685] flex items-center justify-center text-white text-2xl font-bold">{initials}</div>
+            )}
+            <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              {avatarUploading
+                ? <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                : <Icon name="photo_camera" size={20} color="#fff" />}
+            </div>
+          </button>
+          {!avatarUrl && (
+            <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center" title="Photo obligatoire">
+              <span className="text-white text-[10px] font-bold">!</span>
+            </span>
+          )}
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f) handleAvatarUpload(f) }}
+          />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-lg font-bold text-[#0b1c30]">{fullName || '—'}</p>
           <p className="text-sm text-[#6f787e]">{speciality || 'Praticien'}</p>
+          {!avatarUrl && <p className="text-xs text-red-500 font-semibold mt-0.5">Photo de profil requise</p>}
           {pract?.rating && <p className="text-xs text-[#705d00] font-semibold mt-0.5">★ {pract.rating}/5 · {pract.total_reviews} avis</p>}
         </div>
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold flex-shrink-0" style={{ backgroundColor: statusCfg.bg, color: statusCfg.color }}>

@@ -58,7 +58,7 @@ function usePractitioners() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, users(full_name)')
+        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, users!user_id(full_name)')
         .order('created_at', { ascending: false })
       if (error) throw error
       const sorted = (data ?? []) as unknown as Practitioner[]
@@ -71,9 +71,16 @@ function usePractitioners() {
   })
 }
 
+function displayName(pract: Practitioner): string {
+  const name = pract.users?.full_name ?? '—'
+  if (name === '—') return name
+  const isHealthcare = !pract.practitioner_type || pract.practitioner_type === 'healthcare'
+  return isHealthcare ? `Dr. ${name}` : name
+}
+
 export default function PractitionersPage() {
   const queryClient = useQueryClient()
-  const { data: practitioners, isLoading } = usePractitioners()
+  const { data: practitioners, isLoading, error: queryError } = usePractitioners()
   const [rejectDialog, setRejectDialog] = useState<{ practId: string; userId: string } | null>(null)
   const [rejectReason, setRejectReason] = useState('')
   const [statusDialog, setStatusDialog] = useState<{ practId: string; action: 'suspended' | 'blocked' | 'active' } | null>(null)
@@ -184,6 +191,12 @@ export default function PractitionersPage() {
         <p className="text-sm text-[#6f787e] mt-1">Validation et gestion des permissions</p>
       </div>
 
+      {queryError && (
+        <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-100 text-sm text-red-700">
+          Erreur de chargement : {(queryError as Error).message}
+        </div>
+      )}
+
       {isLoading ? (
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -207,10 +220,10 @@ export default function PractitionersPage() {
                 {/* Identité */}
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-[#006685] flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                    {(pract.users?.full_name ?? 'P').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
+                    {(pract.users?.full_name ?? 'P').split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-semibold text-[#0b1c30]">{pract.users?.full_name ?? '—'}</p>
+                    <p className="font-semibold text-[#0b1c30]">{displayName(pract)}</p>
                     <p className="text-sm text-[#6f787e]">{pract.speciality}</p>
                     <p className="text-xs text-[#6f787e] mt-0.5">
                       Soumis le {new Date(pract.created_at).toLocaleDateString('fr-FR')}
