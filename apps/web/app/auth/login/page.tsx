@@ -41,7 +41,7 @@ export default function LoginPage() {
       .single()
 
     if (profileError || !profile) {
-      setError('Impossible de charger votre profil. Réessayez.')
+      setError(`Profil introuvable${profileError ? ` : ${profileError.message}` : ''}. Réessayez ou contactez le support.`)
       await supabase.auth.signOut()
       setLoading(false)
       return
