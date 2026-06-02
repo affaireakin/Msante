@@ -6,6 +6,19 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
 type Role = 'patient' | 'practitioner'
+type PractType = 'healthcare' | 'wellness'
+
+const HEALTHCARE_SPECIALITIES = [
+  'Médecin généraliste', 'Psychiatre', 'Psychologue clinicien', 'Neurologue',
+  'Pédiatre', 'Gynécologue', 'Cardiologue', 'Dermatologue', 'Infirmier(e)',
+  'Sage-femme', 'Kinésithérapeute', 'Orthophoniste',
+]
+
+const WELLNESS_SPECIALITIES = [
+  'Coach de vie', 'Coach bien-être', 'Relaxologue', 'Thérapeute',
+  'Nutritionniste', 'Naturopathe', 'Hypnothérapeute', 'Sophrologue',
+  'Méditation & pleine conscience', 'Yoga-thérapeute',
+]
 
 function translateError(msg: string): string {
   if (msg.includes('already registered') || msg.includes('User already registered')) return 'Un compte existe déjà avec cet email.'
@@ -17,18 +30,39 @@ function translateError(msg: string): string {
 
 export default function SignupPage() {
   const router = useRouter()
-  const [role, setRole]           = useState<Role>('patient')
-  const [fullName, setFullName]   = useState('')
-  const [email, setEmail]         = useState('')
-  const [password, setPassword]   = useState('')
-  const [showPwd, setShowPwd]     = useState(false)
-  const [speciality, setSpeciality] = useState('')
-  const [error, setError]         = useState('')
-  const [loading, setLoading]     = useState(false)
+  const [role, setRole]               = useState<Role>('patient')
+  const [practType, setPractType]     = useState<PractType>('healthcare')
+  const [fullName, setFullName]       = useState('')
+  const [email, setEmail]             = useState('')
+  const [password, setPassword]       = useState('')
+  const [showPwd, setShowPwd]         = useState(false)
+  const [speciality, setSpeciality]   = useState('')
+  const [acceptedCGU, setAcceptedCGU] = useState(false)
+  const [error, setError]             = useState('')
+  const [loading, setLoading]         = useState(false)
+
+  const specialityList = practType === 'healthcare' ? HEALTHCARE_SPECIALITIES : WELLNESS_SPECIALITIES
+
+  const handleRoleChange = (newRole: Role) => {
+    setRole(newRole)
+    setSpeciality('')
+    setPractType('healthcare')
+  }
+
+  const handlePractTypeChange = (t: PractType) => {
+    setPractType(t)
+    setSpeciality('')
+  }
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+
+    if (!acceptedCGU) {
+      setError('Vous devez accepter les Conditions Générales d\'Utilisation.')
+      return
+    }
+
     setLoading(true)
 
     const { data, error: authError } = await supabase.auth.signUp({
@@ -53,6 +87,7 @@ export default function SignupPage() {
       await supabase.from('practitioners').insert({
         user_id: data.user.id,
         speciality,
+        practitioner_type: practType,
         verification_status: 'pending',
       })
     }
@@ -86,13 +121,13 @@ export default function SignupPage() {
           {/* Choix rôle */}
           <div className="flex gap-2 mb-6 p-1 bg-[#e5eeff] rounded-xl">
             {([
-              { value: 'patient',       label: 'Patient',   icon: 'person' },
-              { value: 'practitioner',  label: 'Praticien', icon: 'medical_services' },
+              { value: 'patient',      label: 'Patient',   icon: 'person' },
+              { value: 'practitioner', label: 'Praticien', icon: 'medical_services' },
             ] as { value: Role; label: string; icon: string }[]).map(({ value, label, icon }) => (
               <button
                 key={value}
                 type="button"
-                onClick={() => { setRole(value); setSpeciality('') }}
+                onClick={() => handleRoleChange(value)}
                 className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${
                   role === value ? 'bg-white text-[#006685] shadow-sm' : 'text-slate-500 hover:text-[#006685]'
                 }`}
@@ -102,6 +137,34 @@ export default function SignupPage() {
               </button>
             ))}
           </div>
+
+          {/* Type praticien */}
+          {role === 'practitioner' && (
+            <div className="mb-5">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Type de pratique</p>
+              <div className="grid grid-cols-2 gap-3">
+                {([
+                  { value: 'healthcare', label: 'Professionnel de santé', icon: 'local_hospital', desc: 'Médecins, psychiatres, infirmiers…' },
+                  { value: 'wellness',   label: 'Praticien bien-être',     icon: 'self_improvement', desc: 'Coachs, relaxologues, thérapeutes…' },
+                ] as { value: PractType; label: string; icon: string; desc: string }[]).map(({ value, label, icon, desc }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => handlePractTypeChange(value)}
+                    className={`p-4 rounded-xl border-2 text-left transition-all ${
+                      practType === value
+                        ? 'border-[#006685] bg-[#e5eeff]'
+                        : 'border-[#bec8ce] bg-[#f8f9ff] hover:border-[#006685]/40'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '22px', color: practType === value ? '#006685' : '#6f787e' }}>{icon}</span>
+                    <p className={`text-sm font-bold mt-1 ${practType === value ? 'text-[#006685]' : 'text-[#0b1c30]'}`}>{label}</p>
+                    <p className="text-xs text-[#6f787e] mt-0.5 leading-snug">{desc}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <form onSubmit={handleSignup} className="flex flex-col gap-4">
 
@@ -168,12 +231,7 @@ export default function SignupPage() {
                   className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all"
                 >
                   <option value="">Choisir une spécialité</option>
-                  <option>Psychologue</option>
-                  <option>Psychiatre</option>
-                  <option>Thérapeute</option>
-                  <option>Coach bien-être</option>
-                  <option>Nutritionniste</option>
-                  <option>Médecin généraliste</option>
+                  {specialityList.map(s => <option key={s}>{s}</option>)}
                 </select>
               </div>
             )}
@@ -192,9 +250,26 @@ export default function SignupPage() {
               </div>
             )}
 
+            {/* CGU */}
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={acceptedCGU}
+                onChange={e => setAcceptedCGU(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-[#bec8ce] text-[#006685] accent-[#006685] flex-shrink-0"
+              />
+              <span className="text-xs text-slate-500 leading-relaxed">
+                En validant votre inscription, vous acceptez les{' '}
+                <Link href="/cgu" target="_blank" className="text-[#006685] font-semibold hover:underline">
+                  Conditions Générales d&apos;Utilisation
+                </Link>
+                {' '}de M-Santé.
+              </span>
+            </label>
+
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !acceptedCGU}
               className="w-full py-3.5 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? 'Création du compte...' : `Créer mon compte ${role === 'practitioner' ? 'praticien' : 'patient'}`}

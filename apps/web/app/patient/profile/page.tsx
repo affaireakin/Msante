@@ -9,7 +9,15 @@ function Icon({ name, size = 20, color }: { name: string; size?: number; color?:
 
 const BLOOD_TYPES = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Inconnu']
 const COMMON_ALLERGIES = ['Pénicilline', 'Aspirine', 'Ibuprofène', 'Latex', 'Arachides', 'Fruits de mer', 'Gluten', 'Lactose', 'Pollen', 'Poussière']
-const CHRONIC_CONDITIONS = ['Diabète', 'Hypertension', 'Asthme', 'Dépression', 'Anxiété', 'Épilepsie', 'Migraine', 'Arthrite', 'Thyroïde']
+const KNOWN_CONDITIONS = ['Diabète', 'Hypertension', 'Asthme', 'Dépression', 'Anxiété', 'Épilepsie', 'Migraine', 'Arthrite', 'Thyroïde']
+const DIAL_CODES = [
+  { code: '+221', flag: '🇸🇳', label: 'SN' },
+  { code: '+225', flag: '🇨🇮', label: 'CI' },
+  { code: '+237', flag: '🇨🇲', label: 'CM' },
+  { code: '+33',  flag: '🇫🇷', label: 'FR' },
+  { code: '+212', flag: '🇲🇦', label: 'MA' },
+  { code: '+1',   flag: '🇺🇸', label: 'US' },
+]
 
 function useProfile() {
   return useQuery({
@@ -18,7 +26,7 @@ function useProfile() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Non connecté')
       const [{ data: profile }, { data: med }] = await Promise.all([
-        supabase.from('users').select('full_name, phone, country, language').eq('id', user.id).single(),
+        supabase.from('users').select('full_name, phone, country, language, reminder_email').eq('id', user.id).single(),
         supabase.from('patient_medical_profiles').select('*').eq('patient_id', user.id).maybeSingle(),
       ])
       return { user, profile, med }
@@ -34,20 +42,23 @@ export default function PatientProfilePage() {
   const [saved, setSaved] = useState(false)
 
   // Personal
-  const [fullName, setFullName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [country, setCountry] = useState('SN')
-  const [language, setLanguage] = useState('fr')
+  const [fullName, setFullName]         = useState('')
+  const [dialCode, setDialCode]         = useState('+221')
+  const [phoneLocal, setPhoneLocal]     = useState('')
+  const [country, setCountry]           = useState('SN')
+  const [language, setLanguage]         = useState('fr')
+  const [reminderEmail, setReminderEmail] = useState('')
 
   // Medical
-  const [bloodType, setBloodType] = useState('')
-  const [allergies, setAllergies] = useState<string[]>([])
+  const [bloodType, setBloodType]         = useState('')
+  const [allergies, setAllergies]         = useState<string[]>([])
   const [customAllergy, setCustomAllergy] = useState('')
-  const [conditions, setConditions] = useState<string[]>([])
-  const [medications, setMedications] = useState('')
-  const [heightCm, setHeightCm] = useState('')
-  const [weightKg, setWeightKg] = useState('')
-  const [notes, setNotes] = useState('')
+  const [conditions, setConditions]       = useState<string[]>([])
+  const [medications, setMedications]     = useState('')
+  const [heightCm, setHeightCm]           = useState('')
+  const [weightKg, setWeightKg]           = useState('')
+  const [priorities, setPriorities]       = useState('')
+  const [notes, setNotes]                 = useState('')
 
   // Emergency
   const [emergencyName, setEmergencyName] = useState('')
@@ -58,9 +69,14 @@ export default function PatientProfilePage() {
     const { profile, med } = data
     if (profile) {
       setFullName(profile.full_name ?? '')
-      setPhone(profile.phone ?? '')
+      setReminderEmail(profile.reminder_email ?? '')
       setCountry(profile.country ?? 'SN')
       setLanguage(profile.language ?? 'fr')
+      // Split stored phone into dial code + local number
+      const storedPhone = profile.phone ?? ''
+      const matched = DIAL_CODES.find(d => storedPhone.startsWith(d.code))
+      if (matched) { setDialCode(matched.code); setPhoneLocal(storedPhone.slice(matched.code.length).trim()) }
+      else setPhoneLocal(storedPhone)
     }
     if (med) {
       setBloodType(med.blood_type ?? '')
@@ -69,6 +85,7 @@ export default function PatientProfilePage() {
       setMedications(med.current_medications ?? '')
       setHeightCm(med.height_cm ? String(med.height_cm) : '')
       setWeightKg(med.weight_kg ? String(med.weight_kg) : '')
+      setPriorities(med.current_priorities ?? '')
       setEmergencyName(med.emergency_contact_name ?? '')
       setEmergencyPhone(med.emergency_contact_phone ?? '')
       setNotes(med.notes ?? '')
@@ -80,7 +97,8 @@ export default function PatientProfilePage() {
       const userId = data?.user.id
       if (!userId) throw new Error('Non connecté')
 
-      await supabase.from('users').update({ full_name: fullName, phone: phone || null, country, language }).eq('id', userId)
+      const fullPhone = phoneLocal.trim() ? `${dialCode} ${phoneLocal.trim()}` : null
+      await supabase.from('users').update({ full_name: fullName, phone: fullPhone, country, language, reminder_email: reminderEmail || null }).eq('id', userId)
 
       await supabase.from('patient_medical_profiles').upsert({
         patient_id: userId,
@@ -88,6 +106,7 @@ export default function PatientProfilePage() {
         allergies,
         chronic_conditions: conditions,
         current_medications: medications || null,
+        current_priorities: priorities || null,
         emergency_contact_name: emergencyName || null,
         emergency_contact_phone: emergencyPhone || null,
         height_cm: heightCm ? parseInt(heightCm) : null,
@@ -176,8 +195,22 @@ export default function PatientProfilePage() {
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Téléphone</label>
-              <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+221 77 000 00 00"
+              <div className="flex gap-2">
+                <select value={dialCode} onChange={e => setDialCode(e.target.value)}
+                  className="px-3 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all text-sm">
+                  {DIAL_CODES.map(d => (
+                    <option key={d.code} value={d.code}>{d.flag} {d.code}</option>
+                  ))}
+                </select>
+                <input type="tel" value={phoneLocal} onChange={e => setPhoneLocal(e.target.value)} placeholder="77 000 00 00"
+                  className="flex-1 px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Email pour les rappels</label>
+              <input type="email" value={reminderEmail} onChange={e => setReminderEmail(e.target.value)} placeholder="rappels@example.com"
                 className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+              <p className="text-xs text-[#6f787e]">Laissez vide pour utiliser votre email de connexion</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
@@ -266,9 +299,9 @@ export default function PatientProfilePage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Maladies chroniques</label>
+              <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Maladies connues</label>
               <div className="flex flex-wrap gap-2">
-                {CHRONIC_CONDITIONS.map(c => (
+                {KNOWN_CONDITIONS.map((c: string) => (
                   <button key={c} type="button" onClick={() => setConditions(toggle(conditions, c))}
                     className="px-3 py-1 rounded-full text-xs font-semibold transition-all"
                     style={{ backgroundColor: conditions.includes(c) ? '#fff8e1' : '#f8f9ff', color: conditions.includes(c) ? '#705d00' : '#6f787e', border: `1px solid ${conditions.includes(c) ? '#705d00' : '#bec8ce'}` }}>
@@ -276,6 +309,13 @@ export default function PatientProfilePage() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Mes priorités en ce moment</label>
+              <textarea value={priorities} onChange={e => setPriorities(e.target.value)} rows={3}
+                placeholder="Ex: Gérer mon stress, améliorer mon sommeil, retrouver de l'énergie..."
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all resize-none" />
             </div>
 
             <div className="flex flex-col gap-1">
