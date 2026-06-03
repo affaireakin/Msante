@@ -175,13 +175,23 @@ Deno.serve(async (req) => {
       }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
-    // ── Mock checkout (no PayDunya credentials — sandbox UI in the app) ────────
-    // Payment stays in 'processing' state — the mock-checkout screen will
-    // confirm it client-side once the user taps "Payer".
+    // ── Mock checkout (no PayDunya credentials) ──────────────────────────────
+    // Immediately mark payment completed + appointment confirmed so the full
+    // booking→consultation flow can be tested end-to-end.
+    await Promise.all([
+      supabase
+        .from('payments')
+        .update({ status: 'completed' })
+        .eq('id', payment.id),
+      supabase
+        .from('appointments')
+        .update({ status: 'confirmed', payment_id: payment.id })
+        .eq('id', appointment_id),
+    ])
+
     return new Response(JSON.stringify({
       paymentId: payment.id,
-      status: 'processing',
-      mockCheckout: true,
+      status: 'completed',
       amount,
       currency,
     }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })

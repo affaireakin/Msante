@@ -28,6 +28,7 @@ interface Appointment {
   type: string
   notes: string | null
   practitioners: { id: string; speciality: string; users: { full_name: string } | null } | null
+  consultations: { id: string; prescription_content: string | null }[] | null
 }
 
 function useAppointments(filter: Filter) {
@@ -39,7 +40,7 @@ function useAppointments(filter: Filter) {
 
       let q = supabase
         .from('appointments')
-        .select('id, scheduled_at, duration_min, status, type, notes, practitioners!inner(id, speciality, users!user_id(full_name))')
+        .select('id, scheduled_at, duration_min, status, type, notes, practitioners!inner(id, speciality, users!user_id(full_name)), consultations(id, prescription_content)')
         .eq('patient_id', user.id)
         .order('scheduled_at', { ascending: false })
 
@@ -123,6 +124,8 @@ export default function AppointmentsPage() {
             const practName = apt.practitioners?.users?.full_name ?? '—'
             const typeIcon = TYPE_ICONS[apt.type] ?? 'event'
             const isPast = dt < new Date()
+            const consultation = apt.consultations?.[0] ?? null
+            const hasPrescription = !!(consultation?.prescription_content)
 
             return (
               <div key={apt.id} className="rounded-2xl p-5 flex items-center gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)', opacity: isPast && apt.status === 'pending' ? 0.7 : 1 }}>
@@ -139,6 +142,16 @@ export default function AppointmentsPage() {
                     <Icon name={typeIcon} style={{ fontSize: '14px', color: '#6f787e' }} />
                     <span className="text-xs text-[#6f787e]">{dateStr} · {time} · {apt.duration_min} min</span>
                   </div>
+                  {hasPrescription && (
+                    <Link
+                      href={`/patient/prescription/${consultation!.id}`}
+                      target="_blank"
+                      className="inline-flex items-center gap-1 mt-1.5 text-xs font-bold text-[#006685] hover:underline"
+                    >
+                      <Icon name="description" style={{ fontSize: '13px' }} />
+                      Document disponible
+                    </Link>
+                  )}
                 </div>
                 <div className="flex flex-col items-end gap-2 flex-shrink-0">
                   <span className="flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full" style={{ backgroundColor: status.bg, color: status.text }}>

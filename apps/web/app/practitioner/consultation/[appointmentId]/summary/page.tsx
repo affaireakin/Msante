@@ -6,6 +6,14 @@ import { supabase } from '@/lib/supabase'
 import type { ChatMessage } from '@/types/consultation'
 
 type UploadProgress = 'idle' | 'uploading' | 'done' | 'error'
+type DocType = 'prescription' | 'report' | 'appreciation' | 'certificate'
+
+const DOC_TYPE_LABELS: Record<DocType, string> = {
+  prescription: 'Ordonnance',
+  report: 'Compte-rendu de séance',
+  appreciation: 'Appréciation / Avis professionnel',
+  certificate: 'Certificat médical',
+}
 
 export default function ConsultationSummaryPage() {
   const params = useParams()
@@ -26,6 +34,15 @@ export default function ConsultationSummaryPage() {
   const [uploadProgress, setUploadProgress] = useState<UploadProgress>('idle')
   const [uploadError, setUploadError] = useState<string | null>(null)
 
+  // Notes & prescription state
+  const [practNotes, setPractNotes] = useState('')
+  const [docType, setDocType] = useState<DocType>('prescription')
+  const [prescContent, setPrescContent] = useState('')
+  const [notesSaving, setNotesSaving] = useState(false)
+  const [notesSaved, setNotesSaved] = useState(false)
+  const [prescSaving, setPrescSaving] = useState(false)
+  const [prescSaved, setPrescSaved] = useState(false)
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Load consultation data from Supabase
@@ -35,26 +52,48 @@ export default function ConsultationSummaryPage() {
     async function loadConsultation() {
       const { data } = await supabase
         .from('consultations')
-        .select('chat_history, prescription_url, ai_summary')
+        .select('chat_history, prescription_url, ai_summary, practitioner_notes, prescription_content, document_type')
         .eq('id', consultationId)
         .single()
 
       if (data) {
         const history = data.chat_history as ChatMessage[] | null
-        if (Array.isArray(history)) {
-          setChatHistory(history)
-        }
-        if (data.prescription_url) {
-          setPrescriptionUrl(data.prescription_url as string)
-        }
-        if (!aiSummaryParam && data.ai_summary) {
-          setAiSummary(data.ai_summary as string)
-        }
+        if (Array.isArray(history)) setChatHistory(history)
+        if (data.prescription_url) setPrescriptionUrl(data.prescription_url as string)
+        if (!aiSummaryParam && data.ai_summary) setAiSummary(data.ai_summary as string)
+        if (data.practitioner_notes) setPractNotes(data.practitioner_notes as string)
+        if (data.prescription_content) setPrescContent(data.prescription_content as string)
+        if (data.document_type) setDocType(data.document_type as DocType)
       }
     }
 
     void loadConsultation()
   }, [consultationId, aiSummaryParam])
+
+  async function saveNotes() {
+    if (!consultationId) return
+    setNotesSaving(true)
+    await supabase.from('consultations').update({ practitioner_notes: practNotes }).eq('id', consultationId)
+    setNotesSaving(false)
+    setNotesSaved(true)
+    setTimeout(() => setNotesSaved(false), 3000)
+  }
+
+  async function savePrescription() {
+    if (!consultationId || !prescContent.trim()) return
+    setPrescSaving(true)
+    await supabase.from('consultations').update({
+      prescription_content: prescContent,
+      document_type: docType,
+    }).eq('id', consultationId)
+    setPrescSaving(false)
+    setPrescSaved(true)
+    setTimeout(() => setPrescSaved(false), 3000)
+  }
+
+  function openPrescriptionPreview() {
+    window.open(`/patient/prescription/${consultationId}`, '_blank')
+  }
 
   const handleFileUpload = useCallback(
     async (file: File) => {
@@ -277,6 +316,98 @@ export default function ConsultationSummaryPage() {
                   </div>
                 </div>
               ))
+            )}
+          </div>
+        </div>
+
+        {/* Notes de suivi */}
+        <div className="bg-white/60 backdrop-blur-2xl rounded-2xl border border-white/80 shadow-xl shadow-sky-900/5 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="material-symbols-outlined text-[#006685] text-2xl select-none">edit_note</span>
+            <h3 className="text-base font-semibold text-[#0b1c30] flex-1">Notes de suivi</h3>
+            <span className="text-[11px] font-bold uppercase tracking-[0.05em] bg-amber-50 text-amber-700 border border-amber-100 px-2.5 py-1 rounded-full">
+              Privé — non visible par le patient
+            </span>
+          </div>
+          <textarea
+            value={practNotes}
+            onChange={e => setPractNotes(e.target.value)}
+            rows={4}
+            placeholder="Observations cliniques, points de suivi, objectifs pour la prochaine séance..."
+            className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] text-sm focus:outline-none focus:border-[#006685] transition-all resize-none"
+          />
+          <div className="flex justify-end mt-3">
+            <button
+              onClick={() => void saveNotes()}
+              disabled={notesSaving}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50"
+              style={{ backgroundColor: notesSaved ? '#1d7a3a' : '#006685' }}
+            >
+              <span className="material-symbols-outlined text-base select-none">{notesSaved ? 'check' : 'save'}</span>
+              {notesSaving ? 'Sauvegarde...' : notesSaved ? 'Sauvegardé !' : 'Sauvegarder les notes'}
+            </button>
+          </div>
+        </div>
+
+        {/* Générateur d'ordonnance / document */}
+        <div className="bg-white/60 backdrop-blur-2xl rounded-2xl border border-white/80 shadow-xl shadow-sky-900/5 p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="material-symbols-outlined text-[#006685] text-2xl select-none">description</span>
+            <h3 className="text-base font-semibold text-[#0b1c30] flex-1">Document patient</h3>
+            {prescSaved && (
+              <span className="text-[11px] font-bold uppercase tracking-[0.05em] bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-full">
+                ✓ Enregistré
+              </span>
+            )}
+          </div>
+
+          {/* Document type selector */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {(Object.keys(DOC_TYPE_LABELS) as DocType[]).map(type => (
+              <button
+                key={type}
+                onClick={() => setDocType(type)}
+                className="px-3 py-1.5 rounded-full text-xs font-bold transition-all"
+                style={{
+                  backgroundColor: docType === type ? '#006685' : '#e5eeff',
+                  color: docType === type ? '#fff' : '#006685',
+                }}
+              >
+                {DOC_TYPE_LABELS[type]}
+              </button>
+            ))}
+          </div>
+
+          <textarea
+            value={prescContent}
+            onChange={e => setPrescContent(e.target.value)}
+            rows={6}
+            placeholder={docType === 'prescription'
+              ? 'Ex : Médicament 500mg — 1 comprimé matin et soir pendant 7 jours...'
+              : docType === 'appreciation'
+              ? 'Ex : Séance productive. Le patient montre des progrès dans la gestion du stress...'
+              : 'Rédigez le contenu du document ici...'}
+            className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] text-sm focus:outline-none focus:border-[#006685] transition-all resize-none"
+          />
+
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => void savePrescription()}
+              disabled={prescSaving || !prescContent.trim()}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-40"
+              style={{ backgroundColor: prescSaved ? '#1d7a3a' : '#006685' }}
+            >
+              <span className="material-symbols-outlined text-base select-none">{prescSaved ? 'check' : 'save'}</span>
+              {prescSaving ? 'Sauvegarde...' : prescSaved ? 'Enregistré !' : 'Enregistrer pour le patient'}
+            </button>
+            {prescSaved && (
+              <button
+                onClick={openPrescriptionPreview}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-[#006685] text-[#006685] hover:bg-[#eff4ff] transition-all"
+              >
+                <span className="material-symbols-outlined text-base select-none">preview</span>
+                Aperçu
+              </button>
             )}
           </div>
         </div>

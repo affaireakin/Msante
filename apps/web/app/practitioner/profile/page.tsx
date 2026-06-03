@@ -41,7 +41,7 @@ function usePractitionerProfile() {
 export default function PractitionerProfilePage() {
   const { data, isLoading } = usePractitionerProfile()
   const queryClient = useQueryClient()
-  const [tab, setTab] = useState<'profile' | 'practice' | 'documents'>('profile')
+  const [tab, setTab] = useState<'profile' | 'practice' | 'documents' | 'signature'>('profile')
   const [saved, setSaved] = useState(false)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [avatarUploading, setAvatarUploading] = useState(false)
@@ -57,6 +57,16 @@ export default function PractitionerProfilePage() {
   const [duration, setDuration] = useState(60)
   const [sessionTypes, setSessionTypes] = useState<string[]>(['video'])
   const [timezone, setTimezone] = useState('Africa/Dakar')
+
+  // professional info (for prescription letterhead)
+  const [professionalTitle, setProfessionalTitle] = useState('')
+  const [registrationNumber, setRegistrationNumber] = useState('')
+  const [clinicAddress, setClinicAddress] = useState('')
+  const [signatureUrl, setSignatureUrl] = useState<string | null>(null)
+  const [stampUrl, setStampUrl] = useState<string | null>(null)
+  const [sigUploading, setSigUploading] = useState<'signature' | 'stamp' | null>(null)
+  const signatureRef = useRef<HTMLInputElement>(null)
+  const stampRef = useRef<HTMLInputElement>(null)
 
   // doc upload
   const diplomaRef = useRef<HTMLInputElement>(null)
@@ -83,6 +93,11 @@ export default function PractitionerProfilePage() {
       setCurrency(pract.session_currency ?? 'XOF')
       setDuration(pract.session_duration_min ?? 60)
       setTimezone(pract.timezone ?? 'Africa/Dakar')
+      setProfessionalTitle((pract as unknown as Record<string, string>).professional_title ?? '')
+      setRegistrationNumber((pract as unknown as Record<string, string>).registration_number ?? '')
+      setClinicAddress((pract as unknown as Record<string, string>).clinic_address ?? '')
+      setSignatureUrl((pract as unknown as Record<string, string | null>).signature_url ?? null)
+      setStampUrl((pract as unknown as Record<string, string | null>).stamp_url ?? null)
     }
   }, [data])
 
@@ -101,6 +116,9 @@ export default function PractitionerProfilePage() {
         session_currency: currency,
         session_duration_min: duration,
         timezone,
+        professional_title: professionalTitle || null,
+        registration_number: registrationNumber || null,
+        clinic_address: clinicAddress || null,
       }).eq('id', practId)
     },
     onSuccess: () => {
@@ -125,6 +143,28 @@ export default function PractitionerProfilePage() {
       queryClient.invalidateQueries({ queryKey: ['practitioner-full-profile'] })
     } finally {
       setAvatarUploading(false)
+    }
+  }
+
+  const handleSigUpload = async (file: File, kind: 'signature' | 'stamp') => {
+    const userId = data?.user.id
+    const practId = data?.pract?.id
+    if (!userId || !practId) return
+    setSigUploading(kind)
+    try {
+      const ext = file.name.split('.').pop() ?? 'png'
+      const path = `${userId}/${kind}.${ext}`
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+      if (uploadError) throw uploadError
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+      await supabase.from('practitioners').update(
+        kind === 'signature' ? { signature_url: publicUrl } : { stamp_url: publicUrl }
+      ).eq('id', practId)
+      if (kind === 'signature') setSignatureUrl(publicUrl)
+      else setStampUrl(publicUrl)
+      queryClient.invalidateQueries({ queryKey: ['practitioner-full-profile'] })
+    } finally {
+      setSigUploading(null)
     }
   }
 
@@ -165,6 +205,7 @@ export default function PractitionerProfilePage() {
     { key: 'profile' as const, label: 'Profil', icon: 'person' },
     { key: 'practice' as const, label: 'Pratique', icon: 'medical_services' },
     { key: 'documents' as const, label: 'Documents', icon: 'description' },
+    { key: 'signature' as const, label: 'Signature', icon: 'draw' },
   ]
 
   const DOC_LABELS: Record<string, string> = {
@@ -428,6 +469,100 @@ export default function PractitionerProfilePage() {
             <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-amber-700 flex items-start gap-2">
               <Icon name="info" size={14} color="#d97706" />
               <span>Chaque nouveau document soumis repasse en revue. Délai de vérification : 24 à 48h.</span>
+            </div>
+          </div>
+        )}
+
+        {/* TAB — Signature & Cachet */}
+        {tab === 'signature' && (
+          <div className="space-y-6">
+            <div>
+              <p className="text-sm font-semibold text-[#0b1c30]">Informations professionnelles</p>
+              <p className="text-xs text-[#6f787e] mt-0.5">Apparaissent sur l&apos;en-tête de vos ordonnances et comptes-rendus.</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Titre professionnel</label>
+                <input value={professionalTitle} onChange={e => setProfessionalTitle(e.target.value)}
+                  placeholder="Psychologue Clinicien, Dr., Coach..."
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">N° Ordre / Référence</label>
+                <input value={registrationNumber} onChange={e => setRegistrationNumber(e.target.value)}
+                  placeholder="No. 12345"
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Adresse du cabinet</label>
+              <input value={clinicAddress} onChange={e => setClinicAddress(e.target.value)}
+                placeholder="12 Rue de la Santé, Dakar, Sénégal"
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+            </div>
+
+            <div className="border-t border-[#bec8ce]/40 pt-5">
+              <p className="text-sm font-semibold text-[#0b1c30] mb-1">Signature &amp; Cachet</p>
+              <p className="text-xs text-[#6f787e] mb-4">Images PNG/JPG sur fond transparent recommandé. Apposées sur chaque document.</p>
+
+              <div className="grid grid-cols-2 gap-4">
+                {/* Signature */}
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Signature</label>
+                  <div
+                    onClick={() => signatureRef.current?.click()}
+                    className="h-32 rounded-xl border-2 border-dashed border-[#bec8ce] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#006685] hover:bg-[#e5eeff]/20 transition-all relative overflow-hidden"
+                  >
+                    {sigUploading === 'signature' ? (
+                      <div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+                    ) : signatureUrl ? (
+                      <>
+                        <img src={signatureUrl} alt="signature" className="max-h-24 max-w-full object-contain" />
+                        <span className="text-[10px] text-[#006685] font-semibold">Cliquer pour remplacer</span>
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="draw" color="#6f787e" size={28} />
+                        <span className="text-xs text-[#6f787e]">Télécharger la signature</span>
+                      </>
+                    )}
+                  </div>
+                  <input ref={signatureRef} type="file" accept="image/*" className="hidden"
+                    onChange={e => { const f = e.target.files?.[0]; if (f) handleSigUpload(f, 'signature') }} />
+                </div>
+
+                {/* Stamp/Cachet */}
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Cachet / Tampon</label>
+                  <div
+                    onClick={() => stampRef.current?.click()}
+                    className="h-32 rounded-xl border-2 border-dashed border-[#bec8ce] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#006685] hover:bg-[#e5eeff]/20 transition-all relative overflow-hidden"
+                  >
+                    {sigUploading === 'stamp' ? (
+                      <div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+                    ) : stampUrl ? (
+                      <>
+                        <img src={stampUrl} alt="cachet" className="max-h-24 max-w-full object-contain" />
+                        <span className="text-[10px] text-[#006685] font-semibold">Cliquer pour remplacer</span>
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="verified" color="#6f787e" size={28} />
+                        <span className="text-xs text-[#6f787e]">Télécharger le cachet</span>
+                      </>
+                    )}
+                  </div>
+                  <input ref={stampRef} type="file" accept="image/*" className="hidden"
+                    onChange={e => { const f = e.target.files?.[0]; if (f) handleSigUpload(f, 'stamp') }} />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#e5eeff]/60 border border-[#d3e4fe] rounded-xl px-4 py-3 text-xs text-[#006685] flex items-start gap-2">
+              <Icon name="info" size={14} color="#006685" />
+              <span>Ces images apparaîtront sur les ordonnances et comptes-rendus que vous générez après chaque consultation. Cliquez <strong>Sauvegarder</strong> pour enregistrer les informations professionnelles.</span>
             </div>
           </div>
         )}
