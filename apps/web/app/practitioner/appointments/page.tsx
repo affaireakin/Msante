@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
 type AptStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
@@ -165,7 +166,13 @@ export default function AppointmentsPage() {
 
                 {/* Actions (upcoming confirmed only) */}
                 {filter === 'upcoming' && apt.status === 'confirmed' && (
-                  <div className="flex gap-2 flex-shrink-0">
+                  <div className="flex gap-2 flex-shrink-0 items-center">
+                    <Link
+                      href={`/practitioner/consultation/${apt.id}/waiting`}
+                      className="px-3 py-1.5 bg-[#006685] text-white text-xs font-bold rounded-full hover:bg-[#005575] transition-colors"
+                    >
+                      Rejoindre →
+                    </Link>
                     <button
                       onClick={() => updateStatus.mutate({ id: apt.id, status: 'completed' })}
                       disabled={updateStatus.isPending}
