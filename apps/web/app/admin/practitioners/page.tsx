@@ -58,7 +58,7 @@ function usePractitioners() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, users(full_name)')
+        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, users!user_id(full_name)')
         .order('created_at', { ascending: false })
       if (error) throw error
       const sorted = (data ?? []) as unknown as Practitioner[]

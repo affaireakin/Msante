@@ -64,7 +64,7 @@ function usePractitionerBooking(id: string) {
     queryKey: ['practitioner-booking', id],
     queryFn: async () => {
       const [{ data: pract }, { data: avails }, { data: appointments }] = await Promise.all([
-        supabase.from('practitioners').select('id, speciality, users!inner(full_name)').eq('id', id).single(),
+        supabase.from('practitioners').select('id, speciality, users!user_id(full_name)').eq('id', id).single(),
         supabase.from('availabilities').select('slot_date, start_time, end_time, session_type, duration_min, price, currency').eq('practitioner_id', id).eq('is_active', true).gte('slot_date', new Date().toISOString().split('T')[0]).order('slot_date'),
         supabase.from('appointments').select('scheduled_at').eq('practitioner_id', id).not('status', 'in', '("cancelled","no_show")').gte('scheduled_at', new Date().toISOString()),
       ])

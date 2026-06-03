@@ -28,7 +28,7 @@ function useDashboard() {
 
       const { data: appointments } = await supabase
         .from('appointments')
-        .select('id, scheduled_at, duration_min, status, type, practitioners!inner(speciality, users!inner(full_name))')
+        .select('id, scheduled_at, duration_min, status, type, practitioners!inner(speciality, users!user_id(full_name))')
         .eq('patient_id', user.id)
         .gte('scheduled_at', new Date().toISOString())
         .order('scheduled_at', { ascending: true })

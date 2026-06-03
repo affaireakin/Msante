@@ -32,7 +32,7 @@ export default function AppealsPage() {
           id, message, status, admin_response, created_at,
           practitioner:practitioners!practitioner_appeals_practitioner_id_fkey(
             id, speciality, account_status,
-            users!inner(full_name)
+            users!user_id(full_name)
           )
         `)
         .eq('status', 'pending')

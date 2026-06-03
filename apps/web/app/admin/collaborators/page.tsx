@@ -79,7 +79,7 @@ export default function CollaboratorsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, speciality, verification_status, practitioner_type, created_at, users(full_name)')
+        .select('id, speciality, verification_status, practitioner_type, created_at, users!user_id(full_name)')
         .order('created_at', { ascending: false })
       if (error) throw error
       return (data ?? []) as {

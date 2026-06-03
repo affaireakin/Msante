@@ -35,7 +35,7 @@ export default function PatientWaitingRoom() {
           type,
           practitioners!inner (
             speciality,
-            users!inner ( full_name )
+            users!user_id ( full_name )
           )
         `)
         .eq('id', appointmentId)

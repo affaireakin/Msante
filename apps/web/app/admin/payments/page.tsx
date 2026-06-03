@@ -86,7 +86,7 @@ function usePayments(
         .select(
           `id, amount, currency, provider, status, created_at,
           patient:users!payments_patient_id_fkey (full_name),
-          practitioner_user:practitioners!inner (users!inner (full_name))`,
+          practitioner_user:practitioners!inner (users!user_id (full_name))`,
           { count: 'exact' }
         )
         .order('created_at', { ascending: false })

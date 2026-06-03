@@ -39,7 +39,7 @@ function useAppointments(filter: Filter) {
 
       let q = supabase
         .from('appointments')
-        .select('id, scheduled_at, duration_min, status, type, notes, practitioners!inner(id, speciality, users!inner(full_name))')
+        .select('id, scheduled_at, duration_min, status, type, notes, practitioners!inner(id, speciality, users!user_id(full_name))')
         .eq('patient_id', user.id)
         .order('scheduled_at', { ascending: false })
 

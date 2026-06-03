@@ -26,7 +26,7 @@ function usePractitioners(speciality: string, search: string) {
     queryFn: async () => {
       let q = supabase
         .from('practitioners')
-        .select('id, speciality, session_duration_min, rating, total_reviews, bio, users!inner(full_name)')
+        .select('id, speciality, session_duration_min, rating, total_reviews, bio, users!user_id(full_name)')
         .eq('verification_status', 'approved')
         .order('rating', { ascending: false })
 

@@ -102,7 +102,7 @@ function useMonthlyPayments() {
       const { data, error } = await supabase
         .from('payments')
         .select(
-          'id, amount, currency, provider, practitioner_id, created_at, practitioner:practitioner_id(users!inner(full_name))'
+          'id, amount, currency, provider, practitioner_id, created_at, practitioner:practitioner_id(users!user_id(full_name))'
         )
         .eq('status', 'completed')
         .gte('created_at', startOfMonth.toISOString())

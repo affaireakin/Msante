@@ -145,7 +145,7 @@ export default function PatientSessionPage() {
     if (!appointmentId) return
     supabase
       .from('appointments')
-      .select('practitioners!inner(users!inner(full_name))')
+      .select('practitioners!inner(users!user_id(full_name))')
       .eq('id', appointmentId)
       .single()
       .then(({ data }) => {
