@@ -19,6 +19,12 @@ function formatDateFR(s: string) {
   return d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' })
 }
 
+function addMinutes(time: string, minutes: number): string {
+  const [h, m] = time.split(':').map(Number)
+  const total = h * 60 + m + minutes
+  return `${pad(Math.floor(total / 60) % 24)}:${pad(total % 60)}`
+}
+
 function generatePreviewSlots(start: string, end: string, dur: number): string[] {
   const [sh, sm] = start.split(':').map(Number)
   const [eh, em] = end.split(':').map(Number)
@@ -154,7 +160,7 @@ export default function AvailabilityPage() {
 
   function openAddModal(dateStr: string) {
     setAddModal({ date: dateStr })
-    setNewStart('09:00'); setNewEnd('17:00')
+    setNewStart('09:00'); setNewEnd(addMinutes('09:00', 60))
     setNewType('video'); setNewDuration(60)
     setNewPrice(''); setNewCurrency('XOF')
   }
@@ -352,7 +358,13 @@ export default function AvailabilityPage() {
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Durée par séance</p>
               <div className="flex flex-wrap gap-2">
                 {DURATIONS.map(d => (
-                  <button key={d} onClick={() => setNewDuration(d)}
+                  <button key={d} onClick={() => {
+                    setNewDuration(d)
+                    // keep number of slots the same when changing duration
+                    const currentSlots = generatePreviewSlots(newStart, newEnd, newDuration)
+                    const count = Math.max(currentSlots.length, 1)
+                    setNewEnd(addMinutes(newStart, d * count))
+                  }}
                     className="px-3 py-1.5 rounded-full text-xs font-bold border transition-all"
                     style={newDuration === d
                       ? { backgroundColor: '#006685', color: '#fff', borderColor: '#006685' }
@@ -366,12 +378,20 @@ export default function AvailabilityPage() {
             {/* Hours */}
             <div className="flex gap-3 mb-4">
               <div className="flex-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">Début</label>
-                <input type="time" value={newStart} onChange={e => setNewStart(e.target.value)}
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">Heure de début</label>
+                <input type="time" value={newStart} onChange={e => {
+                  const s = e.target.value
+                  const currentSlots = generatePreviewSlots(newStart, newEnd, newDuration)
+                  const count = Math.max(currentSlots.length, 1)
+                  setNewStart(s)
+                  setNewEnd(addMinutes(s, newDuration * count))
+                }}
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
               </div>
               <div className="flex-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">Fin</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">
+                  Fin <span className="text-[#006685] normal-case font-normal">(étendre pour plusieurs)</span>
+                </label>
                 <input type="time" value={newEnd} onChange={e => setNewEnd(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
               </div>
