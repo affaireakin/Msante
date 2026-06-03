@@ -100,14 +100,18 @@ export default function ServicesPage() {
     if (!form.name.trim()) { setFormError('Le nom est requis'); return }
     if (form.session_types.length === 0) { setFormError('Sélectionnez au moins un type'); return }
     setFormError(null)
-    await createService.mutateAsync({
-      name: form.name.trim(),
-      duration_min: form.duration_min,
-      price: form.price ? parseFloat(form.price) : null,
-      session_types: form.session_types,
-    })
-    setShowModal(false)
-    setForm(EMPTY_FORM)
+    try {
+      await createService.mutateAsync({
+        name: form.name.trim(),
+        duration_min: form.duration_min,
+        price: form.price ? parseFloat(form.price) : null,
+        session_types: form.session_types,
+      })
+      setShowModal(false)
+      setForm(EMPTY_FORM)
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "Erreur lors de l'enregistrement")
+    }
   }
 
   return (

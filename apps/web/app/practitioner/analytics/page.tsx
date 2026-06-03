@@ -122,9 +122,11 @@ function useAnalytics(practId: string | null) {
           .gte('scheduled_at', monthStart),
         supabase
           .from('availabilities')
-          .select('day_of_week, start_time, end_time')
+          .select('slot_date, start_time, end_time, duration_min')
           .eq('practitioner_id', practId!)
-          .eq('is_active', true),
+          .eq('is_active', true)
+          .gte('slot_date', monthStart.substring(0, 10))
+          .lte('slot_date', new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().substring(0, 10)),
       ])
 
       const firstError = e1 ?? e2 ?? e3 ?? e4 ?? e5 ?? e6
@@ -200,14 +202,15 @@ function useAnalytics(practId: string | null) {
         else newCount++
       })
 
-      // Occupancy rate — count available slots this month vs booked
-      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+      // Occupancy rate — count total generated slots this month vs booked
       let totalSlots = 0
-      for (let day = 1; day <= daysInMonth; day++) {
-        const d = new Date(now.getFullYear(), now.getMonth(), day)
-        const dow = d.getDay() // 0=Sunday
-        const matching = (avails ?? []).filter(a => a.day_of_week === dow)
-        totalSlots += matching.length
+      for (const avail of avails ?? []) {
+        const [sh, sm] = (avail.start_time as string).split(':').map(Number)
+        const [eh, em] = (avail.end_time as string).split(':').map(Number)
+        const dur = (avail.duration_min as number) || 60
+        const start = sh * 60 + sm
+        const end = eh * 60 + em
+        totalSlots += Math.floor((end - start) / dur)
       }
       const bookedThisMonth = (thisMonthAppts ?? []).filter(a =>
         ['confirmed', 'completed', 'pending'].includes(a.status as string)

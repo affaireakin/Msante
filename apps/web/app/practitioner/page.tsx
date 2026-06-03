@@ -93,7 +93,7 @@ export default function PractitionerDashboard() {
     )
   }
 
-  const { pract, appointments, totalConfirmed } = data!
+  const { appointments, totalConfirmed } = data!
   const today = new Date()
   const todayStr = today.toISOString().split('T')[0]
 
@@ -102,16 +102,6 @@ export default function PractitionerDashboard() {
 
   return (
     <div className="space-y-8 max-w-4xl">
-      {/* Statut */}
-      {!pract.is_verified && (
-        <div className="bg-amber-50 border border-amber-100 rounded-2xl px-5 py-4 flex items-center gap-3">
-          <Icon name="hourglass_top" size={24} />
-          <div>
-            <p className="font-semibold text-amber-800">Validation en cours</p>
-            <p className="text-sm text-amber-700 mt-0.5">Votre compte est en cours d&apos;examen. Vous serez notifié dès l&apos;approbation.</p>
-          </div>
-        </div>
-      )}
 
       {/* KPI row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

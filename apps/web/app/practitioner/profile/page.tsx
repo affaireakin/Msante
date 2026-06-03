@@ -62,6 +62,8 @@ export default function PractitionerProfilePage() {
   const diplomaRef = useRef<HTMLInputElement>(null)
   const idRef = useRef<HTMLInputElement>(null)
   const licenseRef = useRef<HTMLInputElement>(null)
+  const orderRef = useRef<HTMLInputElement>(null)
+  const insuranceRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState<string | null>(null)
   const [docError, setDocError] = useState('')
 
@@ -126,7 +128,7 @@ export default function PractitionerProfilePage() {
     }
   }
 
-  const uploadDoc = async (file: File, type: 'diploma' | 'id_card' | 'license') => {
+  const uploadDoc = async (file: File, type: 'diploma' | 'id_card' | 'license' | 'order_certificate' | 'professional_insurance') => {
     const practId = data?.pract?.id
     const userId = data?.user.id
     if (!practId || !userId) return
@@ -165,7 +167,13 @@ export default function PractitionerProfilePage() {
     { key: 'documents' as const, label: 'Documents', icon: 'description' },
   ]
 
-  const DOC_LABELS: Record<string, string> = { diploma: 'Diplôme', id_card: 'Carte ID', license: 'Licence' }
+  const DOC_LABELS: Record<string, string> = {
+    diploma: 'Diplôme universitaire',
+    id_card: "Carte nationale d'identité",
+    license: "Licence d'exercice / Autorisation",
+    order_certificate: "Attestation Ordre professionnel",
+    professional_insurance: "Assurance RC professionnelle",
+  }
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -383,9 +391,11 @@ export default function PractitionerProfilePage() {
             {/* Upload zones */}
             <div className="space-y-3">
               {[
-                { type: 'diploma' as const, label: 'Nouveau diplôme / Certificat', icon: 'school', ref: diplomaRef },
-                { type: 'id_card' as const, label: 'Nouvelle carte d\'identité', icon: 'badge', ref: idRef },
-                { type: 'license' as const, label: 'Nouvelle licence professionnelle', icon: 'verified', ref: licenseRef },
+                { type: 'diploma' as const, label: 'Diplôme universitaire', icon: 'school', ref: diplomaRef },
+                { type: 'id_card' as const, label: "Carte nationale d'identité", icon: 'badge', ref: idRef },
+                { type: 'license' as const, label: "Licence / Autorisation d'exercice", icon: 'verified', ref: licenseRef },
+                { type: 'order_certificate' as const, label: 'Attestation Ordre professionnel', icon: 'workspace_premium', ref: orderRef },
+                { type: 'professional_insurance' as const, label: 'Assurance RC professionnelle', icon: 'security', ref: insuranceRef },
               ].map(({ type, label, icon, ref }) => (
                 <div key={type}>
                   <div onClick={() => ref.current?.click()}
