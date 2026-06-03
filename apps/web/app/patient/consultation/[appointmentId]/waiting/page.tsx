@@ -109,6 +109,7 @@ export default function PatientWaitingRoom() {
     ? new Date(appointment.scheduledAt).toLocaleString('fr-FR', {
         dateStyle: 'long',
         timeStyle: 'short',
+        timeZone: 'Africa/Dakar',
       })
     : ''
 

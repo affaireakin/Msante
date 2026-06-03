@@ -40,13 +40,10 @@ Deno.serve(async (req) => {
       })
     }
 
-    // 1. Récupère la consultation + vérifie que le praticien est bien l'owner
+    // 1. Récupère la consultation (sans join imbriqué)
     const { data: consultation, error: cErr } = await supabase
       .from('consultations')
-      .select(`
-        id, room_url, practitioner_token, status,
-        appointments!inner(practitioner_id, practitioners!inner(user_id))
-      `)
+      .select('id, room_url, practitioner_token, status, appointment_id')
       .eq('id', consultationId)
       .single()
 
@@ -56,15 +53,33 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Vérifie que l'utilisateur est le praticien
-    const practUserIdPath = (consultation as any).appointments?.practitioners?.user_id
-    if (practUserIdPath !== user.id) {
-      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+    // 2. Vérifie que l'utilisateur est bien le praticien de ce RDV
+    const { data: practCheck } = await supabase
+      .from('practitioners')
+      .select('id')
+      .eq('user_id', user.id)
+      .single()
+
+    if (!practCheck) {
+      return new Response(JSON.stringify({ error: 'Forbidden: not a practitioner' }), {
         status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    // 2. Update status → active + started_at (idempotent: ne repasse pas si déjà active)
+    const { data: aptCheck } = await supabase
+      .from('appointments')
+      .select('id')
+      .eq('id', consultation.appointment_id)
+      .eq('practitioner_id', practCheck.id)
+      .single()
+
+    if (!aptCheck) {
+      return new Response(JSON.stringify({ error: 'Forbidden: appointment mismatch' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // 3. Update status → active (idempotent)
     const { error: uErr } = await supabase
       .from('consultations')
       .update({ status: 'active', started_at: new Date().toISOString() })

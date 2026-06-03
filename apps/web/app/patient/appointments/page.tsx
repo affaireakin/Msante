@@ -118,8 +118,9 @@ export default function AppointmentsPage() {
         <div className="space-y-3">
           {data.map(apt => {
             const dt = new Date(apt.scheduled_at)
-            const dateStr = dt.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-            const time = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+            const tz = { timeZone: 'Africa/Dakar' }
+            const dateStr = dt.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', ...tz })
+            const time = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', ...tz })
             const status = STATUS_CONFIG[apt.status] ?? STATUS_CONFIG.pending
             const practName = apt.practitioners?.users?.full_name ?? '—'
             const typeIcon = TYPE_ICONS[apt.type] ?? 'event'
@@ -132,7 +133,7 @@ export default function AppointmentsPage() {
                 <div className="w-16 h-16 rounded-xl bg-[#e5eeff] flex flex-col items-center justify-center flex-shrink-0">
                   <span className="text-xl font-black text-[#006685] leading-none">{dt.getDate()}</span>
                   <span className="text-xs text-[#006685] font-semibold uppercase">
-                    {dt.toLocaleDateString('fr-FR', { month: 'short' })}
+                    {dt.toLocaleDateString('fr-FR', { month: 'short', timeZone: 'Africa/Dakar' })}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">

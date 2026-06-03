@@ -154,6 +154,7 @@ export default function PractitionerWaitingRoom() {
     ? new Date(appointment.scheduledAt).toLocaleString('fr-FR', {
         dateStyle: 'long',
         timeStyle: 'short',
+        timeZone: 'Africa/Dakar',
       })
     : ''
 

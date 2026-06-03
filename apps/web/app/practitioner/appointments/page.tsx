@@ -131,8 +131,9 @@ export default function AppointmentsPage() {
         <div className="space-y-3">
           {(appointments ?? []).map(apt => {
             const dt = new Date(apt.scheduled_at)
-            const dateStr = dt.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-            const timeStr = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+            const tz = { timeZone: 'Africa/Dakar' }
+            const dateStr = dt.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', ...tz })
+            const timeStr = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', ...tz })
 
             return (
               <div
@@ -142,9 +143,9 @@ export default function AppointmentsPage() {
               >
                 {/* Date block */}
                 <div className="flex-shrink-0 w-14 h-14 rounded-xl bg-[#e5eeff] flex flex-col items-center justify-center text-[#006685]">
-                  <span className="text-xl font-black leading-none">{dt.getDate()}</span>
+                  <span className="text-xl font-black leading-none">{dt.toLocaleDateString('fr-FR', { day: 'numeric', timeZone: 'Africa/Dakar' })}</span>
                   <span className="text-xs font-semibold uppercase">
-                    {dt.toLocaleDateString('fr-FR', { month: 'short' })}
+                    {dt.toLocaleDateString('fr-FR', { month: 'short', timeZone: 'Africa/Dakar' })}
                   </span>
                 </div>
 
