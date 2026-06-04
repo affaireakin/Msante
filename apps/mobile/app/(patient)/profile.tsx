@@ -209,7 +209,7 @@ export default function ProfileScreen() {
   if (!profile) return null
   const name = profile.full_name ?? 'Patient'
   const ini = initials(name)
-  const avatarUrl = (profile as Record<string, unknown>).avatar_url as string | undefined
+  const avatarUrl = (profile as unknown as { avatar_url?: string }).avatar_url
   const displayPhone = profile.phone
     ? profile.phone.replace(phonePrefix, `${phonePrefix} `)
     : ''
@@ -323,7 +323,7 @@ export default function ProfileScreen() {
           <InfoRow
             icon="phone"
             label="Téléphone"
-            value={displayPhone || profile.phone ?? ''}
+            value={displayPhone || (profile.phone ?? '')}
             onEdit={() => {
               const raw = profile.phone?.replace(phonePrefix, '') ?? ''
               setEditField('phone')
