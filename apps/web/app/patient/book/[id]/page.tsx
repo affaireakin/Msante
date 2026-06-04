@@ -36,6 +36,7 @@ interface Practitioner {
 
 function generateSlots(availabilities: RawAvailability[], takenSlots: string[]): TimeSlot[] {
   const slots: TimeSlot[] = []
+  const now = new Date()
   for (const avail of availabilities) {
     const dateStr = avail.slot_date
     const [sh, sm] = avail.start_time.split(':').map(Number)
@@ -48,6 +49,8 @@ function generateSlots(availabilities: RawAvailability[], takenSlots: string[]):
       const eMin = cur + dur
       const e = `${String(Math.floor(eMin / 60)).padStart(2, '0')}:${String(eMin % 60).padStart(2, '0')}`
       const key = `${dateStr}T${s}:00`
+      // Skip past slots (Africa/Dakar = UTC+0, direct comparison is valid)
+      if (new Date(`${dateStr}T${s}:00Z`) <= now) { cur += dur; continue }
       if (!takenSlots.includes(key)) {
         slots.push({ date: dateStr, start_time: s, end_time: e, session_type: avail.session_type, duration_min: dur, price: avail.price, currency: avail.currency })
       }

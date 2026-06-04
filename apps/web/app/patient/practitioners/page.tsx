@@ -18,6 +18,7 @@ interface Practitioner {
   total_reviews: number
   bio: string | null
   users: { full_name: string } | null
+  practitioner_services: { duration_min: number; is_active: boolean }[] | null
 }
 
 function usePractitioners(speciality: string, search: string) {
@@ -26,7 +27,7 @@ function usePractitioners(speciality: string, search: string) {
     queryFn: async () => {
       let q = supabase
         .from('practitioners')
-        .select('id, speciality, session_duration_min, rating, total_reviews, bio, users!user_id(full_name)')
+        .select('id, speciality, session_duration_min, rating, total_reviews, bio, users!user_id(full_name), practitioner_services(duration_min, is_active)')
         .eq('verification_status', 'approved')
         .order('rating', { ascending: false })
 
@@ -114,7 +115,16 @@ export default function PractitionersPage() {
                   ) : null}
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-xs text-[#6f787e]">{p.session_duration_min} min</p>
+                  {(() => {
+                    const active = (p.practitioner_services ?? []).filter(s => s.is_active).map(s => s.duration_min)
+                    const min = active.length > 0 ? Math.min(...active) : p.session_duration_min
+                    const max = active.length > 0 ? Math.max(...active) : p.session_duration_min
+                    return (
+                      <p className="text-xs font-semibold text-[#006685] bg-[#e5eeff] px-2 py-1 rounded-full">
+                        {min === max ? `${min} min` : `${min}–${max} min`}
+                      </p>
+                    )
+                  })()}
                 </div>
               </div>
               {p.bio && (
