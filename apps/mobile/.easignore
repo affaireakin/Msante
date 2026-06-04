@@ -1,0 +1,7 @@
+# Exclude web app and other workspace packages from mobile builds
+../../apps/web
+../../packages
+../../supabase
+../../.github
+../../node_modules
+.git

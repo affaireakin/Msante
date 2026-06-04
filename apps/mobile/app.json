@@ -55,7 +55,8 @@
       "infoPlist": {
         "NSCameraUsageDescription": "M-Santé utilise la caméra pour les consultations vidéo.",
         "NSMicrophoneUsageDescription": "M-Santé utilise le microphone pour les consultations audio et vidéo.",
-        "NSPhotoLibraryUsageDescription": "M-Santé accède à votre galerie pour importer votre photo de profil, cachet et signature."
+        "NSPhotoLibraryUsageDescription": "M-Santé accède à votre galerie pour importer votre photo de profil, cachet et signature.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "extra": {
