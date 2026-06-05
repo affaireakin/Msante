@@ -1,0 +1,6 @@
+apps/web
+packages
+supabase
+.github
+apps/mobile/android
+apps/mobile/ios
