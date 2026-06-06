@@ -54,9 +54,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-100/60">
-          <div className="w-10 h-10 rounded-xl bg-[#006685] flex items-center justify-center shadow-sm">
-            <Icon name="favorite" />
-          </div>
+          <img src="/logo.png" alt="M-Santé" className="w-10 h-10 rounded-xl object-cover shadow-sm" />
           <div>
             <h1 className="text-lg font-black tracking-tighter text-[#0b1c30]">M-Santé</h1>
             <p className="text-xs text-[#006685] font-semibold tracking-wide uppercase">Espace Patient</p>

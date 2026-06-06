@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ImageBackground } from 'react-native'
+import { View, Text, TouchableOpacity, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -19,25 +19,14 @@ export default function WelcomeScreen() {
 
         {/* ── Logo ── */}
         <View style={{ alignItems: 'center', paddingTop: 16 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <View style={{
-              width: 52, height: 52, borderRadius: 16,
-              backgroundColor: '#006685',
-              alignItems: 'center', justifyContent: 'center',
-              shadowColor: '#006685', shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.3, shadowRadius: 16, elevation: 8,
-            }}>
-              <MaterialIcons name="medical-services" size={28} color="#fff" />
-            </View>
-            <View>
-              <Text style={{ fontSize: 26, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5 }}>
-                M-Santé
-              </Text>
-              <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', fontWeight: '500' }}>
-                Health Sanctuary
-              </Text>
-            </View>
-          </View>
+          <Image
+            source={require('@/assets/icon.png')}
+            style={{ width: 90, height: 90, borderRadius: 22 }}
+            resizeMode="cover"
+          />
+          <Text style={{ fontSize: 13, color: '#6f787e', fontFamily: 'Manrope', fontWeight: '600', marginTop: 8, letterSpacing: 0.5 }}>
+            Health Sanctuary
+          </Text>
         </View>
 
         {/* ── Hero ── */}

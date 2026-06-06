@@ -1,5 +1,5 @@
 'use client'
-import { useWindowDimensions, View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -30,7 +30,6 @@ const QUICK_ACTIONS = [
 
 export default function PatientHome() {
   const router = useRouter()
-  const { width } = useWindowDimensions()
   const { profile } = useAuthStore()
   const firstName = profile?.full_name?.split(' ')[0] ?? 'Patient'
   const hour = new Date().getHours()
@@ -55,13 +54,12 @@ export default function PatientHome() {
         {/* Header */}
         <View style={{ paddingHorizontal: px, paddingTop: 16, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <View style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center' }}>
-              <MaterialIcons name="medical-services" size={19} color="#fff" />
-            </View>
-            <View>
-              <Text style={{ fontSize: 16, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.3 }}>M-Santé</Text>
-              <Text style={{ fontSize: 9, color: '#006685', fontFamily: 'Manrope', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8 }}>Health Sanctuary</Text>
-            </View>
+            <Image
+              source={require('../../assets/icon.png')}
+              style={{ width: 38, height: 38, borderRadius: 10 }}
+              resizeMode="cover"
+            />
+            <Text style={{ fontSize: 16, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.3 }}>M-Santé</Text>
           </View>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <TouchableOpacity onPress={() => router.push('/(patient)/notifications')} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#e5eeff' }}>
@@ -133,7 +131,7 @@ export default function PatientHome() {
           <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', marginBottom: 14 }}>Technologie au service de votre bien-être</Text>
 
           <View style={{ gap: 12 }}>
-            {FEATURES.map((f, i) => (
+            {FEATURES.map((f) => (
               <TouchableOpacity key={f.title} onPress={() => router.push(f.route as never)} activeOpacity={0.85}
                 style={{ borderRadius: 20, overflow: 'hidden', borderWidth: 1, borderColor: `${f.accent}20`, shadowColor: f.accent, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 2 }}
               >
