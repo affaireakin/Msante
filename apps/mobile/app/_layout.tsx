@@ -18,13 +18,18 @@ SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
+    // Named variants (expo-google-fonts)
     Manrope_400Regular,
     Manrope_500Medium,
     Manrope_600SemiBold,
     Manrope_700Bold,
     Manrope_800ExtraBold,
-    // NativeWind resolves 'Manrope' → map to the weights it will request
-    Manrope: Manrope_400Regular,
+    // Android font-weight resolution: looks for 'Manrope-Bold' when fontWeight:'700'
+    'Manrope': Manrope_400Regular,
+    'Manrope-Medium': Manrope_500Medium,
+    'Manrope-SemiBold': Manrope_600SemiBold,
+    'Manrope-Bold': Manrope_700Bold,
+    'Manrope-ExtraBold': Manrope_800ExtraBold,
   })
 
   const {

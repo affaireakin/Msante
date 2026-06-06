@@ -124,21 +124,16 @@ export default function DashboardScreen() {
         {/* KPI Bento Grid */}
         <View style={{ gap: 12 }}>
           {/* Earnings — full width */}
-          <GlassCard>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-              <MaterialIcons name="account-balance-wallet" size={16} color="#6f787e" />
-              <Text
-                style={{
-                  fontFamily: 'Manrope',
-                  fontSize: 11,
-                  fontWeight: '700',
-                  color: '#6f787e',
-                  letterSpacing: 1,
-                  textTransform: 'uppercase',
-                }}
-              >
-                Revenus ce mois
-              </Text>
+          <GlassCard style={{ backgroundColor: 'rgba(0,102,133,0.06)', borderColor: 'rgba(0,102,133,0.12)' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center' }}>
+                  <MaterialIcons name="account-balance-wallet" size={18} color="#fff" />
+                </View>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#006685', letterSpacing: 1, textTransform: 'uppercase' }}>
+                  Revenus ce mois
+                </Text>
+              </View>
             </View>
             {isLoading ? (
               <View
@@ -183,61 +178,31 @@ export default function DashboardScreen() {
             )}
           </GlassCard>
 
-          {/* Consultations + Rating */}
+          {/* Consultations + Rating + Pending */}
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <GlassCard style={{ flex: 1 }}>
-              <Text
-                style={{
-                  fontFamily: 'Manrope',
-                  fontSize: 11,
-                  fontWeight: '700',
-                  color: '#6f787e',
-                  letterSpacing: 1,
-                  textTransform: 'uppercase',
-                  marginBottom: 8,
-                }}
-              >
+              <View style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+                <MaterialIcons name="video-camera-front" size={17} color="#006685" />
+              </View>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#6f787e', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>
                 Consultations
               </Text>
-              <Text
-                style={{
-                  fontFamily: 'Manrope',
-                  fontSize: 28,
-                  fontWeight: '600',
-                  color: '#0b1c30',
-                }}
-              >
+              <Text style={{ fontFamily: 'Manrope', fontSize: 26, fontWeight: '800', color: '#0b1c30' }}>
                 {data?.consultationsTotal ?? '—'}
               </Text>
             </GlassCard>
             <GlassCard style={{ flex: 1 }}>
-              <Text
-                style={{
-                  fontFamily: 'Manrope',
-                  fontSize: 11,
-                  fontWeight: '700',
-                  color: '#6f787e',
-                  letterSpacing: 1,
-                  textTransform: 'uppercase',
-                  marginBottom: 8,
-                }}
-              >
+              <View style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#fff8e1', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+                <MaterialIcons name="star" size={17} color="#705d00" />
+              </View>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#6f787e', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>
                 Note
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 2 }}>
-                <Text
-                  style={{
-                    fontFamily: 'Manrope',
-                    fontSize: 28,
-                    fontWeight: '600',
-                    color: '#0b1c30',
-                  }}
-                >
+                <Text style={{ fontFamily: 'Manrope', fontSize: 26, fontWeight: '800', color: '#0b1c30' }}>
                   {data?.rating ? Number(data.rating).toFixed(1) : '—'}
                 </Text>
-                <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#6f787e' }}>
-                  /5
-                </Text>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e' }}>/5</Text>
               </View>
             </GlassCard>
           </View>

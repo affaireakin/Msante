@@ -47,16 +47,16 @@ function initials(name: string) {
   return name.split(' ').slice(0, 2).map(p => p[0]).join('').toUpperCase()
 }
 
+const TZ = { timeZone: 'Africa/Dakar' }
+
 function formatDate(iso: string) {
-  const d = new Date(iso)
-  return d.toLocaleDateString('fr-FR', {
-    weekday: 'short', day: 'numeric', month: 'long', year: 'numeric',
+  return new Date(iso).toLocaleDateString('fr-FR', {
+    weekday: 'short', day: 'numeric', month: 'long', year: 'numeric', ...TZ,
   })
 }
 
 function formatTime(iso: string) {
-  const d = new Date(iso)
-  return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  return new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', ...TZ })
 }
 
 function isUpcoming(iso: string) {
