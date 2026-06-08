@@ -1,5 +1,5 @@
 export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
-export type SessionType = 'video' | 'audio' | 'presentiel'
+export type SessionType = 'video' | 'audio' | 'presentiel' | 'suivi' | 'urgence'
 export type PaymentProvider = 'wave' | 'orange_money' | 'card'
 export type PaymentStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'refunded'
 
