@@ -16,9 +16,9 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useResponsive } from '@/hooks/useResponsive'
 import {
   useCreatePrescription,
-  COMMON_MEDICATIONS,
   type MedicationLine,
 } from '@/features/practitioner/hooks/usePrescription'
+import { searchMedications, type MedicationEntry } from '@/data/medications'
 
 // ─── Empty medication factory ────────────────────────────────────────────────
 
@@ -38,29 +38,24 @@ interface MedicationCardProps {
 }
 
 function MedicationCard({ index, med, canRemove, onChange, onRemove, r }: MedicationCardProps) {
-  const [suggestions, setSuggestions] = useState<string[]>([])
+  const [suggestions, setSuggestions] = useState<MedicationEntry[]>([])
 
   const handleNameChange = useCallback(
     (text: string) => {
       onChange(index, 'name', text)
-      if (text.length >= 2) {
-        const q = text.toLowerCase()
-        setSuggestions(
-          COMMON_MEDICATIONS.filter((m) => m.toLowerCase().includes(q)).slice(0, 5)
-        )
-      } else {
-        setSuggestions([])
-      }
+      setSuggestions(searchMedications(text))
     },
     [index, onChange]
   )
 
   const handleSuggestionPress = useCallback(
-    (suggestion: string) => {
-      onChange(index, 'name', suggestion)
+    (entry: MedicationEntry) => {
+      onChange(index, 'name', entry.dci)
+      if (!med.dosage) onChange(index, 'dosage', entry.defaultDosages[0] ?? '')
+      if (!med.frequency) onChange(index, 'frequency', entry.defaultFrequencies[0] ?? '')
       setSuggestions([])
     },
-    [index, onChange]
+    [index, onChange, med.dosage, med.frequency]
   )
 
   return (
@@ -163,10 +158,10 @@ function MedicationCard({ index, med, canRemove, onChange, onRemove, r }: Medica
             overflow: 'hidden',
           }}
         >
-          {suggestions.map((s) => (
+          {suggestions.map((entry) => (
             <TouchableOpacity
-              key={s}
-              onPress={() => handleSuggestionPress(s)}
+              key={entry.dci}
+              onPress={() => handleSuggestionPress(entry)}
               style={{
                 paddingHorizontal: 14,
                 paddingVertical: 10,
@@ -178,16 +173,46 @@ function MedicationCard({ index, med, canRemove, onChange, onRemove, r }: Medica
               }}
             >
               <MaterialIcons name="medication" size={16} color="#006685" />
-              <Text
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: r.fs.md,
+                    color: '#0b1c30',
+                    fontFamily: 'Manrope',
+                    fontWeight: '600',
+                  }}
+                >
+                  {entry.dci}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: r.fs.xs,
+                    color: '#6f787e',
+                    fontFamily: 'Manrope',
+                  }}
+                >
+                  {entry.commercial[0]}
+                </Text>
+              </View>
+              <View
                 style={{
-                  fontSize: r.fs.md,
-                  color: '#0b1c30',
-                  fontFamily: 'Manrope',
-                  fontWeight: '500',
+                  backgroundColor: '#e5eeff',
+                  paddingHorizontal: 6,
+                  paddingVertical: 2,
+                  borderRadius: 999,
                 }}
               >
-                {s}
-              </Text>
+                <Text
+                  style={{
+                    fontSize: 9,
+                    color: '#006685',
+                    fontFamily: 'Manrope',
+                    fontWeight: '700',
+                  }}
+                >
+                  {entry.category}
+                </Text>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
