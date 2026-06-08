@@ -26,10 +26,12 @@ const DOC_TYPES: { id: DocTypeId; label: string; icon: IconName; color: string; 
 interface Message {
   id: string
   sender_id: string
-  body: string
+  receiver_id: string
+  appointment_id?: string | null
+  body: string | null
   attachment_url: string | null
   attachment_name: string | null
-  attachment_type: DocTypeId | null
+  attachment_type: 'analyse' | 'ordonnance' | 'compte_rendu' | 'imagerie' | 'autre' | null
   read_at: string | null
   created_at: string
 }
@@ -114,7 +116,7 @@ export default function PractitionerMessageThreadScreen() {
       const uid = profile!.id
       const { data, error } = await supabase
         .from('messages')
-        .select('id, sender_id, body, attachment_url, attachment_name, attachment_type, read_at, created_at')
+        .select('id, sender_id, receiver_id, appointment_id, body, attachment_url, attachment_name, attachment_type, read_at, created_at')
         .or(`and(sender_id.eq.${uid},receiver_id.eq.${partnerId}),and(sender_id.eq.${partnerId},receiver_id.eq.${uid})`)
         .order('created_at', { ascending: true })
         .limit(100)
