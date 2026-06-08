@@ -55,28 +55,23 @@ export default function PatientLayout() {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          height: Platform.OS === 'ios' ? 86 : 66,
-          backgroundColor: 'rgba(255,255,255,0.80)',
-          borderTopColor: 'rgba(255,255,255,0.30)',
+          height: Platform.OS === 'ios' ? 88 : 68,
+          backgroundColor: 'rgba(255,255,255,0.92)',
+          borderTopColor: 'rgba(130,216,255,0.15)',
           borderTopWidth: 1,
           elevation: 0,
           shadowColor: '#82d8ff',
-          shadowOpacity: 0.12,
-          shadowOffset: { width: 0, height: -8 },
-          shadowRadius: 24,
+          shadowOpacity: 0.18,
+          shadowOffset: { width: 0, height: -6 },
+          shadowRadius: 20,
         },
       }}
     >
+      {/* 5 onglets : HOME · ASSISTANT · ACTIVITIES · PROVIDERS · SUPPORT */}
       <Tabs.Screen
         name="home"
         options={{
           tabBarIcon: ({ focused }) => <TabIcon name="home" label="Accueil" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="mental-health"
-        options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="self-improvement" label="Activités" focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -86,15 +81,15 @@ export default function PatientLayout() {
         }}
       />
       <Tabs.Screen
-        name="find-practitioners"
+        name="mental-health"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="medical-services" label="Praticiens" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="self-improvement" label="Activités" focused={focused} />,
         }}
       />
       <Tabs.Screen
-        name="appointments"
+        name="find-practitioners"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="calendar-today" label="Rendez-vous" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="medical-services" label="Praticiens" focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -105,6 +100,7 @@ export default function PatientLayout() {
       />
 
       {/* Hidden screens */}
+      <Tabs.Screen name="appointments" options={{ href: null }} />
       <Tabs.Screen name="messages" options={{ href: null }} />
       <Tabs.Screen name="profile" options={{ href: null }} />
       <Tabs.Screen name="notifications" options={{ href: null }} />
@@ -115,6 +111,7 @@ export default function PatientLayout() {
       <Tabs.Screen name="practitioner" options={{ href: null }} />
       <Tabs.Screen name="consultation" options={{ href: null }} />
       <Tabs.Screen name="referring-doctor" options={{ href: null }} />
+      <Tabs.Screen name="dossier" options={{ href: null }} />
     </Tabs>
   )
 }
