@@ -112,6 +112,7 @@ export default function PatientLayout() {
       <Tabs.Screen name="consultation" options={{ href: null }} />
       <Tabs.Screen name="referring-doctor" options={{ href: null }} />
       <Tabs.Screen name="dossier" options={{ href: null }} />
+      <Tabs.Screen name="permissions" options={{ href: null }} />
     </Tabs>
   )
 }
