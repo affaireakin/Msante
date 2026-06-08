@@ -104,6 +104,10 @@ export default function PractitionerLayout() {
           tabBarStyle: { display: 'none' },
         }}
       />
+      <Tabs.Screen
+        name="patient-notes"
+        options={{ tabBarButton: () => null }}
+      />
     </Tabs>
   )
 }
