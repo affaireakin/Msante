@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   View, Text, FlatList, TextInput, TouchableOpacity,
-  KeyboardAvoidingView, Platform, ActivityIndicator, Alert, Modal, Linking,
+  KeyboardAvoidingView, Platform, ActivityIndicator, Alert, Modal, Linking, Image,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -96,6 +96,42 @@ function DocCard({ msg, isMe, onOpen }: { msg: Message; isMe: boolean; onOpen: (
   )
 }
 
+function ImageCard({ msg, isMe, onOpenFullscreen }: { msg: Message; isMe: boolean; onOpenFullscreen: (signedUrl: string) => void }) {
+  const [signedUrl, setSignedUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    if (!msg.attachment_url) { setLoading(false); setError(true); return }
+    const path = toStoragePath(msg.attachment_url)
+    supabase.storage.from('message-attachments').createSignedUrl(path, 3600).then(({ data, error: err }) => {
+      if (err || !data) { setError(true) } else { setSignedUrl(data.signedUrl) }
+      setLoading(false)
+    })
+  }, [msg.attachment_url])
+
+  if (loading) {
+    return <View style={{ width: 200, height: 140, borderRadius: 12, backgroundColor: '#e0e3e5' }} />
+  }
+  if (error || !signedUrl) {
+    return <DocCard msg={msg} isMe={isMe} onOpen={(urlOrPath) => {
+      const path = toStoragePath(urlOrPath)
+      supabase.storage.from('message-attachments').createSignedUrl(path, 3600).then(({ data }) => {
+        if (data) Linking.openURL(data.signedUrl).catch(() => {})
+      })
+    }} />
+  }
+  return (
+    <TouchableOpacity onPress={() => onOpenFullscreen(signedUrl)} activeOpacity={0.85}>
+      <Image
+        source={{ uri: signedUrl }}
+        style={{ width: 200, height: 140, borderRadius: 12 }}
+        resizeMode="cover"
+      />
+    </TouchableOpacity>
+  )
+}
+
 export default function PractitionerMessageThreadScreen() {
   const { id: partnerId, name: partnerName } = useLocalSearchParams<{ id: string; name: string }>()
   const router = useRouter()
@@ -105,6 +141,7 @@ export default function PractitionerMessageThreadScreen() {
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
   const [docPickerVisible, setDocPickerVisible] = useState(false)
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null)
 
   const qKey = ['messages-thread', profile?.id, partnerId]
 
@@ -241,7 +278,10 @@ export default function PractitionerMessageThreadScreen() {
                       <View key={msg.id} style={{ alignItems: isMe ? 'flex-end' : 'flex-start' }}>
                         {msg.attachment_url ? (
                           <View style={{ maxWidth: '80%' }}>
-                            <DocCard msg={msg} isMe={isMe} onOpen={handleOpenDoc} />
+                            {msg.attachment_type === 'imagerie'
+                              ? <ImageCard msg={msg} isMe={isMe} onOpenFullscreen={setFullscreenImage} />
+                              : <DocCard msg={msg} isMe={isMe} onOpen={handleOpenDoc} />
+                            }
                             <Text style={{ fontSize: 10, fontFamily: 'Manrope', color: '#6f787e', marginTop: 4, alignSelf: isMe ? 'flex-end' : 'flex-start' }}>
                               {formatTime(msg.created_at)}
                             </Text>
@@ -306,6 +346,33 @@ export default function PractitionerMessageThreadScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+
+      {/* Fullscreen image modal */}
+      <Modal visible={!!fullscreenImage} transparent animationType="fade" onRequestClose={() => setFullscreenImage(null)}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', alignItems: 'center', justifyContent: 'center' }}>
+          <TouchableOpacity
+            style={{ position: 'absolute', top: 50, right: 20, zIndex: 10 }}
+            onPress={() => setFullscreenImage(null)}
+          >
+            <MaterialIcons name="close" size={28} color="#fff" />
+          </TouchableOpacity>
+          {fullscreenImage && (
+            <Image
+              source={{ uri: fullscreenImage }}
+              style={{ width: '90%', height: '70%' }}
+              resizeMode="contain"
+            />
+          )}
+          <Text style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'Manrope', marginTop: 16 }}>
+            Appuyez n'importe où pour fermer
+          </Text>
+          <TouchableOpacity
+            onPress={() => setFullscreenImage(null)}
+            style={{ position: 'absolute', inset: 0 } as any}
+            activeOpacity={1}
+          />
+        </View>
+      </Modal>
 
       {/* Document type picker modal */}
       <Modal visible={docPickerVisible} transparent animationType="slide" onRequestClose={() => setDocPickerVisible(false)}>
