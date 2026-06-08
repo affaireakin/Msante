@@ -112,6 +112,10 @@ export default function PractitionerLayout() {
         name="prescription"
         options={{ href: null }}
       />
+      <Tabs.Screen
+        name="schedule-blocks"
+        options={{ href: null }}
+      />
     </Tabs>
   )
 }

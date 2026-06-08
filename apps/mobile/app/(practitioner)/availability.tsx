@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useDayRules } from '@/features/practitioner/hooks/useDayRules'
 import {
@@ -22,6 +23,7 @@ import {
   type ServiceDraft,
 } from '@/features/practitioner/hooks/useAvailabilitySettings'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { supabase } from '@/services/supabase'
 
 const DAY_LABELS = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0]
@@ -33,6 +35,67 @@ const SESSION_TYPES: Array<{ value: 'video' | 'audio' | 'presentiel'; label: str
 ]
 
 const DURATIONS = [15, 30, 45, 60, 90]
+
+// ── Schedule Blocks ───────────────────────────────────────────────────────────
+
+type BlockReason = 'vacances' | 'formation' | 'maladie' | 'indisponibilite' | 'autre'
+
+const REASON_LABELS: Record<BlockReason, string> = {
+  vacances:        'Vacances',
+  formation:       'Formation',
+  maladie:         'Maladie',
+  indisponibilite: 'Indisponibilité',
+  autre:           'Autre',
+}
+
+interface ScheduleBlock {
+  id: string
+  start_date: string
+  end_date: string
+  reason: BlockReason
+  notes?: string
+  created_at: string
+}
+
+function useScheduleBlocks(practitionerId: string) {
+  return useQuery({
+    queryKey: ['schedule-blocks', practitionerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('schedule_blocks')
+        .select('id, start_date, end_date, reason, notes, created_at')
+        .eq('practitioner_id', practitionerId)
+        .order('start_date', { ascending: false })
+        .limit(10)
+      if (error) throw error
+      return (data ?? []) as ScheduleBlock[]
+    },
+    enabled: !!practitionerId,
+    staleTime: 30_000,
+  })
+}
+
+function useDeleteScheduleBlock(practitionerId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('schedule_blocks').delete().eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: ['schedule-blocks', practitionerId] }),
+  })
+}
+
+function formatBlockDate(isoDate: string): string {
+  try {
+    return new Date(isoDate).toLocaleDateString('fr-FR', {
+      day: '2-digit', month: 'short', year: 'numeric',
+    })
+  } catch {
+    return isoDate
+  }
+}
 
 // ── Subcomponents ─────────────────────────────────────────────────────────────
 
@@ -295,6 +358,9 @@ export default function AvailabilityScreen() {
   const updateService = useUpdateService(pid)
   const deleteService = useDeleteService(pid)
 
+  const { data: scheduleBlocks = [], isLoading: blocksLoading } = useScheduleBlocks(pid)
+  const deleteBlock = useDeleteScheduleBlock(pid)
+
   const [localSlots, setLocalSlots] = useState<DaySlot[] | null>(null)
   const [showExcModal, setShowExcModal] = useState(false)
   const [excForm, setExcForm] = useState<ExceptionForm>({ label: '', start_date: '', end_date: '' })
@@ -353,6 +419,13 @@ export default function AvailabilityScreen() {
     Alert.alert('Supprimer ?', `Supprimer la prestation "${name}" ?`, [
       { text: 'Annuler', style: 'cancel' },
       { text: 'Supprimer', style: 'destructive', onPress: () => deleteService.mutate(id) },
+    ])
+  }
+
+  const handleDeleteBlock = (id: string) => {
+    Alert.alert('Supprimer ce blocage ?', 'Cette période redeviendra disponible pour les rendez-vous.', [
+      { text: 'Annuler', style: 'cancel' },
+      { text: 'Supprimer', style: 'destructive', onPress: () => deleteBlock.mutate(id) },
     ])
   }
 
@@ -551,6 +624,63 @@ export default function AvailabilityScreen() {
                     </Text>
                   </View>
                   <TouchableOpacity onPress={() => handleDeleteException(exc.id, exc.label)} style={{ padding: 8 }}>
+                    <MaterialIcons name="delete-outline" size={20} color="#ba1a1a" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          )}
+        </GlassCard>
+
+        {/* ── 5. Périodes bloquées ── */}
+        <GlassCard>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#ffdad6', alignItems: 'center', justifyContent: 'center' }}>
+                <MaterialIcons name="event-busy" size={20} color="#ba1a1a" />
+              </View>
+              <View>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#0b1c30' }}>Périodes bloquées</Text>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e', marginTop: 1 }}>Vacances, formation, indisponibilité</Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={() => router.push('/(practitioner)/schedule-blocks/new')}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: '#e5eeff' }}
+            >
+              <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#006685' }}>+</Text>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#006685' }}>Bloquer</Text>
+            </TouchableOpacity>
+          </View>
+
+          {blocksLoading ? (
+            <ActivityIndicator color="#006685" />
+          ) : scheduleBlocks.length === 0 ? (
+            <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#6f787e', textAlign: 'center', paddingVertical: 8, fontStyle: 'italic' }}>
+              Aucune période bloquée
+            </Text>
+          ) : (
+            <View style={{ gap: 8 }}>
+              {scheduleBlocks.map(block => (
+                <View key={block.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(186,26,26,0.20)', backgroundColor: 'rgba(255,218,214,0.20)' }}>
+                  <View style={{ flex: 1, gap: 4 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <View style={{ paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, backgroundColor: '#ffdad6' }}>
+                        <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#ba1a1a' }}>
+                          {REASON_LABELS[block.reason]}
+                        </Text>
+                      </View>
+                    </View>
+                    <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#0b1c30', fontWeight: '600' }}>
+                      {formatBlockDate(block.start_date)} → {formatBlockDate(block.end_date)}
+                    </Text>
+                    {block.notes ? (
+                      <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e' }} numberOfLines={1}>
+                        {block.notes}
+                      </Text>
+                    ) : null}
+                  </View>
+                  <TouchableOpacity onPress={() => handleDeleteBlock(block.id)} style={{ padding: 8 }}>
                     <MaterialIcons name="delete-outline" size={20} color="#ba1a1a" />
                   </TouchableOpacity>
                 </View>
