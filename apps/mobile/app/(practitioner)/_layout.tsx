@@ -108,6 +108,10 @@ export default function PractitionerLayout() {
         name="patient-notes"
         options={{ tabBarButton: () => null }}
       />
+      <Tabs.Screen
+        name="prescription"
+        options={{ href: null }}
+      />
     </Tabs>
   )
 }
