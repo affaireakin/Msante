@@ -7,9 +7,11 @@ import { usePractitioners } from '@/features/practitioners/hooks/usePractitioner
 import { PractitionerCard } from '@/features/practitioners/components/PractitionerCard'
 import { FilterBar } from '@/features/practitioners/components/FilterBar'
 import { useBookingStore } from '@/features/booking/store/bookingStore'
+import { useResponsive } from '@/hooks/useResponsive'
 
 export default function FindPractitionersScreen() {
   const router = useRouter()
+  const { px, fs, scale } = useResponsive()
   const [search, setSearch] = useState('')
   const [speciality, setSpeciality] = useState<string | null>(null)
   const [language, setLanguage] = useState<string | null>(null)
@@ -34,29 +36,50 @@ export default function FindPractitionersScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
-      <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 16, gap: 16 }}>
-        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>
-          Trouver un praticien
-        </Text>
+      {/* Header */}
+      <View style={{ paddingHorizontal: px, paddingTop: scale(20), paddingBottom: scale(16), gap: scale(14) }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View>
+            <Text style={{ fontSize: fs.xxl, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5 }}>
+              Praticiens
+            </Text>
+            <Text style={{ fontSize: fs.sm, color: '#6f787e', fontFamily: 'Manrope', marginTop: 2 }}>
+              500+ experts certifiés au Sénégal
+            </Text>
+          </View>
+          <View style={{ backgroundColor: '#e5eeff', borderRadius: scale(12), paddingHorizontal: scale(12), paddingVertical: scale(6), flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <MaterialIcons name="verified" size={scale(14)} color="#006685" />
+            <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#006685', fontFamily: 'Manrope' }}>Vérifiés</Text>
+          </View>
+        </View>
 
+        {/* Search bar */}
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: 'rgba(255,255,255,0.6)',
-          borderRadius: 12,
+          backgroundColor: 'rgba(255,255,255,0.85)',
+          borderRadius: scale(14),
           borderWidth: 1,
-          borderColor: 'rgba(255,255,255,0.8)',
-          paddingHorizontal: 16,
-          gap: 8,
+          borderColor: '#e5eeff',
+          paddingHorizontal: scale(14),
+          gap: scale(8),
+          shadowColor: '#006685',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 8,
+          elevation: 1,
         }}>
-          <MaterialIcons name="search" size={20} color="#6f787e" />
+          <MaterialIcons name="search" size={scale(20)} color="#6f787e" />
           <TextInput
             value={search}
             onChangeText={setSearch}
             placeholder="Nom, spécialité..."
-            style={{ flex: 1, paddingVertical: 12, fontSize: 16, fontFamily: 'Manrope', color: '#0b1c30' }}
-            placeholderTextColor="#6f787e"
+            style={{ flex: 1, paddingVertical: scale(12), fontSize: fs.md, fontFamily: 'Manrope', color: '#0b1c30' }}
+            placeholderTextColor="#bec8ce"
           />
+          {search.length > 0 && (
+            <MaterialIcons name="close" size={scale(16)} color="#6f787e" onPress={() => setSearch('')} />
+          )}
         </View>
 
         <FilterBar
@@ -68,27 +91,47 @@ export default function FindPractitionersScreen() {
       </View>
 
       {isLoading ? (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: scale(12) }}>
           <ActivityIndicator color="#006685" size="large" />
+          <Text style={{ fontSize: fs.sm, color: '#6f787e', fontFamily: 'Manrope' }}>Chargement des praticiens…</Text>
         </View>
       ) : error ? (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }}>
-          <Text style={{ color: '#ba1a1a', fontFamily: 'Manrope', textAlign: 'center' }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: px }}>
+          <View style={{ width: scale(64), height: scale(64), borderRadius: scale(32), backgroundColor: '#fce4ec', alignItems: 'center', justifyContent: 'center', marginBottom: scale(12) }}>
+            <MaterialIcons name="wifi-off" size={scale(30)} color="#ba1a1a" />
+          </View>
+          <Text style={{ color: '#ba1a1a', fontFamily: 'Manrope', textAlign: 'center', fontSize: fs.md, fontWeight: '600' }}>
             Impossible de charger les praticiens
+          </Text>
+          <Text style={{ color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center', fontSize: fs.sm, marginTop: 6 }}>
+            Vérifiez votre connexion et réessayez.
           </Text>
         </View>
       ) : (
         <FlatList
           data={filtered}
           keyExtractor={item => item.id}
-          contentContainerStyle={{ padding: 24, gap: 12 }}
+          contentContainerStyle={{ paddingHorizontal: px, paddingBottom: 100, gap: scale(12), paddingTop: scale(4) }}
           renderItem={({ item }) => (
             <PractitionerCard practitioner={item} onPress={() => handleSelect(item)} />
           )}
+          ListHeaderComponent={
+            filtered.length > 0 ? (
+              <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#6f787e', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(4) }}>
+                {filtered.length} praticien{filtered.length > 1 ? 's' : ''} trouvé{filtered.length > 1 ? 's' : ''}
+              </Text>
+            ) : null
+          }
           ListEmptyComponent={
-            <View style={{ paddingVertical: 48, alignItems: 'center' }}>
-              <Text style={{ color: '#3f484d', fontFamily: 'Manrope' }}>
-                Aucun praticien trouvé
+            <View style={{ paddingVertical: scale(48), alignItems: 'center', gap: scale(12) }}>
+              <View style={{ width: scale(72), height: scale(72), borderRadius: scale(36), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+                <MaterialIcons name="search-off" size={scale(34)} color="#006685" />
+              </View>
+              <Text style={{ fontSize: fs.lg, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>
+                Aucun résultat
+              </Text>
+              <Text style={{ color: '#6f787e', fontFamily: 'Manrope', fontSize: fs.sm, textAlign: 'center' }}>
+                Essayez d'autres mots-clés ou filtres
               </Text>
             </View>
           }
