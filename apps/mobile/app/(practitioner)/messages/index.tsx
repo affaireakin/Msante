@@ -50,8 +50,8 @@ export default function PractitionerMessagesScreen() {
       for (const msg of (msgs ?? [])) {
         const isMe = msg.sender_id === profile!.id
         const partner = isMe
-          ? (msg.receiver as { id: string; full_name: string })
-          : (msg.sender as { id: string; full_name: string })
+          ? (msg.receiver as unknown as { id: string; full_name: string })
+          : (msg.sender as unknown as { id: string; full_name: string })
         if (!partner || map.has(partner.id)) continue
         const unread = (msgs ?? []).filter(
           m => m.sender_id === partner.id && m.receiver_id === profile!.id && !m.read_at

@@ -37,7 +37,7 @@ type EventConfig = {
 
 const EVENT_CONFIG: Record<HistoryEvent['event_type'], EventConfig> = {
   consultation: {
-    icon: 'stethoscope',
+    icon: 'local-hospital',
     color: '#006685',
     bg: '#e5eeff',
     label: 'Consultation',
