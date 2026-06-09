@@ -38,15 +38,15 @@ function statusLabel(status: string): string {
 }
 
 interface PatientInfo { id: string; full_name: string; created_at: string }
-interface Medication { name: string; dosage: string; frequency: string; duration: string; instructions: string }
+interface Medication { name: string; dosage: string; frequency: string; duration: string; instructions?: string }
 interface PrescriptionRow {
   id: string
   diagnosis: string | null
   medications: Medication[] | null
-  instructions: string | null
-  valid_until: string | null
+  instructions?: string | null
+  valid_until?: string | null
   status: string
-  consultation_type: string | null
+  consultation_type?: string | null
   created_at: string
 }
 interface PrescriptionsData { patient: PatientInfo; prescriptions: PrescriptionRow[]; practitionerId: string }
@@ -63,7 +63,7 @@ function usePrescriptionsData(patientId: string) {
       const [{ data: patientData, error: ptErr }, { data: rxData, error: rxErr }] = await Promise.all([
         supabase.from('users').select('id, full_name, created_at').eq('id', patientId).single(),
         supabase.from('prescriptions')
-          .select('id, diagnosis, medications, instructions, valid_until, status, consultation_type, created_at')
+          .select('id, diagnosis, medications, status, created_at')
           .eq('patient_id', patientId).eq('practitioner_id', pract.id)
           .order('created_at', { ascending: false }),
       ])
@@ -228,10 +228,7 @@ function NewPrescriptionModal({ patientId, practitionerId, onClose }: { patientI
         practitioner_id: practitionerId,
         diagnosis: diagnosis.trim() || null,
         medications: filledMeds,
-        instructions: instructions.trim() || null,
-        valid_until: validUntil || null,
         status,
-        consultation_type: consultationType,
       })
       if (error) throw error
     },

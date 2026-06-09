@@ -74,7 +74,7 @@ function useTeam() {
       if (!user) throw new Error('Non connecté')
       const { data, error } = await supabase
         .from('patient_data_permissions')
-        .select(`id, practitioner_id, role, access_level, expires_at,
+        .select(`id, practitioner_id, access_level, expires_at,
                  allow_notes, allow_appreciations, allow_mood_journal,
                  practitioner:practitioner_id(speciality, user:user_id(full_name))`)
         .eq('patient_id', user.id)
@@ -87,7 +87,7 @@ function useTeam() {
           practitioner_id: r.practitioner_id as string,
           pract_name: p?.user?.full_name ?? 'Praticien',
           pract_speciality: p?.speciality ?? '',
-          role: (r.role as string) ?? 'autre',
+          role: ((r as Record<string, unknown>).role as string) ?? 'autre',
           access_level: (r.access_level as string) ?? 'limited',
           expires_at: r.expires_at as string | null,
           allow_notes: (r.allow_notes as boolean) ?? false,
@@ -182,7 +182,6 @@ function AddModal({
       if (!user) throw new Error('Non connecté')
       if (existingId) {
         const { error } = await supabase.from('patient_data_permissions').update({
-          role: form.role,
           access_level: form.access_level,
           allow_notes: form.allow_notes,
           allow_appreciations: form.allow_appreciations,
@@ -193,7 +192,6 @@ function AddModal({
         const { error } = await supabase.from('patient_data_permissions').insert({
           patient_id: user.id,
           practitioner_id: practId,
-          role: form.role,
           access_level: form.access_level,
           allow_notes: form.allow_notes,
           allow_appreciations: form.allow_appreciations,
