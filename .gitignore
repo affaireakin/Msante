@@ -10,3 +10,6 @@ build/
 apps/mobile/android/
 apps/mobile/ios/
 supabase/.temp/
+
+# EAS temp build artifact
+apps/mobile/C*build_info.json
