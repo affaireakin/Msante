@@ -131,23 +131,24 @@ function useDossier(patientId: string) {
 
 interface TabNavProps {
   patientId: string
-  active: 'apercu' | 'notes' | 'ordonnances' | 'parcours'
+  active: 'apercu' | 'notes' | 'ordonnances' | 'appréciations' | 'parcours'
 }
 
 function TabNav({ patientId, active }: TabNavProps) {
   const tabs: { key: TabNavProps['active']; label: string; href: string }[] = [
-    { key: 'apercu',       label: 'Aperçu',       href: `/practitioner/patients/${patientId}` },
-    { key: 'notes',        label: 'Notes',        href: `/practitioner/patients/${patientId}/notes` },
-    { key: 'ordonnances',  label: 'Ordonnances',  href: `/practitioner/patients/${patientId}/prescriptions` },
-    { key: 'parcours',     label: 'Parcours',     href: `/practitioner/patients/${patientId}/journey` },
+    { key: 'apercu',        label: 'Aperçu',        href: `/practitioner/patients/${patientId}` },
+    { key: 'notes',         label: 'Notes',         href: `/practitioner/patients/${patientId}/notes` },
+    { key: 'ordonnances',   label: 'Ordonnances',   href: `/practitioner/patients/${patientId}/prescriptions` },
+    { key: 'appréciations', label: 'Appréciations', href: `/practitioner/patients/${patientId}/appreciation` },
+    { key: 'parcours',      label: 'Parcours',      href: `/practitioner/patients/${patientId}/journey` },
   ]
   return (
-    <div className="flex gap-0 border-b border-slate-200 mt-6">
+    <div className="flex gap-0 border-b border-slate-200 mt-6 overflow-x-auto">
       {tabs.map(tab => (
         <Link
           key={tab.key}
           href={tab.href}
-          className={`px-5 py-3 text-sm font-medium transition-colors ${
+          className={`px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
             active === tab.key
               ? 'border-b-2 border-[#006685] text-[#006685]'
               : 'text-slate-500 hover:text-slate-700'
