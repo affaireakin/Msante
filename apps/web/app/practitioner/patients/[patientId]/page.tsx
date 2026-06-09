@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { useParams } from 'next/navigation'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -202,6 +202,117 @@ function StatCard({ icon, label, value, color }: { icon: string; label: string; 
   )
 }
 
+// ─── Quick create modals ────────────────────────────────────────────────────
+
+interface Medication { name: string; dosage: string; frequency: string; duration: string }
+
+function QuickNoteModal({ patientId, practitionerId, onClose }: { patientId: string; practitionerId: string; onClose: () => void }) {
+  const qc = useQueryClient()
+  const [content, setContent] = useState('')
+  const [noteType, setNoteType] = useState('observation')
+  const save = useMutation({
+    mutationFn: async () => {
+      if (!content.trim()) throw new Error('Contenu requis')
+      const { error } = await supabase.from('practitioner_notes').insert({
+        patient_id: patientId, practitioner_id: practitionerId,
+        note_type: noteType, content: content.trim(), is_shared_with_patient: false, tags: [],
+      })
+      if (error) throw error
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['practitioner-notes', patientId] }); onClose() },
+  })
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-bold text-[#0b1c30] flex items-center gap-2">
+            <Icon name="note_add" size={18} color="#006685" />Nouvelle note
+          </h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400"><Icon name="close" size={18} /></button>
+        </div>
+        <select value={noteType} onChange={e => setNoteType(e.target.value)}
+          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685]">
+          {[['observation','Observation'],['compte_rendu','Compte-rendu'],['note_suivi','Note de suivi'],['bilan','Bilan'],['alerte','Alerte']].map(([v,l]) =>
+            <option key={v} value={v}>{l}</option>
+          )}
+        </select>
+        <textarea value={content} onChange={e => setContent(e.target.value)} rows={5}
+          placeholder="Rédigez votre note ici…"
+          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685] resize-none" />
+        {save.error && <p className="text-xs text-red-600">{(save.error as Error).message}</p>}
+        <div className="flex justify-end gap-3">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm border border-slate-200 text-slate-600 hover:bg-slate-50">Annuler</button>
+          <button onClick={() => save.mutate()} disabled={save.isPending}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-60" style={{ background: '#006685' }}>
+            {save.isPending ? '...' : 'Enregistrer'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function QuickPrescriptionModal({ patientId, practitionerId, onClose }: { patientId: string; practitionerId: string; onClose: () => void }) {
+  const qc = useQueryClient()
+  const [diagnosis, setDiagnosis] = useState('')
+  const [meds, setMeds] = useState<Medication[]>([{ name: '', dosage: '', frequency: '', duration: '' }])
+  const save = useMutation({
+    mutationFn: async () => {
+      const filled = meds.filter(m => m.name.trim())
+      if (!filled.length) throw new Error('Au moins un médicament requis')
+      const { error } = await supabase.from('prescriptions').insert({
+        patient_id: patientId, practitioner_id: practitionerId,
+        diagnosis: diagnosis.trim() || null, medications: filled, status: 'signed',
+      })
+      if (error) throw error
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['practitioner-prescriptions', patientId] }); onClose() },
+  })
+  const updateMed = (i: number, key: keyof Medication, val: string) =>
+    setMeds(prev => prev.map((m, idx) => idx === i ? { ...m, [key]: val } : m))
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between">
+          <h2 className="font-bold text-[#0b1c30] flex items-center gap-2">
+            <Icon name="receipt_long" size={18} color="#006685" />Nouvelle ordonnance
+          </h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400"><Icon name="close" size={18} /></button>
+        </div>
+        <input value={diagnosis} onChange={e => setDiagnosis(e.target.value)} placeholder="Diagnostic / Motif (optionnel)"
+          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685]" />
+        <div className="space-y-3">
+          <p className="text-xs font-semibold text-slate-600">Médicaments <span className="text-red-500">*</span></p>
+          {meds.map((med, i) => (
+            <div key={i} className="bg-[#f8f9ff] rounded-xl p-3 space-y-2 border border-slate-100">
+              <div className="grid grid-cols-2 gap-2">
+                {(['name','dosage','frequency','duration'] as (keyof Medication)[]).map(k => (
+                  <input key={k} value={med[k]} onChange={e => updateMed(i, k, e.target.value)}
+                    placeholder={{ name:'Médicament *', dosage:'Dosage', frequency:'Fréquence', duration:'Durée' }[k]}
+                    className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]" />
+                ))}
+              </div>
+              {i > 0 && <button onClick={() => setMeds(prev => prev.filter((_,idx) => idx !== i))} className="text-xs text-red-500 hover:underline">Supprimer</button>}
+            </div>
+          ))}
+          <button onClick={() => setMeds(prev => [...prev, { name:'', dosage:'', frequency:'', duration:'' }])}
+            className="text-xs text-[#006685] font-semibold hover:underline flex items-center gap-1">
+            <Icon name="add" size={14} color="#006685" />Ajouter un médicament
+          </button>
+        </div>
+        {save.error && <p className="text-xs text-red-600">{(save.error as Error).message}</p>}
+        <div className="flex justify-end gap-3">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm border border-slate-200 text-slate-600 hover:bg-slate-50">Annuler</button>
+          <button onClick={() => save.mutate()} disabled={save.isPending}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-60" style={{ background: '#006685' }}>
+            {save.isPending ? '...' : 'Créer l\'ordonnance'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── skeleton ────────────────────────────────────────────────────────────────
 
 function Skeleton() {
@@ -221,6 +332,8 @@ function Skeleton() {
 export default function PatientDossierPage() {
   const params = useParams()
   const patientId = params.patientId as string
+  const [showNote, setShowNote] = useState(false)
+  const [showPrescription, setShowPrescription] = useState(false)
 
   const { data, isLoading, error } = useDossier(patientId)
 
@@ -257,8 +370,13 @@ export default function PatientDossierPage() {
 
   const recent = appointments.slice(0, 5)
 
+  const { practitionerId } = data
+
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div>
+      {showNote && <QuickNoteModal patientId={patientId} practitionerId={practitionerId} onClose={() => setShowNote(false)} />}
+      {showPrescription && <QuickPrescriptionModal patientId={patientId} practitionerId={practitionerId} onClose={() => setShowPrescription(false)} />}
+      <div className="p-8 max-w-4xl mx-auto">
       <PatientHeader patient={patient} backHref="/practitioner/patients" />
       <TabNav patientId={patientId} active="apercu" />
 
@@ -329,24 +447,39 @@ export default function PatientDossierPage() {
             Actions rapides
           </h2>
           <div className="flex flex-wrap gap-3">
-            <Link
-              href={`/practitioner/patients/${patientId}/notes`}
+            <button
+              onClick={() => setShowNote(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               style={{ background: '#006685', color: '#ffffff' }}
             >
               <Icon name="note_add" size={16} color="#ffffff" />
               Nouvelle note
-            </Link>
+            </button>
             <button
-              onClick={() => alert('Créez une ordonnance depuis la page Ordonnances')}
+              onClick={() => setShowPrescription(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
             >
               <Icon name="description" size={16} color="#006685" />
               Nouvelle ordonnance
             </button>
+            <Link
+              href={`/practitioner/patients/${patientId}/notes`}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
+            >
+              <Icon name="list_alt" size={16} color="#6f787e" />
+              Voir toutes les notes
+            </Link>
+            <Link
+              href={`/practitioner/patients/${patientId}/prescriptions`}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
+            >
+              <Icon name="receipt_long" size={16} color="#6f787e" />
+              Voir toutes les ordonnances
+            </Link>
           </div>
         </div>
       </div>
+    </div>
     </div>
   )
 }

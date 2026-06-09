@@ -108,8 +108,7 @@ function useSearch(q: string) {
       const { data, error } = await supabase
         .from('practitioners')
         .select('id, user_id, speciality, rating, session_price, currency, is_verified, user:user_id(full_name)')
-        .eq('is_verified', true)
-        .limit(10)
+        .limit(20)
       if (error) throw error
       const lq = q.toLowerCase()
       return (data ?? [])

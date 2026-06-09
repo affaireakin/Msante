@@ -43,7 +43,6 @@ interface PatientPermission {
   allow_appreciations: boolean
   allow_mood_journal: boolean
   notes: string | null
-  created_at: string
 }
 
 interface EditState {
@@ -84,7 +83,6 @@ function usePermissions() {
           allow_appreciations: r.allow_appreciations ?? true,
           allow_mood_journal: r.allow_mood_journal ?? false,
           notes: r.notes,
-          created_at: r.created_at,
         }
       })
     },
