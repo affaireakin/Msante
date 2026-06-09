@@ -53,7 +53,7 @@ function useAllPrescriptions() {
 
       const { data, error } = await supabase
         .from('prescriptions')
-        .select('id, diagnosis, medications, status, created_at, patient_id, patient:users!prescriptions_patient_id_fkey(full_name)')
+        .select('id, diagnosis, medications, status, created_at, patient_id, patient:patient_id(full_name)')
         .eq('practitioner_id', pract.id)
         .order('created_at', { ascending: false })
       if (error) throw error

@@ -372,9 +372,9 @@ export default function PatientsPage() {
         ))}
       </div>
 
-      <div className="flex gap-6">
+      <div className="relative">
         {/* Liste */}
-        <div className="flex-1 min-w-0 overflow-x-auto">
+        <div className="overflow-x-auto">
           {isLoading ? (
             <div className="space-y-2">
               {[1, 2, 3, 4].map(i => <div key={i} className="h-16 rounded-xl bg-white/40 animate-pulse" />)}
@@ -516,10 +516,12 @@ export default function PatientsPage() {
           )}
         </div>
 
-        {/* Panneau détail */}
+        {/* Panneau détail — overlay fixe */}
         {selected && (
-          <div className="w-72 flex-shrink-0">
-            <div className="rounded-2xl p-5 space-y-4 sticky top-0" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
+          <div>
+            <div className="fixed inset-0 z-30" onClick={() => setSelected(null)} aria-hidden="true" />
+            <div className="fixed top-0 right-0 h-full w-80 z-40 shadow-2xl overflow-y-auto p-5 space-y-4"
+              style={{ backgroundColor: 'rgba(248,249,255,0.97)', backdropFilter: 'blur(20px)', borderLeft: '1px solid rgba(0,102,133,0.12)' }}>
               <div className="flex items-center justify-between">
                 <h3 className="font-bold text-[#0b1c30]">Fiche patient</h3>
                 <button onClick={() => setSelected(null)} className="text-[#6f787e] hover:text-[#0b1c30]">
@@ -615,14 +617,21 @@ export default function PatientsPage() {
                 </div>
               )}
 
-              {/* Journey CTA */}
-              <div className="border-t border-slate-100 pt-3">
+              {/* Actions dossier */}
+              <div className="border-t border-slate-100 pt-3 space-y-2">
                 <Link
                   href={`/practitioner/patients/${selected.id}/journey`}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border-2 border-[#006685] text-[#006685] hover:bg-[#e5eeff] transition-colors"
                 >
                   <Icon name="route" size={16} color="#006685" />
-                  Voir le parcours bien-être
+                  Parcours bien-être
+                </Link>
+                <Link
+                  href={`/practitioner/patients/${selected.id}`}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-[#006685] text-white hover:bg-[#005070] transition-colors"
+                >
+                  <Icon name="folder_open" size={16} color="#fff" />
+                  Ouvrir le dossier
                 </Link>
               </div>
             </div>

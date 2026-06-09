@@ -63,13 +63,13 @@ function usePermissions() {
       if (!user) throw new Error('Non connecté')
       const { data, error } = await supabase
         .from('patient_data_permissions')
-        .select(`id, practitioner_id, access_level, expires_at, allow_notes, allow_appreciations, allow_mood_journal, notes, created_at,
+        .select(`id, practitioner_id, access_level, expires_at, allow_notes, allow_appreciations, allow_mood_journal, notes,
                  practitioner:practitioners!patient_data_permissions_practitioner_id_fkey(
                    speciality,
                    user:users!practitioners_user_id_fkey(full_name)
                  )`)
         .eq('patient_id', user.id)
-        .order('created_at', { ascending: false })
+        .order('id', { ascending: false })
       if (error) throw error
       return (data ?? []).map(r => {
         const pract = r.practitioner as unknown as { speciality: string; user: { full_name: string } }
