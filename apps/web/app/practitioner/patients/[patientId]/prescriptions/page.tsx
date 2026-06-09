@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -179,15 +179,204 @@ function PrescriptionCard({ rx }: { rx: PrescriptionRow }) {
   )
 }
 
+// ─── Base médicaments (DCI + spécialités courantes) ──────────────────────────
+
+const DRUGS: { name: string; dosages: string[] }[] = [
+  // Psychotropes — antidépresseurs
+  { name: 'Sertraline', dosages: ['50 mg', '100 mg'] },
+  { name: 'Fluoxétine', dosages: ['20 mg'] },
+  { name: 'Escitalopram', dosages: ['10 mg', '20 mg'] },
+  { name: 'Citalopram', dosages: ['20 mg', '40 mg'] },
+  { name: 'Paroxétine', dosages: ['20 mg', '40 mg'] },
+  { name: 'Venlafaxine', dosages: ['75 mg', '150 mg'] },
+  { name: 'Duloxétine', dosages: ['30 mg', '60 mg'] },
+  { name: 'Mirtazapine', dosages: ['15 mg', '30 mg'] },
+  { name: 'Amitriptyline', dosages: ['25 mg', '50 mg'] },
+  { name: 'Clomipramine', dosages: ['25 mg', '75 mg'] },
+  { name: 'Imipramine', dosages: ['25 mg', '50 mg'] },
+  { name: 'Trazodone', dosages: ['50 mg', '100 mg'] },
+  { name: 'Bupropion', dosages: ['150 mg', '300 mg'] },
+  // Anxiolytiques / Hypnotiques
+  { name: 'Alprazolam', dosages: ['0,25 mg', '0,5 mg', '1 mg'] },
+  { name: 'Bromazépam', dosages: ['6 mg'] },
+  { name: 'Diazépam', dosages: ['5 mg', '10 mg'] },
+  { name: 'Lorazépam', dosages: ['1 mg', '2,5 mg'] },
+  { name: 'Oxazépam', dosages: ['10 mg', '50 mg'] },
+  { name: 'Clonazépam', dosages: ['0,5 mg', '2 mg'] },
+  { name: 'Hydroxyzine', dosages: ['25 mg', '100 mg'] },
+  { name: 'Buspirone', dosages: ['10 mg', '15 mg'] },
+  { name: 'Zolpidem', dosages: ['10 mg'] },
+  { name: 'Zopiclone', dosages: ['7,5 mg'] },
+  { name: 'Prégabaline', dosages: ['75 mg', '150 mg', '300 mg'] },
+  // Antipsychotiques
+  { name: 'Halopéridol', dosages: ['1 mg', '5 mg'] },
+  { name: 'Rispéridone', dosages: ['1 mg', '2 mg', '4 mg'] },
+  { name: 'Olanzapine', dosages: ['5 mg', '10 mg'] },
+  { name: 'Quétiapine', dosages: ['25 mg', '100 mg', '200 mg'] },
+  { name: 'Aripiprazole', dosages: ['5 mg', '10 mg', '15 mg'] },
+  { name: 'Clozapine', dosages: ['25 mg', '100 mg'] },
+  { name: 'Chlorpromazine', dosages: ['25 mg', '100 mg'] },
+  { name: 'Lévomépromazine', dosages: ['25 mg', '100 mg'] },
+  { name: 'Amisulpride', dosages: ['50 mg', '200 mg', '400 mg'] },
+  { name: 'Ziprasidone', dosages: ['40 mg', '80 mg'] },
+  // Stabilisateurs d'humeur
+  { name: 'Lithium (carbonate)', dosages: ['250 mg', '400 mg'] },
+  { name: 'Valproate de sodium', dosages: ['200 mg', '500 mg'] },
+  { name: 'Carbamazépine', dosages: ['200 mg', '400 mg'] },
+  { name: 'Lamotrigine', dosages: ['25 mg', '50 mg', '100 mg'] },
+  // TDAH
+  { name: 'Méthylphénidate', dosages: ['10 mg', '20 mg'] },
+  { name: 'Atomoxétine', dosages: ['18 mg', '40 mg', '80 mg'] },
+  // Analgésiques / Anti-inflammatoires
+  { name: 'Paracétamol', dosages: ['500 mg', '1000 mg'] },
+  { name: 'Ibuprofène', dosages: ['200 mg', '400 mg', '600 mg'] },
+  { name: 'Aspirine', dosages: ['100 mg', '500 mg'] },
+  { name: 'Tramadol', dosages: ['50 mg', '100 mg'] },
+  { name: 'Codéine', dosages: ['20 mg', '30 mg'] },
+  { name: 'Diclofénac', dosages: ['50 mg', '75 mg'] },
+  { name: 'Kétoprofène', dosages: ['100 mg'] },
+  { name: 'Néfopam', dosages: ['20 mg'] },
+  // Antibiotiques
+  { name: 'Amoxicilline', dosages: ['500 mg', '1 g'] },
+  { name: 'Amoxicilline + Acide clavulanique', dosages: ['875/125 mg'] },
+  { name: 'Azithromycine', dosages: ['250 mg', '500 mg'] },
+  { name: 'Doxycycline', dosages: ['100 mg'] },
+  { name: 'Ciprofloxacine', dosages: ['250 mg', '500 mg'] },
+  { name: 'Métronidazole', dosages: ['250 mg', '500 mg'] },
+  { name: 'Cotrimoxazole', dosages: ['480 mg', '960 mg'] },
+  { name: 'Céfixime', dosages: ['200 mg', '400 mg'] },
+  { name: 'Doxycycline', dosages: ['100 mg'] },
+  // Antipaludéens
+  { name: 'Artéméther + Luméfantrine (Coartem)', dosages: ['20/120 mg'] },
+  { name: 'Artésunate', dosages: ['50 mg', '100 mg'] },
+  { name: 'Quinine', dosages: ['300 mg', '500 mg'] },
+  { name: 'Chloroquine', dosages: ['150 mg'] },
+  { name: 'Méfloquine', dosages: ['250 mg'] },
+  // Antihypertenseurs
+  { name: 'Amlodipine', dosages: ['5 mg', '10 mg'] },
+  { name: 'Lisinopril', dosages: ['5 mg', '10 mg', '20 mg'] },
+  { name: 'Losartan', dosages: ['50 mg', '100 mg'] },
+  { name: 'Aténolol', dosages: ['25 mg', '50 mg'] },
+  { name: 'Bisoprolol', dosages: ['2,5 mg', '5 mg', '10 mg'] },
+  { name: 'Hydrochlorothiazide', dosages: ['12,5 mg', '25 mg'] },
+  { name: 'Furosémide', dosages: ['20 mg', '40 mg'] },
+  // Antidiabétiques
+  { name: 'Metformine', dosages: ['500 mg', '850 mg', '1000 mg'] },
+  { name: 'Glibenclamide', dosages: ['5 mg'] },
+  { name: 'Sitagliptine', dosages: ['100 mg'] },
+  // Digestif / Gastro
+  { name: 'Oméprazole', dosages: ['20 mg', '40 mg'] },
+  { name: 'Pantoprazole', dosages: ['20 mg', '40 mg'] },
+  { name: 'Ranitidine', dosages: ['150 mg'] },
+  { name: 'Métoclopramide', dosages: ['10 mg'] },
+  { name: 'Dompéridone', dosages: ['10 mg'] },
+  { name: 'Lopéramide', dosages: ['2 mg'] },
+  { name: 'Trimébutine', dosages: ['100 mg'] },
+  // Vitamines / Suppléments
+  { name: 'Vitamine D3', dosages: ['800 UI', '1000 UI', '2000 UI'] },
+  { name: 'Vitamine B12', dosages: ['1000 µg'] },
+  { name: 'Magnésium', dosages: ['100 mg', '300 mg'] },
+  { name: 'Fer (sulfate ferreux)', dosages: ['80 mg', '200 mg'] },
+  { name: 'Acide folique', dosages: ['0,4 mg', '5 mg'] },
+  { name: 'Zinc', dosages: ['15 mg', '60 mg'] },
+  // Respiratoire
+  { name: 'Salbutamol', dosages: ['2 mg', '4 mg', '100 µg/dose'] },
+  { name: 'Béclométasone', dosages: ['100 µg', '200 µg'] },
+  { name: 'Ipratropium', dosages: ['20 µg/dose'] },
+  { name: 'Prednisolone', dosages: ['5 mg', '20 mg', '40 mg'] },
+  // Antihistaminiques
+  { name: 'Cétirizine', dosages: ['5 mg', '10 mg'] },
+  { name: 'Loratadine', dosages: ['10 mg'] },
+  { name: 'Desloratadine', dosages: ['5 mg'] },
+  { name: 'Bilastine', dosages: ['20 mg'] },
+]
+
+// ─── Drug autocomplete ────────────────────────────────────────────────────────
+
+function DrugSearch({ value, onChange }: { value: string; onChange: (name: string, dosage?: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const [q, setQ] = useState(value)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setQ(value) }, [value])
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handle)
+    return () => document.removeEventListener('mousedown', handle)
+  }, [])
+
+  const matches = q.trim().length >= 2
+    ? DRUGS.filter(d => d.name.toLowerCase().includes(q.toLowerCase())).slice(0, 8)
+    : []
+
+  const vidalUrl = value.trim()
+    ? `https://www.vidal.fr/medicaments/recherche/?q=${encodeURIComponent(value.trim())}`
+    : null
+
+  return (
+    <div ref={ref} className="relative">
+      <div className="flex gap-1">
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={q}
+            placeholder="Médicament (DCI ou nom) *"
+            onChange={e => { setQ(e.target.value); onChange(e.target.value); setOpen(true) }}
+            onFocus={() => { if (matches.length > 0) setOpen(true) }}
+            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]"
+          />
+          {q.trim().length >= 2 && matches.length === 0 && (
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">Aucun résultat</span>
+          )}
+        </div>
+        {vidalUrl && (
+          <a href={vidalUrl} target="_blank" rel="noopener noreferrer"
+            title="Consulter la fiche Vidal"
+            className="flex items-center gap-0.5 px-2 py-1 rounded-lg text-[10px] font-bold border transition-colors whitespace-nowrap"
+            style={{ borderColor: '#006685', color: '#006685', background: '#e5eeff' }}>
+            <Icon name="open_in_new" size={11} color="#006685" />
+            Vidal
+          </a>
+        )}
+      </div>
+
+      {open && matches.length > 0 && (
+        <ul className="absolute z-50 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden text-xs max-h-52 overflow-y-auto">
+          {matches.map(drug => (
+            <li key={drug.name}>
+              <button
+                type="button"
+                onMouseDown={e => {
+                  e.preventDefault()
+                  onChange(drug.name, drug.dosages[0])
+                  setQ(drug.name)
+                  setOpen(false)
+                }}
+                className="w-full text-left px-3 py-2 hover:bg-[#e5eeff] transition-colors flex items-center justify-between gap-2"
+              >
+                <span className="font-medium text-[#0b1c30]">{drug.name}</span>
+                <span className="text-slate-400 text-[10px] shrink-0">{drug.dosages.join(' · ')}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 // ─── Medication form row ──────────────────────────────────────────────────────
 
 function MedRow({ med, onChange, onRemove }: { med: Medication; onChange: (m: Medication) => void; onRemove: () => void }) {
-  const field = (key: keyof Medication) => (
+  const field = (key: Exclude<keyof Medication, 'name'>) => (
     <input
       type="text"
-      value={med[key]}
+      value={med[key] ?? ''}
       onChange={e => onChange({ ...med, [key]: e.target.value })}
-      placeholder={{ name: 'Médicament *', dosage: 'Dosage', frequency: 'Fréquence', duration: 'Durée', instructions: 'Remarques' }[key]}
+      placeholder={{ dosage: 'Dosage', frequency: 'Fréquence', duration: 'Durée', instructions: 'Remarques' }[key]}
       className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]"
     />
   )
@@ -196,13 +385,18 @@ function MedRow({ med, onChange, onRemove }: { med: Medication; onChange: (m: Me
       <button onClick={onRemove} className="absolute top-2 right-2 p-1 rounded text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors">
         <Icon name="close" size={14} />
       </button>
-      <div className="grid grid-cols-2 gap-2 pr-6">
-        {field('name')}
+      <div className="pr-6">
+        <DrugSearch
+          value={med.name}
+          onChange={(name, dosage) => onChange({ ...med, name, ...(dosage && !med.dosage ? { dosage } : {}) })}
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
         {field('dosage')}
         {field('frequency')}
         {field('duration')}
+        {field('instructions')}
       </div>
-      {field('instructions')}
     </div>
   )
 }
