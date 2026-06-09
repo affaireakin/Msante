@@ -105,27 +105,46 @@ function useSearch(q: string) {
     queryKey: ['pract-search', q],
     enabled: q.trim().length >= 2,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('practitioners')
-        .select('id, user_id, speciality, rating, session_price, currency, is_verified, user:user_id(full_name)')
-        .limit(20)
-      if (error) throw error
-      const lq = q.toLowerCase()
-      return (data ?? [])
-        .map(r => {
-          const u = r.user as unknown as { full_name: string }
-          return {
-            id: r.id,
-            user_id: r.user_id,
-            speciality: r.speciality,
-            rating: r.rating,
-            session_price: r.session_price,
-            currency: r.currency ?? 'XOF',
-            is_verified: r.is_verified,
-            full_name: u?.full_name ?? 'Praticien',
-          }
-        })
-        .filter(r => r.full_name.toLowerCase().includes(lq) || r.speciality.toLowerCase().includes(lq))
+      // Recherche en parallèle : par spécialité (direct) + par nom via users
+      const [bySpeciality, byName] = await Promise.all([
+        supabase
+          .from('practitioners')
+          .select('id, user_id, speciality, rating, session_price, currency, is_verified')
+          .ilike('speciality', `%${q}%`)
+          .limit(15),
+        supabase
+          .from('users')
+          .select('id, full_name')
+          .ilike('full_name', `%${q}%`)
+          .limit(15),
+      ])
+
+      // Récupérer les praticiens correspondant aux noms trouvés
+      const matchedUserIds = (byName.data ?? []).map(u => u.id)
+      const byNamePract = matchedUserIds.length > 0
+        ? await supabase
+            .from('practitioners')
+            .select('id, user_id, speciality, rating, session_price, currency, is_verified')
+            .in('user_id', matchedUserIds)
+            .limit(15)
+        : { data: [] as typeof bySpeciality.data }
+
+      // Dédoublonner et construire la map nom
+      const nameMap = Object.fromEntries((byName.data ?? []).map(u => [u.id, u.full_name]))
+      const seen = new Set<string>()
+      const combined = [...(bySpeciality.data ?? []), ...(byNamePract.data ?? [])]
+        .filter(p => { if (seen.has(p.id)) return false; seen.add(p.id); return true })
+
+      return combined.map(r => ({
+        id: r.id,
+        user_id: r.user_id,
+        speciality: r.speciality ?? '',
+        rating: r.rating,
+        session_price: r.session_price,
+        currency: r.currency ?? 'XOF',
+        is_verified: r.is_verified,
+        full_name: nameMap[r.user_id] ?? 'Praticien',
+      }))
     },
     staleTime: 60_000,
   })
