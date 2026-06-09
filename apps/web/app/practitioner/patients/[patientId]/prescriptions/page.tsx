@@ -63,7 +63,7 @@ function usePrescriptionsData(patientId: string) {
       const [{ data: patientData, error: ptErr }, { data: rxData, error: rxErr }] = await Promise.all([
         supabase.from('users').select('id, full_name, created_at').eq('id', patientId).single(),
         supabase.from('prescriptions')
-          .select('id, diagnosis, medications, status, created_at')
+          .select('id, diagnosis, medications, instructions, valid_until, status, consultation_type, created_at')
           .eq('patient_id', patientId).eq('practitioner_id', pract.id)
           .order('created_at', { ascending: false }),
       ])
@@ -228,7 +228,10 @@ function NewPrescriptionModal({ patientId, practitionerId, onClose }: { patientI
         practitioner_id: practitionerId,
         diagnosis: diagnosis.trim() || null,
         medications: filledMeds,
+        instructions: instructions.trim() || null,
+        valid_until: validUntil || null,
         status,
+        consultation_type: consultationType,
       })
       if (error) throw error
     },
