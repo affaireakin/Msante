@@ -37,6 +37,8 @@ interface ConversationPreview {
   unread: number
 }
 
+interface PatientRow { id: string; full_name: string }
+
 function getInitials(name: string) {
   return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
 }
@@ -70,11 +72,14 @@ function toStoragePath(urlOrPath: string): string {
 export default function PractitionerMessagesPage() {
   const queryClient = useQueryClient()
   const [myId, setMyId] = useState<string | null>(null)
+  const [practId, setPractId] = useState<string | null>(null)
   const [activeConv, setActiveConv] = useState<ConversationPreview | null>(null)
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
   const [docPickerOpen, setDocPickerOpen] = useState(false)
   const [selectedDocType, setSelectedDocType] = useState<DocTypeId | null>(null)
+  const [showNewConv, setShowNewConv] = useState(false)
+  const [patientSearch, setPatientSearch] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -82,6 +87,13 @@ export default function PractitionerMessagesPage() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => { if (user) setMyId(user.id) })
   }, [])
+
+  // Fetch own practitioners.id
+  useEffect(() => {
+    if (!myId) return
+    supabase.from('practitioners').select('id').eq('user_id', myId).single()
+      .then(({ data }) => { if (data) setPractId(data.id) })
+  }, [myId])
 
   const { data: conversations = [], isLoading: loadingConvs } = useQuery<ConversationPreview[]>({
     queryKey: ['pract-conversations', myId],
@@ -113,6 +125,29 @@ export default function PractitionerMessagesPage() {
         })
       }
       return Array.from(map.values())
+    },
+  })
+
+  // Patients available to message (from appointments)
+  const { data: myPatients = [], isLoading: loadingPatients } = useQuery<PatientRow[]>({
+    queryKey: ['pract-patients-picker', practId],
+    enabled: !!practId && showNewConv,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('patient_id, patient:users!appointments_patient_id_fkey(id, full_name)')
+        .eq('practitioner_id', practId!)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      const seen = new Set<string>()
+      return (data ?? [])
+        .filter(r => {
+          const p = r.patient as unknown as PatientRow
+          if (!p || seen.has(p.id)) return false
+          seen.add(p.id)
+          return true
+        })
+        .map(r => r.patient as unknown as PatientRow)
     },
   })
 
@@ -208,18 +243,49 @@ export default function PractitionerMessagesPage() {
     }
   }, [myId, activeConv, selectedDocType, sendMutation])
 
+  function startConversation(patient: PatientRow) {
+    // Check if conversation already exists
+    const existing = conversations.find(c => c.partnerId === patient.id)
+    setActiveConv(existing ?? {
+      partnerId: patient.id,
+      partnerName: patient.full_name,
+      lastMessage: '',
+      lastAt: new Date().toISOString(),
+      unread: 0,
+    })
+    setShowNewConv(false)
+    setPatientSearch('')
+  }
+
+  const filteredPatients = myPatients.filter(p =>
+    p.full_name.toLowerCase().includes(patientSearch.toLowerCase())
+  )
+
   const groups = groupByDay(messages)
 
   return (
     <div className="h-[calc(100vh-4rem)] flex gap-0 rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.80)' }}>
 
-      {/* Conversations list */}
-      <div className="w-80 flex-shrink-0 flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.70)', borderRight: '1px solid rgba(190,200,206,0.30)' }}>
-        <div className="p-4 border-b border-slate-100/60">
-          <h2 className="text-base font-bold text-[#0b1c30]">Messagerie patients</h2>
-          <p className="text-xs text-[#6f787e] mt-0.5">Communication sécurisée</p>
+      {/* ── Sidebar: conversations ── */}
+      <div className="w-80 flex-shrink-0 flex flex-col relative" style={{ backgroundColor: 'rgba(255,255,255,0.70)', borderRight: '1px solid rgba(190,200,206,0.30)' }}>
+
+        {/* Header */}
+        <div className="p-4 border-b border-slate-100/60 flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-bold text-[#0b1c30]">Messagerie patients</h2>
+            <p className="text-xs text-[#6f787e] mt-0.5">Communication sécurisée</p>
+          </div>
+          <button
+            onClick={() => { setShowNewConv(true); setPatientSearch('') }}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-opacity hover:opacity-90"
+            style={{ backgroundColor: '#006685' }}
+          >
+            <Icon name="add" style={{ fontSize: '16px' }} />
+            Nouveau
+          </button>
         </div>
 
+        {/* Conversation list */}
         <div className="flex-1 overflow-y-auto">
           {loadingConvs ? (
             <div className="space-y-2 p-3">
@@ -228,8 +294,16 @@ export default function PractitionerMessagesPage() {
           ) : conversations.length === 0 ? (
             <div className="p-6 text-center">
               <Icon name="chat_bubble_outline" style={{ fontSize: '40px', color: '#bec8ce' }} />
-              <p className="text-sm text-[#6f787e] mt-2">Aucune conversation</p>
-              <p className="text-xs text-[#bec8ce] mt-1">Les patients peuvent vous écrire depuis leur espace</p>
+              <p className="text-sm text-[#6f787e] mt-2 font-semibold">Aucune conversation</p>
+              <p className="text-xs text-[#bec8ce] mt-1 mb-4">Initiez le premier échange avec un patient</p>
+              <button
+                onClick={() => setShowNewConv(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white"
+                style={{ backgroundColor: '#006685' }}
+              >
+                <Icon name="add" style={{ fontSize: '18px' }} />
+                Nouveau message
+              </button>
             </div>
           ) : (
             conversations.map(conv => (
@@ -258,19 +332,79 @@ export default function PractitionerMessagesPage() {
             ))
           )}
         </div>
+
+        {/* New conversation overlay */}
+        {showNewConv && (
+          <div className="absolute inset-0 z-20 flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)' }}>
+            <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-100">
+              <button onClick={() => setShowNewConv(false)} className="p-1 rounded-lg hover:bg-slate-100 transition-colors">
+                <Icon name="arrow_back" style={{ fontSize: '20px', color: '#006685' }} />
+              </button>
+              <div>
+                <p className="text-sm font-bold text-[#0b1c30]">Nouveau message</p>
+                <p className="text-xs text-[#6f787e]">Choisir un patient</p>
+              </div>
+            </div>
+            <div className="p-3 border-b border-slate-100/60">
+              <input
+                type="text"
+                placeholder="Rechercher un patient..."
+                value={patientSearch}
+                onChange={e => setPatientSearch(e.target.value)}
+                autoFocus
+                className="w-full px-3 py-2 rounded-xl text-sm outline-none border"
+                style={{ borderColor: '#bec8ce', color: '#0b1c30', backgroundColor: '#f8f9ff' }}
+              />
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {loadingPatients ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-5 h-5 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : filteredPatients.length === 0 ? (
+                <div className="px-6 py-8 text-center">
+                  <p className="text-sm text-[#6f787e]">
+                    {patientSearch ? 'Aucun patient trouvé' : 'Aucun patient avec rendez-vous'}
+                  </p>
+                </div>
+              ) : (
+                filteredPatients.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => startConversation(p)}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#eff4ff]/60 transition-colors border-b border-slate-50"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                      {getInitials(p.full_name)}
+                    </div>
+                    <span className="text-sm font-semibold text-[#0b1c30]">{p.full_name}</span>
+                    <Icon name="chevron_right" style={{ fontSize: '18px', color: '#bec8ce', marginLeft: 'auto' }} />
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Thread */}
+      {/* ── Thread ── */}
       {!activeConv ? (
-        <div className="flex-1 flex items-center justify-center flex-col gap-3" style={{ backgroundColor: 'rgba(255,255,255,0.40)' }}>
-          <Icon name="forum" style={{ fontSize: '56px', color: '#bec8ce' }} />
-          <p className="text-sm font-semibold text-[#6f787e]">Sélectionnez une conversation</p>
-          <p className="text-xs text-[#bec8ce]">Communication chiffrée de bout en bout</p>
+        <div className="flex-1 flex items-center justify-center flex-col gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.40)' }}>
+          <div className="w-16 h-16 rounded-2xl bg-[#e5eeff] flex items-center justify-center">
+            <Icon name="forum" style={{ fontSize: '32px', color: '#006685' }} />
+          </div>
+          <div className="text-center">
+            <p className="text-sm font-bold text-[#0b1c30]">Sélectionnez une conversation</p>
+            <p className="text-xs text-[#bec8ce] mt-1">ou cliquez sur « Nouveau » pour initier un échange</p>
+          </div>
         </div>
       ) : (
         <div className="flex-1 flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.50)' }}>
           {/* Thread header */}
           <div className="flex items-center gap-3 px-5 py-3.5 border-b border-slate-100/60" style={{ backgroundColor: 'rgba(255,255,255,0.70)' }}>
+            <button onClick={() => setActiveConv(null)} className="p-1 rounded-lg hover:bg-slate-100 transition-colors mr-1">
+              <Icon name="arrow_back" style={{ fontSize: '18px', color: '#6f787e' }} />
+            </button>
             <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold">
               {getInitials(activeConv.partnerName)}
             </div>
@@ -289,6 +423,12 @@ export default function PractitionerMessagesPage() {
             {loadingThread ? (
               <div className="flex items-center justify-center h-full">
                 <div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+              </div>
+            ) : groups.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
+                <Icon name="chat_bubble_outline" style={{ fontSize: '40px', color: '#bec8ce' }} />
+                <p className="text-sm text-[#6f787e]">Aucun message pour l&apos;instant</p>
+                <p className="text-xs text-[#bec8ce]">Commencez la conversation ci-dessous</p>
               </div>
             ) : (
               groups.map((group, gi) => (
