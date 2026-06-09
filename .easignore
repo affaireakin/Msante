@@ -74,9 +74,6 @@ video_consultation_2
 wellness_space_1
 wellness_space_2
 wellness_space_3
-*.html
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.svg
+# Root-level prototype files only (subdirs already excluded above)
+/*.html
+/logo_1_de_pr_f_rence.png
