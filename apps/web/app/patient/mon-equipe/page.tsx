@@ -105,37 +105,14 @@ function useSearch(q: string) {
     queryKey: ['pract-search', q],
     enabled: q.trim().length >= 2,
     queryFn: async () => {
-      // Recherche en parallèle : par spécialité (direct) + par nom via users
-      const [bySpeciality, byName] = await Promise.all([
-        supabase
-          .from('practitioners')
-          .select('id, user_id, speciality, rating, session_price, currency, is_verified')
-          .ilike('speciality', `%${q}%`)
-          .limit(15),
-        supabase
-          .from('users')
-          .select('id, full_name')
-          .ilike('full_name', `%${q}%`)
-          .limit(15),
-      ])
-
-      // Récupérer les praticiens correspondant aux noms trouvés
-      const matchedUserIds = (byName.data ?? []).map(u => u.id)
-      const byNamePract = matchedUserIds.length > 0
-        ? await supabase
-            .from('practitioners')
-            .select('id, user_id, speciality, rating, session_price, currency, is_verified')
-            .in('user_id', matchedUserIds)
-            .limit(15)
-        : { data: [] as typeof bySpeciality.data }
-
-      // Dédoublonner et construire la map nom
-      const nameMap = Object.fromEntries((byName.data ?? []).map(u => [u.id, u.full_name]))
-      const seen = new Set<string>()
-      const combined = [...(bySpeciality.data ?? []), ...(byNamePract.data ?? [])]
-        .filter(p => { if (seen.has(p.id)) return false; seen.add(p.id); return true })
-
-      return combined.map(r => ({
+      // Fonction SECURITY DEFINER qui contourne le RLS pour la recherche
+      const { data, error } = await supabase
+        .rpc('search_practitioners', { search_term: q })
+      if (error) throw error
+      return (data ?? []).map((r: {
+        id: string; user_id: string; speciality: string; rating: number | null;
+        session_price: number | null; currency: string; is_verified: boolean; full_name: string
+      }) => ({
         id: r.id,
         user_id: r.user_id,
         speciality: r.speciality ?? '',
@@ -143,7 +120,7 @@ function useSearch(q: string) {
         session_price: r.session_price,
         currency: r.currency ?? 'XOF',
         is_verified: r.is_verified,
-        full_name: nameMap[r.user_id] ?? 'Praticien',
+        full_name: r.full_name ?? 'Praticien',
       }))
     },
     staleTime: 60_000,
