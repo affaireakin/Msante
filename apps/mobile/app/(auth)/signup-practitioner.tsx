@@ -32,7 +32,11 @@ export default function SignupPractitionerScreen() {
       speciality: speciality ?? '',
     })
     setLoading(false)
-    if (result.error) Alert.alert('Erreur', result.error)
+    if (result.error) {
+      Alert.alert('Erreur', result.error)
+      return
+    }
+    router.push(`/(auth)/verify-otp?email=${encodeURIComponent(data.email)}` as never)
   }
 
   return (

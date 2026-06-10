@@ -40,6 +40,18 @@ export const authService = {
     return { user: null, error: null }
   },
 
+  async verifyEmailOtp(email: string, token: string): Promise<AuthResult> {
+    const { data, error } = await supabase.auth.verifyOtp({ email, token, type: 'signup' })
+    if (error) return { user: null, error: error.message }
+    return { user: data.user, error: null }
+  },
+
+  async resendEmailOtp(email: string): Promise<{ error: string | null }> {
+    const { error } = await supabase.auth.resend({ type: 'signup', email })
+    if (error) return { error: error.message }
+    return { error: null }
+  },
+
   async resetPassword(email: string): Promise<void> {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'msante://reset-password',

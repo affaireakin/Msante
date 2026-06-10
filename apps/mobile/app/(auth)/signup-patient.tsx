@@ -28,7 +28,11 @@ export default function SignupPatientScreen() {
     setLoading(true)
     const result = await authService.signUpWithEmail(data.email, data.password, 'patient', data.full_name)
     setLoading(false)
-    if (result.error) Alert.alert('Erreur', result.error)
+    if (result.error) {
+      Alert.alert('Erreur', result.error)
+      return
+    }
+    router.push(`/(auth)/verify-otp?email=${encodeURIComponent(data.email)}` as never)
   }
 
   return (
