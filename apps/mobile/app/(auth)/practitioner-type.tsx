@@ -5,26 +5,27 @@ import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { PrimaryButton } from '@/components/ui'
 
+// Doit correspondre EXACTEMENT aux profession_label de la table profession_permissions
 const HEALTHCARE_SPECIALTIES = [
-  'Psychiatre',
-  'Psychologue clinicien(ne)',
   'Médecin généraliste',
-  'Pédopsychiatre',
-  'Neurologue',
-  'Addictologue',
-  'Gériatre',
-  'Autre professionnel de santé',
+  'Psychiatre',
+  'Cardiologue',
+  'Dermatologue',
+  'Gynécologue',
+  'Pédiatre',
+  'Ophtalmologue',
+  'Sage-femme',
+  'Infirmier(e)',
+  'Kinésithérapeute',
+  'Dentiste',
 ]
 
 const WELLNESS_SPECIALTIES = [
-  'Coach de vie',
-  'Thérapeute bien-être',
+  'Psychologue',
+  'Thérapeute',
+  'Coach bien-être',
   'Sophrologue',
-  'Hypnothérapeute',
-  'Nutritionniste / Diététicien(ne)',
-  'Coach sportif & mental',
-  'Instructeur yoga / méditation',
-  'Autre praticien bien-être',
+  'Nutritionniste',
 ]
 
 type PractitionerType = 'healthcare' | 'wellness' | null
@@ -99,7 +100,7 @@ export default function PractitionerTypeScreen() {
                 Professionnel de santé
               </Text>
               <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', lineHeight: 17 }}>
-                Psychiatre, psychologue, médecin…
+                Médecin, cardiologue, gynécologue, pédiatre…
               </Text>
             </View>
             {selectedType === 'healthcare' && (
@@ -130,7 +131,7 @@ export default function PractitionerTypeScreen() {
                 Praticien bien-être
               </Text>
               <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', lineHeight: 17 }}>
-                Coach, sophrologue, hypnothérapeute…
+                Psychologue, thérapeute, coach, sophrologue…
               </Text>
             </View>
             {selectedType === 'wellness' && (

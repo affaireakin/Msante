@@ -1,6 +1,11 @@
 import { ScrollView, TouchableOpacity, Text, View } from 'react-native'
 
-const SPECIALITIES = ['Psychologue', 'Psychiatre', 'Thérapeute', 'Coach', 'Nutritionniste']
+const SPECIALITIES = [
+  'Psychologue', 'Psychiatre', 'Thérapeute', 'Coach bien-être', 'Nutritionniste',
+  'Médecin généraliste', 'Sophrologue', 'Kinésithérapeute', 'Sage-femme',
+  'Cardiologue', 'Dermatologue', 'Gynécologue', 'Pédiatre', 'Ophtalmologue',
+  'Infirmier(e)', 'Dentiste',
+]
 const LANGUAGES = ['Français', 'English', 'Wolof']
 
 interface FilterBarProps {
