@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -15,6 +15,7 @@ export default function MoodCheckin() {
   const { profile } = useAuth()
   const [score, setScore] = useState(6)
   const [emotions, setEmotions] = useState<EmotionId[]>([])
+  const [note, setNote] = useState('')
   const addMood = useAddMoodEntry()
 
   const toggleEmotion = (id: EmotionId) =>
@@ -22,7 +23,7 @@ export default function MoodCheckin() {
 
   const handleSave = async () => {
     if (!profile?.id) return
-    await addMood.mutateAsync({ patientId: profile.id, score, emotions })
+    await addMood.mutateAsync({ patientId: profile.id, score, emotions, note: note.trim() || undefined })
     if (score < 3) {
       Alert.alert(
         'Prendre soin de soi',
@@ -63,6 +64,30 @@ export default function MoodCheckin() {
           <View style={{ gap: 12 }}>
             <Text style={{ fontSize: 12, fontWeight: '600', color: '#3f484d', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Vos émotions</Text>
             <EmotionPicker selected={emotions} onToggle={toggleEmotion} />
+          </View>
+          <View style={{ gap: 12 }}>
+            <Text style={{ fontSize: 12, fontWeight: '600', color: '#3f484d', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Note (optionnel)</Text>
+            <TextInput
+              value={note}
+              onChangeText={setNote}
+              placeholder="Comment s'est passée votre journée ?"
+              placeholderTextColor="#6f787e"
+              multiline
+              numberOfLines={3}
+              style={{
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: 'rgba(190,200,206,0.4)',
+                backgroundColor: 'rgba(255,255,255,0.4)',
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+                fontSize: 14,
+                fontFamily: 'Manrope',
+                color: '#0b1c30',
+                minHeight: 80,
+                textAlignVertical: 'top',
+              }}
+            />
           </View>
         </View>
         <View style={{ marginTop: 24 }}>

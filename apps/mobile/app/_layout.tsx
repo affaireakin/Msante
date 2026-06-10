@@ -12,6 +12,7 @@ import {
 import { Providers } from './_providers'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { usePushNotifications } from '@/features/notifications/hooks/usePushNotifications'
+import { useMoodReminder } from '@/features/notifications/hooks/useMoodReminder'
 import { supabase, fetchUserProfile, fetchPractitionerProfile } from '@/services/supabase'
 
 SplashScreen.preventAutoHideAsync()
@@ -39,6 +40,7 @@ export default function RootLayout() {
   const router = useRouter()
   const segments = useSegments()
   usePushNotifications(isAuthenticated)
+  useMoodReminder(isAuthenticated)
 
   useEffect(() => {
     if (fontsLoaded) SplashScreen.hideAsync()
