@@ -12,6 +12,8 @@ const STEPS = ['Votre profil', 'Votre pratique', 'Documents', 'Confirmation']
 const SPECIALITIES = [
   'Psychologue', 'Psychiatre', 'Thérapeute', 'Coach bien-être',
   'Nutritionniste', 'Médecin généraliste', 'Sage-femme', 'Infirmier(e)',
+  'Sophrologue', 'Kinésithérapeute', 'Cardiologue', 'Dermatologue',
+  'Gynécologue', 'Ophtalmologue', 'Pédiatre', 'Dentiste',
 ]
 const LANGUAGES = ['Français', 'Wolof', 'Anglais', 'Arabe', 'Diola', 'Mandingue', 'Pulaar']
 const DURATIONS = [{ value: 30, label: '30 min' }, { value: 45, label: '45 min' }, { value: 60, label: '1h' }, { value: 90, label: '1h30' }]

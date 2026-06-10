@@ -69,6 +69,7 @@ interface AddForm {
 function useTeam() {
   return useQuery<TeamMember[]>({
     queryKey: ['patient-team'],
+    retry: false,
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Non connecté')
@@ -99,6 +100,7 @@ function useTeam() {
 function useAllPractitioners() {
   return useQuery<PractRow[]>({
     queryKey: ['all-practitioners'],
+    retry: false,
     queryFn: async () => {
       const { data, error } = await supabase.rpc('list_practitioners')
       if (error) throw error
@@ -272,8 +274,8 @@ function useRemove() {
 
 // ─── Page ──────────────────────────────────────────────────────────────────
 export default function MonEquipePage() {
-  const { data: team = [], isLoading: teamLoading } = useTeam()
-  const { data: allPract = [], isLoading: practLoading } = useAllPractitioners()
+  const { data: team = [], isLoading: teamLoading, error: teamError } = useTeam()
+  const { data: allPract = [], isLoading: practLoading, error: practError } = useAllPractitioners()
   const remove = useRemove()
 
   const [modalPract, setModalPract] = useState<PractRow | TeamMember | null>(null)
@@ -313,6 +315,10 @@ export default function MonEquipePage() {
         {teamLoading ? (
           <div className="animate-pulse space-y-3">
             {[1, 2].map(i => <div key={i} className="h-20 bg-slate-100 rounded-xl" />)}
+          </div>
+        ) : teamError ? (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-xs text-red-700 font-mono break-all">
+            {(teamError as Error).message}
           </div>
         ) : team.length === 0 ? (
           <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-8 text-center">
@@ -390,6 +396,12 @@ export default function MonEquipePage() {
         {practLoading ? (
           <div className="grid grid-cols-2 gap-3 animate-pulse">
             {[1,2,3,4].map(i => <div key={i} className="h-24 bg-slate-100 rounded-xl" />)}
+          </div>
+        ) : practError ? (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 space-y-2">
+            <p className="text-xs font-bold text-red-700">Erreur — fonctions SQL manquantes</p>
+            <p className="text-xs text-red-600 font-mono break-all">{(practError as Error).message}</p>
+            <p className="text-xs text-red-500 mt-2">Exécutez les fonctions <code className="bg-red-100 px-1 rounded">list_practitioners()</code> et <code className="bg-red-100 px-1 rounded">get_patient_team()</code> dans l'éditeur SQL Supabase.</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-8 text-center">
