@@ -211,6 +211,240 @@ function fmtDayTime(iso: string): string {
   return `${day} à ${time}`
 }
 
+// ─── Hooks onglets 2 et 3 ─────────────────────────────────────────────────────
+
+interface PendingApt {
+  id: string
+  scheduled_at: string
+  duration_min: number
+  type: 'video' | 'audio' | 'chat'
+  users: { full_name: string; phone: string | null } | null
+}
+
+interface UpcomingApt {
+  id: string
+  scheduled_at: string
+  duration_min: number
+  status: 'confirmed' | 'pending'
+  type: 'video' | 'audio' | 'chat'
+  users: { full_name: string } | null
+}
+
+function usePendingAppointments(practId: string | null) {
+  return useQuery<PendingApt[]>({
+    queryKey: ['pract-pending-apts', practId],
+    enabled: !!practId,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const now = new Date().toISOString()
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('id, scheduled_at, duration_min, type, users!patient_id(full_name, phone)')
+        .eq('practitioner_id', practId!)
+        .eq('status', 'pending')
+        .gte('scheduled_at', now)
+        .order('scheduled_at', { ascending: true })
+      if (error) throw error
+      return (data ?? []) as unknown as PendingApt[]
+    },
+  })
+}
+
+function useUpcomingConfirmed(practId: string | null) {
+  return useQuery<UpcomingApt[]>({
+    queryKey: ['pract-upcoming-confirmed', practId],
+    enabled: !!practId,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const now = new Date().toISOString()
+      const in14 = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('id, scheduled_at, duration_min, status, type, users!patient_id(full_name)')
+        .eq('practitioner_id', practId!)
+        .eq('status', 'confirmed')
+        .gte('scheduled_at', now)
+        .lte('scheduled_at', in14)
+        .order('scheduled_at', { ascending: true })
+      if (error) throw error
+      return (data ?? []) as unknown as UpcomingApt[]
+    },
+  })
+}
+
+const TYPE_ICONS: Record<string, string> = { video: 'videocam', audio: 'mic', chat: 'chat_bubble' }
+const TYPE_COLOR: Record<string, { bg: string; text: string }> = {
+  video: { bg: '#e5eeff', text: '#006685' },
+  audio: { bg: '#f3e8ff', text: '#7c3aed' },
+  chat:  { bg: '#dcfce7', text: '#1d7a3a' },
+}
+
+// ─── Onglet 2 : Demandes en attente ───────────────────────────────────────────
+
+function PendingTab({ practId }: { practId: string }) {
+  const qc = useQueryClient()
+  const { data: apts = [], isLoading } = usePendingAppointments(practId)
+
+  const updateStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: 'confirmed' | 'cancelled' }) => {
+      const { error } = await supabase.from('appointments').update({ status }).eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['pract-pending-apts'] })
+      qc.invalidateQueries({ queryKey: ['pract-upcoming-confirmed'] })
+    },
+  })
+
+  if (isLoading) return <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-20 rounded-xl bg-white/40 animate-pulse" />)}</div>
+
+  if (apts.length === 0) return (
+    <div className="rounded-2xl p-14 text-center bg-white/60 border border-white/80">
+      <Icon name="check_circle" size={44} color="#86efac" />
+      <p className="font-semibold text-[#0b1c30] mt-3">Aucune demande en attente</p>
+      <p className="text-sm text-[#6f787e] mt-1">Toutes les demandes ont été traitées</p>
+    </div>
+  )
+
+  return (
+    <div className="space-y-3">
+      {apts.map(apt => {
+        const dt = new Date(apt.scheduled_at)
+        const tc = TYPE_COLOR[apt.type] ?? TYPE_COLOR.video
+        const dateStr = dt.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Africa/Dakar' })
+        const timeStr = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Dakar' })
+        return (
+          <div key={apt.id} className="bg-white/70 border border-white/80 rounded-2xl p-5 flex items-center gap-4">
+            {/* Date bloc */}
+            <div className="w-14 h-14 rounded-xl flex flex-col items-center justify-center shrink-0"
+              style={{ background: tc.bg }}>
+              <span className="text-xl font-black leading-none" style={{ color: tc.text }}>
+                {dt.toLocaleDateString('fr-FR', { day: 'numeric', timeZone: 'Africa/Dakar' })}
+              </span>
+              <span className="text-[10px] font-bold uppercase" style={{ color: tc.text }}>
+                {dt.toLocaleDateString('fr-FR', { month: 'short', timeZone: 'Africa/Dakar' })}
+              </span>
+            </div>
+
+            {/* Infos */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="font-semibold text-[#0b1c30]">{apt.users?.full_name ?? 'Patient'}</p>
+                <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium bg-amber-100 text-amber-700">
+                  <Icon name="schedule" size={11} color="#92400e" />
+                  En attente
+                </span>
+              </div>
+              <p className="text-sm text-[#6f787e] capitalize mt-0.5">{dateStr} · {timeStr} · {apt.duration_min} min</p>
+              {apt.users?.phone && <p className="text-xs text-[#6f787e] mt-0.5">{apt.users.phone}</p>}
+            </div>
+
+            {/* Type badge */}
+            <span className="hidden sm:flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full"
+              style={{ background: tc.bg, color: tc.text }}>
+              <Icon name={TYPE_ICONS[apt.type] ?? 'event'} size={13} color={tc.text} />
+              {apt.type === 'video' ? 'Vidéo' : apt.type === 'audio' ? 'Audio' : 'Chat'}
+            </span>
+
+            {/* Actions */}
+            <div className="flex gap-2 shrink-0">
+              <button onClick={() => updateStatus.mutate({ id: apt.id, status: 'cancelled' })}
+                disabled={updateStatus.isPending}
+                className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50">
+                <Icon name="close" size={14} color="#dc2626" />
+                Refuser
+              </button>
+              <button onClick={() => updateStatus.mutate({ id: apt.id, status: 'confirmed' })}
+                disabled={updateStatus.isPending}
+                className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold text-white transition-colors disabled:opacity-50"
+                style={{ background: '#006685' }}>
+                <Icon name="check" size={14} color="#fff" />
+                Confirmer
+              </button>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ─── Onglet 3 : RDV à venir (14 jours) ───────────────────────────────────────
+
+function UpcomingTab({ practId }: { practId: string }) {
+  const qc = useQueryClient()
+  const { data: apts = [], isLoading } = useUpcomingConfirmed(practId)
+
+  const markDone = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: 'completed' | 'no_show' }) => {
+      const { error } = await supabase.from('appointments').update({ status }).eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['pract-upcoming-confirmed'] }),
+  })
+
+  if (isLoading) return <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-20 rounded-xl bg-white/40 animate-pulse" />)}</div>
+
+  if (apts.length === 0) return (
+    <div className="rounded-2xl p-14 text-center bg-white/60 border border-white/80">
+      <Icon name="calendar_month" size={44} color="#bec8ce" />
+      <p className="font-semibold text-[#0b1c30] mt-3">Aucun RDV confirmé dans les 14 prochains jours</p>
+    </div>
+  )
+
+  // Group by day
+  const byDay: Record<string, UpcomingApt[]> = {}
+  for (const apt of apts) {
+    const key = new Date(apt.scheduled_at).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Africa/Dakar' })
+    if (!byDay[key]) byDay[key] = []
+    byDay[key].push(apt)
+  }
+
+  return (
+    <div className="space-y-6">
+      {Object.entries(byDay).map(([day, dayApts]) => (
+        <div key={day}>
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 capitalize">{day}</p>
+          <div className="space-y-2">
+            {dayApts.map(apt => {
+              const dt = new Date(apt.scheduled_at)
+              const timeStr = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Dakar' })
+              const tc = TYPE_COLOR[apt.type] ?? TYPE_COLOR.video
+              return (
+                <div key={apt.id} className="bg-white/70 border border-white/80 rounded-xl px-4 py-3 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: tc.bg }}>
+                    <Icon name={TYPE_ICONS[apt.type] ?? 'event'} size={20} color={tc.text} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-[#0b1c30] text-sm">{apt.users?.full_name ?? 'Patient'}</p>
+                    <p className="text-xs text-[#6f787e]">{timeStr} · {apt.duration_min} min</p>
+                  </div>
+                  <div className="flex gap-2 items-center shrink-0">
+                    <Link href={`/practitioner/consultation/${apt.id}/waiting`}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-white"
+                      style={{ background: '#006685' }}>
+                      <Icon name="videocam" size={13} color="#fff" />
+                      Rejoindre
+                    </Link>
+                    <button onClick={() => markDone.mutate({ id: apt.id, status: 'no_show' })}
+                      disabled={markDone.isPending}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                      title="Patient absent">
+                      <Icon name="person_off" size={16} />
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─── Page principale ──────────────────────────────────────────────────────────
+
 export default function PatientsPage() {
   const { data: patients = [], isLoading, isError, error } = usePatients()
   const [search, setSearch] = useState('')
@@ -249,6 +483,12 @@ export default function PatientsPage() {
 
   const pendingDesignations = designations.filter(d => d.referring_doctor_status === 'pending')
 
+  type MainTab = 'patients' | 'pending' | 'upcoming'
+  const [mainTab, setMainTab] = useState<MainTab>('patients')
+
+  const { data: pendingApts = [] } = usePendingAppointments(practId ?? null)
+  const { data: upcomingApts = [] } = useUpcomingConfirmed(practId ?? null)
+
   type StatusFilter = 'tous' | 'rdv_prochain' | 'humeur_basse' | 'a_recontacter'
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('tous')
 
@@ -272,14 +512,51 @@ export default function PatientsPage() {
     { id: 'a_recontacter', label: 'À recontacter', icon: 'person_search', count: searched.filter(p => !p.nextApptDate && !!p.lastSessionDate).length },
   ]
 
+  const MAIN_TABS = [
+    { id: 'patients' as MainTab, label: 'Patients',            icon: 'group',           count: patients.length },
+    { id: 'pending'  as MainTab, label: 'Demandes en attente', icon: 'pending_actions', count: pendingApts.length },
+    { id: 'upcoming' as MainTab, label: 'RDV à venir',         icon: 'calendar_clock',  count: upcomingApts.length },
+  ]
+
   return (
     <div className="space-y-6 max-w-6xl" style={{ fontFamily: 'Manrope' }}>
+
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-[#0b1c30]">Mes patients</h1>
           <p className="text-sm text-[#6f787e] mt-1">{patients.length} patient{patients.length !== 1 ? 's' : ''} suivi{patients.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
+
+      {/* Onglets principaux */}
+      <div className="flex gap-1 p-1 bg-white/60 backdrop-blur-sm border border-white/80 rounded-2xl w-fit">
+        {MAIN_TABS.map(tab => (
+          <button key={tab.id} onClick={() => setMainTab(tab.id)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
+            style={{ background: mainTab === tab.id ? '#006685' : 'transparent', color: mainTab === tab.id ? '#fff' : '#6f787e' }}>
+            <Icon name={tab.icon} size={16} color={mainTab === tab.id ? '#fff' : '#6f787e'} />
+            {tab.label}
+            {tab.count > 0 && (
+              <span className="text-xs px-1.5 py-0.5 rounded-full font-bold" style={{
+                background: mainTab === tab.id ? 'rgba(255,255,255,0.25)' : (tab.id === 'pending' ? '#fef3c7' : '#e5eeff'),
+                color:      mainTab === tab.id ? '#fff'                    : (tab.id === 'pending' ? '#92400e' : '#006685'),
+              }}>
+                {tab.count}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Onglet 2 — Demandes en attente */}
+      {mainTab === 'pending' && practId && <PendingTab practId={practId} />}
+
+      {/* Onglet 3 — RDV à venir */}
+      {mainTab === 'upcoming' && practId && <UpcomingTab practId={practId} />}
+
+      {/* Onglet 1 — Patients (contenu original, visible uniquement si actif) */}
+      <div style={{ display: mainTab === 'patients' ? undefined : 'none' }}>
 
       {/* Désignations médecin traitant */}
       {pendingDesignations.length > 0 && (
@@ -637,6 +914,7 @@ export default function PatientsPage() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   )
