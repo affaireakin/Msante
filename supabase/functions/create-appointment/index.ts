@@ -268,16 +268,15 @@ Deno.serve(async (req) => {
         .eq('id', user.id)
         .single()
 
-      const { data: practUser } = await supabase
-        .from('users')
-        .select('full_name')
-        .eq('id', (await supabase
-          .from('practitioners')
-          .select('user_id')
-          .eq('id', practitioner_id)
-          .single()
-        ).data?.user_id ?? '')
-        .maybeSingle()
+      const { data: practRow } = await supabase
+        .from('practitioners')
+        .select('user_id')
+        .eq('id', practitioner_id)
+        .single()
+
+      const { data: practUser } = practRow?.user_id
+        ? await supabase.from('users').select('id, full_name, email, push_token').eq('id', practRow.user_id).single()
+        : { data: null }
 
       const apptDate = new Date(scheduled_at)
       const dateTimeStr = apptDate.toLocaleDateString('fr-FR', {
@@ -286,6 +285,7 @@ Deno.serve(async (req) => {
         hour: '2-digit', minute: '2-digit',
       })
 
+      // Notify patient: booking request received
       if (patientUser) {
         await notifService.send({
           type: 'appointment_confirm',
@@ -300,6 +300,35 @@ Deno.serve(async (req) => {
             date: dateTimeStr,
             appointmentId: appointment.id,
           },
+        })
+      }
+
+      // Notify practitioner: new booking request
+      if (practUser?.push_token) {
+        await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: practUser.push_token,
+            title: 'Nouvelle demande de RDV 📅',
+            body: `${patientUser?.full_name ?? 'Un patient'} souhaite un RDV le ${dateTimeStr}.`,
+            data: { route: '/(practitioner)/appointments', appointment_id: appointment.id },
+            sound: 'default',
+            priority: 'high',
+            channelId: 'default',
+          }),
+        })
+      }
+      if (practUser?.id) {
+        await supabase.from('notifications').insert({
+          user_id: practUser.id,
+          type: 'appointment_booked',
+          title: 'Nouvelle demande de RDV 📅',
+          body: `${patientUser?.full_name ?? 'Un patient'} souhaite un RDV le ${dateTimeStr}.`,
+          data: { appointment_id: appointment.id },
+          channel: 'push',
+          status: practUser.push_token ? 'sent' : 'pending',
+          sent_at: practUser.push_token ? new Date().toISOString() : null,
         })
       }
     } catch (notifErr) {

@@ -289,6 +289,9 @@ function PendingTab({ practId }: { practId: string }) {
     mutationFn: async ({ id, status }: { id: string; status: 'confirmed' | 'cancelled' }) => {
       const { error } = await supabase.from('appointments').update({ status }).eq('id', id)
       if (error) throw error
+      void supabase.functions.invoke('on-appointment-status-change', {
+        body: { appointment_id: id, new_status: status },
+      })
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pract-pending-apts'] })
@@ -379,6 +382,11 @@ function UpcomingTab({ practId }: { practId: string }) {
     mutationFn: async ({ id, status }: { id: string; status: 'completed' | 'no_show' }) => {
       const { error } = await supabase.from('appointments').update({ status }).eq('id', id)
       if (error) throw error
+      if (status === 'no_show') {
+        void supabase.functions.invoke('on-appointment-status-change', {
+          body: { appointment_id: id, new_status: status },
+        })
+      }
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['pract-upcoming-confirmed'] }),
   })

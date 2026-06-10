@@ -143,6 +143,9 @@ function DetailPanel({ apt, onClose }: { apt: Appointment; onClose: () => void }
     mutationFn: async (s: AptStatus) => {
       const { error } = await supabase.from('appointments').update({ status: s }).eq('id', apt.id)
       if (error) throw error
+      void supabase.functions.invoke('on-appointment-status-change', {
+        body: { appointment_id: apt.id, new_status: s },
+      })
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['pract-apts'] })
@@ -417,6 +420,9 @@ export default function AppointmentsPage() {
     mutationFn: async ({ id, status }: { id: string; status: AptStatus }) => {
       const { error } = await supabase.from('appointments').update({ status }).eq('id', id)
       if (error) throw error
+      void supabase.functions.invoke('on-appointment-status-change', {
+        body: { appointment_id: id, new_status: status },
+      })
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['pract-apts'] }),
   })

@@ -5,6 +5,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+async function sendPush(token: string, title: string, body: string, data: Record<string, string>) {
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ to: token, title, body, data, sound: 'default', priority: 'high', channelId: 'default' }),
+  })
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
@@ -15,7 +23,7 @@ Deno.serve(async (req) => {
 
   const { appointment_id, new_status } = await req.json()
 
-  if (new_status !== 'no_show') {
+  if (!['confirmed', 'cancelled', 'no_show'].includes(new_status)) {
     return new Response(JSON.stringify({ skipped: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
@@ -23,76 +31,111 @@ Deno.serve(async (req) => {
 
   const { data: appt } = await supabase
     .from('appointments')
-    .select('patient_id, practitioner_id')
+    .select('patient_id, practitioner_id, scheduled_at')
     .eq('id', appointment_id)
     .single()
 
-  if (!appt) return new Response('Not found', { status: 404 })
+  if (!appt) return new Response('Not found', { status: 404, headers: corsHeaders })
 
-  const { count } = await supabase
-    .from('appointments')
-    .select('id', { count: 'exact', head: true })
-    .eq('patient_id', appt.patient_id)
-    .eq('practitioner_id', appt.practitioner_id)
-    .eq('status', 'no_show')
+  const { data: pract } = await supabase
+    .from('practitioners')
+    .select('user_id')
+    .eq('id', appt.practitioner_id)
+    .single()
 
-  const noShowCount = count ?? 0
+  // ── confirmed / cancelled → notifie le patient ────────────────────────────
+  if (new_status === 'confirmed' || new_status === 'cancelled') {
+    const [{ data: patient }, { data: practUser }] = await Promise.all([
+      supabase.from('users').select('push_token, full_name').eq('id', appt.patient_id).single(),
+      supabase.from('users').select('full_name').eq('id', pract?.user_id ?? '').single(),
+    ])
 
-  const { data: rules } = await supabase
-    .from('practitioner_patient_rules')
-    .select('alert_threshold')
-    .eq('practitioner_id', appt.practitioner_id)
-    .maybeSingle()
+    const scheduledDate = new Date(appt.scheduled_at as string)
+    const dateStr = scheduledDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long' })
+    const timeStr = scheduledDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+    const practName = practUser?.full_name ?? 'votre praticien'
 
-  const alertThreshold = rules?.alert_threshold ?? 2
+    const isConfirmed = new_status === 'confirmed'
+    const title = isConfirmed ? 'RDV confirmé ✓' : 'Demande refusée'
+    const body = isConfirmed
+      ? `Votre RDV avec ${practName} le ${dateStr} à ${timeStr} est confirmé.`
+      : `Votre demande de RDV avec ${practName} le ${dateStr} n'a pas pu être acceptée.`
+    const route = isConfirmed ? '/(patient)/appointments' : '/(patient)/find-practitioners'
 
-  if (noShowCount >= alertThreshold) {
-    const { data: practitioner } = await supabase
-      .from('practitioners')
-      .select('user_id')
-      .eq('id', appt.practitioner_id)
-      .single()
+    if (patient?.push_token) {
+      await sendPush(patient.push_token, title, body, { route, appointment_id })
+    }
 
-    if (practitioner) {
+    await supabase.from('notifications').insert({
+      user_id: appt.patient_id,
+      type: isConfirmed ? 'appointment_confirm' : 'appointment_cancelled',
+      title,
+      body,
+      data: { appointment_id, route },
+      channel: 'push',
+      status: patient?.push_token ? 'sent' : 'pending',
+      sent_at: patient?.push_token ? new Date().toISOString() : null,
+    })
+
+    return new Response(JSON.stringify({ notified: 'patient', status: new_status }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
+  }
+
+  // ── no_show → alerte praticien si absences répétées ───────────────────────
+  if (new_status === 'no_show') {
+    const { count } = await supabase
+      .from('appointments')
+      .select('id', { count: 'exact', head: true })
+      .eq('patient_id', appt.patient_id)
+      .eq('practitioner_id', appt.practitioner_id)
+      .eq('status', 'no_show')
+
+    const noShowCount = count ?? 0
+
+    const { data: rules } = await supabase
+      .from('practitioner_patient_rules')
+      .select('alert_threshold')
+      .eq('practitioner_id', appt.practitioner_id)
+      .maybeSingle()
+
+    const alertThreshold = rules?.alert_threshold ?? 2
+
+    if (noShowCount >= alertThreshold && pract?.user_id) {
       const [{ data: practUser }, { data: patient }] = await Promise.all([
-        supabase.from('users').select('push_token, full_name').eq('id', practitioner.user_id).single(),
+        supabase.from('users').select('push_token, full_name').eq('id', pract.user_id).single(),
         supabase.from('users').select('full_name').eq('id', appt.patient_id).single(),
       ])
 
       const patientName = patient?.full_name ?? 'Un patient'
+      const title = 'Patient absent ⚠️'
       const body = `${patientName} a manqué ${noShowCount} RDV. Voulez-vous le restreindre ?`
 
       if (practUser?.push_token) {
-        await fetch('https://exp.host/--/api/v2/push/send', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: practUser.push_token,
-            title: 'Patient absent ⚠️',
-            body,
-            data: {
-              route: '/(practitioner)/patients',
-              patient_id: appt.patient_id,
-              practitioner_id: appt.practitioner_id,
-            },
-          }),
+        await sendPush(practUser.push_token, title, body, {
+          route: '/(practitioner)/patients',
+          patient_id: appt.patient_id,
         })
       }
 
       await supabase.from('notifications').insert({
-        user_id: practitioner.user_id,
+        user_id: pract.user_id,
         type: 'no_show_alert',
-        title: 'Patient absent ⚠️',
+        title,
         body,
-        data: { patient_id: appt.patient_id, no_show_count: noShowCount },
+        data: { patient_id: appt.patient_id, no_show_count: String(noShowCount) },
         channel: 'push',
-        status: 'sent',
-        sent_at: new Date().toISOString(),
+        status: practUser?.push_token ? 'sent' : 'pending',
+        sent_at: practUser?.push_token ? new Date().toISOString() : null,
       })
     }
+
+    return new Response(JSON.stringify({ no_show_count: noShowCount }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
   }
 
-  return new Response(JSON.stringify({ no_show_count: noShowCount }), {
+  return new Response(JSON.stringify({ skipped: true }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' }
   })
 })
