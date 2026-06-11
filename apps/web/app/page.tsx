@@ -1,5 +1,53 @@
 import React from 'react'
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'M-Santé | Psychologues & Psychiatres en ligne au Sénégal',
+  description:
+    'M-Santé — 1ère plateforme de santé mentale africaine. Consultez des psychologues et psychiatres certifiés en téléconsultation depuis Dakar ou partout au Sénégal. Paiement Wave & Orange Money.',
+  alternates: { canonical: 'https://m-santé.com' },
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': 'https://m-santé.com/#website',
+      url: 'https://m-santé.com',
+      name: 'M-Santé',
+      description: '1ère plateforme de santé mentale africaine',
+      inLanguage: 'fr-SN',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://m-santé.com/patient/practitioners?q={search_term_string}',
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@type': 'MedicalOrganization',
+      '@id': 'https://m-santé.com/#organization',
+      name: 'M-Santé',
+      url: 'https://m-santé.com',
+      logo: 'https://m-santé.com/logo.png',
+      description:
+        'Première plateforme de santé mentale africaine connectant patients et praticiens certifiés via téléconsultation.',
+      medicalSpecialty: ['Psychiatry', 'Psychology'],
+      areaServed: [
+        { '@type': 'Country', name: 'Sénégal', sameAs: 'https://www.wikidata.org/wiki/Q1041' },
+        { '@type': 'Continent', name: 'Afrique' },
+      ],
+      availableService: [
+        { '@type': 'MedicalTherapy', name: 'Téléconsultation psychologique' },
+        { '@type': 'MedicalTherapy', name: 'Suivi bien-être mental' },
+        { '@type': 'MedicalTherapy', name: 'Consultation psychiatrique en ligne' },
+      ],
+      paymentAccepted: 'Wave, Orange Money, Carte bancaire',
+      sameAs: ['https://twitter.com/msante_sn'],
+    },
+  ],
+}
 
 function Icon({ name, className = '', style }: { name: string; className?: string; style?: React.CSSProperties }) {
   return <span className={`material-symbols-outlined ${className}`} style={style}>{name}</span>
@@ -8,6 +56,10 @@ function Icon({ name, className = '', style }: { name: string; className?: strin
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#f8f9ff] font-[family-name:var(--font-manrope)] text-[#0b1c30] overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       {/* ── Topbar ── */}
       <header className="sticky top-0 z-50 bg-[#f8f9ff]/80 backdrop-blur-xl border-b border-white/10 shadow-sm">
