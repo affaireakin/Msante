@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
-export default function VerifyOtpPage() {
+function VerifyOtpContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -258,5 +258,17 @@ export default function VerifyOtpPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function VerifyOtpPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <VerifyOtpContent />
+    </Suspense>
   )
 }
