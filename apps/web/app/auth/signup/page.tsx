@@ -65,7 +65,7 @@ export default function SignupPage() {
 
     setLoading(true)
 
-    const { data, error: authError } = await supabase.auth.signUp({
+    const { error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { role, full_name: fullName } },
@@ -77,23 +77,13 @@ export default function SignupPage() {
       return
     }
 
-    if (!data.user) {
-      setError('Vérifiez votre email pour confirmer votre inscription.')
-      setLoading(false)
-      return
+    // Redirect to OTP verification — practitioner profile created after email confirmed
+    const params = new URLSearchParams({ email, role })
+    if (role === 'practitioner') {
+      params.set('speciality', speciality)
+      params.set('practType', practType)
     }
-
-    if (role === 'practitioner' && speciality) {
-      await supabase.from('practitioners').insert({
-        user_id: data.user.id,
-        speciality,
-        practitioner_type: practType,
-        verification_status: 'pending',
-      })
-    }
-
-    router.push(role === 'practitioner' ? '/onboarding/practitioner' : '/onboarding/patient')
-    setLoading(false)
+    router.push(`/auth/verify-otp?${params.toString()}`)
   }
 
   return (
