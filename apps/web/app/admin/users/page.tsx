@@ -17,6 +17,14 @@ interface UserRow {
   onboarding_completed: boolean
   created_at: string
   account_status: AccountStatus | null
+  prefix_id: string | null
+}
+
+interface PrefixOption {
+  id: string
+  prefix: string
+  label: string
+  allowed_roles: string[]
 }
 
 interface PractitionerProfile {
@@ -76,7 +84,7 @@ function useUsers(role: Role, search: string, page: number) {
     queryFn: async () => {
       let query = supabase
         .from('users')
-        .select('id, full_name, role, country, onboarding_completed, created_at, account_status', { count: 'exact' })
+        .select('id, full_name, role, country, onboarding_completed, created_at, account_status, prefix_id', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
 
@@ -523,6 +531,87 @@ function PractitionerSection({ userId }: { userId: string }) {
   )
 }
 
+// ─── Prefix Section ───────────────────────────────────────────────────────────
+
+function PrefixSection({ user }: { user: UserRow }) {
+  const queryClient = useQueryClient()
+  const [selected, setSelected] = useState<string>(user.prefix_id ?? '')
+
+  const { data: prefixes = [] } = useQuery<PrefixOption[]>({
+    queryKey: ['prefixes-for-role', user.role],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('professional_prefixes')
+        .select('id, prefix, label, allowed_roles')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true })
+      if (error) throw error
+      return (data ?? []).filter(p =>
+        (p.allowed_roles as string[]).includes(user.role)
+      ) as PrefixOption[]
+    },
+    staleTime: 60_000,
+  })
+
+  const saveMutation = useMutation({
+    mutationFn: async (prefixId: string | null) => {
+      const { error } = await supabase
+        .from('users')
+        .update({ prefix_id: prefixId })
+        .eq('id', user.id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+    },
+  })
+
+  const handleSave = () => {
+    const val = selected === '' ? null : selected
+    saveMutation.mutate(val)
+  }
+
+  const currentPrefix = prefixes.find(p => p.id === selected)
+  const isDirty = selected !== (user.prefix_id ?? '')
+
+  return (
+    <div>
+      <p className="text-xs font-bold text-[#6f787e] uppercase tracking-wide mb-2">Préfixe professionnel</p>
+      <div className="flex gap-2 items-center">
+        <select
+          value={selected}
+          onChange={e => setSelected(e.target.value)}
+          className="flex-1 px-3 py-2.5 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-colors"
+        >
+          <option value="">— Aucun préfixe —</option>
+          {prefixes.map(p => (
+            <option key={p.id} value={p.id}>{p.prefix} — {p.label}</option>
+          ))}
+        </select>
+        <button
+          onClick={handleSave}
+          disabled={!isDirty || saveMutation.isPending}
+          className="px-4 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-40"
+          style={{ backgroundColor: '#006685', color: '#fff' }}
+        >
+          {saveMutation.isPending ? '…' : 'OK'}
+        </button>
+      </div>
+      {currentPrefix && (
+        <p className="text-[10px] text-[#006685] mt-1.5 px-1 font-medium">
+          Affiché : <strong>{currentPrefix.prefix} {user.full_name}</strong>
+        </p>
+      )}
+      {saveMutation.isSuccess && (
+        <p className="text-[10px] text-emerald-600 mt-1 px-1">Préfixe enregistré ✓</p>
+      )}
+      {saveMutation.isError && (
+        <p className="text-[10px] text-[#ba1a1a] mt-1 px-1">Erreur lors de l&apos;enregistrement</p>
+      )}
+    </div>
+  )
+}
+
 // ─── User Profile Slide-out ───────────────────────────────────────────────────
 
 function UserProfilePanel({
@@ -641,6 +730,9 @@ function UserProfilePanel({
             ))}
           </div>
 
+          {/* Prefix selector */}
+          <PrefixSection user={user} />
+
           {/* Suspend / Unsuspend */}
           {user.role !== 'admin' && (
             <div>
@@ -699,7 +791,7 @@ export default function UsersPage() {
   const [page, setPage] = useState(0)
   const [selectedUser, setSelectedUser] = useState<UserRow | null>(null)
   const [showInvite, setShowInvite] = useState(false)
-  const debounceTimer = useRef<ReturnType<typeof setTimeout>>()
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const handleSearch = (value: string) => {
     setSearch(value)

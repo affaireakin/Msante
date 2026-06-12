@@ -27,6 +27,10 @@ interface Message {
   attachment_type: DocTypeId | null
   read_at: string | null
   created_at: string
+  sender_name: string
+  sender_role: string
+  sender_avatar: string | null
+  sender_prefix: string | null
 }
 
 interface ConversationPreview {
@@ -180,7 +184,20 @@ export default function PatientMessagesPage() {
         .order('created_at', { ascending: true })
         .limit(100)
       if (error) throw error
-      return (data ?? []) as Message[]
+
+      const { data: usersInfo } = await supabase
+        .from('users')
+        .select('id, full_name, role, avatar_url, prefix:professional_prefixes(prefix)')
+        .in('id', [myId!, activeConv!.partnerId])
+      const userMap = new Map((usersInfo ?? []).map(u => {
+        const prefixObj = u.prefix as unknown as { prefix: string } | null
+        return [u.id, { name: u.full_name, role: u.role as string, avatar: u.avatar_url as string | null, prefix: prefixObj?.prefix ?? null }]
+      }))
+
+      return (data ?? []).map(msg => {
+        const s = userMap.get(msg.sender_id)
+        return { ...msg, sender_name: s?.name ?? '', sender_role: s?.role ?? '', sender_avatar: s?.avatar ?? null, sender_prefix: s?.prefix ?? null } as Message
+      })
     },
   })
 
@@ -484,9 +501,28 @@ export default function PatientMessagesPage() {
                     const isMe = msg.sender_id === myId
                     const hasDoc = !!msg.attachment_url
                     const dt = DOC_TYPES.find(d => d.id === msg.attachment_type)
+                    const timeStr = new Date(msg.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Dakar' })
+                    const displayName = msg.sender_prefix ? `${msg.sender_prefix} ${msg.sender_name}` : msg.sender_name
+                    const roleLabel = msg.sender_role === 'practitioner' ? 'Médecin' : msg.sender_role === 'admin' ? 'Admin' : 'Patient'
+                    const roleBg = msg.sender_role === 'practitioner' ? '#e5eeff' : msg.sender_role === 'admin' ? '#ede9fe' : '#e8f5e9'
+                    const roleColor = msg.sender_role === 'practitioner' ? '#006685' : msg.sender_role === 'admin' ? '#7c3aed' : '#1d7a3a'
                     return (
-                      <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[70%] space-y-1 ${isMe ? 'items-end' : 'items-start'} flex flex-col`}>
+                      <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} items-end gap-2`}>
+                        {!isMe && (
+                          <div className="w-7 h-7 rounded-full bg-[#006685] flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0 mb-5 overflow-hidden">
+                            {msg.sender_avatar
+                              ? <img src={msg.sender_avatar} alt="" className="w-7 h-7 object-cover" />
+                              : getInitials(msg.sender_name || activeConv!.partnerName)
+                            }
+                          </div>
+                        )}
+                        <div className={`max-w-[70%] space-y-0.5 ${isMe ? 'items-end' : 'items-start'} flex flex-col`}>
+                          {!isMe && (
+                            <div className="flex items-center gap-1.5 px-1 mb-1">
+                              <span className="text-xs font-bold text-[#0b1c30]">{displayName}</span>
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: roleBg, color: roleColor }}>{roleLabel}</span>
+                            </div>
+                          )}
                           {hasDoc && dt ? (
                             <div className="rounded-xl overflow-hidden border" style={{ borderColor: isMe ? 'rgba(255,255,255,0.15)' : 'rgba(226,232,240,0.8)', backgroundColor: isMe ? '#006685' : '#fff', minWidth: '200px' }}>
                               <div className="flex items-center gap-2 px-3 py-2" style={{ backgroundColor: isMe ? 'rgba(255,255,255,0.1)' : dt.bg }}>
@@ -501,12 +537,12 @@ export default function PatientMessagesPage() {
                               </div>
                             </div>
                           ) : (
-                            <div className="px-4 py-2.5 rounded-2xl text-sm" style={{ backgroundColor: isMe ? '#006685' : 'rgba(255,255,255,0.80)', color: isMe ? '#fff' : '#0b1c30', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px' }}>
+                            <div className="px-4 py-2.5 text-sm" style={{ backgroundColor: isMe ? '#006685' : 'rgba(255,255,255,0.80)', color: isMe ? '#fff' : '#0b1c30', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px' }}>
                               {msg.body}
                             </div>
                           )}
                           <p className="text-[10px] text-[#6f787e] px-1">
-                            {new Date(msg.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Dakar' })}
+                            {timeStr}
                             {isMe && msg.read_at && <span className="ml-1 text-emerald-600">· Lu</span>}
                           </p>
                         </div>
