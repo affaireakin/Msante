@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
@@ -41,6 +41,7 @@ interface PatientInfo { id: string; full_name: string; created_at: string }
 interface Medication { name: string; dosage: string; frequency: string; duration: string; instructions?: string }
 interface PrescriptionRow {
   id: string
+  patient_id: string
   diagnosis: string | null
   medications: Medication[] | null
   instructions?: string | null
@@ -63,7 +64,7 @@ function usePrescriptionsData(patientId: string) {
       const [{ data: patientData, error: ptErr }, { data: rxData, error: rxErr }] = await Promise.all([
         supabase.from('users').select('id, full_name, created_at').eq('id', patientId).single(),
         supabase.from('prescriptions')
-          .select('id, diagnosis, medications, instructions, valid_until, status, consultation_type, created_at')
+          .select('id, patient_id, diagnosis, medications, instructions, valid_until, status, consultation_type, created_at')
           .eq('patient_id', patientId).eq('practitioner_id', pract.id)
           .order('created_at', { ascending: false }),
       ])
@@ -117,11 +118,38 @@ function PatientHeader({ patient, patientId }: { patient: PatientInfo; patientId
 
 // ─── Prescription card ────────────────────────────────────────────────────────
 
-function PrescriptionCard({ rx }: { rx: PrescriptionRow }) {
+function PrescriptionCard({ rx, patientId }: { rx: PrescriptionRow; patientId: string }) {
+  const queryClient = useQueryClient()
+  const router = useRouter()
   const [expanded, setExpanded] = useState(false)
   const { bg, text } = statusColors(rx.status)
   const meds = Array.isArray(rx.medications) ? rx.medications : []
   const typeLabel: Record<string, string> = { video: 'Vidéo', audio: 'Audio', chat: 'Chat', in_person: 'Présentiel' }
+
+  const signMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('prescriptions').update({ status: 'signed' }).eq('id', rx.id)
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['practitioner-prescriptions', patientId] }),
+  })
+
+  const sendMutation = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Non connecté')
+      await supabase.from('notifications').insert({
+        user_id: rx.patient_id,
+        type: 'prescription_sent',
+        title: 'Nouvelle ordonnance disponible 📋',
+        body: 'Votre médecin a émis une ordonnance. Consultez-la dans votre espace santé.',
+        data: { prescription_id: rx.id, route: '/patient/prescriptions' },
+        channel: 'push',
+        status: 'pending',
+      })
+    },
+    onSuccess: () => alert('Ordonnance envoyée au patient.'),
+  })
 
   return (
     <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm overflow-hidden">
@@ -169,11 +197,44 @@ function PrescriptionCard({ rx }: { rx: PrescriptionRow }) {
         )}
 
         {rx.valid_until && (
-          <p className="text-xs text-slate-400 flex items-center gap-1">
+          <p className="text-xs text-slate-400 flex items-center gap-1 mb-3">
             <Icon name="event" size={12} color="#6f787e" />
             Valide jusqu&apos;au {fmt(rx.valid_until)}
           </p>
         )}
+
+        {/* Actions */}
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+          <button
+            onClick={() => router.push(`/practitioner/patients/${patientId}/prescriptions/${rx.id}/print`)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#006685] bg-[#e5eeff] hover:bg-[#d3e4fe] transition-colors"
+          >
+            <Icon name="print" size={14} color="#006685" />Imprimer / PDF
+          </button>
+
+          {rx.status === 'draft' && (
+            <button
+              onClick={() => signMutation.mutate()}
+              disabled={signMutation.isPending}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#1d7a3a] bg-[#dcfce7] hover:bg-[#bbf7d0] transition-colors disabled:opacity-50"
+            >
+              <Icon name="draw" size={14} color="#1d7a3a" />
+              {signMutation.isPending ? 'Signature…' : 'Signer'}
+            </button>
+          )}
+
+          {rx.status === 'signed' && (
+            <button
+              onClick={() => sendMutation.mutate()}
+              disabled={sendMutation.isPending}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-colors disabled:opacity-50"
+              style={{ background: '#006685' }}
+            >
+              <Icon name="send" size={14} color="#fff" />
+              {sendMutation.isPending ? 'Envoi…' : 'Envoyer au patient'}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -600,7 +661,7 @@ export default function PatientPrescriptionsPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {prescriptions.map(rx => <PrescriptionCard key={rx.id} rx={rx} />)}
+              {prescriptions.map(rx => <PrescriptionCard key={rx.id} rx={rx} patientId={patientId} />)}
             </div>
           )}
         </div>
