@@ -157,7 +157,7 @@ function DetailPanel({ apt, onClose }: { apt: Appointment; onClose: () => void }
     <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
       <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" />
       <div
-        className="relative w-80 h-full bg-white shadow-2xl flex flex-col overflow-y-auto"
+        className="relative w-full sm:w-80 h-full bg-white shadow-2xl flex flex-col overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}

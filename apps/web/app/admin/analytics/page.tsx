@@ -371,8 +371,8 @@ export default function AnalyticsPage() {
       {/* Recent transactions */}
       <div>
         <h3 className="font-bold text-[#0b1c30] mb-4">Transactions récentes</h3>
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
-          <table className="w-full">
+        <div className="rounded-2xl overflow-hidden overflow-x-auto" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
+          <table className="w-full min-w-[500px]">
             <thead>
               <tr className="border-b border-slate-100">
                 {['Référence', 'Patient', 'Provider', 'Montant', 'Statut', 'Date'].map(h => (

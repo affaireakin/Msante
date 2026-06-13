@@ -163,7 +163,7 @@ export default function CollaboratorsPage() {
 
       {/* ── Invitations ── */}
       {tab === 'invitations' && (
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
+        <div className="rounded-2xl overflow-hidden overflow-x-auto" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
           <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <h2 className="font-semibold text-[#0b1c30]">Invitations envoyées</h2>
             <span className="text-xs text-[#6f787e]">{invitations.length} au total</span>
@@ -173,7 +173,7 @@ export default function CollaboratorsPage() {
               <div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (
-            <table className="w-full">
+            <table className="w-full min-w-[600px]">
               <thead className="bg-slate-50/50">
                 <tr>
                   {['Email', 'Rôle', 'Statut', 'Envoyée le', 'Expire le'].map(h => (
@@ -206,7 +206,7 @@ export default function CollaboratorsPage() {
 
       {/* ── Patients ── */}
       {tab === 'patients' && (
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
+        <div className="rounded-2xl overflow-hidden overflow-x-auto" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
           <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <h2 className="font-semibold text-[#0b1c30]">Patients inscrits</h2>
             <span className="text-xs text-[#6f787e]">{patients.length} au total</span>
@@ -216,7 +216,7 @@ export default function CollaboratorsPage() {
               <div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (
-            <table className="w-full">
+            <table className="w-full min-w-[600px]">
               <thead className="bg-slate-50/50">
                 <tr>
                   {['Patient', 'Téléphone', 'Pays', 'Inscrit le', 'Onboarding'].map(h => (
@@ -256,7 +256,7 @@ export default function CollaboratorsPage() {
 
       {/* ── Praticiens ── */}
       {tab === 'practitioners' && (
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
+        <div className="rounded-2xl overflow-hidden overflow-x-auto" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
           <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <h2 className="font-semibold text-[#0b1c30]">Praticiens inscrits</h2>
             <span className="text-xs text-[#6f787e]">{practitioners.length} au total</span>
@@ -266,7 +266,7 @@ export default function CollaboratorsPage() {
               <div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (
-            <table className="w-full">
+            <table className="w-full min-w-[600px]">
               <thead className="bg-slate-50/50">
                 <tr>
                   {['Praticien', 'Spécialité', 'Type', 'Vérification', 'Inscrit le'].map(h => (

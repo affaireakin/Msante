@@ -287,7 +287,7 @@ export default function PractitionerAnalyticsPage() {
         <div>
           <h1 className="text-2xl font-black text-[#0b1c30]">Analytics</h1>
         </div>
-        <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map(i => (
             <div key={i} className="h-24 rounded-2xl bg-white/40 animate-pulse" />
           ))}
@@ -304,7 +304,7 @@ export default function PractitionerAnalyticsPage() {
       </div>
 
       {/* KPI cards */}
-      <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <KpiCard
           label="CA ce mois"
           value={`${data.thisMonth.toLocaleString('fr-FR')} XOF`}

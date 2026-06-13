@@ -274,9 +274,9 @@ export default function DisputesPage() {
               <p className="text-sm text-[#6f787e] mt-1">Les litiges apparaîtront ici lorsqu'ils seront créés.</p>
             </div>
           ) : (
-            <div className="rounded-2xl overflow-hidden"
+            <div className="rounded-2xl overflow-hidden overflow-x-auto"
               style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
-              <table className="w-full">
+              <table className="w-full min-w-[700px]">
                 <thead>
                   <tr className="border-b border-slate-100">
                     {['Dossier', 'Patient', 'Praticien', 'Montant', 'Motif', 'Statut', 'Priorité', 'Date'].map(h => (

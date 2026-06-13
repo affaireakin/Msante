@@ -683,8 +683,8 @@ export default function PatientsPage() {
               </p>
             </div>
           ) : (
-            <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
-              <table className="w-full">
+            <div className="rounded-2xl overflow-hidden overflow-x-auto" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
+              <table className="w-full min-w-[700px]">
                 <thead>
                   <tr className="border-b border-slate-100">
                     {['Patient', 'Contact', 'Humeur moy.', 'Dernière session', 'Prochain RDV', 'Consultations', 'Infos médicales', ''].map(h => (
@@ -805,7 +805,7 @@ export default function PatientsPage() {
         {selected && (
           <div>
             <div className="fixed inset-0 z-30" onClick={() => setSelected(null)} aria-hidden="true" />
-            <div className="fixed top-0 right-0 h-full w-80 z-40 shadow-2xl overflow-y-auto p-5 space-y-4"
+            <div className="fixed top-0 right-0 h-full w-full sm:w-80 z-40 shadow-2xl overflow-y-auto p-5 space-y-4"
               style={{ backgroundColor: 'rgba(248,249,255,0.97)', backdropFilter: 'blur(20px)', borderLeft: '1px solid rgba(0,102,133,0.12)' }}>
               <div className="flex items-center justify-between">
                 <h3 className="font-bold text-[#0b1c30]">Fiche patient</h3>

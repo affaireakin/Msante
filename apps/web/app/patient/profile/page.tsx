@@ -257,7 +257,7 @@ export default function PatientProfilePage() {
                 className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
               <p className="text-xs text-[#6f787e]">Laissez vide pour utiliser votre email de connexion</p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Pays</label>
                 <select value={country} onChange={e => setCountry(e.target.value)}
@@ -300,7 +300,7 @@ export default function PatientProfilePage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Taille (cm)</label>
                 <input type="number" value={heightCm} onChange={e => setHeightCm(e.target.value)} placeholder="170"

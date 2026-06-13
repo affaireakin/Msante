@@ -130,7 +130,7 @@ export default function AllPrescriptionsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
           { label: 'Total', value: prescriptions.length, color: '#006685', bg: '#e5eeff' },
           { label: 'Signées', value: prescriptions.filter(r => r.status === 'signed').length, color: '#006685', bg: '#e5eeff' },

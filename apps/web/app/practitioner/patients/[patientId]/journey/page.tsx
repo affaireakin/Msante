@@ -320,7 +320,7 @@ export default function WellnessJourneyPage() {
       <div className="space-y-6 max-w-5xl" style={{ fontFamily: 'Manrope, sans-serif' }}>
         <Skeleton className="h-10 w-64" />
         <Skeleton className="h-20" />
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-28" />)}
         </div>
         <Skeleton className="h-60" />

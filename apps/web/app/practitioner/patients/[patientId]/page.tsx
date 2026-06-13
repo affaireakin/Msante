@@ -339,7 +339,7 @@ export default function PatientDossierPage() {
 
   if (isLoading) {
     return (
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-4 md:p-8 max-w-4xl mx-auto">
         <Skeleton />
       </div>
     )
@@ -347,7 +347,7 @@ export default function PatientDossierPage() {
 
   if (error || !data) {
     return (
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-4 md:p-8 max-w-4xl mx-auto">
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm p-6 text-center">
           <Icon name="error" size={32} color="#ba1a1a" />
           <p className="mt-2 text-slate-600">{error?.message ?? 'Erreur de chargement'}</p>
@@ -376,7 +376,7 @@ export default function PatientDossierPage() {
     <div>
       {showNote && <QuickNoteModal patientId={patientId} practitionerId={practitionerId} onClose={() => setShowNote(false)} />}
       {showPrescription && <QuickPrescriptionModal patientId={patientId} practitionerId={practitionerId} onClose={() => setShowPrescription(false)} />}
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-4 md:p-8 max-w-4xl mx-auto">
       <PatientHeader patient={patient} backHref="/practitioner/patients" />
       <TabNav patientId={patientId} active="apercu" />
 

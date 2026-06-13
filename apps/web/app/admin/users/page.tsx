@@ -875,7 +875,7 @@ export default function UsersPage() {
 
       {/* Table */}
       <div
-        className="rounded-2xl overflow-hidden"
+        className="rounded-2xl overflow-hidden overflow-x-auto"
         style={{
           backgroundColor: 'rgba(255,255,255,0.60)',
           backdropFilter: 'blur(16px)',

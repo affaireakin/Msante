@@ -155,7 +155,7 @@ function EditDrawer({
   return (
     <div className="fixed inset-0 z-50 flex">
       <div className="flex-1 bg-black/30 backdrop-blur-sm" onClick={onClose} />
-      <div className="w-96 h-full bg-white flex flex-col overflow-y-auto shadow-2xl">
+      <div className="w-full sm:w-96 h-full bg-white flex flex-col overflow-y-auto shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
           <div>
@@ -285,7 +285,7 @@ export default function PatientPermissionsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 text-center shadow-sm">
           <p className="text-2xl font-black text-[#006685]">{active.length}</p>
           <p className="text-xs text-slate-500 mt-0.5">Accès actifs</p>

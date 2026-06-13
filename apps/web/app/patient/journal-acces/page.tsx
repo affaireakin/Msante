@@ -141,7 +141,7 @@ export default function JournalAccesPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 text-center shadow-sm">
           <p className="text-2xl font-black text-[#006685]">{today.length}</p>
           <p className="text-xs text-slate-500 mt-0.5">Aujourd'hui</p>

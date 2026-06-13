@@ -296,7 +296,7 @@ export default function PractitionerProfilePage() {
         {/* TAB — Profil */}
         {tab === 'profile' && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Nom complet</label>
                 <input value={fullName} onChange={e => setFullName(e.target.value)}
@@ -358,7 +358,7 @@ export default function PractitionerProfilePage() {
 
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Durée des séances</label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {DURATIONS.map(d => (
                   <button key={d.value} type="button" onClick={() => setDuration(d.value)}
                     className="py-2.5 rounded-xl text-sm font-bold transition-all"
@@ -371,7 +371,7 @@ export default function PractitionerProfilePage() {
 
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Types de consultation</label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {SESSION_TYPES.map(t => (
                   <button key={t.value} type="button" onClick={() => setSessionTypes(toggle(sessionTypes, t.value))}
                     className="flex flex-col items-center gap-2 p-4 rounded-xl transition-all border-2"
@@ -481,7 +481,7 @@ export default function PractitionerProfilePage() {
               <p className="text-xs text-[#6f787e] mt-0.5">Apparaissent sur l&apos;en-tête de vos ordonnances et comptes-rendus.</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Titre professionnel</label>
                 <input value={professionalTitle} onChange={e => setProfessionalTitle(e.target.value)}

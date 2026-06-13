@@ -229,7 +229,7 @@ export default function PaymentsPage() {
       </div>
 
       {/* Totaux */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { label: "Revenus aujourd'hui", value: formatXOF(totals?.todayRevenue ?? 0), color: 'text-emerald-600' },
           { label: 'En attente', value: `${totals?.pendingCount ?? 0} transactions`, color: 'text-amber-600' },
@@ -412,7 +412,7 @@ export default function PaymentsPage() {
 
       {/* Table */}
       <div
-        className="rounded-2xl overflow-hidden"
+        className="rounded-2xl overflow-hidden overflow-x-auto"
         style={{
           backgroundColor: 'rgba(255,255,255,0.70)',
           backdropFilter: 'blur(16px)',

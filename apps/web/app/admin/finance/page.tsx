@@ -412,7 +412,7 @@ export default function FinancePage() {
         </div>
 
         {/* Provider breakdown table */}
-        <div className="p-5" style={CARD_STYLE}>
+        <div className="p-5 overflow-x-auto" style={CARD_STYLE}>
           <p className="text-xs font-bold text-[#006685] uppercase tracking-widest mb-4">
             Répartition par provider
           </p>

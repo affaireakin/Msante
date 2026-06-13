@@ -298,10 +298,10 @@ export default function PatientMessagesPage() {
   const groups = groupByDay(messages)
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex gap-0 rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.80)' }}>
+    <div className="flex flex-col md:flex-row min-h-[calc(100vh-4rem)] md:h-[calc(100vh-4rem)] gap-0 rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.80)' }}>
 
       {/* ── Sidebar ── */}
-      <div className="w-80 flex-shrink-0 flex flex-col relative" style={{ backgroundColor: 'rgba(255,255,255,0.70)', borderRight: '1px solid rgba(190,200,206,0.30)' }}>
+      <div className={`${activeConv ? 'hidden md:flex' : 'flex'} w-full md:w-80 flex-shrink-0 flex-col relative`} style={{ backgroundColor: 'rgba(255,255,255,0.70)', borderRight: '1px solid rgba(190,200,206,0.30)' }}>
 
         {/* Header */}
         <div className="p-4 border-b border-slate-100/60 flex items-center justify-between">
@@ -439,7 +439,7 @@ export default function PatientMessagesPage() {
 
       {/* ── Thread ── */}
       {!activeConv ? (
-        <div className="flex-1 flex items-center justify-center flex-col gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.40)' }}>
+        <div className="hidden md:flex flex-1 items-center justify-center flex-col gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.40)' }}>
           <div className="w-16 h-16 rounded-2xl bg-[#e5eeff] flex items-center justify-center">
             <Icon name="forum" style={{ fontSize: '32px', color: '#006685' }} />
           </div>

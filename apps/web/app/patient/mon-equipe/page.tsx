@@ -394,7 +394,7 @@ export default function MonEquipePage() {
         </div>
 
         {practLoading ? (
-          <div className="grid grid-cols-2 gap-3 animate-pulse">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 animate-pulse">
             {[1,2,3,4].map(i => <div key={i} className="h-24 bg-slate-100 rounded-xl" />)}
           </div>
         ) : practError ? (
@@ -409,7 +409,7 @@ export default function MonEquipePage() {
             <p className="mt-2 text-slate-400 text-sm">Aucun praticien disponible</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {filtered.map(p => {
               const inTeam = teamIds.has(p.id)
               return (
