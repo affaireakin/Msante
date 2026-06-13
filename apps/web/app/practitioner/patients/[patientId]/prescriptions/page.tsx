@@ -124,7 +124,7 @@ function PrescriptionCard({ rx, patientId }: { rx: PrescriptionRow; patientId: s
   const [expanded, setExpanded] = useState(false)
   const { bg, text } = statusColors(rx.status)
   const meds = Array.isArray(rx.medications) ? rx.medications : []
-  const typeLabel: Record<string, string> = { video: 'Vidéo', audio: 'Audio', chat: 'Chat', in_person: 'Présentiel' }
+  const typeLabel: Record<string, string> = { video: 'Vidéo', audio: 'Audio', chat: 'Chat', presentiel: 'Présentiel', standalone: 'Hors consultation' }
 
   const signMutation = useMutation({
     mutationFn: async () => {
@@ -471,7 +471,7 @@ function NewPrescriptionModal({ patientId, practitionerId, onClose }: { patientI
   const [instructions, setInstructions] = useState('')
   const [validUntil, setValidUntil] = useState('')
   const [status, setStatus] = useState<'draft' | 'signed'>('signed')
-  const [consultationType, setConsultationType] = useState<string>('in_person')
+  const [consultationType, setConsultationType] = useState<string>('presentiel')
   const [formError, setFormError] = useState<string | null>(null)
 
   const mutation = useMutation({
@@ -532,7 +532,7 @@ function NewPrescriptionModal({ patientId, practitionerId, onClose }: { patientI
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Type de consultation</label>
               <select value={consultationType} onChange={e => setConsultationType(e.target.value)}
                 className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]">
-                <option value="in_person">Présentiel</option>
+                <option value="presentiel">Présentiel</option>
                 <option value="video">Vidéo</option>
                 <option value="audio">Audio</option>
                 <option value="chat">Chat</option>
