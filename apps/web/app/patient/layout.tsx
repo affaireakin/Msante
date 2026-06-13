@@ -26,6 +26,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const router = useRouter()
   const [name, setName] = useState('')
   const [initials, setInitials] = useState('P')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -45,23 +46,41 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
   return (
     <div className="flex h-screen bg-[#f8f9ff] overflow-hidden">
+
+      {/* Overlay mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-20 bg-black/40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <aside
-        className="fixed left-0 top-0 h-screen w-64 z-30 flex flex-col"
+        className={`fixed left-0 top-0 h-screen w-64 z-30 flex flex-col transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
         style={{
-          backgroundColor: 'rgba(255,255,255,0.70)',
+          backgroundColor: 'rgba(255,255,255,0.95)',
           backdropFilter: 'blur(20px)',
           borderRight: '1px solid rgba(226,232,240,0.50)',
           boxShadow: '20px 0 40px rgba(130,216,255,0.05)',
         }}
       >
-        {/* Logo */}
+        {/* Logo + close mobile */}
         <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-100/60">
           <img src="/logo.png" alt="M-Santé" className="w-10 h-10 rounded-xl object-cover shadow-sm" />
-          <div>
+          <div className="flex-1">
             <h1 className="text-lg font-black tracking-tighter text-[#0b1c30]">M-Santé</h1>
             <p className="text-xs text-[#006685] font-semibold tracking-wide uppercase">Espace Patient</p>
           </div>
+          <button
+            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:bg-slate-100"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         {/* Profil */}
@@ -78,13 +97,14 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? 'bg-sky-50 text-[#006685] font-semibold border-r-4 border-[#006685] -mr-3 pr-4'
@@ -102,7 +122,11 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
 
         {/* Sign out */}
         <div className="px-4 py-4 border-t border-slate-100/60 space-y-2">
-          <Link href="/patient/practitioners" className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#006685] hover:shadow-lg hover:shadow-[#006685]/20 transition-all">
+          <Link
+            href="/patient/practitioners"
+            onClick={() => setSidebarOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#006685] hover:shadow-lg hover:shadow-[#006685]/20 transition-all"
+          >
             <Icon name="add_circle" />
             Nouveau rendez-vous
           </Link>
@@ -117,23 +141,36 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
       </aside>
 
       {/* Main */}
-      <div className="flex-1 ml-64 flex flex-col min-h-screen">
+      <div className="flex-1 ml-0 md:ml-64 flex flex-col min-h-screen">
         {/* Topbar */}
         <header
-          className="fixed top-0 right-0 left-64 h-16 z-20 flex items-center justify-between px-8"
+          className="fixed top-0 right-0 left-0 md:left-64 h-16 z-20 flex items-center justify-between px-4 md:px-8"
           style={{
             backgroundColor: 'rgba(255,255,255,0.40)',
             backdropFilter: 'blur(16px)',
             borderBottom: '1px solid rgba(255,255,255,0.10)',
           }}
         >
-          <div className="flex items-center gap-3 bg-white/60 rounded-full px-4 py-2 border border-slate-200/50">
-            <Icon name="search" />
-            <input
-              type="text"
-              placeholder="Rechercher un praticien..."
-              className="bg-transparent text-sm text-[#0b1c30] placeholder-[#6f787e] outline-none w-48"
-            />
+          <div className="flex items-center gap-3">
+            {/* Hamburger mobile */}
+            <button
+              className="md:hidden p-2 rounded-lg text-[#006685] hover:bg-white/50 transition-colors"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
+            </button>
+            <div className="hidden md:flex items-center gap-3 bg-white/60 rounded-full px-4 py-2 border border-slate-200/50">
+              <Icon name="search" />
+              <input
+                type="text"
+                placeholder="Rechercher un praticien..."
+                className="bg-transparent text-sm text-[#0b1c30] placeholder-[#6f787e] outline-none w-48"
+              />
+            </div>
+            {/* Logo mobile (visible dans header quand sidebar fermée) */}
+            <span className="md:hidden text-base font-black tracking-tighter text-[#0b1c30]">M-Santé</span>
           </div>
           <div className="flex items-center gap-3">
             <button className="w-9 h-9 flex items-center justify-center rounded-full bg-white/60 border border-slate-200/50 text-[#6f787e] hover:bg-white transition-colors">
@@ -145,7 +182,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           </div>
         </header>
 
-        <main className="flex-1 mt-16 p-8 overflow-y-auto">
+        <main className="flex-1 mt-16 p-4 md:p-8 overflow-y-auto">
           {children}
         </main>
       </div>
