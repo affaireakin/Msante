@@ -20,6 +20,7 @@ interface RxData {
   practitioner_phone: string
   signature_url: string | null
   stamp_url: string | null
+  document_type: 'ordonnance' | 'recommandation'
 }
 
 export default function PatientPrescriptionDetailPage() {
@@ -36,7 +37,7 @@ export default function PatientPrescriptionDetailPage() {
       const { data: rx, error: rxErr } = await supabase
         .from('prescriptions')
         .select(`
-          diagnosis, medications, instructions, valid_until, created_at, patient_id,
+          diagnosis, medications, instructions, valid_until, created_at, patient_id, document_type,
           patient:patient_id ( full_name ),
           practitioner:practitioner_id (
             speciality, professional_title, registration_number, clinic_address, signature_url, stamp_url,
@@ -71,6 +72,7 @@ export default function PatientPrescriptionDetailPage() {
         practitioner_phone: p?.pract_user?.phone ?? '',
         signature_url: p?.signature_url ?? null,
         stamp_url: p?.stamp_url ?? null,
+        document_type: (rx.document_type as string) === 'recommandation' ? 'recommandation' : 'ordonnance',
       })
       setLoading(false)
     }
@@ -93,6 +95,7 @@ export default function PatientPrescriptionDetailPage() {
   const dateConsult = new Date(data.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
   const validStr = data.valid_until ? new Date(data.valid_until).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : null
   const fullTitle = `${data.practitioner_title} ${data.practitioner_name}`.trim()
+  const isReco = data.document_type === 'recommandation'
 
   return (
     <>
@@ -109,7 +112,7 @@ export default function PatientPrescriptionDetailPage() {
       <div className="no-print fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200 px-6 py-3 flex items-center justify-between font-[Manrope]">
         <a href="/patient/prescriptions" className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-[#006685]">
           <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
-          Mes ordonnances
+          Mes documents médicaux
         </a>
         <button onClick={() => window.print()}
           className="flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:bg-[#005575] transition-colors shadow-[0_2px_8px_rgba(0,102,133,0.25)]">
@@ -141,7 +144,9 @@ export default function PatientPrescriptionDetailPage() {
               </div>
 
               <div className="text-center mb-8">
-                <h1 className="text-2xl font-black tracking-widest text-[#0b1c30] uppercase border-b-2 border-[#006685] pb-2 inline-block">ORDONNANCE</h1>
+                <h1 className="text-2xl font-black tracking-widest text-[#0b1c30] uppercase border-b-2 border-[#006685] pb-2 inline-block">
+                  {isReco ? 'RECOMMANDATION' : 'ORDONNANCE'}
+                </h1>
               </div>
 
               <div className="mb-6 bg-[#f8f9ff] rounded-xl px-5 py-3">
@@ -151,30 +156,42 @@ export default function PatientPrescriptionDetailPage() {
 
               {data.diagnosis && (
                 <div className="mb-5">
-                  <p className="text-[10px] font-bold text-[#6f787e] uppercase tracking-widest mb-1">Diagnostic</p>
+                  <p className="text-[10px] font-bold text-[#6f787e] uppercase tracking-widest mb-1">
+                    {isReco ? 'Objectif / Contexte' : 'Diagnostic'}
+                  </p>
                   <p className="text-sm text-[#0b1c30] font-medium">{data.diagnosis}</p>
                 </div>
               )}
 
-              <div className="mb-6 space-y-4">
-                {data.medications.map((med, i) => (
-                  <div key={i} className="flex gap-3">
-                    <span className="text-[#006685] font-black text-base mt-0.5">{i + 1}.</span>
-                    <div>
-                      <p className="text-sm font-bold text-[#0b1c30]">{med.name}{med.dosage ? ` ${med.dosage}` : ''}</p>
-                      {med.frequency && <p className="text-sm text-[#3f484d]">{med.frequency}</p>}
-                      {med.duration && <p className="text-sm text-[#6f787e]">{med.duration}</p>}
-                      {med.instructions && <p className="text-xs text-[#6f787e] italic mt-0.5">{med.instructions}</p>}
-                    </div>
+              {isReco ? (
+                data.instructions && (
+                  <div className="mb-6 bg-[#fef9c3] rounded-xl px-5 py-4">
+                    <p className="text-[10px] font-bold text-[#854d0e] uppercase tracking-widest mb-2">Conseils &amp; Recommandations</p>
+                    <p className="text-sm text-[#0b1c30] whitespace-pre-line leading-relaxed">{data.instructions}</p>
                   </div>
-                ))}
-              </div>
-
-              {data.instructions && (
-                <div className="mb-6 bg-[#eff4ff] rounded-xl px-5 py-3">
-                  <p className="text-[10px] font-bold text-[#6f787e] uppercase tracking-widest mb-1">Instructions</p>
-                  <p className="text-sm text-[#0b1c30]">{data.instructions}</p>
-                </div>
+                )
+              ) : (
+                <>
+                  <div className="mb-6 space-y-4">
+                    {data.medications.map((med, i) => (
+                      <div key={i} className="flex gap-3">
+                        <span className="text-[#006685] font-black text-base mt-0.5">{i + 1}.</span>
+                        <div>
+                          <p className="text-sm font-bold text-[#0b1c30]">{med.name}{med.dosage ? ` ${med.dosage}` : ''}</p>
+                          {med.frequency && <p className="text-sm text-[#3f484d]">{med.frequency}</p>}
+                          {med.duration && <p className="text-sm text-[#6f787e]">{med.duration}</p>}
+                          {med.instructions && <p className="text-xs text-[#6f787e] italic mt-0.5">{med.instructions}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {data.instructions && (
+                    <div className="mb-6 bg-[#eff4ff] rounded-xl px-5 py-3">
+                      <p className="text-[10px] font-bold text-[#6f787e] uppercase tracking-widest mb-1">Instructions</p>
+                      <p className="text-sm text-[#0b1c30]">{data.instructions}</p>
+                    </div>
+                  )}
+                </>
               )}
 
               {validStr && <p className="text-xs text-[#6f787e] mb-6">Valable jusqu&apos;au : <strong>{validStr}</strong></p>}

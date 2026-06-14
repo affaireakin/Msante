@@ -42,6 +42,19 @@ interface RxRow {
   patient_name: string
 }
 
+function usePractitionerType() {
+  return useQuery<'healthcare' | 'wellness'>({
+    queryKey: ['practitioner-type-self'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return 'healthcare'
+      const { data } = await supabase.from('practitioners').select('practitioner_type').eq('user_id', user.id).single()
+      return ((data?.practitioner_type ?? 'healthcare') as 'healthcare' | 'wellness')
+    },
+    staleTime: 10 * 60 * 1000,
+  })
+}
+
 function useAllPrescriptions() {
   return useQuery<RxRow[]>({
     queryKey: ['all-prescriptions'],
@@ -81,6 +94,10 @@ function Skeleton() {
 
 export default function AllPrescriptionsPage() {
   const { data: prescriptions = [], isLoading, error } = useAllPrescriptions()
+  const { data: practitionerType = 'healthcare' } = usePractitionerType()
+  const isWellness = practitionerType === 'wellness'
+  const docLabel = isWellness ? 'Recommandations' : 'Ordonnances'
+  const docLabelSingle = isWellness ? 'recommandation' : 'ordonnance'
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [search, setSearch] = useState('')
 
@@ -98,8 +115,8 @@ export default function AllPrescriptionsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-[#0b1c30] tracking-tight">Ordonnances</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Toutes vos ordonnances patients</p>
+          <h1 className="text-2xl font-black text-[#0b1c30] tracking-tight">{docLabel}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{`Toutes vos ${docLabel.toLowerCase()} patients`}</p>
         </div>
         <Link href="/practitioner/patients"
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors">
@@ -111,7 +128,7 @@ export default function AllPrescriptionsPage() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-          placeholder="Rechercher un patient ou diagnostic…"
+          placeholder={`Rechercher un patient ou ${isWellness ? 'objectif' : 'diagnostic'}…`}
           className="flex-1 px-4 py-2.5 rounded-xl text-sm border border-slate-200 text-[#0b1c30] bg-white/80 focus:outline-none focus:border-[#006685]" />
         <div className="flex gap-1.5 flex-wrap">
           {ALL_STATUSES.map(s => (
@@ -152,8 +169,8 @@ export default function AllPrescriptionsPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-white/60 border border-white/80 rounded-xl p-10 text-center">
-          <Icon name="receipt_long" size={40} color="#cbd5e1" />
-          <p className="mt-3 text-slate-400 text-sm">Aucune ordonnance trouvée</p>
+          <Icon name={isWellness ? 'tips_and_updates' : 'receipt_long'} size={40} color="#cbd5e1" />
+          <p className="mt-3 text-slate-400 text-sm">{`Aucune ${docLabelSingle} trouvée`}</p>
         </div>
       ) : (
         <div className="space-y-3">

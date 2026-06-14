@@ -50,7 +50,7 @@ interface PrescriptionRow {
   consultation_type?: string | null
   created_at: string
 }
-interface PrescriptionsData { patient: PatientInfo; prescriptions: PrescriptionRow[]; practitionerId: string }
+interface PrescriptionsData { patient: PatientInfo; prescriptions: PrescriptionRow[]; practitionerId: string; practitionerType: 'healthcare' | 'wellness' }
 
 function usePrescriptionsData(patientId: string) {
   return useQuery<PrescriptionsData>({
@@ -59,7 +59,7 @@ function usePrescriptionsData(patientId: string) {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Non connecté')
-      const { data: pract, error: pErr } = await supabase.from('practitioners').select('id').eq('user_id', user.id).single()
+      const { data: pract, error: pErr } = await supabase.from('practitioners').select('id, practitioner_type').eq('user_id', user.id).single()
       if (pErr || !pract) throw new Error('Profil praticien introuvable')
       const [{ data: patientData, error: ptErr }, { data: rxData, error: rxErr }] = await Promise.all([
         supabase.from('users').select('id, full_name, created_at').eq('id', patientId).single(),
@@ -70,7 +70,7 @@ function usePrescriptionsData(patientId: string) {
       ])
       if (ptErr) throw ptErr
       if (rxErr) throw rxErr
-      return { patient: patientData as PatientInfo, prescriptions: (rxData ?? []) as PrescriptionRow[], practitionerId: pract.id as string }
+      return { patient: patientData as PatientInfo, prescriptions: (rxData ?? []) as PrescriptionRow[], practitionerId: pract.id as string, practitionerType: (pract.practitioner_type ?? 'healthcare') as 'healthcare' | 'wellness' }
     },
     staleTime: 3 * 60 * 1000,
   })
@@ -78,13 +78,14 @@ function usePrescriptionsData(patientId: string) {
 
 // ─── Tab nav ─────────────────────────────────────────────────────────────────
 
-function TabNav({ patientId }: { patientId: string }) {
+function TabNav({ patientId, practitionerType }: { patientId: string; practitionerType?: 'healthcare' | 'wellness' }) {
+  const docsLabel = practitionerType === 'wellness' ? 'Recommandations' : 'Ordonnances'
   const tabs = [
-    { key: 'apercu',        label: 'Aperçu',         href: `/practitioner/patients/${patientId}` },
-    { key: 'notes',         label: 'Notes',           href: `/practitioner/patients/${patientId}/notes` },
-    { key: 'ordonnances',   label: 'Ordonnances',     href: `/practitioner/patients/${patientId}/prescriptions` },
-    { key: 'appréciations', label: 'Appréciations',   href: `/practitioner/patients/${patientId}/appreciation` },
-    { key: 'parcours',      label: 'Parcours',        href: `/practitioner/patients/${patientId}/journey` },
+    { key: 'apercu',        label: 'Aperçu',       href: `/practitioner/patients/${patientId}` },
+    { key: 'notes',         label: 'Notes',         href: `/practitioner/patients/${patientId}/notes` },
+    { key: 'ordonnances',   label: docsLabel,        href: `/practitioner/patients/${patientId}/prescriptions` },
+    { key: 'appréciations', label: 'Appréciations', href: `/practitioner/patients/${patientId}/appreciation` },
+    { key: 'parcours',      label: 'Parcours',      href: `/practitioner/patients/${patientId}/journey` },
   ]
   return (
     <div className="flex gap-0 border-b border-slate-200 mt-6 overflow-x-auto">
@@ -118,7 +119,7 @@ function PatientHeader({ patient, patientId }: { patient: PatientInfo; patientId
 
 // ─── Prescription card ────────────────────────────────────────────────────────
 
-function PrescriptionCard({ rx, patientId }: { rx: PrescriptionRow; patientId: string }) {
+function PrescriptionCard({ rx, patientId, practitionerType }: { rx: PrescriptionRow; patientId: string; practitionerType: 'healthcare' | 'wellness' }) {
   const queryClient = useQueryClient()
   const router = useRouter()
   const [expanded, setExpanded] = useState(false)
@@ -141,14 +142,14 @@ function PrescriptionCard({ rx, patientId }: { rx: PrescriptionRow; patientId: s
       await supabase.from('notifications').insert({
         user_id: rx.patient_id,
         type: 'prescription_sent',
-        title: 'Nouvelle ordonnance disponible 📋',
-        body: 'Votre médecin a émis une ordonnance. Consultez-la dans votre espace santé.',
+        title: practitionerType === 'wellness' ? 'Nouvelle recommandation disponible 📋' : 'Nouvelle ordonnance disponible 📋',
+        body: practitionerType === 'wellness' ? 'Votre praticien a émis une recommandation. Consultez-la dans votre espace santé.' : 'Votre médecin a émis une ordonnance. Consultez-la dans votre espace santé.',
         data: { prescription_id: rx.id, route: '/patient/prescriptions' },
         channel: 'push',
         status: 'pending',
       })
     },
-    onSuccess: () => alert('Ordonnance envoyée au patient.'),
+    onSuccess: () => alert(practitionerType === 'wellness' ? 'Recommandation envoyée au patient.' : 'Ordonnance envoyée au patient.'),
   })
 
   return (
@@ -464,8 +465,9 @@ function MedRow({ med, onChange, onRemove }: { med: Medication; onChange: (m: Me
 
 // ─── New prescription modal ───────────────────────────────────────────────────
 
-function NewPrescriptionModal({ patientId, practitionerId, onClose }: { patientId: string; practitionerId: string; onClose: () => void }) {
+function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onClose }: { patientId: string; practitionerId: string; practitionerType: 'healthcare' | 'wellness'; onClose: () => void }) {
   const queryClient = useQueryClient()
+  const isWellness = practitionerType === 'wellness'
   const [diagnosis, setDiagnosis] = useState('')
   const [medications, setMedications] = useState<Medication[]>([{ name: '', dosage: '', frequency: '', duration: '', instructions: '' }])
   const [instructions, setInstructions] = useState('')
@@ -476,19 +478,36 @@ function NewPrescriptionModal({ patientId, practitionerId, onClose }: { patientI
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const filledMeds = medications.filter(m => m.name.trim())
-      if (filledMeds.length === 0) throw new Error('Ajoutez au moins un médicament')
-      const { error } = await supabase.from('prescriptions').insert({
-        patient_id: patientId,
-        practitioner_id: practitionerId,
-        diagnosis: diagnosis.trim() || null,
-        medications: filledMeds,
-        instructions: instructions.trim() || null,
-        valid_until: validUntil || null,
-        status,
-        consultation_type: consultationType,
-      })
-      if (error) throw error
+      if (isWellness) {
+        if (!instructions.trim()) throw new Error('Ajoutez au moins un conseil ou une recommandation')
+        const { error } = await supabase.from('prescriptions').insert({
+          patient_id: patientId,
+          practitioner_id: practitionerId,
+          diagnosis: diagnosis.trim() || null,
+          medications: [],
+          instructions: instructions.trim(),
+          valid_until: validUntil || null,
+          status,
+          consultation_type: consultationType,
+          document_type: 'recommandation',
+        })
+        if (error) throw error
+      } else {
+        const filledMeds = medications.filter(m => m.name.trim())
+        if (filledMeds.length === 0) throw new Error('Ajoutez au moins un médicament')
+        const { error } = await supabase.from('prescriptions').insert({
+          patient_id: patientId,
+          practitioner_id: practitionerId,
+          diagnosis: diagnosis.trim() || null,
+          medications: filledMeds,
+          instructions: instructions.trim() || null,
+          valid_until: validUntil || null,
+          status,
+          consultation_type: consultationType,
+          document_type: 'ordonnance',
+        })
+        if (error) throw error
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['practitioner-prescriptions', patientId] })
@@ -507,8 +526,8 @@ function NewPrescriptionModal({ patientId, practitionerId, onClose }: { patientI
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <h2 className="text-base font-semibold text-[#0b1c30] flex items-center gap-2">
-            <Icon name="receipt_long" size={18} color="#006685" />
-            Nouvelle ordonnance
+            <Icon name={isWellness ? 'tips_and_updates' : 'receipt_long'} size={18} color="#006685" />
+            {isWellness ? 'Nouvelle recommandation' : 'Nouvelle ordonnance'}
           </h2>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
             <Icon name="close" size={18} />
@@ -519,15 +538,18 @@ function NewPrescriptionModal({ patientId, practitionerId, onClose }: { patientI
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {formError && <div className="text-sm text-[#ba1a1a] bg-[#ffdad6] rounded-lg px-3 py-2">{formError}</div>}
 
-          {/* Diagnosis */}
+          {/* Diagnosis / Objectif */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Diagnostic / Motif</label>
-            <input type="text" value={diagnosis} onChange={e => setDiagnosis(e.target.value)} placeholder="Ex: Anxiété généralisée, Trouble du sommeil…"
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+              {isWellness ? 'Objectif / Contexte' : 'Diagnostic / Motif'}
+            </label>
+            <input type="text" value={diagnosis} onChange={e => setDiagnosis(e.target.value)}
+              placeholder={isWellness ? 'Ex: Perte de poids, Gestion du stress, Amélioration du sommeil…' : 'Ex: Anxiété généralisée, Trouble du sommeil…'}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]" />
           </div>
 
           {/* Type + Status */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Type de consultation</label>
               <select value={consultationType} onChange={e => setConsultationType(e.target.value)}
@@ -542,34 +564,49 @@ function NewPrescriptionModal({ patientId, practitionerId, onClose }: { patientI
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Statut</label>
               <select value={status} onChange={e => setStatus(e.target.value as 'draft' | 'signed')}
                 className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]">
-                <option value="signed">Signée</option>
+                <option value="signed">Signé(e)</option>
                 <option value="draft">Brouillon</option>
               </select>
             </div>
           </div>
 
-          {/* Medications */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-semibold text-slate-600">Médicaments <span className="text-[#ba1a1a]">*</span></label>
-              <button onClick={addMed} className="flex items-center gap-1 text-xs font-semibold text-[#006685] hover:underline">
-                <Icon name="add" size={14} color="#006685" />Ajouter
-              </button>
+          {/* Wellness: Conseils textarea / Healthcare: Medications */}
+          {isWellness ? (
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                Conseils &amp; Recommandations <span className="text-[#ba1a1a]">*</span>
+              </label>
+              <textarea value={instructions} onChange={e => setInstructions(e.target.value)} rows={6}
+                placeholder={'Ex:\n• Adopter une alimentation équilibrée riche en légumes\n• 30 min de marche par jour\n• Limiter les écrans après 21h\n• Techniques de respiration 4-7-8 au coucher'}
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685] resize-none" />
+              <p className="text-xs text-slate-400 mt-1">Rédigez vos conseils sous forme de liste ou de paragraphes.</p>
             </div>
-            <div className="space-y-2">
-              {medications.map((med, i) => (
-                <MedRow key={i} med={med} onChange={m => updateMed(i, m)} onRemove={() => removeMed(i)} />
-              ))}
-            </div>
-          </div>
+          ) : (
+            <>
+              {/* Medications */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-semibold text-slate-600">Médicaments <span className="text-[#ba1a1a]">*</span></label>
+                  <button onClick={addMed} className="flex items-center gap-1 text-xs font-semibold text-[#006685] hover:underline">
+                    <Icon name="add" size={14} color="#006685" />Ajouter
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {medications.map((med, i) => (
+                    <MedRow key={i} med={med} onChange={m => updateMed(i, m)} onRemove={() => removeMed(i)} />
+                  ))}
+                </div>
+              </div>
 
-          {/* Instructions */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Instructions générales <span className="font-normal text-slate-400">(optionnel)</span></label>
-            <textarea value={instructions} onChange={e => setInstructions(e.target.value)} rows={2}
-              placeholder="Ex: À prendre avec les repas, éviter l'alcool…"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685] resize-none" />
-          </div>
+              {/* Instructions */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 mb-1.5">Instructions générales <span className="font-normal text-slate-400">(optionnel)</span></label>
+                <textarea value={instructions} onChange={e => setInstructions(e.target.value)} rows={2}
+                  placeholder="Ex: À prendre avec les repas, éviter l'alcool…"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685] resize-none" />
+              </div>
+            </>
+          )}
 
           {/* Valid until */}
           <div>
@@ -587,7 +624,9 @@ function NewPrescriptionModal({ patientId, practitionerId, onClose }: { patientI
           <button onClick={() => mutation.mutate()} disabled={mutation.isPending}
             className="px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors disabled:opacity-60 flex items-center gap-2"
             style={{ background: '#006685' }}>
-            {mutation.isPending ? 'Enregistrement…' : (<><Icon name="receipt_long" size={15} color="#fff" />Créer l&apos;ordonnance</>)}
+            {mutation.isPending ? 'Enregistrement…' : (
+              <><Icon name={isWellness ? 'tips_and_updates' : 'receipt_long'} size={15} color="#fff" />{isWellness ? 'Créer la recommandation' : 'Créer l\'ordonnance'}</>
+            )}
           </button>
         </div>
       </div>
@@ -628,40 +667,43 @@ export default function PatientPrescriptionsPage() {
     )
   }
 
-  const { patient, prescriptions, practitionerId } = data
+  const { patient, prescriptions, practitionerId, practitionerType } = data
+  const isWellness = practitionerType === 'wellness'
+  const docLabel = isWellness ? 'recommandation' : 'ordonnance'
+  const docLabelPlural = isWellness ? 'recommandations' : 'ordonnances'
 
   return (
     <>
       {showModal && (
-        <NewPrescriptionModal patientId={patientId} practitionerId={practitionerId} onClose={() => setShowModal(false)} />
+        <NewPrescriptionModal patientId={patientId} practitionerId={practitionerId} practitionerType={practitionerType} onClose={() => setShowModal(false)} />
       )}
 
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-4 md:p-8 max-w-4xl mx-auto">
         <PatientHeader patient={patient} patientId={patientId} />
-        <TabNav patientId={patientId} />
+        <TabNav patientId={patientId} practitionerType={practitionerType} />
 
         <div className="mt-6 space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-slate-500">{prescriptions.length} ordonnance{prescriptions.length !== 1 ? 's' : ''}</p>
+            <p className="text-sm text-slate-500">{prescriptions.length} {prescriptions.length !== 1 ? docLabelPlural : docLabel}</p>
             <button onClick={() => setShowModal(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors"
               style={{ background: '#006685' }}>
               <Icon name="add_circle" size={16} color="#ffffff" />
-              Nouvelle ordonnance
+              {`Nouvelle ${docLabel}`}
             </button>
           </div>
 
           {prescriptions.length === 0 ? (
             <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm p-10 text-center">
               <Icon name="receipt_long" size={36} color="#cbd5e1" />
-              <p className="mt-3 text-slate-400 text-sm">Aucune ordonnance pour ce patient</p>
+              <p className="mt-3 text-slate-400 text-sm">{`Aucune ${docLabel} pour ce patient`}</p>
               <button onClick={() => setShowModal(true)} className="mt-4 px-4 py-2 rounded-lg text-sm font-medium text-white" style={{ background: '#006685' }}>
-                Créer une ordonnance
+                {`Créer une ${docLabel}`}
               </button>
             </div>
           ) : (
             <div className="space-y-4">
-              {prescriptions.map(rx => <PrescriptionCard key={rx.id} rx={rx} patientId={patientId} />)}
+              {prescriptions.map((rx: PrescriptionRow) => <PrescriptionCard key={rx.id} rx={rx} patientId={patientId} practitionerType={practitionerType} />)}
             </div>
           )}
         </div>

@@ -108,6 +108,7 @@ export default function PractitionerLayout({ children }: { children: React.React
   const [accountStatus, setAccountStatus] = useState<string | null>(null)
   const [statusReason, setStatusReasonText] = useState<string | null>(null)
   const [practitionerId, setPractitionerId] = useState<string | null>(null)
+  const [practitionerType, setPractitionerType] = useState<'healthcare' | 'wellness'>('healthcare')
   const [showAppealForm, setShowAppealForm] = useState(false)
   const [appealText, setAppealText] = useState('')
   const [appealSent, setAppealSent] = useState(false)
@@ -131,7 +132,7 @@ export default function PractitionerLayout({ children }: { children: React.React
           setInitials(fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'P')
           supabase
             .from('practitioners')
-            .select('id, speciality, account_status, status_reason')
+            .select('id, speciality, account_status, status_reason, practitioner_type')
             .eq('user_id', user.id)
             .single()
             .then(({ data: pract }) => {
@@ -140,6 +141,7 @@ export default function PractitionerLayout({ children }: { children: React.React
                 setAccountStatus(pract.account_status ?? null)
                 setStatusReasonText(pract.status_reason ?? null)
                 setPractitionerId(pract.id)
+                setPractitionerType((pract.practitioner_type as 'healthcare' | 'wellness') ?? 'healthcare')
               }
             })
         })
@@ -207,6 +209,9 @@ export default function PractitionerLayout({ children }: { children: React.React
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+            const label = item.href === '/practitioner/ordonnances' && practitionerType === 'wellness'
+              ? 'Recommandations'
+              : item.label
             return (
               <Link
                 key={item.href}
@@ -219,7 +224,7 @@ export default function PractitionerLayout({ children }: { children: React.React
                 }`}
               >
                 <span className={isActive ? 'text-[#006685]' : 'text-[#6f787e]'}>{item.icon}</span>
-                {item.label}
+                {label}
               </Link>
             )
           })}
