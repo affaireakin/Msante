@@ -1,6 +1,6 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
@@ -88,6 +88,14 @@ const STATUS_FILTERS = [
 ] as const
 
 export default function PractitionersPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-[#006685] border-t-transparent rounded-full animate-spin" /></div>}>
+      <PractitionersContent />
+    </Suspense>
+  )
+}
+
+function PractitionersContent() {
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
   const defaultStatus = searchParams.get('status') ?? 'all'
