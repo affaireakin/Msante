@@ -1,6 +1,7 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 type VerifStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
@@ -78,8 +79,19 @@ function displayName(pract: Practitioner): string {
   return isHealthcare ? `Dr. ${name}` : name
 }
 
+const STATUS_FILTERS = [
+  { value: 'all', label: 'Tous' },
+  { value: 'pending', label: 'En attente' },
+  { value: 'under_review', label: 'En revue' },
+  { value: 'approved', label: 'Approuvés' },
+  { value: 'rejected', label: 'Rejetés' },
+] as const
+
 export default function PractitionersPage() {
   const queryClient = useQueryClient()
+  const searchParams = useSearchParams()
+  const defaultStatus = searchParams.get('status') ?? 'all'
+  const [statusFilter, setStatusFilter] = useState<string>(defaultStatus)
   const { data: practitioners, isLoading, error: queryError } = usePractitioners()
   const [rejectDialog, setRejectDialog] = useState<{ practId: string; userId: string } | null>(null)
   const [rejectReason, setRejectReason] = useState('')
@@ -184,11 +196,48 @@ export default function PractitionersPage() {
     })
   }
 
+  const filtered = (practitioners ?? []).filter(p =>
+    statusFilter === 'all' || p.verification_status === statusFilter
+  )
+  const pendingCount = (practitioners ?? []).filter(p => p.verification_status === 'pending').length
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[#0b1c30]">Praticiens</h1>
-        <p className="text-sm text-[#6f787e] mt-1">Validation et gestion des permissions</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold text-[#0b1c30]">Praticiens</h1>
+          <p className="text-sm text-[#6f787e] mt-1">Validation et gestion des permissions</p>
+        </div>
+        {pendingCount > 0 && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-xl">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+            <span className="text-sm font-bold text-amber-700">{pendingCount} en attente de validation</span>
+          </div>
+        )}
+      </div>
+
+      {/* Status filter tabs */}
+      <div className="flex gap-2 flex-wrap">
+        {STATUS_FILTERS.map(f => {
+          const count = f.value === 'all'
+            ? (practitioners ?? []).length
+            : (practitioners ?? []).filter(p => p.verification_status === f.value).length
+          return (
+            <button key={f.value} onClick={() => setStatusFilter(f.value)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all border"
+              style={{
+                backgroundColor: statusFilter === f.value ? '#006685' : 'rgba(255,255,255,0.70)',
+                color: statusFilter === f.value ? '#fff' : '#475569',
+                borderColor: statusFilter === f.value ? '#006685' : 'rgba(190,200,206,0.40)',
+              }}>
+              {f.label}
+              <span className="text-xs px-1.5 py-0.5 rounded-full font-bold"
+                style={{ backgroundColor: statusFilter === f.value ? 'rgba(255,255,255,0.25)' : '#e5eeff', color: statusFilter === f.value ? '#fff' : '#006685' }}>
+                {count}
+              </span>
+            </button>
+          )
+        })}
       </div>
 
       {queryError && (
@@ -205,7 +254,7 @@ export default function PractitionersPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {(practitioners ?? []).map((pract) => (
+          {filtered.map((pract) => (
             <div
               key={pract.id}
               className="rounded-2xl p-6"
@@ -331,9 +380,11 @@ export default function PractitionersPage() {
             </div>
           ))}
 
-          {(practitioners ?? []).length === 0 && (
+          {filtered.length === 0 && (
             <div className="text-center py-16 text-[#6f787e]">
-              <p className="text-lg font-medium">Aucun praticien à afficher</p>
+              <p className="text-lg font-medium">
+                {statusFilter === 'all' ? 'Aucun praticien enregistré' : `Aucun praticien avec le statut « ${STATUS_FILTERS.find(f => f.value === statusFilter)?.label ?? statusFilter} »`}
+              </p>
             </div>
           )}
         </div>

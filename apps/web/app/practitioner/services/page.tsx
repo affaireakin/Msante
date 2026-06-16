@@ -60,10 +60,13 @@ function usePractitionerServicesPage() {
       const { error } = await supabase.from('practitioner_services').insert({
         ...service,
         practitioner_id: practitioner!.id,
+        is_active: true,
       })
       if (error) throw error
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['practitioner-services-web'] }),
+    onSuccess: () => {
+      void qc.refetchQueries({ queryKey: ['practitioner-services-web', practitioner?.id] })
+    },
   })
 
   const deleteService = useMutation({
@@ -74,7 +77,9 @@ function usePractitionerServicesPage() {
         .eq('id', id)
       if (error) throw error
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['practitioner-services-web'] }),
+    onSuccess: () => {
+      void qc.refetchQueries({ queryKey: ['practitioner-services-web', practitioner?.id] })
+    },
   })
 
   return { services, createService, deleteService }
@@ -183,83 +188,92 @@ export default function ServicesPage() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-5 shadow-2xl">
+          <div className="bg-white rounded-2xl p-7 w-full max-w-md space-y-6 shadow-2xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-900">Nouvelle prestation</h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">
+              <h3 className="text-xl font-bold text-[#0b1c30]">Nouvelle prestation</h3>
+              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-700 transition-colors">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="text-sm font-semibold text-slate-700">Nom</label>
+                <label className="block text-sm font-bold text-[#0b1c30] mb-1.5">
+                  Nom de la prestation <span className="text-[#ba1a1a]">*</span>
+                </label>
                 <input
                   type="text"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                  placeholder="Ex: Consultation initiale"
+                  className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-base text-[#0b1c30] placeholder-slate-400 focus:outline-none focus:border-[#006685] transition-colors"
+                  placeholder="Ex : Consultation initiale, Suivi hebdomadaire…"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-semibold text-slate-700">Durée (min)</label>
+                  <label className="block text-sm font-bold text-[#0b1c30] mb-1.5">Durée (min) <span className="text-[#ba1a1a]">*</span></label>
                   <input
                     type="number"
                     value={form.duration_min}
                     onChange={e => setForm(f => ({ ...f, duration_min: parseInt(e.target.value) || 60 }))}
                     min={15}
                     step={15}
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-base text-[#0b1c30] font-semibold focus:outline-none focus:border-[#006685] transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-semibold text-slate-700">Prix (XOF)</label>
+                  <label className="block text-sm font-bold text-[#0b1c30] mb-1.5">Prix (XOF)</label>
                   <input
                     type="number"
                     value={form.price}
                     onChange={e => setForm(f => ({ ...f, price: e.target.value }))}
                     min={0}
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                    placeholder="Optionnel"
+                    className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-base text-[#0b1c30] font-semibold placeholder-slate-400 focus:outline-none focus:border-[#006685] transition-colors"
+                    placeholder="0"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-sm font-semibold text-slate-700 mb-2 block">Types de session</label>
+                <label className="block text-sm font-bold text-[#0b1c30] mb-2">
+                  Types de session <span className="text-[#ba1a1a]">*</span>
+                </label>
                 <div className="flex gap-2 flex-wrap">
                   {(['video', 'audio', 'presentiel'] as SessionType[]).map(type => (
                     <button
                       key={type}
                       type="button"
                       onClick={() => toggleType(type)}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all border-2 ${
                         form.session_types.includes(type)
-                          ? 'bg-[#006685] text-white'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          ? 'bg-[#006685] text-white border-[#006685]'
+                          : 'bg-white text-[#0b1c30] border-slate-300 hover:border-[#006685]'
                       }`}
                     >
-                      <span className="material-symbols-outlined text-[14px]">{SESSION_TYPE_ICONS[type]}</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>{SESSION_TYPE_ICONS[type]}</span>
                       {SESSION_TYPE_LABELS[type]}
                     </button>
                   ))}
                 </div>
               </div>
-              {formError && <p className="text-red-500 text-sm">{formError}</p>}
-              <div className="flex gap-3 pt-2">
+              {formError && (
+                <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                  <span className="material-symbols-outlined text-[#ba1a1a]" style={{ fontSize: '18px' }}>error</span>
+                  <p className="text-sm font-semibold text-[#ba1a1a]">{formError}</p>
+                </div>
+              )}
+              <div className="flex gap-3 pt-1">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 border border-slate-200 text-slate-700 rounded-lg py-2.5 text-sm font-semibold hover:bg-slate-50 transition"
+                  className="flex-1 border-2 border-slate-200 text-[#0b1c30] rounded-xl py-3 text-sm font-bold hover:bg-slate-50 transition-colors"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={createService.isPending}
-                  className="flex-1 bg-[#006685] text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-[#005470] transition disabled:opacity-50"
+                  className="flex-1 bg-[#006685] text-white rounded-xl py-3 text-sm font-bold hover:bg-[#005470] transition-colors disabled:opacity-50 shadow-[0_4px_12px_rgba(0,102,133,0.25)]"
                 >
-                  {createService.isPending ? 'Création...' : 'Créer'}
+                  {createService.isPending ? 'Création…' : 'Créer la prestation'}
                 </button>
               </div>
             </form>

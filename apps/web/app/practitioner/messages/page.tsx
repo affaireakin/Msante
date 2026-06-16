@@ -260,6 +260,43 @@ export default function PractitionerMessagesPage() {
     }
   }, [myId, activeConv, selectedDocType, sendMutation])
 
+  // ── Close conversation ──────────────────────────────────────────────────────
+  const closeConvMutation = useMutation({
+    mutationFn: async ({ partnerId, close }: { partnerId: string; close: boolean }) => {
+      if (!myId) return
+      const a = myId < partnerId ? myId : partnerId
+      const b = myId < partnerId ? partnerId : myId
+      if (close) {
+        await supabase.from('message_threads').upsert(
+          { participant_a: a, participant_b: b, closed_at: new Date().toISOString(), closed_by: myId },
+          { onConflict: 'participant_a,participant_b' }
+        )
+      } else {
+        await supabase.from('message_threads')
+          .update({ closed_at: null, closed_by: null })
+          .eq('participant_a', a).eq('participant_b', b)
+      }
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['pract-thread-status', myId, activeConv?.partnerId] })
+    },
+  })
+
+  const { data: threadStatus } = useQuery<{ closed_at: string | null }>({
+    queryKey: ['pract-thread-status', myId, activeConv?.partnerId],
+    enabled: !!myId && !!activeConv,
+    queryFn: async () => {
+      if (!myId || !activeConv) return { closed_at: null }
+      const a = myId < activeConv.partnerId ? myId : activeConv.partnerId
+      const b = myId < activeConv.partnerId ? activeConv.partnerId : myId
+      const { data } = await supabase.from('message_threads')
+        .select('closed_at').eq('participant_a', a).eq('participant_b', b).maybeSingle()
+      return { closed_at: data?.closed_at ?? null }
+    },
+    staleTime: 5_000,
+  })
+  const isClosed = !!threadStatus?.closed_at
+
   function startConversation(patient: PatientRow) {
     // Check if conversation already exists
     const existing = conversations.find(c => c.partnerId === patient.id)
@@ -427,13 +464,40 @@ export default function PractitionerMessagesPage() {
             </div>
             <div className="flex-1">
               <p className="text-sm font-bold text-[#0b1c30]">{activeConv.partnerName}</p>
-              <p className="text-xs text-[#6f787e]">Patient</p>
+              <p className="text-xs text-[#6f787e]">Patient {isClosed ? '· Conversation clôturée' : ''}</p>
             </div>
-            <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">
-              <Icon name="lock" style={{ fontSize: '11px', color: '#1d7a3a' }} />
-              <span className="text-[10px] font-bold text-emerald-700">Chiffré</span>
+            <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full">
+                <Icon name="lock" style={{ fontSize: '11px', color: '#1d7a3a' }} />
+                <span className="text-[10px] font-bold text-emerald-700">Chiffré</span>
+              </div>
+              <button
+                onClick={() => closeConvMutation.mutate({ partnerId: activeConv.partnerId, close: !isClosed })}
+                disabled={closeConvMutation.isPending}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+                style={isClosed
+                  ? { backgroundColor: '#e8f5e9', color: '#1d7a3a', border: '1px solid #a7f3d0' }
+                  : { backgroundColor: '#ffdad6', color: '#ba1a1a', border: '1px solid #fecaca' }
+                }
+                title={isClosed ? 'Rouvrir la conversation' : 'Clôturer la conversation'}
+              >
+                <Icon name={isClosed ? 'mark_chat_unread' : 'mark_chat_read'} style={{ fontSize: '14px' }} />
+                <span className="hidden sm:inline">{isClosed ? 'Rouvrir' : 'Clôturer'}</span>
+              </button>
             </div>
           </div>
+
+          {/* Closed banner */}
+          {isClosed && (
+            <div className="flex items-center gap-2 px-5 py-2.5 bg-slate-50 border-b border-slate-200">
+              <Icon name="do_not_disturb" style={{ fontSize: '14px', color: '#6f787e' }} />
+              <p className="text-xs text-[#6f787e] flex-1">Cette conversation est clôturée. Le patient ne peut plus envoyer de nouveaux messages.</p>
+              <button onClick={() => closeConvMutation.mutate({ partnerId: activeConv.partnerId, close: false })}
+                className="text-xs font-bold text-[#006685] hover:underline flex-shrink-0">
+                Rouvrir
+              </button>
+            </div>
+          )}
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">

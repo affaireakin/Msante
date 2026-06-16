@@ -39,6 +39,7 @@ export default function PractitionerOnboardingPage() {
   const [languages, setLanguages] = useState<string[]>(['Français'])
   const [speciality, setSpeciality] = useState('')
   const [phone, setPhone] = useState('')
+  const [cguAccepted, setCguAccepted] = useState(false)
 
   // Step 1 — pratique
   const [price, setPrice] = useState('')
@@ -105,7 +106,7 @@ export default function PractitionerOnboardingPage() {
 
   const handleNext = async () => {
     if (step === 0) {
-      if (!bio.trim() || !speciality) return
+      if (!bio.trim() || !speciality || !phone.trim()) return
       setStep(1)
     } else if (step === 1) {
       if (!price || sessionTypes.length === 0) return
@@ -262,9 +263,22 @@ export default function PractitionerOnboardingPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Téléphone (optionnel)</label>
-                <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+221 77 000 00 00"
+                <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Téléphone <span className="text-[#ba1a1a]">*</span></label>
+                <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+221 77 000 00 00" required
                   className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                <p className="text-xs text-[#6f787e]">Nécessaire pour la vérification de votre compte et les notifications patients</p>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-[#e5eeff] border border-[#bee9ff]">
+                <input type="checkbox" id="cgu" checked={cguAccepted} onChange={e => setCguAccepted(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 rounded border-[#006685] text-[#006685] accent-[#006685] cursor-pointer flex-shrink-0" />
+                <label htmlFor="cgu" className="text-sm text-[#0b1c30] cursor-pointer">
+                  J&apos;ai lu et j&apos;accepte les{' '}
+                  <a href="/cgu" target="_blank" rel="noopener noreferrer" className="font-bold text-[#006685] underline hover:text-[#004d65]">
+                    Conditions Générales d&apos;Utilisation
+                  </a>{' '}
+                  de M-Santé <span className="text-[#ba1a1a]">*</span>
+                </label>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -412,7 +426,7 @@ export default function PractitionerOnboardingPage() {
             </button>
 
             <button type="button" onClick={handleNext}
-              disabled={saving || (step === 0 && (!bio.trim() || !speciality)) || (step === 1 && (!price || sessionTypes.length === 0))}
+              disabled={saving || (step === 0 && (!bio.trim() || !speciality || !phone.trim() || !cguAccepted)) || (step === 1 && (!price || sessionTypes.length === 0))}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-sky-500/20 disabled:opacity-50"
               style={{ backgroundColor: '#006685' }}>
               {saving ? 'Envoi en cours...' : step === STEPS.length - 1 ? 'Accéder à mon espace' : 'Suivant'}

@@ -18,6 +18,8 @@ interface UserRow {
   created_at: string
   account_status: AccountStatus | null
   prefix_id: string | null
+  phone: string | null
+  email: string | null
 }
 
 interface PrefixOption {
@@ -84,7 +86,7 @@ function useUsers(role: Role, search: string, page: number) {
     queryFn: async () => {
       let query = supabase
         .from('users')
-        .select('id, full_name, role, country, onboarding_completed, created_at, account_status, prefix_id', { count: 'exact' })
+        .select('id, full_name, role, country, onboarding_completed, created_at, account_status, prefix_id, phone, email', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
 
@@ -697,35 +699,34 @@ function UserProfilePanel({
             </div>
           </div>
 
-          {/* Info fields */}
-          <div
-            className="rounded-xl overflow-hidden"
-            style={{ border: '1px solid #e5eeff' }}
-          >
+          {/* Contact info (admin only) */}
+          <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #e5eeff' }}>
+            <div className="px-4 py-2 bg-[#e5eeff]">
+              <p className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Informations de contact</p>
+            </div>
             {[
-              { label: 'ID', value: user.id.slice(0, 8) + '…' },
-              { label: 'Pays', value: user.country ?? '—' },
-              {
-                label: 'Onboarding',
-                value: user.onboarding_completed ? 'Complété' : 'En cours',
-              },
-              {
-                label: 'Inscrit le',
-                value: new Date(user.created_at).toLocaleDateString('fr-FR', {
-                  day: '2-digit', month: 'long', year: 'numeric',
-                }),
-              },
-            ].map(({ label, value }, idx, arr) => (
-              <div
-                key={label}
-                className="flex justify-between items-center px-4 py-3"
-                style={{
-                  borderBottom: idx < arr.length - 1 ? '1px solid #f0f4ff' : 'none',
-                  backgroundColor: idx % 2 === 0 ? 'rgba(255,255,255,0.60)' : '#f8f9ff',
-                }}
-              >
-                <span className="text-xs text-[#6f787e]">{label}</span>
-                <span className="text-xs font-medium text-[#0b1c30]">{value}</span>
+              { label: 'E-mail', value: user.email ?? '—', icon: 'mail', copyable: true },
+              { label: 'Téléphone', value: user.phone ?? '—', icon: 'phone', copyable: true },
+              { label: 'Pays', value: user.country ?? '—', icon: 'location_on', copyable: false },
+              { label: 'Inscrit le', value: new Date(user.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }), icon: 'calendar_today', copyable: false },
+              { label: 'Onboarding', value: user.onboarding_completed ? 'Complété ✓' : 'En cours…', icon: 'checklist', copyable: false },
+              { label: 'ID', value: user.id.slice(0, 12) + '…', icon: 'tag', copyable: false },
+            ].map(({ label, value, icon, copyable }, idx, arr) => (
+              <div key={label} className="flex items-center justify-between px-4 py-3 gap-2"
+                style={{ borderBottom: idx < arr.length - 1 ? '1px solid #f0f4ff' : 'none', backgroundColor: idx % 2 === 0 ? 'rgba(255,255,255,0.60)' : '#f8f9ff' }}>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="material-symbols-outlined text-[#6f787e] flex-shrink-0" style={{ fontSize: '14px' }}>{icon}</span>
+                  <span className="text-xs text-[#6f787e]">{label}</span>
+                </div>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <span className="text-xs font-medium text-[#0b1c30] max-w-[140px] truncate text-right">{value}</span>
+                  {copyable && value !== '—' && (
+                    <button onClick={() => navigator.clipboard.writeText(value)}
+                      className="text-[#6f787e] hover:text-[#006685] transition-colors" title="Copier">
+                      <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>content_copy</span>
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

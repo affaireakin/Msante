@@ -238,7 +238,7 @@ export default function AnalyticsPage() {
               </p>
               <p className="text-xs text-[#705d00] opacity-75">À traiter depuis le panneau de gestion des praticiens</p>
             </div>
-            <a href="/admin/practitioners" className="text-xs font-bold text-[#705d00] hover:underline">
+            <a href="/admin/practitioners?status=pending" className="text-xs font-bold text-[#705d00] hover:underline">
               Voir →
             </a>
           </div>

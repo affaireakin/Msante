@@ -113,10 +113,13 @@ export default function PractitionerLayout({ children }: { children: React.React
   const [appealText, setAppealText] = useState('')
   const [appealSent, setAppealSent] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
+  const [unreadMessages, setUnreadMessages] = useState(0)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
+      setUserId(user.id)
       supabase
         .from('users')
         .select('full_name, role')
@@ -147,6 +150,24 @@ export default function PractitionerLayout({ children }: { children: React.React
         })
     })
   }, [router])
+
+  useEffect(() => {
+    if (!userId) return
+    const fetchUnread = async () => {
+      const { count } = await supabase
+        .from('messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('receiver_id', userId)
+        .is('read_at', null)
+      setUnreadMessages(count ?? 0)
+    }
+    void fetchUnread()
+    const channel = supabase
+      .channel(`unread-msgs-${userId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `receiver_id=eq.${userId}` }, () => { void fetchUnread() })
+      .subscribe()
+    return () => { void supabase.removeChannel(channel) }
+  }, [userId])
 
   const handleAppealSubmit = async () => {
     if (!practitionerId || !appealText.trim()) return
@@ -224,7 +245,12 @@ export default function PractitionerLayout({ children }: { children: React.React
                 }`}
               >
                 <span className={isActive ? 'text-[#006685]' : 'text-[#6f787e]'}>{item.icon}</span>
-                {label}
+                <span className="flex-1">{label}</span>
+                {item.href === '/practitioner/messages' && unreadMessages > 0 && (
+                  <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: '#ba1a1a' }}>
+                    {unreadMessages > 99 ? '99+' : unreadMessages}
+                  </span>
+                )}
               </Link>
             )
           })}
