@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
     method: 'POST',
     headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: 'M-Santé <noreply@msante.sn>',
+      from: 'M-Santé <noreply@m-sante.com>',
       to: [email],
       subject: `Invitation M-Santé — ${roleLabels[role] ?? role}`,
       html: `

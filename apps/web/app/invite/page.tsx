@@ -72,11 +72,12 @@ function InviteForm() {
       return
     }
 
+    const userRole = invitation.role === 'practitioner' ? 'practitioner' : 'admin'
     await supabase.from('users').upsert({
       id: authData.user.id,
       full_name: '',
-      role: invitation.role === 'practitioner' ? 'practitioner' : invitation.role === 'admin' ? 'admin' : 'patient',
-      onboarding_completed: invitation.role !== 'practitioner',
+      role: userRole,
+      onboarding_completed: true,
     })
 
     await supabase.from('invitations')
