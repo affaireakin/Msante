@@ -14,13 +14,14 @@ function VerifyOtpContent() {
   const speciality = searchParams.get('speciality') ?? ''
   const practType  = searchParams.get('practType') ?? 'healthcare'
 
-  const [digits, setDigits]     = useState<string[]>(Array(6).fill(''))
+  const OTP_LENGTH = 8
+  const [digits, setDigits]     = useState<string[]>(Array(OTP_LENGTH).fill(''))
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
   const [success, setSuccess]   = useState(false)
   const [cooldown, setCooldown] = useState(60)
   const [canResend, setCanResend] = useState(false)
-  const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null))
+  const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(OTP_LENGTH).fill(null))
 
   // Focus first input on mount
   useEffect(() => { setTimeout(() => inputRefs.current[0]?.focus(), 100) }, [])
@@ -74,12 +75,12 @@ function VerifyOtpContent() {
     setDigits(next)
     setError('')
 
-    if (digit && idx < 5) {
+    if (digit && idx < OTP_LENGTH - 1) {
       inputRefs.current[idx + 1]?.focus()
     }
-    if (idx === 5 && digit) {
+    if (idx === OTP_LENGTH - 1 && digit) {
       const code = next.join('')
-      if (code.length === 6) void verify(code)
+      if (code.length === OTP_LENGTH) void verify(code)
     }
   }
 
@@ -91,21 +92,21 @@ function VerifyOtpContent() {
         inputRefs.current[idx - 1]?.focus()
       }
     }
-    if (e.key === 'ArrowLeft' && idx > 0)  inputRefs.current[idx - 1]?.focus()
-    if (e.key === 'ArrowRight' && idx < 5) inputRefs.current[idx + 1]?.focus()
+    if (e.key === 'ArrowLeft' && idx > 0)              inputRefs.current[idx - 1]?.focus()
+    if (e.key === 'ArrowRight' && idx < OTP_LENGTH - 1) inputRefs.current[idx + 1]?.focus()
   }
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault()
     const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
-    if (text.length === 6) {
+    if (text.length === OTP_LENGTH) {
       setDigits(text.split(''))
       void verify(text)
     } else if (text.length > 0) {
-      const next = Array(6).fill('')
+      const next = Array(OTP_LENGTH).fill('')
       text.split('').forEach((c, i) => { next[i] = c })
       setDigits(next)
-      inputRefs.current[Math.min(text.length, 5)]?.focus()
+      inputRefs.current[Math.min(text.length, OTP_LENGTH - 1)]?.focus()
     }
   }
 
@@ -120,7 +121,7 @@ function VerifyOtpContent() {
     setTimeout(() => inputRefs.current[0]?.focus(), 50)
   }
 
-  const codeComplete = digits.join('').length === 6
+  const codeComplete = digits.join('').length === OTP_LENGTH
 
   return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
@@ -171,7 +172,7 @@ function VerifyOtpContent() {
               </div>
 
               {/* OTP boxes */}
-              <div className="flex gap-2 justify-center mb-6">
+              <div className="flex gap-1.5 justify-center mb-6">
                 {digits.map((d, i) => (
                   <input
                     key={i}
@@ -184,7 +185,7 @@ function VerifyOtpContent() {
                     onKeyDown={e => handleKeyDown(i, e)}
                     onPaste={handlePaste}
                     disabled={loading || success}
-                    className="w-11 h-14 text-center text-2xl font-black rounded-xl border-2 outline-none transition-all"
+                    className="w-9 h-12 text-center text-xl font-black rounded-xl border-2 outline-none transition-all"
                     style={{
                       backgroundColor: '#f8f9ff',
                       borderColor: error ? '#ba1a1a' : d ? '#006685' : '#bec8ce',
@@ -231,7 +232,7 @@ function VerifyOtpContent() {
 
               {/* Resend */}
               <div className="text-center">
-                <p className="text-xs text-slate-400 mb-2">Vous n&apos;avez pas reçu le code ?</p>
+                <p className="text-xs text-slate-400 mb-2">Code à 8 chiffres · Vous n&apos;avez pas reçu le code ?</p>
                 <button
                   onClick={() => void handleResend()}
                   disabled={!canResend}
