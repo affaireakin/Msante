@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import AuthRedirect from '@/components/AuthRedirect'
 
 export const metadata: Metadata = {
   title: 'M-Santé | Psychologues & Psychiatres en ligne au Sénégal',
@@ -56,6 +57,7 @@ function Icon({ name, className = '', style }: { name: string; className?: strin
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#f8f9ff] font-[family-name:var(--font-manrope)] text-[#0b1c30] overflow-x-hidden">
+      <AuthRedirect />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
