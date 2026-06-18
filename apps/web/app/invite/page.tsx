@@ -85,8 +85,8 @@ function InviteForm() {
       .eq('token', token!)
 
     setSubmitting(false)
-    if (invitation.role === 'practitioner') router.push('/practitioner/onboarding')
-    else router.push('/admin')
+    const otpRole = invitation.role === 'practitioner' ? 'practitioner' : 'admin'
+    router.push(`/auth/verify-otp?email=${encodeURIComponent(invitation.email)}&role=${otpRole}`)
   }
 
   if (loading) return (

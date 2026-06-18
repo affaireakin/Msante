@@ -64,7 +64,9 @@ function VerifyOtpContent() {
 
     setSuccess(true)
     setTimeout(() => {
-      router.push(role === 'practitioner' ? '/onboarding/practitioner' : '/onboarding/patient')
+      if (role === 'practitioner') router.push('/onboarding/practitioner')
+      else if (role === 'admin') router.push('/admin')
+      else router.push('/onboarding/patient')
     }, 800)
   }, [email, loading, practType, role, router, speciality])
 
