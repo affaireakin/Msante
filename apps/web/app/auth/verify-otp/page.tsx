@@ -10,7 +10,7 @@ function VerifyOtpContent() {
   const router = useRouter()
 
   const email      = searchParams.get('email') ?? ''
-  const role       = (searchParams.get('role') ?? 'patient') as 'patient' | 'practitioner'
+  const role       = (searchParams.get('role') ?? 'patient') as 'patient' | 'practitioner' | 'admin'
   const speciality = searchParams.get('speciality') ?? ''
   const practType  = searchParams.get('practType') ?? 'healthcare'
 
@@ -46,7 +46,7 @@ function VerifyOtpContent() {
 
     if (verifyErr || !data.user) {
       setError('Code incorrect ou expiré. Vérifiez le code reçu par email.')
-      setDigits(Array(6).fill(''))
+      setDigits(Array(OTP_LENGTH).fill(''))
       setTimeout(() => inputRefs.current[0]?.focus(), 50)
       setLoading(false)
       return
@@ -100,7 +100,7 @@ function VerifyOtpContent() {
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault()
-    const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
+    const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH)
     if (text.length === OTP_LENGTH) {
       setDigits(text.split(''))
       void verify(text)
@@ -118,7 +118,7 @@ function VerifyOtpContent() {
     if (resendErr) { setError('Erreur lors du renvoi. Réessayez dans un instant.'); return }
     setCanResend(false)
     setCooldown(60)
-    setDigits(Array(6).fill(''))
+    setDigits(Array(OTP_LENGTH).fill(''))
     setError('')
     setTimeout(() => inputRefs.current[0]?.focus(), 50)
   }
@@ -168,7 +168,7 @@ function VerifyOtpContent() {
                 </div>
                 <h1 className="text-xl font-black text-[#0b1c30]">Vérifiez votre email</h1>
                 <p className="text-sm text-slate-400 mt-2 leading-relaxed">
-                  Nous avons envoyé un code à 6 chiffres à
+                  Nous avons envoyé un code à 8 chiffres à
                 </p>
                 <p className="text-sm font-bold text-[#006685] mt-0.5">{email}</p>
               </div>

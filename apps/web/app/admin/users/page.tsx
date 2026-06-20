@@ -233,13 +233,13 @@ function InviteAdminModal({ onClose }: { onClose: () => void }) {
       if (!session) throw new Error('Session expirée, reconnectez-vous.')
 
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-      const res = await fetch(`${supabaseUrl}/functions/v1/invite-admin`, {
+      const res = await fetch(`${supabaseUrl}/functions/v1/invite-collaborator`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ email: data.email, full_name: data.fullName }),
+        body: JSON.stringify({ email: data.email, role: 'admin' }),
       })
 
       const json = await res.json() as { success?: boolean; error?: string }

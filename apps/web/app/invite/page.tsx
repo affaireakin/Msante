@@ -62,31 +62,24 @@ function InviteForm() {
     setSubmitting(true)
     setError(null)
 
-    const { data: authData, error: authErr } = await supabase.auth.signUp({
+    const userRole = invitation.role === 'practitioner' ? 'practitioner' : 'admin'
+    const { error: authErr } = await supabase.auth.signUp({
       email: invitation.email,
       password,
+      options: { data: { role: userRole, full_name: '' } },
     })
-    if (authErr || !authData.user) {
-      setError(authErr?.message ?? 'Erreur lors de la création du compte')
+    if (authErr) {
+      setError(authErr.message ?? 'Erreur lors de la création du compte')
       setSubmitting(false)
       return
     }
-
-    const userRole = invitation.role === 'practitioner' ? 'practitioner' : 'admin'
-    await supabase.from('users').upsert({
-      id: authData.user.id,
-      full_name: '',
-      role: userRole,
-      onboarding_completed: true,
-    })
 
     await supabase.from('invitations')
       .update({ status: 'accepted', accepted_at: new Date().toISOString() })
       .eq('token', token!)
 
     setSubmitting(false)
-    const otpRole = invitation.role === 'practitioner' ? 'practitioner' : 'admin'
-    router.push(`/auth/verify-otp?email=${encodeURIComponent(invitation.email)}&role=${otpRole}`)
+    router.push(`/auth/verify-otp?email=${encodeURIComponent(invitation.email)}&role=${userRole}`)
   }
 
   if (loading) return (
