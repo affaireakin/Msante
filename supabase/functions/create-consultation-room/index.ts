@@ -172,14 +172,29 @@ Deno.serve(async (req) => {
           supabase.from('users').select('full_name').eq('id', user.id).single(),
         ])
 
+        const patientName = patientData?.full_name ?? 'Votre patient'
+        const notifTitle = 'Patient prêt pour la consultation'
+        const notifBody = `${patientName} est dans la salle d'attente.`
+
+        // Notification web (cloche)
+        await supabase.from('notifications').insert({
+          user_id: practData.user_id,
+          type: 'consultation_starting',
+          title: notifTitle,
+          body: notifBody,
+          channel: 'push',
+          data: { appointment_id: appointmentId, consultation_id: consultation.id },
+        })
+
+        // Push Expo mobile
         if (practUser?.push_token) {
           await fetch('https://exp.host/--/api/v2/push/send', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               to: practUser.push_token,
-              title: 'Votre patient est prêt',
-              body: `${patientData?.full_name ?? 'Votre patient'} attend dans la salle de consultation.`,
+              title: notifTitle,
+              body: notifBody,
               data: { route: '/(practitioner)/appointments' },
             }),
           })

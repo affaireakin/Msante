@@ -88,6 +88,51 @@ Deno.serve(async (req) => {
 
     if (uErr) throw uErr
 
+    // 4. Notifie le patient que le praticien a rejoint (fire-and-forget)
+    try {
+      const { data: apt } = await supabase
+        .from('appointments')
+        .select('patient_id, practitioners!inner(users!user_id(full_name))')
+        .eq('id', consultation.appointment_id)
+        .single()
+
+      if (apt?.patient_id) {
+        const practRaw = apt.practitioners as unknown as { users: { full_name: string } }
+        const practName = practRaw?.users?.full_name ?? 'Votre praticien'
+        const notifTitle = 'Votre praticien a rejoint la consultation'
+        const notifBody = `${practName} est prêt. La séance commence maintenant.`
+
+        // Notification web (cloche)
+        await supabase.from('notifications').insert({
+          user_id: apt.patient_id,
+          type: 'consultation_starting',
+          title: notifTitle,
+          body: notifBody,
+          channel: 'push',
+          data: { consultation_id: consultationId, appointment_id: consultation.appointment_id },
+        })
+
+        // Push Expo mobile
+        const { data: patientUser } = await supabase
+          .from('users').select('push_token').eq('id', apt.patient_id).single()
+
+        if (patientUser?.push_token) {
+          await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: patientUser.push_token,
+              title: notifTitle,
+              body: notifBody,
+              data: { route: '/(patient)/appointments' },
+            }),
+          })
+        }
+      }
+    } catch (notifErr) {
+      console.error('join-consultation: patient notification failed', notifErr)
+    }
+
     return new Response(JSON.stringify({
       consultationId,
       practitionerToken: consultation.practitioner_token,
@@ -100,3 +145,4 @@ Deno.serve(async (req) => {
     })
   }
 })
+
