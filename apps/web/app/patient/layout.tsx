@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import NotificationBell from '@/components/NotificationBell'
 
 function Icon({ name }: { name: string }) {
   return <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>{name}</span>
@@ -27,10 +28,12 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const [name, setName] = useState('')
   const [initials, setInitials] = useState('P')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
+      setUserId(user.id)
       supabase.from('users').select('full_name, role').eq('id', user.id).single().then(({ data }) => {
         if (!data || data.role !== 'patient') { router.push('/auth/login'); return }
         setName(data.full_name ?? '')
@@ -173,9 +176,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
             <span className="md:hidden text-base font-black tracking-tighter text-[#0b1c30]">M-Santé</span>
           </div>
           <div className="flex items-center gap-3">
-            <button className="w-9 h-9 flex items-center justify-center rounded-full bg-white/60 border border-slate-200/50 text-[#6f787e] hover:bg-white transition-colors">
-              <Icon name="notifications" />
-            </button>
+            {userId && <NotificationBell userId={userId} />}
             <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold shadow-sm">
               {initials}
             </div>

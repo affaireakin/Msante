@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import NotificationBell from '@/components/NotificationBell'
 
 const navItems = [
   {
@@ -290,9 +291,7 @@ export default function PractitionerLayout({ children }: { children: React.React
             <span className="md:hidden text-base font-black tracking-tighter text-[#0b1c30]">M-Santé</span>
           </div>
           <div className="flex items-center gap-3">
-            <button className="w-9 h-9 flex items-center justify-center rounded-full bg-white/60 border border-slate-200/50 text-[#6f787e] hover:bg-white transition-colors">
-              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>notifications</span>
-            </button>
+            {userId && <NotificationBell userId={userId} />}
             <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold shadow-sm">
               {initials}
             </div>
