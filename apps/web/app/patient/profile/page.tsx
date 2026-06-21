@@ -38,7 +38,11 @@ export default function PatientProfilePage() {
   const { data, isLoading } = useProfile()
   const queryClient = useQueryClient()
 
-  const [tab, setTab] = useState<'personal' | 'medical' | 'emergency'>('personal')
+  const [tab, setTab] = useState<'personal' | 'medical' | 'emergency' | 'privacy'>('personal')
+  const [exportLoading, setExportLoading] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState('')
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
   const [avatarUrl, setAvatarUrl]       = useState<string | null>(null)
   const [avatarUploading, setAvatarUploading] = useState(false)
@@ -160,7 +164,38 @@ export default function PatientProfilePage() {
     { key: 'personal' as const, label: 'Informations', icon: 'person' },
     { key: 'medical' as const, label: 'Profil médical', icon: 'medical_information' },
     { key: 'emergency' as const, label: 'Urgence', icon: 'emergency' },
+    { key: 'privacy' as const, label: 'Confidentialité', icon: 'shield' },
   ]
+
+  const handleExportData = async () => {
+    setExportLoading(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setExportLoading(false); return }
+    const [{ data: profile }, { data: med }, { data: moods }, { data: journals }, { data: appts }] = await Promise.all([
+      supabase.from('users').select('*').eq('id', user.id).single(),
+      supabase.from('patient_medical_profiles').select('*').eq('patient_id', user.id).maybeSingle(),
+      supabase.from('mood_entries').select('*').eq('patient_id', user.id).order('entry_date', { ascending: false }),
+      supabase.from('journal_entries').select('id, title, content, mood_score, tags, created_at').eq('patient_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('appointments').select('id, scheduled_at, status, type, created_at').eq('patient_id', user.id).order('scheduled_at', { ascending: false }),
+    ])
+    const payload = { exported_at: new Date().toISOString(), profile, medical_profile: med, mood_entries: moods ?? [], journal_entries: journals ?? [], appointments: appts ?? [] }
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url; a.download = `m-sante-mes-donnees-${new Date().toISOString().slice(0, 10)}.json`
+    a.click(); URL.revokeObjectURL(url)
+    setExportLoading(false)
+  }
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirm !== 'SUPPRIMER') { setDeleteError('Tapez SUPPRIMER pour confirmer'); return }
+    setDeleteLoading(true); setDeleteError(null)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setDeleteLoading(false); return }
+    await supabase.from('users').update({ status: 'suspended' } as never).eq('id', user.id)
+    await supabase.auth.signOut()
+    window.location.href = '/auth/login?deleted=1'
+  }
 
   const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'P'
 
@@ -373,6 +408,71 @@ export default function PatientProfilePage() {
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Notes médicales</label>
               <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} placeholder="Antécédents, informations importantes pour votre praticien..."
                 className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all resize-none" />
+            </div>
+          </div>
+        )}
+
+        {/* TAB — Confidentialité & RGPD */}
+        {tab === 'privacy' && (
+          <div className="space-y-5">
+            {/* Export */}
+            <div className="rounded-xl border border-[#bec8ce] p-5 space-y-3">
+              <div className="flex items-start gap-3">
+                <Icon name="download" color="#006685" size={22} />
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-[#0b1c30]">Télécharger mes données</p>
+                  <p className="text-xs text-[#6f787e] mt-0.5">Exportez l&apos;ensemble de vos données personnelles et médicales (RGPD art. 15). Fichier JSON incluant profil, humeurs, journal et rendez-vous.</p>
+                </div>
+              </div>
+              <button
+                onClick={handleExportData}
+                disabled={exportLoading}
+                className="w-full flex items-center justify-center gap-2 bg-[#006685] text-white rounded-xl py-3 text-sm font-semibold disabled:opacity-50 hover:shadow-lg hover:shadow-[#006685]/20 transition"
+              >
+                <Icon name="download" size={16} />
+                {exportLoading ? 'Préparation...' : 'Exporter mes données'}
+              </button>
+            </div>
+
+            {/* Infos légales */}
+            <div className="rounded-xl bg-[#e5eeff] p-4 space-y-2 text-xs text-[#3f484d]">
+              <p className="font-bold text-[#006685]">Vos droits RGPD</p>
+              <p>• <strong>Art. 15</strong> — Droit d&apos;accès : télécharger vos données ci-dessus</p>
+              <p>• <strong>Art. 16</strong> — Droit de rectification : modifiez vos informations dans l&apos;onglet &quot;Informations&quot;</p>
+              <p>• <strong>Art. 17</strong> — Droit à l&apos;effacement : supprimez votre compte ci-dessous</p>
+              <p>• <strong>Art. 20</strong> — Portabilité : vos données sont exportées au format JSON standard</p>
+              <p className="pt-1">Contact DPO : <span className="font-medium">privacy@m-sante.com</span></p>
+            </div>
+
+            {/* Suppression */}
+            <div className="rounded-xl border border-[#ba1a1a]/30 bg-[#ffdad6]/20 p-5 space-y-4">
+              <div className="flex items-start gap-3">
+                <Icon name="delete_forever" color="#ba1a1a" size={22} />
+                <div>
+                  <p className="text-sm font-bold text-[#0b1c30]">Supprimer mon compte</p>
+                  <p className="text-xs text-[#6f787e] mt-0.5">Cette action est irréversible. Toutes vos données seront supprimées sous 30 jours conformément au RGPD.</p>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">
+                  Tapez <span className="text-[#ba1a1a]">SUPPRIMER</span> pour confirmer
+                </label>
+                <input
+                  value={deleteConfirm}
+                  onChange={e => { setDeleteConfirm(e.target.value); setDeleteError(null) }}
+                  placeholder="SUPPRIMER"
+                  className="mt-1 w-full px-4 py-3 bg-white border border-[#ba1a1a]/40 rounded-xl text-[#0b1c30] placeholder-[#6f787e]/50 focus:outline-none focus:border-[#ba1a1a] transition-all text-sm"
+                />
+              </div>
+              {deleteError && <p className="text-xs text-[#ba1a1a]">{deleteError}</p>}
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading || deleteConfirm !== 'SUPPRIMER'}
+                className="w-full flex items-center justify-center gap-2 bg-[#ba1a1a] text-white rounded-xl py-3 text-sm font-semibold disabled:opacity-40 hover:shadow-lg hover:shadow-[#ba1a1a]/20 transition"
+              >
+                <Icon name="delete_forever" size={16} />
+                {deleteLoading ? 'Suppression...' : 'Supprimer définitivement mon compte'}
+              </button>
             </div>
           </div>
         )}

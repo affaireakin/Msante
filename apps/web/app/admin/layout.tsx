@@ -129,11 +129,45 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
+  const [suspended, setSuspended] = React.useState(false)
+  const [authChecked, setAuthChecked] = React.useState(false)
+
+  React.useEffect(() => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) { router.replace('/auth/login'); return }
+      const { data } = await supabase.from('users').select('status, role').eq('id', user.id).single()
+      if (!data || data.role !== 'admin') { router.replace('/auth/login'); return }
+      if (data.status === 'suspended') { setSuspended(true) }
+      setAuthChecked(true)
+    })
+  }, [router])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/auth/login')
   }
+
+  if (!authChecked) return (
+    <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+
+  if (suspended) return (
+    <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
+      <div className="bg-white rounded-2xl p-10 max-w-md w-full text-center space-y-5 shadow-xl">
+        <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto">
+          <span className="material-symbols-outlined text-red-600 text-3xl">block</span>
+        </div>
+        <h2 className="text-xl font-black text-[#0b1c30]">Compte suspendu</h2>
+        <p className="text-sm text-[#6f787e]">Votre accès à la console d&apos;administration a été suspendu. Contactez un super-administrateur pour plus d&apos;informations.</p>
+        <button onClick={handleLogout}
+          className="w-full bg-[#006685] text-white rounded-xl py-3 text-sm font-semibold hover:shadow-lg transition">
+          Se déconnecter
+        </button>
+      </div>
+    </div>
+  )
 
   return (
     <div className="flex h-screen bg-[#f8f9ff] overflow-hidden">
