@@ -252,6 +252,22 @@ export default function PatientMessagesPage() {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void handleSend() }
   }
 
+  const { data: threadStatus } = useQuery<{ closed_at: string | null }>({
+    queryKey: ['patient-thread-status', myId, activeConv?.partnerId],
+    enabled: !!myId && !!activeConv,
+    refetchInterval: 10_000,
+    queryFn: async () => {
+      if (!myId || !activeConv) return { closed_at: null }
+      const a = myId < activeConv.partnerId ? myId : activeConv.partnerId
+      const b = myId < activeConv.partnerId ? activeConv.partnerId : myId
+      const { data } = await supabase.from('message_threads')
+        .select('closed_at').eq('participant_a', a).eq('participant_b', b).maybeSingle()
+      return { closed_at: data?.closed_at ?? null }
+    },
+    staleTime: 8_000,
+  })
+  const isClosed = !!threadStatus?.closed_at
+
   const handleDocTypeSelect = (typeId: DocTypeId) => {
     setSelectedDocType(typeId)
     setDocPickerOpen(false)
@@ -475,6 +491,14 @@ export default function PatientMessagesPage() {
             </div>
           </div>
 
+          {/* Closed banner */}
+          {isClosed && (
+            <div className="flex items-center gap-2 px-5 py-2.5 bg-amber-50 border-b border-amber-100">
+              <Icon name="lock" style={{ fontSize: '14px', color: '#92400e' }} />
+              <p className="text-xs text-amber-800 flex-1">Cette conversation a été clôturée par votre praticien. Pour reprendre contact, prenez un nouveau rendez-vous.</p>
+            </div>
+          )}
+
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
             {loadingThread ? (
@@ -567,29 +591,36 @@ export default function PatientMessagesPage() {
                 ))}
               </div>
             )}
-            <div className="flex items-end gap-2">
-              <button onClick={() => setDocPickerOpen(v => !v)} className="flex-shrink-0 p-2.5 rounded-xl transition-colors" style={{ backgroundColor: docPickerOpen ? '#e5eeff' : 'transparent', color: '#006685' }} title="Joindre un document médical">
-                <Icon name="attach_file" style={{ fontSize: '20px' }} />
-              </button>
-              <textarea
-                ref={textareaRef}
-                value={text}
-                onChange={e => setText(e.target.value)}
-                onKeyDown={handleKeyDown}
-                rows={1}
-                placeholder="Écrire un message... (Entrée pour envoyer)"
-                className="flex-1 px-4 py-2.5 rounded-xl text-sm resize-none outline-none text-[#0b1c30] placeholder-[#6f787e] border border-[#bec8ce] focus:border-[#006685] transition-colors"
-                style={{ backgroundColor: 'rgba(255,255,255,0.80)', maxHeight: '120px' }}
-              />
-              <button
-                onClick={() => void handleSend()}
-                disabled={!text.trim() || sending}
-                className="flex-shrink-0 p-2.5 rounded-xl text-white transition-all disabled:opacity-40"
-                style={{ backgroundColor: '#006685' }}
-              >
-                <Icon name="send" style={{ fontSize: '20px' }} />
-              </button>
-            </div>
+            {isClosed ? (
+              <div className="flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-50 border border-slate-200">
+                <Icon name="lock" style={{ fontSize: '16px', color: '#6f787e' }} />
+                <span className="text-sm text-[#6f787e]">Conversation clôturée — vous ne pouvez plus envoyer de messages</span>
+              </div>
+            ) : (
+              <div className="flex items-end gap-2">
+                <button onClick={() => setDocPickerOpen(v => !v)} className="flex-shrink-0 p-2.5 rounded-xl transition-colors" style={{ backgroundColor: docPickerOpen ? '#e5eeff' : 'transparent', color: '#006685' }} title="Joindre un document médical">
+                  <Icon name="attach_file" style={{ fontSize: '20px' }} />
+                </button>
+                <textarea
+                  ref={textareaRef}
+                  value={text}
+                  onChange={e => setText(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  rows={1}
+                  placeholder="Écrire un message... (Entrée pour envoyer)"
+                  className="flex-1 px-4 py-2.5 rounded-xl text-sm resize-none outline-none text-[#0b1c30] placeholder-[#6f787e] border border-[#bec8ce] focus:border-[#006685] transition-colors"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.80)', maxHeight: '120px' }}
+                />
+                <button
+                  onClick={() => void handleSend()}
+                  disabled={!text.trim() || sending}
+                  className="flex-shrink-0 p-2.5 rounded-xl text-white transition-all disabled:opacity-40"
+                  style={{ backgroundColor: '#006685' }}
+                >
+                  <Icon name="send" style={{ fontSize: '20px' }} />
+                </button>
+              </div>
+            )}
             <input ref={fileInputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" className="hidden" onChange={e => void handleFileChange(e)} />
             <p className="text-[9px] text-[#6f787e]/60 text-center mt-2">
               Cet espace ne remplace pas une consultation médicale · Urgence : 15 (SAMU)
