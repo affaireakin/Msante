@@ -57,6 +57,7 @@ export default function PractitionerProfilePage() {
   const [duration, setDuration] = useState(60)
   const [sessionTypes, setSessionTypes] = useState<string[]>(['video'])
   const [timezone, setTimezone] = useState('Africa/Dakar')
+  const [acceptingNewPatients, setAcceptingNewPatients] = useState(true)
 
   // professional info (for prescription letterhead)
   const [professionalTitle, setProfessionalTitle] = useState('')
@@ -93,6 +94,7 @@ export default function PractitionerProfilePage() {
       setCurrency(pract.session_currency ?? 'XOF')
       setDuration(pract.session_duration_min ?? 60)
       setTimezone(pract.timezone ?? 'Africa/Dakar')
+      setAcceptingNewPatients((pract as unknown as Record<string, boolean>).accepting_new_patients ?? true)
       setProfessionalTitle((pract as unknown as Record<string, string>).professional_title ?? '')
       setRegistrationNumber((pract as unknown as Record<string, string>).registration_number ?? '')
       setClinicAddress((pract as unknown as Record<string, string>).clinic_address ?? '')
@@ -116,6 +118,7 @@ export default function PractitionerProfilePage() {
         session_currency: currency,
         session_duration_min: duration,
         timezone,
+        accepting_new_patients: acceptingNewPatients,
         professional_title: professionalTitle || null,
         registration_number: registrationNumber || null,
         clinic_address: clinicAddress || null,
@@ -392,6 +395,25 @@ export default function PractitionerProfilePage() {
                 <option value="Africa/Douala">Douala (GMT+1)</option>
                 <option value="Europe/Paris">Paris (GMT+1/+2)</option>
               </select>
+            </div>
+
+            {/* Acceptation nouveaux patients */}
+            <div className={`flex items-center justify-between gap-4 px-4 py-4 rounded-xl border-2 transition-colors ${acceptingNewPatients ? 'border-[#006685] bg-[#e5eeff]/50' : 'border-[#ba1a1a] bg-[#ffdad6]/30'}`}>
+              <div>
+                <p className="text-sm font-bold text-[#0b1c30]">Accepter de nouveaux patients</p>
+                <p className="text-xs text-[#6f787e] mt-0.5">
+                  {acceptingNewPatients
+                    ? 'Votre profil est visible dans les résultats de recherche.'
+                    : 'Votre profil est masqué des nouvelles recherches. Vos patients existants restent actifs.'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAcceptingNewPatients(v => !v)}
+                className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${acceptingNewPatients ? 'bg-[#006685]' : 'bg-[#ba1a1a]'}`}
+              >
+                <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${acceptingNewPatients ? 'translate-x-6' : 'translate-x-0.5'}`} />
+              </button>
             </div>
           </div>
         )}

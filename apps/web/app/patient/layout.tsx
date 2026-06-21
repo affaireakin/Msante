@@ -30,6 +30,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const [initials, setInitials] = useState('P')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
+  const [unreadMessages, setUnreadMessages] = useState(0)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -42,6 +43,24 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
       })
     })
   }, [router])
+
+  useEffect(() => {
+    if (!userId) return
+    const fetchUnread = async () => {
+      const { count } = await supabase
+        .from('messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('receiver_id', userId)
+        .is('read_at', null)
+      setUnreadMessages(count ?? 0)
+    }
+    void fetchUnread()
+    const channel = supabase
+      .channel(`unread-patient-msgs-${userId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `receiver_id=eq.${userId}` }, () => { void fetchUnread() })
+      .subscribe()
+    return () => { void supabase.removeChannel(channel) }
+  }, [userId])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -118,7 +137,12 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 <span className={isActive ? 'text-[#006685]' : 'text-[#6f787e]'}>
                   <Icon name={item.icon} />
                 </span>
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {item.href === '/patient/messages' && unreadMessages > 0 && (
+                  <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: '#ba1a1a' }}>
+                    {unreadMessages > 99 ? '99+' : unreadMessages}
+                  </span>
+                )}
               </Link>
             )
           })}

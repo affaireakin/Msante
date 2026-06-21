@@ -497,6 +497,76 @@ export default function PatientsPage() {
   const { data: pendingApts = [] } = usePendingAppointments(practId ?? null)
   const { data: upcomingApts = [] } = useUpcomingConfirmed(practId ?? null)
 
+  // Block modal state
+  const BLOCK_REASONS = [
+    'Absence répétée à un rendez-vous',
+    'Non-paiement répété',
+    'Comportement inapproprié',
+    'Communication irrespectueuse',
+    'Annulation répétée de dernière minute',
+    'Demande du praticien',
+    'Autre',
+  ]
+  const [showBlockModal, setShowBlockModal] = useState(false)
+  const [blockReason, setBlockReason] = useState(BLOCK_REASONS[0])
+  const [blockCustom, setBlockCustom] = useState('')
+  const [blockCooldown, setBlockCooldown] = useState<'1m' | '3m' | '6m' | 'permanent'>('3m')
+
+  const { data: patientBlock, refetch: refetchBlock } = useQuery<{
+    id: string; reason: string; cooldown_until: string | null; unblocked_at: string | null
+  } | null>({
+    queryKey: ['patient-block', practId, selected?.id],
+    enabled: !!practId && !!selected,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('practitioner_patient_blocks')
+        .select('id, reason, cooldown_until, unblocked_at')
+        .eq('practitioner_id', practId!)
+        .eq('patient_id', selected!.id)
+        .maybeSingle()
+      return data ?? null
+    },
+  })
+
+  const isBlocked = !!patientBlock && !patientBlock.unblocked_at
+
+  const blockMutation = useMutation({
+    mutationFn: async () => {
+      if (!practId || !selected) return
+      const reason = blockReason === 'Autre' ? (blockCustom.trim() || 'Autre') : blockReason
+      let cooldown_until: string | null = null
+      if (blockCooldown !== 'permanent') {
+        const days = blockCooldown === '1m' ? 30 : blockCooldown === '3m' ? 90 : 180
+        const d = new Date()
+        d.setDate(d.getDate() + days)
+        cooldown_until = d.toISOString()
+      }
+      const { error } = await supabase
+        .from('practitioner_patient_blocks')
+        .upsert({ practitioner_id: practId, patient_id: selected.id, reason, cooldown_until, unblocked_at: null },
+          { onConflict: 'practitioner_id,patient_id' })
+      if (error) throw error
+    },
+    onSuccess: () => {
+      void refetchBlock()
+      setShowBlockModal(false)
+      setBlockReason(BLOCK_REASONS[0])
+      setBlockCustom('')
+    },
+  })
+
+  const unblockMutation = useMutation({
+    mutationFn: async () => {
+      if (!patientBlock) return
+      const { error } = await supabase
+        .from('practitioner_patient_blocks')
+        .update({ unblocked_at: new Date().toISOString() })
+        .eq('id', patientBlock.id)
+      if (error) throw error
+    },
+    onSuccess: () => void refetchBlock(),
+  })
+
   type StatusFilter = 'tous' | 'rdv_prochain' | 'humeur_basse' | 'a_recontacter'
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('tous')
 
@@ -919,9 +989,97 @@ export default function PatientsPage() {
                   Ouvrir le dossier
                 </Link>
               </div>
+
+              {/* Blocage patient */}
+              <div className="border-t border-slate-100 pt-3">
+                {isBlocked ? (
+                  <div className="space-y-2">
+                    <div className="rounded-xl bg-[#ffdad6]/60 px-3 py-2.5 text-xs text-[#ba1a1a] space-y-0.5">
+                      <p className="font-bold flex items-center gap-1">
+                        <Icon name="block" size={14} color="#ba1a1a" />
+                        Patient bloqué
+                      </p>
+                      <p className="text-[#ba1a1a]/80">{patientBlock?.reason}</p>
+                      {patientBlock?.cooldown_until && (
+                        <p className="text-[#ba1a1a]/70">
+                          Jusqu&apos;au {new Date(patientBlock.cooldown_until).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => unblockMutation.mutate()}
+                      disabled={unblockMutation.isPending}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-[#ba1a1a] text-[#ba1a1a] hover:bg-[#ffdad6] transition-colors disabled:opacity-50"
+                    >
+                      <Icon name="lock_open" size={15} color="#ba1a1a" />
+                      Débloquer ce patient
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowBlockModal(true)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-[#ba1a1a] hover:bg-[#ffdad6] transition-colors border border-transparent hover:border-[#ba1a1a]/30"
+                  >
+                    <Icon name="block" size={15} color="#ba1a1a" />
+                    Bloquer ce patient
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}
+
+      {/* Modal blocage */}
+      {showBlockModal && selected && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-[#0b1c30]">Bloquer {selected.full_name}</h3>
+              <button onClick={() => setShowBlockModal(false)} className="text-[#6f787e] hover:text-[#0b1c30]">
+                <Icon name="close" size={20} />
+              </button>
+            </div>
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
+              Le patient bloqué ne pourra plus prendre de rendez-vous avec vous pendant la période indiquée.
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-semibold text-[#0b1c30]">Motif du blocage</label>
+                <select value={blockReason} onChange={e => setBlockReason(e.target.value)}
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685]">
+                  {BLOCK_REASONS.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+                {blockReason === 'Autre' && (
+                  <input value={blockCustom} onChange={e => setBlockCustom(e.target.value)}
+                    placeholder="Précisez le motif..."
+                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685]" />
+                )}
+              </div>
+              <div>
+                <label className="text-sm font-semibold text-[#0b1c30]">Durée du blocage</label>
+                <div className="mt-2 grid grid-cols-4 gap-2">
+                  {([['1m', '1 mois'], ['3m', '3 mois'], ['6m', '6 mois'], ['permanent', 'Permanent']] as const).map(([val, label]) => (
+                    <button key={val} onClick={() => setBlockCooldown(val)}
+                      className={`py-2 rounded-xl text-xs font-semibold border-2 transition-colors ${blockCooldown === val ? 'border-[#ba1a1a] bg-[#ffdad6] text-[#ba1a1a]' : 'border-slate-200 text-[#6f787e] hover:border-slate-300'}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setShowBlockModal(false)}
+                className="flex-1 border border-slate-200 text-[#6f787e] rounded-xl py-2.5 text-sm font-semibold hover:bg-slate-50">
+                Annuler
+              </button>
+              <button onClick={() => blockMutation.mutate()} disabled={blockMutation.isPending}
+                className="flex-1 bg-[#ba1a1a] text-white rounded-xl py-2.5 text-sm font-semibold disabled:opacity-50">
+                {blockMutation.isPending ? 'Blocage...' : 'Confirmer le blocage'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
       </div>
     </div>
