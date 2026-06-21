@@ -83,21 +83,48 @@ export default function CollaboratorsPage() {
     },
   })
 
+  async function logAudit(
+    action: string,
+    resource_type: string,
+    resource_id: string,
+    old_values?: Record<string, unknown> | null,
+    new_values?: Record<string, unknown> | null,
+  ) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    await supabase.from('audit_logs').insert({
+      actor_id: user.id,
+      action,
+      resource_type,
+      resource_id,
+      old_values: old_values ?? null,
+      new_values: new_values ?? null,
+    })
+  }
+
   const suspendMutation = useMutation({
-    mutationFn: async ({ id, suspend }: { id: string; suspend: boolean }) => {
+    mutationFn: async ({ id, suspend, member }: { id: string; suspend: boolean; member: TeamMember }) => {
       const { error } = await supabase
         .from('users')
         .update({ status: suspend ? 'suspended' : 'active' })
         .eq('id', id)
       if (error) throw error
+      await logAudit(
+        suspend ? 'collaborator.suspended' : 'collaborator.reactivated',
+        'user', id,
+        { status: member.status },
+        { status: suspend ? 'suspended' : 'active' },
+      )
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-team'] }),
   })
 
   const changeRoleMutation = useMutation({
     mutationFn: async ({ id, sub_role }: { id: string; sub_role: string }) => {
+      const prev = editingMember?.sub_role ?? null
       const { error } = await supabase.from('users').update({ sub_role }).eq('id', id)
       if (error) throw error
+      await logAudit('collaborator.role_changed', 'user', id, { sub_role: prev }, { sub_role })
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-team'] })
@@ -106,8 +133,9 @@ export default function CollaboratorsPage() {
   })
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await supabase.from('users').delete().eq('id', id)
+    mutationFn: async (member: TeamMember) => {
+      await supabase.from('users').delete().eq('id', member.id)
+      await logAudit('collaborator.deleted', 'user', member.id, { email: member.email, sub_role: member.sub_role }, null)
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-team'] })
@@ -177,6 +205,7 @@ export default function CollaboratorsPage() {
         const body = await res.json().catch(() => ({}))
         throw new Error((body as { error?: string }).error ?? "Erreur lors de l'invitation")
       }
+      await logAudit('collaborator.invited', 'invitation', email, null, { email, role })
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-invitations'] })
@@ -265,7 +294,7 @@ export default function CollaboratorsPage() {
                     </button>
                     {/* Suspendre / Réactiver */}
                     <button
-                      onClick={() => suspendMutation.mutate({ id: member.id, suspend: member.status === 'active' })}
+                      onClick={() => suspendMutation.mutate({ id: member.id, suspend: member.status === 'active', member })}
                       disabled={suspendMutation.isPending}
                       className="p-2 rounded-lg hover:bg-slate-100 transition-colors disabled:opacity-50"
                       style={{ color: member.status === 'suspended' ? '#1d7a3a' : '#705d00' }}
@@ -517,7 +546,7 @@ export default function CollaboratorsPage() {
                 className="flex-1 border border-[#bec8ce] text-[#6f787e] rounded-xl py-2.5 text-sm font-semibold hover:bg-slate-50 transition">
                 Annuler
               </button>
-              <button onClick={() => deleteMutation.mutate(confirmDelete.id)}
+              <button onClick={() => deleteMutation.mutate(confirmDelete!)}
                 disabled={deleteMutation.isPending}
                 className="flex-1 bg-[#ba1a1a] text-white rounded-xl py-2.5 text-sm font-semibold disabled:opacity-50 transition">
                 {deleteMutation.isPending ? 'Suppression...' : 'Supprimer'}
