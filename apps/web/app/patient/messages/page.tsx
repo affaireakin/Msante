@@ -224,6 +224,17 @@ export default function PatientMessagesPage() {
         attachment_type: payload.attachmentType ?? null,
       })
       if (error) throw error
+      // Notification in-app pour le praticien
+      const preview = payload.attachmentType ? '📎 Document joint' : payload.body.slice(0, 80)
+      await supabase.from('notifications').insert({
+        user_id: activeConv!.partnerId,
+        type: 'new_message',
+        title: 'Nouveau message patient',
+        body: preview,
+        data: { sender_id: myId, conversation_partner: myId },
+        channel: 'push',
+        status: 'pending',
+      })
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: threadKey })

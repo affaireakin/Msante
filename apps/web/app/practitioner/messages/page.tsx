@@ -208,6 +208,17 @@ export default function PractitionerMessagesPage() {
         attachment_type: payload.attachmentType ?? null,
       })
       if (error) throw error
+      // Notification in-app pour le destinataire
+      const preview = payload.attachmentType ? '📎 Document joint' : payload.body.slice(0, 80)
+      await supabase.from('notifications').insert({
+        user_id: activeConv!.partnerId,
+        type: 'new_message',
+        title: 'Nouveau message',
+        body: preview,
+        data: { sender_id: myId, conversation_partner: myId },
+        channel: 'push',
+        status: 'pending',
+      })
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: threadKey })
@@ -271,6 +282,16 @@ export default function PractitionerMessagesPage() {
           { participant_a: a, participant_b: b, closed_at: new Date().toISOString(), closed_by: myId },
           { onConflict: 'participant_a,participant_b' }
         )
+        // Notifier le patient de la clôture
+        await supabase.from('notifications').insert({
+          user_id: partnerId,
+          type: 'conversation_closed',
+          title: 'Conversation clôturée',
+          body: 'Votre praticien a clôturé cette conversation.',
+          data: { closed_by: myId },
+          channel: 'push',
+          status: 'pending',
+        })
       } else {
         await supabase.from('message_threads')
           .update({ closed_at: null, closed_by: null })
