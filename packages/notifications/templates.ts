@@ -53,6 +53,16 @@ const TEMPLATES: Record<
     body: 'Prenez 30 secondes pour noter votre humeur du jour.',
     route: () => '/(patient)/mental-health',
   },
+  appointment_cancelled: {
+    title: 'RDV annulé',
+    body: 'Votre RDV avec {practitionerName} le {date} à {time} a été annulé. {reason}',
+    route: () => '/(patient)/appointments',
+  },
+  prescription_created: {
+    title: 'Nouvelle ordonnance 📋',
+    body: 'Dr {practitionerName} vient de vous créer une ordonnance. Consultez-la dans M-Santé.',
+    route: () => '/(patient)/prescriptions',
+  },
 }
 
 function interpolate(template: string, data: TemplateData): string {

@@ -13,13 +13,37 @@ async function sendPush(token: string, title: string, body: string, data: Record
   })
 }
 
+// Fire-and-forget call to send-workflow-notification (WhatsApp + Email)
+async function triggerWorkflowNotif(
+  supabaseUrl: string,
+  serviceRoleKey: string,
+  template_key: string,
+  recipients: Array<{ user_id: string; full_name: string; email?: string | null; phone?: string | null; push_token?: string | null }>,
+  data: Record<string, string | number>,
+) {
+  try {
+    await fetch(
+      `${supabaseUrl}/functions/v1/send-workflow-notification`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${serviceRoleKey}`,
+        },
+        body: JSON.stringify({ template_key, recipients, data }),
+      }
+    )
+  } catch (err) {
+    console.error('on-appointment-status-change: workflow notif failed', err)
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
-  const supabase = createClient(
-    Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-  )
+  const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
+  const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 
   const { appointment_id, new_status } = await req.json()
 
@@ -31,7 +55,7 @@ Deno.serve(async (req) => {
 
   const { data: appt } = await supabase
     .from('appointments')
-    .select('patient_id, practitioner_id, scheduled_at')
+    .select('patient_id, practitioner_id, scheduled_at, cancellation_reason')
     .eq('id', appointment_id)
     .single()
 
@@ -43,17 +67,18 @@ Deno.serve(async (req) => {
     .eq('id', appt.practitioner_id)
     .single()
 
-  // ── confirmed / cancelled → notifie le patient ────────────────────────────
+  // ── confirmed / cancelled → notifie le patient (push) + workflow (WA + email) ─
   if (new_status === 'confirmed' || new_status === 'cancelled') {
     const [{ data: patient }, { data: practUser }] = await Promise.all([
-      supabase.from('users').select('push_token, full_name').eq('id', appt.patient_id).single(),
-      supabase.from('users').select('full_name').eq('id', pract?.user_id ?? '').single(),
+      supabase.from('users').select('push_token, full_name, email, phone').eq('id', appt.patient_id).single(),
+      supabase.from('users').select('full_name, email, phone, push_token').eq('id', pract?.user_id ?? '').single(),
     ])
 
     const scheduledDate = new Date(appt.scheduled_at as string)
     const dateStr = scheduledDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long' })
     const timeStr = scheduledDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
     const practName = practUser?.full_name ?? 'votre praticien'
+    const patientName = patient?.full_name ?? 'Votre patient'
 
     const isConfirmed = new_status === 'confirmed'
     const title = isConfirmed ? 'RDV confirmé ✓' : 'Demande refusée'
@@ -62,6 +87,7 @@ Deno.serve(async (req) => {
       : `Votre demande de RDV avec ${practName} le ${dateStr} n'a pas pu être acceptée.`
     const route = isConfirmed ? '/(patient)/appointments' : '/(patient)/find-practitioners'
 
+    // Push notification
     if (patient?.push_token) {
       await sendPush(patient.push_token, title, body, { route, appointment_id })
     }
@@ -76,6 +102,27 @@ Deno.serve(async (req) => {
       status: patient?.push_token ? 'sent' : 'pending',
       sent_at: patient?.push_token ? new Date().toISOString() : null,
     })
+
+    // WhatsApp + Email via workflow (fire-and-forget)
+    const templateKey = isConfirmed ? 'appointment.confirmed' : 'appointment.cancelled'
+    const notifData = {
+      practitionerName: practName,
+      patientName,
+      date: dateStr,
+      time: timeStr,
+      reason: (appt.cancellation_reason as string | null) ?? '',
+      appointment_id,
+    }
+
+    const patientRecipient = patient
+      ? [{ user_id: appt.patient_id, full_name: patient.full_name, email: patient.email, phone: patient.phone, push_token: null }]
+      : []
+
+    const practRecipient = (pract?.user_id && practUser)
+      ? [{ user_id: pract.user_id, full_name: practUser.full_name, email: practUser.email, phone: practUser.phone, push_token: null }]
+      : []
+
+    void triggerWorkflowNotif(SUPABASE_URL, SERVICE_ROLE_KEY, templateKey, [...patientRecipient, ...practRecipient], notifData)
 
     return new Response(JSON.stringify({ notified: 'patient', status: new_status }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

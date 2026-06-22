@@ -189,6 +189,44 @@ Deno.serve(async (req) => {
         .eq('id', appointment_id),
     ])
 
+    // Trigger WhatsApp + email workflow notification (fire-and-forget)
+    try {
+      const { data: patientUser } = await supabase
+        .from('users')
+        .select('full_name, email, phone')
+        .eq('id', user.id)
+        .single()
+
+      if (patientUser) {
+        void fetch(
+          `${Deno.env.get('SUPABASE_URL')}/functions/v1/send-workflow-notification`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+            },
+            body: JSON.stringify({
+              template_key: 'payment.completed',
+              recipients: [{
+                user_id: user.id,
+                full_name: patientUser.full_name,
+                email: patientUser.email,
+                phone: patientUser.phone,
+                push_token: null,
+              }],
+              data: {
+                amount: String(amount),
+                currency,
+                provider,
+                appointment_id,
+              },
+            }),
+          }
+        )
+      }
+    } catch (_) { /* fire-and-forget — never block the response */ }
+
     return new Response(JSON.stringify({
       paymentId: payment.id,
       status: 'completed',

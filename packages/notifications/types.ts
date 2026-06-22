@@ -5,6 +5,8 @@ export type NotificationChannel = 'push' | 'email' | 'whatsapp' | 'sms'
 export type NotificationEventType =
   | 'appointment_confirm'
   | 'appointment_reminder'
+  | 'appointment_cancelled'
+  | 'prescription_created'
   | 'payment_success'
   | 'payment_failed'
   | 'consultation_starting'
