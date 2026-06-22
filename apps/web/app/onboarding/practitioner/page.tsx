@@ -9,12 +9,6 @@ function Icon({ name, size = 20, color }: { name: string; size?: number; color?:
 
 const STEPS = ['Votre profil', 'Votre pratique', 'Documents', 'Confirmation']
 
-const SPECIALITIES = [
-  'Psychologue', 'Psychiatre', 'Thérapeute', 'Coach bien-être',
-  'Nutritionniste', 'Médecin généraliste', 'Sage-femme', 'Infirmier(e)',
-  'Sophrologue', 'Kinésithérapeute', 'Cardiologue', 'Dermatologue',
-  'Gynécologue', 'Ophtalmologue', 'Pédiatre', 'Dentiste',
-]
 const LANGUAGES = ['Français', 'Wolof', 'Anglais', 'Arabe', 'Diola', 'Mandingue', 'Pulaar']
 const DURATIONS = [{ value: 30, label: '30 min' }, { value: 45, label: '45 min' }, { value: 60, label: '1h' }, { value: 90, label: '1h30' }]
 const SESSION_TYPES = [
@@ -57,6 +51,15 @@ export default function PractitionerOnboardingPage() {
   const diplomaRef = useRef<HTMLInputElement>(null)
   const idRef = useRef<HTMLInputElement>(null)
   const licenseRef = useRef<HTMLInputElement>(null)
+
+  const [specialities, setSpecialities] = useState<string[]>([])
+
+  useEffect(() => {
+    supabase.from('profession_permissions').select('profession_label').order('profession_label')
+      .then(({ data }) => {
+        if (data?.length) setSpecialities(data.map(r => r.profession_label))
+      })
+  }, [])
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -250,7 +253,7 @@ export default function PractitionerOnboardingPage() {
                 <select value={speciality} onChange={e => setSpeciality(e.target.value)}
                   className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all">
                   <option value="">Sélectionnez</option>
-                  {SPECIALITIES.map(s => <option key={s}>{s}</option>)}
+                  {specialities.map(s => <option key={s}>{s}</option>)}
                 </select>
               </div>
 

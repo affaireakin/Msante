@@ -1,24 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
 type Role = 'patient' | 'practitioner'
 type PractType = 'healthcare' | 'wellness'
-
-const HEALTHCARE_SPECIALITIES = [
-  'Médecin généraliste', 'Psychiatre', 'Psychologue clinicien', 'Neurologue',
-  'Pédiatre', 'Gynécologue', 'Cardiologue', 'Dermatologue', 'Infirmier(e)',
-  'Sage-femme', 'Kinésithérapeute', 'Orthophoniste',
-]
-
-const WELLNESS_SPECIALITIES = [
-  'Coach de vie', 'Coach bien-être', 'Relaxologue', 'Thérapeute',
-  'Nutritionniste', 'Naturopathe', 'Hypnothérapeute', 'Sophrologue',
-  'Méditation & pleine conscience', 'Yoga-thérapeute',
-]
 
 function translateError(msg: string): string {
   if (msg.includes('already registered') || msg.includes('User already registered')) return 'Un compte existe déjà avec cet email.'
@@ -41,7 +29,16 @@ export default function SignupPage() {
   const [error, setError]             = useState('')
   const [loading, setLoading]         = useState(false)
 
-  const specialityList = practType === 'healthcare' ? HEALTHCARE_SPECIALITIES : WELLNESS_SPECIALITIES
+  const [specialities, setSpecialities] = useState<string[]>([])
+
+  useEffect(() => {
+    supabase.from('profession_permissions').select('profession_label').order('profession_label')
+      .then(({ data }) => {
+        if (data?.length) setSpecialities(data.map(r => r.profession_label))
+      })
+  }, [])
+
+  const specialityList = specialities
 
   const handleRoleChange = (newRole: Role) => {
     setRole(newRole)
