@@ -217,7 +217,7 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Nom</label>
                 <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="ex: Consultation générale"
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#006685]" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -237,7 +237,7 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Tarif</label>
                   <div className="flex gap-1.5">
                     <input type="number" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="15000"
-                      className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685] min-w-0" />
+                      className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#006685] min-w-0" />
                     <select value={form.currency} onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}
                       className="px-2 py-2 border border-slate-200 rounded-xl text-xs outline-none bg-white">
                       <option value="XOF">XOF</option><option value="EUR">EUR</option><option value="USD">USD</option>
@@ -274,7 +274,7 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Description (optionnelle)</label>
                 <input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="ex: Pour les nouveaux patients"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#006685]" />
               </div>
             </div>
 

@@ -125,8 +125,9 @@ export default function EditProfessionPage() {
   const { data: profession, isLoading, error } = useQuery({
     queryKey: ['profession-permission', professionKey],
     queryFn: async () => {
-      const { data, error } = await supabase.from('profession_permissions').select('*').eq('profession_key', professionKey).single()
+      const { data, error } = await supabase.from('profession_permissions').select('*').eq('profession_key', professionKey).maybeSingle()
       if (error) throw error
+      if (!data) throw new Error('not_found')
       return data as ProfessionPermission
     },
     staleTime: 30_000,

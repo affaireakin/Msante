@@ -366,7 +366,7 @@ export default function PractitionerOnboardingPage() {
 
               <DocUploadZone label="Diplôme / Certificat" required docState={diploma} setDoc={setDiploma} inputRef={diplomaRef} icon="school" />
               <DocUploadZone label="Carte d'identité nationale" required docState={idCard} setDoc={setIdCard} inputRef={idRef} icon="badge" />
-              <DocUploadZone label="Licence professionnelle" docState={license} setDoc={setLicense} inputRef={licenseRef} icon="verified" />
+              <DocUploadZone label="Justificatif professionnel" docState={license} setDoc={setLicense} inputRef={licenseRef} icon="verified" />
 
               {docError && (
                 <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-[#ba1a1a] flex items-center gap-2">

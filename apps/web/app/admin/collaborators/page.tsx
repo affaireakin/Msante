@@ -6,10 +6,10 @@ import { supabase } from '@/lib/supabase'
 type Tab = 'team' | 'invitations' | 'patients' | 'practitioners'
 
 const COLLAB_ROLES = [
-  { value: 'admin',     label: 'Administrateur' },
-  { value: 'moderator', label: 'Modérateur' },
-  { value: 'accountant',label: 'Comptable' },
-  { value: 'readonly',  label: 'Lecture seule' },
+  { value: 'admin',      label: 'Administrateur', description: 'Accès complet : validation praticiens, gestion utilisateurs, workflows, paiements.' },
+  { value: 'moderator',  label: 'Modérateur',     description: 'Validation praticiens, modération contenus, résolution litiges. Pas d\'accès finances.' },
+  { value: 'accountant', label: 'Comptable',      description: 'Lecture seule sur paiements, réconciliation financière et exports comptables.' },
+  { value: 'readonly',   label: 'Lecture seule',  description: 'Consultation du tableau de bord et des statistiques uniquement. Aucune action.' },
 ]
 
 const ROLE_BADGE: Record<string, string> = {
@@ -474,12 +474,15 @@ export default function CollaboratorsPage() {
                   placeholder="collaborateur@email.com" />
               </div>
               <div>
-                <label className="text-sm font-semibold text-[#0b1c30] mb-2 block">Rôle</label>
+                <label className="text-sm font-semibold text-[#0b1c30] mb-2 block">Rôle & permissions</label>
                 <div className="space-y-2">
                   {COLLAB_ROLES.map(r => (
-                    <label key={r.value} className="flex items-center gap-3 cursor-pointer group">
-                      <input type="radio" name="role" value={r.value} checked={role === r.value} onChange={() => setRole(r.value)} className="accent-[#006685]" />
-                      <span className="text-sm text-[#3f484d] group-hover:text-[#0b1c30]">{r.label}</span>
+                    <label key={r.value} className={`flex items-start gap-3 cursor-pointer p-3 rounded-xl border transition-all ${role === r.value ? 'border-[#006685] bg-[#e5eeff]' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}>
+                      <input type="radio" name="role" value={r.value} checked={role === r.value} onChange={() => setRole(r.value)} className="accent-[#006685] mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="text-sm font-semibold text-[#0b1c30] block">{r.label}</span>
+                        <span className="text-xs text-[#6f787e] leading-relaxed">{r.description}</span>
+                      </div>
                     </label>
                   ))}
                 </div>
@@ -508,9 +511,12 @@ export default function CollaboratorsPage() {
             <p className="text-sm text-[#6f787e]">{editingMember.full_name || editingMember.email}</p>
             <div className="space-y-2">
               {COLLAB_ROLES.map(r => (
-                <label key={r.value} className="flex items-center gap-3 cursor-pointer">
-                  <input type="radio" name="edit-role" value={r.value} checked={editRole === r.value} onChange={() => setEditRole(r.value)} className="accent-[#006685]" />
-                  <span className="text-sm text-[#3f484d]">{r.label}</span>
+                <label key={r.value} className={`flex items-start gap-3 cursor-pointer p-3 rounded-xl border transition-all ${editRole === r.value ? 'border-[#006685] bg-[#e5eeff]' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}>
+                  <input type="radio" name="edit-role" value={r.value} checked={editRole === r.value} onChange={() => setEditRole(r.value)} className="accent-[#006685] mt-0.5 flex-shrink-0" />
+                  <div>
+                    <span className="text-sm font-semibold text-[#0b1c30] block">{r.label}</span>
+                    <span className="text-xs text-[#6f787e] leading-relaxed">{r.description}</span>
+                  </div>
                 </label>
               ))}
             </div>

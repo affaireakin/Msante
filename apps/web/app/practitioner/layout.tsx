@@ -117,6 +117,8 @@ export default function PractitionerLayout({ children }: { children: React.React
   const [speciality, setSpeciality] = useState('')
   const [accountStatus, setAccountStatus] = useState<string | null>(null)
   const [statusReason, setStatusReasonText] = useState<string | null>(null)
+  const [verificationStatus, setVerificationStatus] = useState<string | null>(null)
+  const [practitionerLoaded, setPractitionerLoaded] = useState(false)
   const [practitionerId, setPractitionerId] = useState<string | null>(null)
   const [practitionerType, setPractitionerType] = useState<'healthcare' | 'wellness'>('healthcare')
   const [showAppealForm, setShowAppealForm] = useState(false)
@@ -145,16 +147,18 @@ export default function PractitionerLayout({ children }: { children: React.React
           setInitials(fullName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'P')
           supabase
             .from('practitioners')
-            .select('id, speciality, account_status, status_reason, practitioner_type')
+            .select('id, speciality, account_status, status_reason, practitioner_type, verification_status')
             .eq('user_id', user.id)
-            .single()
+            .maybeSingle()
             .then(({ data: pract }) => {
+              setPractitionerLoaded(true)
               if (pract) {
                 setSpeciality(pract.speciality ?? '')
                 setAccountStatus(pract.account_status ?? null)
                 setStatusReasonText(pract.status_reason ?? null)
                 setPractitionerId(pract.id)
                 setPractitionerType((pract.practitioner_type as 'healthcare' | 'wellness') ?? 'healthcare')
+                setVerificationStatus(pract.verification_status ?? null)
               }
             })
         })
@@ -307,7 +311,40 @@ export default function PractitionerLayout({ children }: { children: React.React
           </div>
         </header>
         <main className="flex-1 mt-16 p-4 md:p-8 overflow-y-auto">
-          {(accountStatus === 'suspended' || accountStatus === 'blocked') && (
+          {/* Blocking screen: account pending validation */}
+          {practitionerLoaded && verificationStatus !== null && verificationStatus !== 'approved' && (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+              <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 ${
+                verificationStatus === 'rejected' ? 'bg-red-100' : 'bg-amber-100'
+              }`}>
+                <span className={`material-symbols-outlined text-4xl ${
+                  verificationStatus === 'rejected' ? 'text-red-500' : 'text-amber-500'
+                }`}>
+                  {verificationStatus === 'rejected' ? 'cancel' : 'pending_actions'}
+                </span>
+              </div>
+              <h2 className="text-xl font-bold text-[#0b1c30] mb-2">
+                {verificationStatus === 'rejected' ? 'Demande refusée' : 'Compte en attente de validation'}
+              </h2>
+              <p className="text-sm text-[#6f787e] max-w-md mb-4">
+                {verificationStatus === 'rejected'
+                  ? `Votre demande d'accès a été refusée.${statusReason ? ` Motif : ${statusReason}` : ''} Contactez notre équipe pour plus d'informations.`
+                  : verificationStatus === 'under_review'
+                    ? 'Votre dossier est en cours d\'examen par notre équipe. Vous serez notifié par email et WhatsApp dès validation.'
+                    : 'Votre profil est en attente de vérification par notre équipe. Vous recevrez une notification dès que votre compte sera validé.'
+                }
+              </p>
+              <div className="flex items-center gap-2 text-xs text-[#6f787e] bg-white/60 border border-white/80 rounded-xl px-4 py-3">
+                <span className="material-symbols-outlined text-[16px] text-[#006685]">notifications</span>
+                Notification push, email et WhatsApp envoyés à la validation
+              </div>
+              <button onClick={handleLogout} className="mt-6 text-sm text-[#6f787e] underline hover:text-[#0b1c30] transition-colors">
+                Se déconnecter
+              </button>
+            </div>
+          )}
+          {/* Normal content — only shown when account is approved */}
+          {(!practitionerLoaded || verificationStatus === null || verificationStatus === 'approved') && (accountStatus === 'suspended' || accountStatus === 'blocked') && (
             <div className={`mb-6 rounded-xl p-4 border flex items-start gap-3 ${
               accountStatus === 'blocked'
                 ? 'bg-red-50 border-red-200 text-red-800'
@@ -360,7 +397,7 @@ export default function PractitionerLayout({ children }: { children: React.React
               </div>
             </div>
           )}
-          {children}
+          {(!practitionerLoaded || verificationStatus === null || verificationStatus === 'approved') && children}
         </main>
       </div>
     </div>
