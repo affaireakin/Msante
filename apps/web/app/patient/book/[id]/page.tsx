@@ -102,6 +102,9 @@ function useBookingData(practId: string) {
   return useQuery({
     queryKey: ['booking-v2', practId],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      const patientId = user?.id ?? null
+
       const [
         { data: pract },
         { data: types },
@@ -109,14 +112,30 @@ function useBookingData(practId: string) {
         { data: blocked },
         { data: settings },
         { data: appointments },
+        { data: patientBlock },
       ] = await Promise.all([
-        supabase.from('practitioners').select('id, speciality, users!user_id(full_name)').eq('id', practId).single(),
+        supabase.from('practitioners').select('id, speciality, accepting_new_patients, users!user_id(full_name)').eq('id', practId).single(),
         supabase.from('consultation_types').select('id, name, duration_min, price, currency, color, description, mode').eq('practitioner_id', practId).eq('is_active', true).order('sort_order'),
         supabase.from('weekly_availabilities').select('day_of_week, start_time, end_time, consultation_type_ids, is_active, location:practitioner_locations(name, address, city, is_teleconsult)').eq('practitioner_id', practId).eq('is_active', true),
         supabase.from('blocked_periods').select('start_date, end_date, start_time, end_time').eq('practitioner_id', practId).gte('end_date', new Date().toISOString().split('T')[0]),
         supabase.from('practitioner_booking_settings').select('min_booking_delay_h, max_booking_days_ahead, buffer_between_min, auto_confirm').eq('practitioner_id', practId).maybeSingle(),
         supabase.from('appointments').select('scheduled_at').eq('practitioner_id', practId).not('status', 'in', '("cancelled","no_show")').gte('scheduled_at', new Date().toISOString()),
+        patientId
+          ? supabase.from('practitioner_patient_blocks').select('reason, cooldown_until').eq('practitioner_id', practId).eq('patient_id', patientId).is('unblocked_at', null).maybeSingle()
+          : Promise.resolve({ data: null }),
       ])
+
+      const practData = pract as unknown as { id: string; speciality: string; accepting_new_patients: boolean; users: { full_name: string } | null }
+
+      // Patient bloqué par ce praticien
+      if (patientBlock) {
+        return { pract: practData, types: [], slots: [], autoConfirm: false, blocked: true, blockReason: (patientBlock as { reason: string; cooldown_until: string | null }).reason, blockUntil: (patientBlock as { reason: string; cooldown_until: string | null }).cooldown_until }
+      }
+
+      // Praticien n'accepte plus de nouveaux patients
+      if (practData && practData.accepting_new_patients === false) {
+        return { pract: practData, types: [], slots: [], autoConfirm: false, blocked: true, blockReason: 'Ce praticien n\'accepte plus de nouveaux patients pour le moment.', blockUntil: null }
+      }
 
       const defaultSettings: BookingSettings = { min_booking_delay_h: 2, max_booking_days_ahead: 60, buffer_between_min: 0, auto_confirm: true }
       const effectiveSettings: BookingSettings = settings ? { ...defaultSettings, ...settings } : defaultSettings
@@ -130,10 +149,13 @@ function useBookingData(practId: string) {
       )
 
       return {
-        pract: pract as unknown as { id: string; speciality: string; users: { full_name: string } | null },
+        pract: practData,
         types: (types ?? []) as ConsultationType[],
         slots,
         autoConfirm: effectiveSettings.auto_confirm,
+        blocked: false,
+        blockReason: null,
+        blockUntil: null,
       }
     },
     enabled: !!practId,
@@ -184,6 +206,29 @@ export default function BookingPage() {
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
   const [bookingError, setBookingError] = useState('')
+
+  // Blocage patient
+  if (data?.blocked) {
+    return (
+      <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6" style={{ fontFamily: 'Manrope' }}>
+        <div className="bg-white rounded-2xl p-10 max-w-md w-full text-center space-y-5 shadow-xl">
+          <div className="w-16 h-16 rounded-full bg-[#ffdad6] flex items-center justify-center mx-auto">
+            <span className="material-symbols-outlined text-[#ba1a1a]" style={{ fontSize: '32px' }}>block</span>
+          </div>
+          <h2 className="text-xl font-black text-[#0b1c30]">Réservation impossible</h2>
+          <p className="text-sm text-[#6f787e]">{data.blockReason}</p>
+          {data.blockUntil && (
+            <p className="text-xs text-[#6f787e] bg-slate-50 rounded-xl px-4 py-2">
+              Jusqu&apos;au {new Date(data.blockUntil).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+            </p>
+          )}
+          <button onClick={() => router.back()} className="w-full py-3 rounded-xl bg-[#006685] text-white font-semibold text-sm">
+            Retour
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const allSlots = data?.slots ?? []
   const types = data?.types ?? []

@@ -17,6 +17,7 @@ interface Practitioner {
   rating: number | null
   total_reviews: number
   bio: string | null
+  accepting_new_patients: boolean
   users: { full_name: string } | null
   practitioner_services: { duration_min: number; is_active: boolean }[] | null
 }
@@ -27,8 +28,9 @@ function usePractitioners(speciality: string, search: string) {
     queryFn: async () => {
       let q = supabase
         .from('practitioners')
-        .select('id, speciality, session_duration_min, rating, total_reviews, bio, users!user_id(full_name), practitioner_services(duration_min, is_active)')
+        .select('id, speciality, session_duration_min, rating, total_reviews, bio, accepting_new_patients, users!user_id(full_name), practitioner_services(duration_min, is_active)')
         .eq('verification_status', 'approved')
+        .eq('accepting_new_patients', true)
         .order('rating', { ascending: false })
 
       if (speciality !== 'Tous') q = q.eq('speciality', speciality)
