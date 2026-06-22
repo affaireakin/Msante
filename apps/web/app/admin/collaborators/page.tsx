@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
@@ -67,6 +67,13 @@ export default function CollaboratorsPage() {
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null)
   const [editRole, setEditRole] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<TeamMember | null>(null)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setCurrentUserId(user.id)
+    })
+  }, [])
 
   // ── Équipe admin ──────────────────────────────────────────────────────────
   const { data: team = [], isLoading: loadingTeam } = useQuery<TeamMember[]>({
@@ -263,11 +270,22 @@ export default function CollaboratorsPage() {
           {loadingTeam ? (
             <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" /></div>
           ) : team.length === 0 ? (
-            <div className="px-6 py-12 text-center text-[#6f787e] text-sm">Aucun membre admin</div>
+            <div className="px-6 py-12 text-center space-y-3">
+              <p className="text-[#6f787e] text-sm">Aucun membre trouvé.</p>
+              <p className="text-xs text-[#6f787e]">Votre compte apparaîtra ici une fois que la table <code>public.users</code> contient bien votre entrée avec <code>role = &apos;admin&apos;</code>.</p>
+              {currentUserId && (
+                <button
+                  onClick={() => setEditingMember({ id: currentUserId, full_name: 'Moi (admin)', email: null, sub_role: 'admin', status: 'active', created_at: new Date().toISOString() })}
+                  className="mx-auto flex items-center gap-2 px-4 py-2 bg-[#006685] text-white text-sm font-semibold rounded-xl hover:shadow-md transition"
+                >
+                  Modifier mon rôle
+                </button>
+              )}
+            </div>
           ) : (
             <div className="divide-y divide-slate-100">
               {team.map(member => (
-                <div key={member.id} className="flex items-center gap-4 px-6 py-4 hover:bg-slate-50/50 transition-colors">
+                <div key={member.id} className="flex items-center gap-3 px-6 py-4 hover:bg-slate-50/50 transition-colors">
                   <div className="w-10 h-10 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                     {initials(member.full_name)}
                   </div>
@@ -284,33 +302,26 @@ export default function CollaboratorsPage() {
                     <p className="text-xs text-[#6f787e] mt-0.5">{member.email ?? '—'}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    {/* Modifier le rôle */}
                     <button
                       onClick={() => { setEditingMember(member); setEditRole(member.sub_role ?? 'admin') }}
-                      className="p-2 rounded-lg hover:bg-slate-100 transition-colors text-[#6f787e] hover:text-[#006685]"
-                      title="Modifier le rôle"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#006685] text-[#006685] text-xs font-semibold hover:bg-[#006685] hover:text-white transition-colors"
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>edit</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>edit</span>
+                      Modifier rôle
                     </button>
-                    {/* Suspendre / Réactiver */}
                     <button
                       onClick={() => suspendMutation.mutate({ id: member.id, suspend: member.status === 'active', member })}
                       disabled={suspendMutation.isPending}
-                      className="p-2 rounded-lg hover:bg-slate-100 transition-colors disabled:opacity-50"
-                      style={{ color: member.status === 'suspended' ? '#1d7a3a' : '#705d00' }}
-                      title={member.status === 'suspended' ? 'Réactiver' : 'Suspendre'}
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors disabled:opacity-50"
+                      style={{ borderColor: member.status === 'suspended' ? '#1d7a3a' : '#705d00', color: member.status === 'suspended' ? '#1d7a3a' : '#705d00' }}
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                        {member.status === 'suspended' ? 'play_circle' : 'pause_circle'}
-                      </span>
+                      {member.status === 'suspended' ? 'Réactiver' : 'Suspendre'}
                     </button>
-                    {/* Supprimer */}
                     <button
                       onClick={() => setConfirmDelete(member)}
-                      className="p-2 rounded-lg hover:bg-red-50 transition-colors text-[#6f787e] hover:text-[#ba1a1a]"
-                      title="Supprimer"
+                      className="p-1.5 rounded-lg hover:bg-red-50 transition-colors text-[#6f787e] hover:text-[#ba1a1a]"
                     >
-                      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
+                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
                     </button>
                   </div>
                 </div>
