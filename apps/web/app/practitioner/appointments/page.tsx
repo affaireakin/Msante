@@ -363,17 +363,23 @@ function WeekCalendar({
                   .map((w, wi) => {
                     const [sh, sm] = w.start_time.split(':').map(Number)
                     const [eh, em] = w.end_time.split(':').map(Number)
-                    const topPct = (sh + sm / 60 - HOUR_START) * HOUR_H
-                    const heightPct = (eh + em / 60 - sh - sm / 60) * HOUR_H
+                    const topPx = (sh + sm / 60 - HOUR_START) * HOUR_H
+                    const heightPx = (eh + em / 60 - sh - sm / 60) * HOUR_H
+                    const label = `${w.start_time.slice(0,5)}–${w.end_time.slice(0,5)}`
                     return (
-                      <div key={wi} className="absolute pointer-events-none"
+                      <div key={wi} className="absolute pointer-events-none overflow-hidden"
                         style={{
-                          top: `${Math.max(0, topPct)}px`,
-                          height: `${heightPct}px`,
-                          left: 0, right: 0,
-                          backgroundColor: 'rgba(0,102,133,0.06)',
-                          borderLeft: '2px solid rgba(0,102,133,0.20)',
-                        }} />
+                          top: `${Math.max(0, topPx)}px`,
+                          height: `${heightPx}px`,
+                          left: '2px', right: '2px',
+                          backgroundColor: 'rgba(0,102,133,0.12)',
+                          borderRadius: '6px',
+                          borderLeft: '3px solid rgba(0,102,133,0.50)',
+                        }}>
+                        <span style={{ fontSize: '10px', fontWeight: 600, color: 'rgba(0,102,133,0.70)', padding: '3px 5px', display: 'block', lineHeight: 1.2 }}>
+                          📅 {label}
+                        </span>
+                      </div>
                     )
                   })}
 

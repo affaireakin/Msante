@@ -447,20 +447,26 @@ export default function BookingPage() {
               </div>
             </div>
 
-            {/* Mode selector si 'both' */}
+            {/* Mode selector si 'both' — optionnel, filtre les créneaux */}
             {selectedType.mode === 'both' && (
               <div>
-                <p className="text-sm font-bold text-[#0b1c30] mb-2">Mode de consultation</p>
+                <p className="text-sm font-bold text-[#0b1c30] mb-2">
+                  Mode de consultation{' '}
+                  <span className="text-xs font-normal text-slate-400">(optionnel)</span>
+                </p>
                 <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { value: 'presentiel' as const, label: 'Présentiel', icon: '🏥', desc: 'En cabinet' },
-                    { value: 'video' as const,      label: 'Téléconsultation', icon: '📹', desc: 'En ligne' },
-                  ].map(opt => (
-                    <button key={opt.value} onClick={() => setSelectedMode(opt.value)}
+                  {([
+                    { value: 'presentiel' as const, label: 'Présentiel',      icon: '🏥', desc: 'En cabinet' },
+                    { value: 'video'      as const, label: 'Téléconsultation', icon: '📹', desc: 'En ligne'  },
+                  ]).map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setSelectedMode(selectedMode === opt.value ? null : opt.value)}
                       className="flex flex-col items-center gap-1.5 p-4 rounded-2xl border transition-all"
                       style={selectedMode === opt.value
                         ? { backgroundColor: '#e5eeff', borderColor: '#006685', color: '#006685' }
-                        : { backgroundColor: 'rgba(255,255,255,0.70)', borderColor: 'rgba(255,255,255,0.80)', color: '#3f484d' }}>
+                        : { backgroundColor: 'rgba(255,255,255,0.70)', borderColor: 'rgba(190,200,206,0.50)', color: '#3f484d' }}
+                    >
                       <span className="text-2xl">{opt.icon}</span>
                       <span className="font-bold text-sm">{opt.label}</span>
                       <span className="text-xs opacity-70">{opt.desc}</span>
@@ -470,58 +476,68 @@ export default function BookingPage() {
               </div>
             )}
 
-            {/* Date tabs */}
-            {(selectedMode || selectedType.mode !== 'both') && (
+            {/* Créneaux — toujours visibles dès qu'un type est sélectionné */}
+            {dates.length === 0 ? (
+              <div className="rounded-2xl p-10 text-center" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
+                <p className="text-4xl mb-3">📅</p>
+                <p className="font-semibold text-[#0b1c30]">Aucun créneau disponible</p>
+                <p className="text-sm text-[#6f787e] mt-1">Ce praticien n&apos;a pas encore de disponibilités configurées.</p>
+              </div>
+            ) : (
               <>
-                {dates.length === 0 ? (
-                  <div className="rounded-2xl p-10 text-center" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
-                    <p className="text-4xl mb-3">📅</p>
-                    <p className="font-semibold text-[#0b1c30]">Aucun créneau disponible</p>
-                    <p className="text-sm text-[#6f787e] mt-1">Essayez un autre type ou mode de consultation.</p>
+                <div>
+                  <p className="text-sm font-bold text-[#0b1c30] mb-2">Choisir une date</p>
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {dates.slice(0, 14).map(d => (
+                      <button
+                        key={d}
+                        onClick={() => { setSelectedDate(d); setSelectedSlot(null) }}
+                        className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${selectedDate === d ? 'bg-[#006685] text-white border-[#006685]' : 'bg-white/60 text-[#3f484d] border-slate-200/50 hover:bg-white'}`}
+                      >
+                        {formatDate(d)}
+                      </button>
+                    ))}
                   </div>
-                ) : (
-                  <>
-                    <div>
-                      <p className="text-sm font-bold text-[#0b1c30] mb-2">Choisir une date</p>
-                      <div className="flex gap-2 overflow-x-auto pb-2">
-                        {dates.slice(0, 14).map(d => (
-                          <button key={d} onClick={() => { setSelectedDate(d); setSelectedSlot(null) }}
-                            className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${selectedDate === d ? 'bg-[#006685] text-white border-[#006685]' : 'bg-white/60 text-[#3f484d] border-slate-200/50 hover:bg-white'}`}>
-                            {formatDate(d)}
+                </div>
+
+                {selectedDate && (
+                  <div>
+                    <p className="text-sm font-bold text-[#0b1c30] mb-2">
+                      Créneaux disponibles — {formatDateLong(selectedDate)}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {(grouped.get(selectedDate) ?? []).map(slot => {
+                        const key = `${slot.date}-${slot.start_time}`
+                        const isSel = selectedSlot?.date === slot.date && selectedSlot?.start_time === slot.start_time
+                        return (
+                          <button
+                            key={key}
+                            onClick={() => setSelectedSlot(slot)}
+                            className="px-4 py-3 rounded-xl text-sm font-semibold transition-all border flex flex-col items-center gap-0.5"
+                            style={isSel
+                              ? { backgroundColor: '#006685', color: '#fff', borderColor: '#006685' }
+                              : { backgroundColor: 'rgba(255,255,255,0.70)', color: '#0b1c30', borderColor: 'rgba(190,200,206,0.50)' }}
+                          >
+                            <span className="font-bold">{slot.start_time}</span>
+                            {slot.location && (
+                              <span className="text-[10px] opacity-70">{slot.location.name}</span>
+                            )}
                           </button>
-                        ))}
-                      </div>
+                        )
+                      })}
                     </div>
-
-                    {selectedDate && (
-                      <div>
-                        <p className="text-sm font-bold text-[#0b1c30] mb-2">Créneaux disponibles — {formatDateLong(selectedDate)}</p>
-                        <div className="flex flex-wrap gap-2">
-                          {(grouped.get(selectedDate) ?? []).map(slot => {
-                            const key = `${slot.date}-${slot.start_time}`
-                            const isSel = selectedSlot?.date === slot.date && selectedSlot?.start_time === slot.start_time
-                            return (
-                              <button key={key} onClick={() => setSelectedSlot(slot)}
-                                className="px-4 py-3 rounded-xl text-sm font-semibold transition-all border flex flex-col items-center gap-0.5"
-                                style={isSel ? { backgroundColor: '#006685', color: '#fff', borderColor: '#006685' }
-                                  : { backgroundColor: 'rgba(255,255,255,0.70)', color: '#0b1c30', borderColor: 'rgba(190,200,206,0.50)' }}>
-                                <span className="font-bold">{slot.start_time}</span>
-                                {slot.location && (
-                                  <span className="text-[10px] opacity-70">{slot.location.name}</span>
-                                )}
-                              </button>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    )}
-
-                    <button onClick={() => { if (selectedSlot) setStep('confirm') }} disabled={!selectedSlot}
-                      className="w-full py-4 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-40">
-                      {selectedSlot ? `Continuer — ${formatDate(selectedSlot.date)} à ${selectedSlot.start_time}` : 'Sélectionnez un créneau'}
-                    </button>
-                  </>
+                  </div>
                 )}
+
+                <button
+                  onClick={() => { if (selectedSlot) setStep('confirm') }}
+                  disabled={!selectedSlot}
+                  className="w-full py-4 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-40"
+                >
+                  {selectedSlot
+                    ? `Continuer — ${formatDate(selectedSlot.date)} à ${selectedSlot.start_time}`
+                    : 'Sélectionnez un créneau'}
+                </button>
               </>
             )}
           </div>
