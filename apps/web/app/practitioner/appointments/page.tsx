@@ -76,12 +76,36 @@ function fmtTime(d: Date) {
 
 // ─── Hooks ─────────────────────────────────────────────────────────────────────
 
+interface WeeklyAvail {
+  day_of_week: number
+  start_time: string
+  end_time: string
+  is_active: boolean
+}
+
 async function getPractitionerId() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Non connecté')
   const { data } = await supabase.from('practitioners').select('id').eq('user_id', user.id).single()
   if (!data) throw new Error('Profil praticien introuvable')
   return data.id as string
+}
+
+function useWeeklyAvail() {
+  return useQuery<WeeklyAvail[]>({
+    queryKey: ['pract-weekly-avail'],
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const practId = await getPractitionerId()
+      const { data, error } = await supabase
+        .from('weekly_availabilities')
+        .select('day_of_week, start_time, end_time, is_active')
+        .eq('practitioner_id', practId)
+        .eq('is_active', true)
+      if (error) throw error
+      return (data ?? []) as WeeklyAvail[]
+    },
+  })
 }
 
 function useWeekAppointments(weekStart: Date) {
@@ -253,10 +277,11 @@ function DetailPanel({ apt, onClose }: { apt: Appointment; onClose: () => void }
 // ─── WeekCalendar ──────────────────────────────────────────────────────────────
 
 function WeekCalendar({
-  weekDays, appointments, onSelect,
+  weekDays, appointments, weeklyAvails, onSelect,
 }: {
   weekDays: Date[]
   appointments: Appointment[]
+  weeklyAvails: WeeklyAvail[]
   onSelect: (apt: Appointment) => void
 }) {
   const gridRef = useRef<HTMLDivElement>(null)
@@ -332,6 +357,26 @@ function WeekCalendar({
                     className="absolute left-0 right-0 border-b border-dashed border-slate-100/40" />
                 ))}
 
+                {/* Weekly availability overlay */}
+                {weeklyAvails
+                  .filter(w => w.day_of_week === day.getDay())
+                  .map((w, wi) => {
+                    const [sh, sm] = w.start_time.split(':').map(Number)
+                    const [eh, em] = w.end_time.split(':').map(Number)
+                    const topPct = (sh + sm / 60 - HOUR_START) * HOUR_H
+                    const heightPct = (eh + em / 60 - sh - sm / 60) * HOUR_H
+                    return (
+                      <div key={wi} className="absolute pointer-events-none"
+                        style={{
+                          top: `${Math.max(0, topPct)}px`,
+                          height: `${heightPct}px`,
+                          left: 0, right: 0,
+                          backgroundColor: 'rgba(0,102,133,0.06)',
+                          borderLeft: '2px solid rgba(0,102,133,0.20)',
+                        }} />
+                    )
+                  })}
+
                 {/* Today highlight */}
                 {isToday && (
                   <div className="absolute inset-0 bg-sky-500/3 pointer-events-none" />
@@ -386,7 +431,7 @@ function WeekCalendar({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 px-4 py-3 border-t border-slate-100/60 bg-slate-50/40">
+      <div className="flex items-center gap-4 px-4 py-3 border-t border-slate-100/60 bg-slate-50/40 flex-wrap">
         {Object.entries(TYPE_META).map(([type, m]) => (
           <div key={type} className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-sm" style={{ background: m.bg, border: `1.5px solid ${m.border}` }} />
@@ -397,6 +442,12 @@ function WeekCalendar({
           <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
           <span className="text-xs text-slate-500">Maintenant</span>
         </div>
+        {weeklyAvails.length > 0 && (
+          <div className="flex items-center gap-1.5 ml-2">
+            <div className="w-3 h-3 rounded-sm" style={{ background: 'rgba(0,102,133,0.10)', borderLeft: '2px solid rgba(0,102,133,0.30)' }} />
+            <span className="text-xs text-slate-500">Disponibilités configurées</span>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -415,6 +466,7 @@ export default function AppointmentsPage() {
 
   const { data: weekApts = [], isLoading: weekLoading, error: weekError } = useWeekAppointments(weekStart)
   const { data: listApts = [], isLoading: listLoading, error: listError } = useListAppointments(listFilter)
+  const { data: weeklyAvails = [] } = useWeeklyAvail()
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: AptStatus }) => {
@@ -502,7 +554,7 @@ export default function AppointmentsPage() {
           {weekLoading ? (
             <div className="h-96 rounded-2xl bg-white/40 animate-pulse" />
           ) : (
-            <WeekCalendar weekDays={weekDays} appointments={weekApts} onSelect={setSelected} />
+            <WeekCalendar weekDays={weekDays} appointments={weekApts} weeklyAvails={weeklyAvails} onSelect={setSelected} />
           )}
         </>
       )}

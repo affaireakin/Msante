@@ -45,13 +45,18 @@ function generateSlots(
   const latest = new Date(now)
   latest.setDate(latest.getDate() + settings.max_booking_days_ahead)
 
+  // Use local date string to avoid UTC-vs-local day mismatch
+  function localDateStr(d: Date) {
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  }
+
   // Build blocked set
   const blockedDates = new Set<string>()
   for (const b of blocked) {
     const d = new Date(b.start_date + 'T00:00:00')
     const end = new Date(b.end_date + 'T00:00:00')
     while (d <= end) {
-      blockedDates.add(d.toISOString().split('T')[0])
+      blockedDates.add(localDateStr(d))
       d.setDate(d.getDate() + 1)
     }
   }
@@ -60,7 +65,7 @@ function generateSlots(
   const cursor = new Date(earliest)
   cursor.setHours(0, 0, 0, 0)
   while (cursor <= latest) {
-    const dateStr = cursor.toISOString().split('T')[0]
+    const dateStr = localDateStr(cursor)
     const dow = cursor.getDay()
 
     if (!blockedDates.has(dateStr)) {
@@ -195,7 +200,7 @@ type Step = 'type' | 'slot' | 'confirm' | 'payment' | 'success'
 export default function BookingPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  const { data, isLoading } = useBookingData(id)
+  const { data, isLoading, error } = useBookingData(id)
 
   const [step, setStep] = useState<Step>('type')
   const [selectedType, setSelectedType] = useState<ConsultationType | null>(null)
@@ -288,6 +293,17 @@ export default function BookingPage() {
   if (isLoading) return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center">
       <div className="w-8 h-8 rounded-full border-2 border-[#006685] border-t-transparent animate-spin" />
+    </div>
+  )
+
+  if (error) return (
+    <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
+      <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center space-y-4 shadow-xl">
+        <span className="material-symbols-outlined text-[#ba1a1a] text-5xl">error</span>
+        <p className="font-bold text-[#0b1c30]">Erreur de chargement</p>
+        <p className="text-sm text-[#6f787e]">{(error as Error).message}</p>
+        <button onClick={() => router.back()} className="w-full py-3 rounded-xl bg-[#006685] text-white font-semibold text-sm">Retour</button>
+      </div>
     </div>
   )
 
