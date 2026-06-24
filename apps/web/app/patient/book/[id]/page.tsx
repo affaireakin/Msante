@@ -25,6 +25,7 @@ interface TimeSlot {
   end_time: string
   type: ConsultationType
   location: WeeklyAvail['location']
+  taken: boolean
 }
 
 // ─── Slot generation ──────────────────────────────────────────────────────────
@@ -88,8 +89,8 @@ function generateSlots(
             const slotDt = new Date(`${dateStr}T${startStr}:00`)
             const takenKey = `${dateStr}T${startStr}:00`
 
-            if (slotDt >= earliest && !taken.includes(takenKey)) {
-              slots.push({ date: dateStr, start_time: startStr, end_time: endStr, type: ctype, location: avail.location ?? null })
+            if (slotDt >= earliest) {
+              slots.push({ date: dateStr, start_time: startStr, end_time: endStr, type: ctype, location: avail.location ?? null, taken: taken.includes(takenKey) })
             }
             cur += dur
           }
@@ -529,16 +530,21 @@ export default function BookingPage() {
                         return (
                           <button
                             key={key}
-                            onClick={() => setSelectedSlot(slot)}
+                            onClick={() => { if (!slot.taken) setSelectedSlot(slot) }}
+                            disabled={slot.taken}
+                            title={slot.taken ? 'Créneau déjà réservé' : undefined}
                             className="px-4 py-3 rounded-xl text-sm font-semibold transition-all border flex flex-col items-center gap-0.5"
-                            style={isSel
+                            style={slot.taken
+                              ? { backgroundColor: '#f1f5f9', color: '#94a3b8', borderColor: '#e2e8f0', cursor: 'not-allowed' }
+                              : isSel
                               ? { backgroundColor: '#006685', color: '#fff', borderColor: '#006685' }
                               : { backgroundColor: 'rgba(255,255,255,0.70)', color: '#0b1c30', borderColor: 'rgba(190,200,206,0.50)' }}
                           >
-                            <span className="font-bold">{slot.start_time}</span>
-                            {slot.location && (
-                              <span className="text-[10px] opacity-70">{slot.location.name}</span>
-                            )}
+                            <span className={`font-bold ${slot.taken ? 'line-through opacity-60' : ''}`}>{slot.start_time}</span>
+                            {slot.taken
+                              ? <span className="text-[9px] text-slate-400">Réservé</span>
+                              : slot.location && <span className="text-[10px] opacity-70">{slot.location.name}</span>
+                            }
                           </button>
                         )
                       })}

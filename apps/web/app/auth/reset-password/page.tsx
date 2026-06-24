@@ -13,22 +13,36 @@ export default function ResetPasswordPage() {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    // If Supabase redirected here with an error in the hash (token expired/consumed),
-    // send the user to login with the error message instead of showing a broken form.
+    // @supabase/ssr browser client does NOT auto-exchange PKCE codes — must be done explicitly
+    const searchParams = new URLSearchParams(window.location.search)
+    const code = searchParams.get('code')
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ data, error: exchErr }) => {
+        if (exchErr || !data.session) {
+          router.replace('/auth/login?error=' + encodeURIComponent('Lien invalide ou expiré. Demandez un nouveau lien.'))
+          return
+        }
+        setReady(true)
+        window.history.replaceState({}, '', window.location.pathname)
+      })
+      return
+    }
+
+    // Errors from Supabase come in the hash fragment (#error=access_denied&...)
     const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''))
     const hashError = hash.get('error')
     if (hashError) {
       const msg = hash.get('error_description') ?? 'Lien invalide ou expiré.'
-      router.replace(`/auth/login?error=${encodeURIComponent(msg)}`)
+      router.replace('/auth/login?error=' + encodeURIComponent(msg))
       return
     }
 
-    // PKCE: exchange code from URL if present — createBrowserClient handles this automatically
-    // then fires PASSWORD_RECOVERY or SIGNED_IN
+    // Fallback: implicit flow or already-active session
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session) setReady(true)
+      if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+        setReady(true)
+      }
     })
-    // Also check existing session (case where callback route already exchanged the code)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) setReady(true)
     })

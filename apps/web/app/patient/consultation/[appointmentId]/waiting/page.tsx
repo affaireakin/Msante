@@ -21,6 +21,8 @@ export default function PatientWaitingRoom() {
   const [isLoading, setIsLoading] = useState(true)
   const [isJoining, setIsJoining] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [canJoin, setCanJoin] = useState(false)
+  const [minsLeft, setMinsLeft] = useState<number | null>(null)
 
   useEffect(() => {
     async function init() {
@@ -65,6 +67,22 @@ export default function PatientWaitingRoom() {
 
     void init()
   }, [appointmentId])
+
+  // 5-min window rule
+  useEffect(() => {
+    if (!appointment) return
+    const start = new Date(appointment.scheduledAt).getTime()
+    const open  = start - 5 * 60 * 1000
+    const close = start + appointment.durationMin * 60 * 1000
+    const tick = () => {
+      const now = Date.now()
+      setCanJoin(now >= open && now <= close)
+      setMinsLeft(now < open ? Math.ceil((open - now) / 60000) : null)
+    }
+    tick()
+    const id = setInterval(tick, 15_000)
+    return () => clearInterval(id)
+  }, [appointment])
 
   async function handleJoin() {
     setIsJoining(true)
@@ -253,17 +271,35 @@ export default function PatientWaitingRoom() {
                 Appelez le <strong>15</strong> ou le <strong>+221 33 823 8020</strong>.
               </p>
 
+              {/* 5-min window info */}
+              {!canJoin && minsLeft !== null && appointment && (
+                <div className="bg-[#eff4ff] border border-[#d3e4fe] rounded-xl px-4 py-3 mb-4 text-xs text-[#006685] text-center">
+                  Accès disponible à{' '}
+                  <strong>
+                    {new Date(new Date(appointment.scheduledAt).getTime() - 5 * 60 * 1000)
+                      .toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Dakar' })}
+                  </strong>
+                  {' '}— dans {minsLeft} min
+                </div>
+              )}
+
               {error && (
                 <p className="text-sm text-[#ba1a1a] text-center mb-4">{error}</p>
               )}
 
               <button
                 onClick={() => void handleJoin()}
-                disabled={isJoining}
+                disabled={isJoining || !canJoin}
                 className="w-full py-3 rounded-xl bg-[#006685] text-white font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#005575] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_16px_rgba(0,102,133,0.2)]"
               >
                 <span className="material-symbols-outlined text-xl select-none">video_call</span>
-                {isJoining ? 'Connexion en cours…' : 'Rejoindre la consultation'}
+                {isJoining
+                  ? 'Connexion en cours…'
+                  : canJoin
+                  ? 'Rejoindre la consultation'
+                  : minsLeft !== null
+                  ? `Disponible dans ${minsLeft} min`
+                  : 'Session expirée'}
               </button>
             </>
           )}
