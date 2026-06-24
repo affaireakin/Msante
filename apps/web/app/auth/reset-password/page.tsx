@@ -13,6 +13,16 @@ export default function ResetPasswordPage() {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
+    // If Supabase redirected here with an error in the hash (token expired/consumed),
+    // send the user to login with the error message instead of showing a broken form.
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''))
+    const hashError = hash.get('error')
+    if (hashError) {
+      const msg = hash.get('error_description') ?? 'Lien invalide ou expiré.'
+      router.replace(`/auth/login?error=${encodeURIComponent(msg)}`)
+      return
+    }
+
     // PKCE: exchange code from URL if present — createBrowserClient handles this automatically
     // then fires PASSWORD_RECOVERY or SIGNED_IN
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -23,7 +33,7 @@ export default function ResetPasswordPage() {
       if (session) setReady(true)
     })
     return () => subscription.unsubscribe()
-  }, [])
+  }, [router])
 
   const validate = () => {
     if (password.length < 8) return 'Minimum 8 caractères'

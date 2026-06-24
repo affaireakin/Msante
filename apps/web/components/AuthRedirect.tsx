@@ -6,10 +6,12 @@ import { supabase } from '@/lib/supabase'
 export default function AuthRedirect() {
   const router = useRouter()
   useEffect(() => {
-    // Supabase redirects here with ?error= when a link is invalid/expired
-    const params = new URLSearchParams(window.location.search)
-    const error = params.get('error')
-    const errorDesc = params.get('error_description')
+    // Supabase redirects here with error params when a link is invalid/expired.
+    // PKCE flow puts errors in the hash fragment (#error=...), implicit flow in query (?error=...).
+    const search = new URLSearchParams(window.location.search)
+    const hash   = new URLSearchParams(window.location.hash.replace(/^#/, ''))
+    const error    = search.get('error')    || hash.get('error')
+    const errorDesc = search.get('error_description') || hash.get('error_description')
     if (error) {
       const msg = errorDesc ?? 'Lien invalide ou expiré.'
       router.replace(`/auth/login?error=${encodeURIComponent(msg)}`)
