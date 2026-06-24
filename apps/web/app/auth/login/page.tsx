@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
@@ -15,11 +15,17 @@ function translateError(msg: string): string {
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [showPwd, setShowPwd]   = useState(false)
   const [error, setError]       = useState('')
   const [loading, setLoading]   = useState(false)
+
+  useEffect(() => {
+    const urlError = searchParams.get('error')
+    if (urlError) setError(decodeURIComponent(urlError))
+  }, [searchParams])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
