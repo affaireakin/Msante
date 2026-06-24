@@ -164,7 +164,7 @@ function useBookingData(practId: string) {
       }
     },
     enabled: !!practId,
-    staleTime: 60_000,
+    staleTime: 0,
   })
 }
 
@@ -269,6 +269,23 @@ export default function BookingPage() {
       if (!session) { router.push('/auth/login'); return }
 
       const scheduled_at = `${selectedSlot.date}T${selectedSlot.start_time}:00`
+
+      // Server-side double-booking check — catches race conditions and stale UI data
+      const { count: conflictCount } = await supabase
+        .from('appointments')
+        .select('id', { count: 'exact', head: true })
+        .eq('practitioner_id', data.pract.id)
+        .eq('scheduled_at', scheduled_at)
+        .not('status', 'in', '("cancelled","no_show")')
+
+      if ((conflictCount ?? 0) > 0) {
+        setBookingError('Ce créneau vient d\'être réservé. Veuillez choisir un autre horaire.')
+        setSelectedSlot(null)
+        setStep('slot')
+        setLoading(false)
+        return
+      }
+
       const type = selectedMode === 'video' ? 'video' : 'audio'
 
       const { data: appt, error: apptErr } = await supabase.from('appointments').insert({
