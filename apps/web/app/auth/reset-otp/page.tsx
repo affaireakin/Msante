@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
-const OTP_LENGTH = 6
+const OTP_LENGTH = 8
 
 function ResetOtpContent() {
   const searchParams = useSearchParams()
