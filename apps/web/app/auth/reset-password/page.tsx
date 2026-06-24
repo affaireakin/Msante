@@ -11,75 +11,15 @@ export default function ResetPasswordPage() {
   const [done, setDone] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [ready, setReady] = useState(false)
-  const [pageError, setPageError] = useState<string | null>(null)
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
-    async function detectSession() {
-      const searchParams = new URLSearchParams(window.location.search)
-      const hash = window.location.hash
-
-      // 1. PKCE flow: ?code=xxx (normal path or forwarded by AuthRedirect)
-      const code = searchParams.get('code')
-      if (code) {
-        sessionStorage.setItem('recovery_in_progress', '1')
-        const { data, error: exchErr } = await supabase.auth.exchangeCodeForSession(code)
-        window.history.replaceState({}, '', window.location.pathname)
-        if (exchErr || !data.session) {
-          sessionStorage.removeItem('recovery_in_progress')
-          setPageError('Lien invalide ou expiré. Demandez un nouveau lien.')
-        } else {
-          setReady(true)
-        }
-        setChecking(false)
-        return
-      }
-
-      // 2. Implicit flow: #access_token=xxx (older email links)
-      if (hash.includes('access_token')) {
-        const params = new URLSearchParams(hash.replace(/^#/, ''))
-        const accessToken = params.get('access_token')
-        const refreshToken = params.get('refresh_token') ?? ''
-        if (accessToken) {
-          sessionStorage.setItem('recovery_in_progress', '1')
-          const { error: sessErr } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
-          window.history.replaceState({}, '', window.location.pathname)
-          if (sessErr) {
-            sessionStorage.removeItem('recovery_in_progress')
-            setPageError('Lien invalide ou expiré. Demandez un nouveau lien.')
-          } else {
-            setReady(true)
-          }
-          setChecking(false)
-          return
-        }
-      }
-
-      // 3. Error in hash
-      if (hash.includes('error=')) {
-        const params = new URLSearchParams(hash.replace(/^#/, ''))
-        const desc = params.get('error_description') ?? 'Lien invalide ou expiré.'
-        sessionStorage.removeItem('recovery_in_progress')
-        setPageError(decodeURIComponent(desc.replace(/\+/g, ' ')))
-        window.history.replaceState({}, '', window.location.pathname)
-        setChecking(false)
-        return
-      }
-
-      // 4. Existing session (user returned to this page after exchange)
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session) {
-        setReady(true)
-        setChecking(false)
-        return
-      }
-
-      // 5. No token found
-      sessionStorage.removeItem('recovery_in_progress')
+    // After OTP verify, Supabase sets a recovery session in cookies.
+    // Just check if the session exists.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setReady(!!session)
       setChecking(false)
-    }
-
-    void detectSession()
+    })
   }, [])
 
   const validate = () => {
@@ -99,9 +39,7 @@ export default function ResetPasswordPage() {
     setError(null)
     const { error } = await supabase.auth.updateUser({ password })
     if (error) { setError(error.message); setLoading(false); return }
-    sessionStorage.removeItem('recovery_in_progress')
     setDone(true)
-    // Sign out so user must log in with the new password
     await supabase.auth.signOut()
     setTimeout(() => router.push('/auth/login'), 2000)
     setLoading(false)
@@ -118,23 +56,7 @@ export default function ResetPasswordPage() {
   if (checking) return (
     <div className="glass-card rounded-xl p-8 text-center space-y-4">
       <div className="w-10 h-10 border-2 border-[#006685] border-t-transparent rounded-full animate-spin mx-auto" />
-      <p className="text-slate-500 text-sm">Vérification du lien…</p>
-    </div>
-  )
-
-  if (pageError) return (
-    <div className="glass-card rounded-xl p-8 text-center space-y-4">
-      <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto">
-        <span className="material-symbols-outlined text-red-500 text-3xl">link_off</span>
-      </div>
-      <h2 className="text-xl font-bold text-slate-900">Lien invalide</h2>
-      <p className="text-slate-500 text-sm leading-relaxed">{pageError}</p>
-      <a
-        href="/auth/forgot-password"
-        className="inline-block bg-[#006685] text-white rounded-lg px-6 py-3 font-semibold text-sm hover:bg-[#005470] transition"
-      >
-        Demander un nouveau lien
-      </a>
+      <p className="text-slate-500 text-sm">Chargement…</p>
     </div>
   )
 
@@ -143,15 +65,15 @@ export default function ResetPasswordPage() {
       <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center mx-auto">
         <span className="material-symbols-outlined text-amber-500 text-3xl">link</span>
       </div>
-      <h2 className="text-xl font-bold text-slate-900">Lien requis</h2>
+      <h2 className="text-xl font-bold text-slate-900">Session expirée</h2>
       <p className="text-slate-500 text-sm leading-relaxed">
-        Cliquez sur le lien reçu par email pour accéder à cette page.
+        Le code a expiré ou la session est invalide. Recommencez depuis le début.
       </p>
       <a
         href="/auth/forgot-password"
         className="inline-block bg-[#006685] text-white rounded-lg px-6 py-3 font-semibold text-sm hover:bg-[#005470] transition"
       >
-        Demander un lien
+        Réinitialiser à nouveau
       </a>
     </div>
   )
