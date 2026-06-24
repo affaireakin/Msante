@@ -18,6 +18,20 @@ export default function AuthRedirect() {
       return
     }
 
+    // If a PKCE code landed on the homepage, Supabase redirected here instead
+    // of /auth/reset-password (URL not matched). Forward it to the reset form.
+    const code = search.get('code')
+    if (code) {
+      router.replace(`/auth/reset-password?code=${code}`)
+      return
+    }
+
+    // If user navigated away from the reset form mid-flow, send them back.
+    if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('recovery_in_progress')) {
+      router.replace('/auth/reset-password')
+      return
+    }
+
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return
       supabase.from('users').select('role').eq('id', user.id).single().then(({ data }) => {

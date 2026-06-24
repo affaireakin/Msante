@@ -16,20 +16,36 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     async function detectSession() {
-      // 1. Implicit flow: #access_token=xxx&type=recovery (magic link)
-      //    @supabase/ssr has detectSessionInUrl:false — must call setSession manually
+      const searchParams = new URLSearchParams(window.location.search)
       const hash = window.location.hash
-      if (hash && hash.includes('access_token')) {
+
+      // 1. PKCE flow: ?code=xxx (normal path or forwarded by AuthRedirect)
+      const code = searchParams.get('code')
+      if (code) {
+        sessionStorage.setItem('recovery_in_progress', '1')
+        const { data, error: exchErr } = await supabase.auth.exchangeCodeForSession(code)
+        window.history.replaceState({}, '', window.location.pathname)
+        if (exchErr || !data.session) {
+          sessionStorage.removeItem('recovery_in_progress')
+          setPageError('Lien invalide ou expiré. Demandez un nouveau lien.')
+        } else {
+          setReady(true)
+        }
+        setChecking(false)
+        return
+      }
+
+      // 2. Implicit flow: #access_token=xxx (older email links)
+      if (hash.includes('access_token')) {
         const params = new URLSearchParams(hash.replace(/^#/, ''))
         const accessToken = params.get('access_token')
         const refreshToken = params.get('refresh_token') ?? ''
         if (accessToken) {
-          const { error: sessErr } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-          })
+          sessionStorage.setItem('recovery_in_progress', '1')
+          const { error: sessErr } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
           window.history.replaceState({}, '', window.location.pathname)
           if (sessErr) {
+            sessionStorage.removeItem('recovery_in_progress')
             setPageError('Lien invalide ou expiré. Demandez un nouveau lien.')
           } else {
             setReady(true)
@@ -39,32 +55,18 @@ export default function ResetPasswordPage() {
         }
       }
 
-      // 2. Error in hash: #error=access_denied
-      if (hash && hash.includes('error=')) {
+      // 3. Error in hash
+      if (hash.includes('error=')) {
         const params = new URLSearchParams(hash.replace(/^#/, ''))
         const desc = params.get('error_description') ?? 'Lien invalide ou expiré.'
+        sessionStorage.removeItem('recovery_in_progress')
         setPageError(decodeURIComponent(desc.replace(/\+/g, ' ')))
         window.history.replaceState({}, '', window.location.pathname)
         setChecking(false)
         return
       }
 
-      // 3. PKCE flow: ?code=xxx
-      const searchParams = new URLSearchParams(window.location.search)
-      const code = searchParams.get('code')
-      if (code) {
-        const { data, error: exchErr } = await supabase.auth.exchangeCodeForSession(code)
-        window.history.replaceState({}, '', window.location.pathname)
-        if (exchErr || !data.session) {
-          setPageError('Lien invalide ou expiré. Demandez un nouveau lien.')
-        } else {
-          setReady(true)
-        }
-        setChecking(false)
-        return
-      }
-
-      // 4. Existing session (from OTP verify-reset or already signed in)
+      // 4. Existing session (user returned to this page after exchange)
       const { data: { session } } = await supabase.auth.getSession()
       if (session) {
         setReady(true)
@@ -72,20 +74,9 @@ export default function ResetPasswordPage() {
         return
       }
 
-      // 5. No token found — wait briefly for onAuthStateChange (PASSWORD_RECOVERY event)
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-        if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'PASSWORD_RECOVERY') && session) {
-          setReady(true)
-          setChecking(false)
-          subscription.unsubscribe()
-        }
-      })
-
-      // If no event after 3s, show helpful error
-      setTimeout(() => {
-        setChecking(false)
-        subscription.unsubscribe()
-      }, 3000)
+      // 5. No token found
+      sessionStorage.removeItem('recovery_in_progress')
+      setChecking(false)
     }
 
     void detectSession()
@@ -107,10 +98,13 @@ export default function ResetPasswordPage() {
     setLoading(true)
     setError(null)
     const { error } = await supabase.auth.updateUser({ password })
-    setLoading(false)
-    if (error) { setError(error.message); return }
+    if (error) { setError(error.message); setLoading(false); return }
+    sessionStorage.removeItem('recovery_in_progress')
     setDone(true)
+    // Sign out so user must log in with the new password
+    await supabase.auth.signOut()
     setTimeout(() => router.push('/auth/login'), 2000)
+    setLoading(false)
   }
 
   if (done) return (
