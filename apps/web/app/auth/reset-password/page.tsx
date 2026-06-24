@@ -13,41 +13,19 @@ export default function ResetPasswordPage() {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    // @supabase/ssr browser client does NOT auto-exchange PKCE codes — must be done explicitly
-    const searchParams = new URLSearchParams(window.location.search)
-    const code = searchParams.get('code')
-    if (code) {
-      supabase.auth.exchangeCodeForSession(code).then(({ data, error: exchErr }) => {
-        if (exchErr || !data.session) {
-          router.replace('/auth/login?error=' + encodeURIComponent('Lien invalide ou expiré. Demandez un nouveau lien.'))
-          return
-        }
-        setReady(true)
-        window.history.replaceState({}, '', window.location.pathname)
-      })
-      return
-    }
-
-    // Errors from Supabase come in the hash fragment (#error=access_denied&...)
-    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''))
-    const hashError = hash.get('error')
-    if (hashError) {
-      const msg = hash.get('error_description') ?? 'Lien invalide ou expiré.'
-      router.replace('/auth/login?error=' + encodeURIComponent(msg))
-      return
-    }
-
-    // Fallback: implicit flow or already-active session
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
-        setReady(true)
-      }
-    })
+    // Session is set by verify-reset step (verifyOtp → SIGNED_IN)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) setReady(true)
     })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'PASSWORD_RECOVERY') && session) {
+        setReady(true)
+      }
+    })
+
     return () => subscription.unsubscribe()
-  }, [router])
+  }, [])
 
   const validate = () => {
     if (password.length < 8) return 'Minimum 8 caractères'
@@ -79,17 +57,22 @@ export default function ResetPasswordPage() {
     </div>
   )
 
+  if (!ready) return (
+    <div className="glass-card rounded-xl p-8 text-center space-y-4">
+      <div className="w-10 h-10 border-2 border-[#006685] border-t-transparent rounded-full animate-spin mx-auto" />
+      <p className="text-slate-500 text-sm">Vérification de votre session…</p>
+      <a href="/auth/forgot-password" className="block text-[#006685] text-sm font-semibold hover:underline">
+        Recommencer la réinitialisation
+      </a>
+    </div>
+  )
+
   return (
     <div className="glass-card rounded-xl p-8 space-y-6">
       <div>
         <h2 className="text-2xl font-extrabold text-slate-900">Nouveau mot de passe</h2>
         <p className="text-slate-500 text-sm mt-1">Choisissez un mot de passe sécurisé.</p>
       </div>
-      {!ready && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-700">
-          En attente du lien... Assurez-vous d'avoir cliqué sur le lien dans votre email.
-        </div>
-      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="text-sm font-semibold text-slate-700">Nouveau mot de passe</label>
@@ -98,8 +81,7 @@ export default function ResetPasswordPage() {
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
-            disabled={!ready}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50"
+            className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
           />
         </div>
         <div>
@@ -109,15 +91,14 @@ export default function ResetPasswordPage() {
             value={confirm}
             onChange={e => setConfirm(e.target.value)}
             required
-            disabled={!ready}
-            className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50"
+            className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
           />
         </div>
         <p className="text-xs text-slate-400">Min. 8 caractères · 1 majuscule · 1 chiffre · 1 caractère spécial</p>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <button
           type="submit"
-          disabled={loading || !ready}
+          disabled={loading}
           className="w-full bg-[#006685] text-white rounded-lg py-3 font-semibold text-sm hover:bg-[#005470] transition disabled:opacity-50"
         >
           {loading ? 'Enregistrement...' : 'Enregistrer'}

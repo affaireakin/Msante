@@ -1,10 +1,11 @@
 'use client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 export default function ForgotPasswordPage() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
-  const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -12,33 +13,29 @@ export default function ForgotPasswordPage() {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
-    })
-    setLoading(false)
-    if (error) { setError(error.message); return }
-    setSent(true)
-  }
 
-  if (sent) return (
-    <div className="glass-card rounded-xl p-8 text-center space-y-4">
-      <span className="material-symbols-outlined text-sky-500 text-5xl">mark_email_read</span>
-      <h2 className="text-xl font-bold text-slate-900">Email envoyé !</h2>
-      <p className="text-slate-500 text-sm">
-        Vérifiez votre boîte mail et cliquez sur le lien pour réinitialiser votre mot de passe.
-      </p>
-      <a href="/auth/login" className="block text-sky-600 text-sm font-semibold hover:underline">
-        Retour à la connexion
-      </a>
-    </div>
-  )
+    const { error: otpError } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false },
+    })
+
+    setLoading(false)
+
+    // Always navigate (prevents email enumeration), only block on technical errors
+    if (otpError && otpError.status !== 422) {
+      setError(otpError.message)
+      return
+    }
+
+    router.push(`/auth/verify-reset?email=${encodeURIComponent(email)}`)
+  }
 
   return (
     <div className="glass-card rounded-xl p-8 space-y-6">
       <div>
         <h2 className="text-2xl font-extrabold text-slate-900">Mot de passe oublié</h2>
         <p className="text-slate-500 text-sm mt-1">
-          Entrez votre email pour recevoir un lien de réinitialisation.
+          Entrez votre email pour recevoir un code de vérification.
         </p>
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -59,7 +56,7 @@ export default function ForgotPasswordPage() {
           disabled={loading}
           className="w-full bg-[#006685] text-white rounded-lg py-3 font-semibold text-sm hover:bg-[#005470] transition disabled:opacity-50"
         >
-          {loading ? 'Envoi...' : 'Envoyer le lien'}
+          {loading ? 'Envoi...' : 'Recevoir le code'}
         </button>
       </form>
       <a href="/auth/login" className="block text-center text-slate-500 text-sm hover:text-slate-700">
