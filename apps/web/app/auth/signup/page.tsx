@@ -62,7 +62,7 @@ export default function SignupPage() {
 
     setLoading(true)
 
-    const { error: authError } = await supabase.auth.signUp({
+    const { data: signUpData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { role, full_name: fullName } },
@@ -70,6 +70,14 @@ export default function SignupPage() {
 
     if (authError) {
       setError(translateError(authError.message))
+      setLoading(false)
+      return
+    }
+
+    // Supabase v2 silently ignores duplicate emails (no error, no OTP sent)
+    // Detect via empty identities array
+    if (!signUpData.user || (signUpData.user.identities?.length ?? 0) === 0) {
+      setError('Un compte existe déjà avec cet email. Connectez-vous ou utilisez "Mot de passe oublié".')
       setLoading(false)
       return
     }
