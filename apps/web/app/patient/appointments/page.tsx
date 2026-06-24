@@ -84,24 +84,25 @@ export default function AppointmentsPage() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="text-2xl font-black text-[#0b1c30]">Mes rendez-vous</h1>
           <p className="text-sm text-[#6f787e] mt-1">{data.length} rendez-vous</p>
         </div>
-        <Link href="/patient/practitioners" className="flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#006685]/20 transition-all">
+        <Link href="/patient/practitioners" className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#006685]/20 transition-all">
           <Icon name="add" style={{ fontSize: '18px' }} />
-          Nouveau RDV
+          <span className="hidden sm:inline">Nouveau RDV</span>
+          <span className="sm:hidden">Nouveau</span>
         </Link>
       </div>
 
       {/* Filters */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
         {FILTERS.map(f => (
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className="px-4 py-2 rounded-full text-xs font-bold transition-all"
+            className="flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all"
             style={{
               backgroundColor: filter === f.key ? '#006685' : 'rgba(255,255,255,0.70)',
               color: filter === f.key ? '#fff' : '#6f787e',
@@ -140,20 +141,39 @@ export default function AppointmentsPage() {
             const docs = apt.consultations?.[0]?.practitioner_documents ?? []
 
             return (
-              <div key={apt.id} className="rounded-2xl p-5 flex items-center gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)', opacity: isPast && apt.status === 'pending' ? 0.7 : 1 }}>
-                <div className="w-16 h-16 rounded-xl bg-[#e5eeff] flex flex-col items-center justify-center flex-shrink-0">
-                  <span className="text-xl font-black text-[#006685] leading-none">{dt.getDate()}</span>
-                  <span className="text-xs text-[#006685] font-semibold uppercase">
+              <div key={apt.id} className="rounded-2xl p-4 sm:p-5 flex items-start gap-3 sm:gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)', opacity: isPast && apt.status === 'pending' ? 0.7 : 1 }}>
+                {/* Date box */}
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#e5eeff] flex flex-col items-center justify-center flex-shrink-0">
+                  <span className="text-lg sm:text-xl font-black text-[#006685] leading-none">{dt.getDate()}</span>
+                  <span className="text-[10px] sm:text-xs text-[#006685] font-semibold uppercase">
                     {dt.toLocaleDateString('fr-FR', { month: 'short', timeZone: 'Africa/Dakar' })}
                   </span>
                 </div>
+
+                {/* Main content */}
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-[#0b1c30]">{practName}</p>
-                  <p className="text-sm text-[#6f787e]">{apt.practitioners?.speciality}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Icon name={typeIcon} style={{ fontSize: '14px', color: '#6f787e' }} />
-                    <span className="text-xs text-[#6f787e]">{dateStr} · {time} · {apt.duration_min} min</span>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-bold text-[#0b1c30] truncate">{practName}</p>
+                      <p className="text-xs sm:text-sm text-[#6f787e] truncate">{apt.practitioners?.speciality}</p>
+                    </div>
+                    {/* Status badge — on the right, inline with name */}
+                    <span className="flex-shrink-0 flex items-center gap-1 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-full" style={{ backgroundColor: status.bg, color: status.text }}>
+                      <Icon name={status.icon} style={{ fontSize: '12px' }} />
+                      <span className="hidden xs:inline">{status.label}</span>
+                    </span>
                   </div>
+
+                  {/* Date + time + duration on separate lines for mobile */}
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <Icon name={typeIcon} style={{ fontSize: '13px', color: '#6f787e' }} />
+                    <div className="text-xs text-[#6f787e] min-w-0">
+                      <span className="block sm:inline capitalize">{dateStr}</span>
+                      <span className="sm:before:content-['_·_']">{time} · {apt.duration_min} min</span>
+                    </div>
+                  </div>
+
+                  {/* Documents */}
                   {docs.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
                       {docs.map(doc => (
@@ -169,15 +189,12 @@ export default function AppointmentsPage() {
                       ))}
                     </div>
                   )}
-                </div>
-                <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                  <span className="flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full" style={{ backgroundColor: status.bg, color: status.text }}>
-                    <Icon name={status.icon} style={{ fontSize: '13px' }} />
-                    {status.label}
-                  </span>
+
+                  {/* Join link */}
                   {apt.status === 'confirmed' && !isPast && (
-                    <Link href={`/patient/consultation/${apt.id}/waiting`} className="text-xs font-bold text-[#006685] hover:underline">
-                      Rejoindre →
+                    <Link href={`/patient/consultation/${apt.id}/waiting`} className="inline-flex items-center gap-1 mt-2 text-xs font-bold text-[#006685] hover:underline">
+                      <Icon name="video_call" style={{ fontSize: '14px' }} />
+                      Rejoindre la consultation →
                     </Link>
                   )}
                 </div>
