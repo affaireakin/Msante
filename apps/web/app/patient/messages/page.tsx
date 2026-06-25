@@ -618,7 +618,7 @@ export default function PatientMessagesPage() {
                   onChange={e => setText(e.target.value)}
                   onKeyDown={handleKeyDown}
                   rows={1}
-                  placeholder="Écrire un message... (Entrée pour envoyer)"
+                  placeholder="Écrire un message..."
                   className="flex-1 px-4 py-2.5 rounded-xl text-sm resize-none outline-none text-[#0b1c30] placeholder-[#6f787e] border border-[#bec8ce] focus:border-[#006685] transition-colors"
                   style={{ backgroundColor: 'rgba(255,255,255,0.80)', maxHeight: '120px' }}
                 />
