@@ -310,7 +310,7 @@ export default function PractitionerLayout({ children }: { children: React.React
             </div>
           </div>
         </header>
-        <main className="flex-1 mt-16 p-4 md:p-8 overflow-y-auto">
+        <main className="flex-1 mt-16 p-4 md:p-8 overflow-y-auto overflow-x-hidden">
           {/* Blocking screen: account pending validation */}
           {practitionerLoaded && verificationStatus !== null && verificationStatus !== 'approved' && (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">

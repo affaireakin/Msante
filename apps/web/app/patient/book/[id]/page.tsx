@@ -402,7 +402,7 @@ export default function BookingPage() {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
+      <main className="w-full max-w-2xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
         {/* Practitioner card */}
         <div className="rounded-2xl p-5 flex items-center gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
           <div className="w-14 h-14 rounded-full bg-[#006685] flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
@@ -505,7 +505,7 @@ export default function BookingPage() {
               <>
                 <div>
                   <p className="text-sm font-bold text-[#0b1c30] mb-2">Choisir une date</p>
-                  <div className="flex gap-2 overflow-x-auto pb-2">
+                  <div className="flex gap-2 overflow-x-auto pb-2 w-full min-w-0">
                     {dates.slice(0, 14).map(d => (
                       <button
                         key={d}
