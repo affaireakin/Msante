@@ -660,6 +660,7 @@ export default function AppointmentsPage() {
                           </button>
                       </div>
                     )}
+                    </div>
                   </div>
                 )
               })}
