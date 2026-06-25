@@ -660,7 +660,7 @@ function UserProfilePanel({
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
       <div
-        className="relative w-80 h-full flex flex-col overflow-y-auto"
+        className="relative w-full sm:w-96 h-full flex flex-col overflow-y-auto"
         style={{
           backgroundColor: 'rgba(255,255,255,0.97)',
           backdropFilter: 'blur(20px)',
@@ -833,23 +833,24 @@ export default function UsersPage() {
         </div>
         <button
           onClick={() => setShowInvite(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all"
+          className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all"
         >
           <span className="material-symbols-outlined text-base">person_add</span>
-          Inviter un admin
+          <span className="hidden sm:inline">Inviter un admin</span>
+          <span className="sm:hidden">Inviter</span>
         </button>
       </div>
 
       {showInvite && <InviteAdminModal onClose={() => setShowInvite(false)} />}
 
       {/* Filters + Search */}
-      <div className="flex items-center gap-4 flex-wrap">
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none w-full sm:w-auto">
           {filters.map((f) => (
             <button
               key={f.value}
               onClick={() => { setRole(f.value); setPage(0) }}
-              className="px-4 py-2 rounded-full text-sm font-medium transition-all"
+              className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all"
               style={
                 role === f.value
                   ? { backgroundColor: '#006685', color: '#ffffff' }
@@ -865,7 +866,7 @@ export default function UsersPage() {
           value={search}
           onChange={(e) => handleSearch(e.target.value)}
           placeholder="Rechercher par nom…"
-          className="px-4 py-2 rounded-full text-sm outline-none transition-colors"
+          className="w-full sm:w-64 px-4 py-2 rounded-full text-sm outline-none transition-colors"
           style={{
             backgroundColor: 'rgba(255,255,255,0.60)',
             border: '1px solid rgba(203,216,254,0.50)',

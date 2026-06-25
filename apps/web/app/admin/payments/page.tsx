@@ -212,19 +212,20 @@ export default function PaymentsPage() {
 
   return (
     <div className="space-y-6" style={{ fontFamily: 'Manrope' }}>
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-[#0b1c30]">Paiements</h1>
           <p className="text-sm text-[#6f787e] mt-1">Réconciliation et suivi des transactions</p>
         </div>
         <button
           onClick={handleExportCSV}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-semibold rounded-full hover:bg-[#005070] transition-colors"
+          className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-[#006685] text-white text-sm font-semibold rounded-full hover:bg-[#005070] transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
           </svg>
-          Exporter CSV
+          <span className="hidden sm:inline">Exporter CSV</span>
+          <span className="sm:hidden">CSV</span>
         </button>
       </div>
 
@@ -336,13 +337,13 @@ export default function PaymentsPage() {
       {/* Filtres */}
       <div className="flex flex-col gap-3">
         {/* Status + provider filters */}
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none w-full sm:w-auto">
             {(['all', 'completed', 'pending', 'failed', 'refunded'] as PaymentStatus[]).map((s) => (
               <button
                 key={s}
                 onClick={() => { setStatus(s); setPage(0) }}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   status === s ? 'bg-[#006685] text-white' : 'bg-white/60 text-[#3f484d] border border-slate-200/50 hover:bg-white'
                 }`}
               >
@@ -353,7 +354,7 @@ export default function PaymentsPage() {
           <select
             value={provider}
             onChange={(e) => { setProvider(e.target.value as Provider); setPage(0) }}
-            className="px-4 py-2 rounded-full text-sm bg-white/60 border border-slate-200/50 text-[#0b1c30] outline-none focus:border-[#006685]"
+            className="w-full sm:w-auto px-4 py-2 rounded-full text-sm bg-white/60 border border-slate-200/50 text-[#0b1c30] outline-none focus:border-[#006685]"
           >
             {PROVIDERS.map(({ key, label }) => (
               <option key={key} value={key}>{label}</option>
@@ -362,13 +363,14 @@ export default function PaymentsPage() {
         </div>
 
         {/* Date range filter */}
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <div className="flex items-center gap-2">
-            <label className="text-xs font-semibold text-[#6f787e]">Du</label>
+            <label className="text-xs font-semibold text-[#6f787e] whitespace-nowrap">Du</label>
             <input
               type="date"
               value={dateFrom}
               onChange={(e) => { setDateFrom(e.target.value); setPage(0) }}
+              className="w-full sm:w-auto"
               style={{
                 border: '1px solid #bec8ce',
                 borderRadius: '8px',
@@ -382,11 +384,12 @@ export default function PaymentsPage() {
             />
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-xs font-semibold text-[#6f787e]">Au</label>
+            <label className="text-xs font-semibold text-[#6f787e] whitespace-nowrap">Au</label>
             <input
               type="date"
               value={dateTo}
               onChange={(e) => { setDateTo(e.target.value); setPage(0) }}
+              className="w-full sm:w-auto"
               style={{
                 border: '1px solid #bec8ce',
                 borderRadius: '8px',

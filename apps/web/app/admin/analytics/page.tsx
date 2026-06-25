@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
 
         {/* Pending practitioners alert */}
         {p.pendingPractitioners > 0 && (
-          <div className="mt-4 flex items-center gap-3 px-5 py-3.5 rounded-2xl" style={{ backgroundColor: '#fff8e1', border: '1px solid #e4c546' }}>
+          <div className="mt-4 flex items-center gap-3 flex-wrap px-5 py-3.5 rounded-2xl" style={{ backgroundColor: '#fff8e1', border: '1px solid #e4c546' }}>
             <Icon name="pending_actions" style={{ color: '#705d00', fontSize: '20px' }} />
             <div className="flex-1">
               <p className="text-sm font-bold text-[#705d00]">
@@ -313,7 +313,7 @@ export default function AnalyticsPage() {
         {/* Distribution donut */}
         <div className="rounded-2xl p-6" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
           <h3 className="font-bold text-[#0b1c30] mb-6">Répartition revenus</h3>
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-8 flex-wrap">
             <div className="relative w-32 h-32 flex-shrink-0">
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                 {d.byProvider.length === 0 ? (

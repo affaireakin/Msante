@@ -468,6 +468,13 @@ export default function AppointmentsPage() {
   const [weekStart, setWeekStart] = useState(() => getWeekStart(new Date()))
   const [selected, setSelected] = useState<Appointment | null>(null)
 
+  // Auto-switch to list view on mobile (< 768px)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setView('list')
+    }
+  }, [])
+
   const weekDays = useMemo(() => getWeekDays(weekStart), [weekStart])
 
   const { data: weekApts = [], isLoading: weekLoading, error: weekError } = useWeekAppointments(weekStart)
@@ -512,7 +519,7 @@ export default function AppointmentsPage() {
         <div className="flex items-center gap-3">
           <div className="flex gap-1 p-1 bg-[#e5eeff] rounded-xl">
             <button onClick={() => setView('week')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${view === 'week' ? 'bg-white text-[#006685] shadow-sm' : 'text-slate-500 hover:text-[#006685]'}`}>
+              className={`hidden md:flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${view === 'week' ? 'bg-white text-[#006685] shadow-sm' : 'text-slate-500 hover:text-[#006685]'}`}>
               <Icon name="calendar_view_week" size={16} />
               Semaine
             </button>
@@ -560,7 +567,11 @@ export default function AppointmentsPage() {
           {weekLoading ? (
             <div className="h-96 rounded-2xl bg-white/40 animate-pulse" />
           ) : (
-            <WeekCalendar weekDays={weekDays} appointments={weekApts} weeklyAvails={weeklyAvails} onSelect={setSelected} />
+            <div className="overflow-x-auto">
+              <div className="min-w-[640px]">
+                <WeekCalendar weekDays={weekDays} appointments={weekApts} weeklyAvails={weeklyAvails} onSelect={setSelected} />
+              </div>
+            </div>
           )}
         </>
       )}
@@ -599,11 +610,11 @@ export default function AppointmentsPage() {
                 const meta = TYPE_META[apt.type] ?? TYPE_META.video
                 const sc = STATUS_COLORS[apt.status]
                 return (
-                  <div key={apt.id} className="rounded-2xl p-5 flex items-center gap-4 cursor-pointer hover:shadow-md transition-shadow bg-white/60 border border-white/80"
+                  <div key={apt.id} className="rounded-2xl p-4 sm:p-5 flex items-start gap-3 sm:gap-4 cursor-pointer hover:shadow-md transition-shadow bg-white/60 border border-white/80"
                     onClick={() => setSelected(apt)}>
-                    <div className="w-14 h-14 rounded-xl flex flex-col items-center justify-center shrink-0"
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex flex-col items-center justify-center shrink-0"
                       style={{ background: meta.bg }}>
-                      <span className="text-xl font-black leading-none" style={{ color: meta.text }}>
+                      <span className="text-lg sm:text-xl font-black leading-none" style={{ color: meta.text }}>
                         {dt.toLocaleDateString('fr-FR', { day: 'numeric', timeZone: 'Africa/Dakar' })}
                       </span>
                       <span className="text-[10px] font-bold uppercase" style={{ color: meta.text }}>
@@ -611,39 +622,42 @@ export default function AppointmentsPage() {
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-[#0b1c30]">{apt.users?.full_name ?? 'Patient'}</p>
-                        <Icon name={meta.icon} size={14} color={meta.text} />
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <p className="font-semibold text-[#0b1c30] truncate">{apt.users?.full_name ?? 'Patient'}</p>
+                          <Icon name={meta.icon} size={13} color={meta.text} />
+                        </div>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
+                          style={{ background: sc.bg, color: sc.text }}>
+                          {STATUS_LABELS[apt.status]}
+                        </span>
                       </div>
-                      <p className="text-sm text-[#6f787e] capitalize">
-                        {fmtDate(dt)} · {fmtTime(dt)} · {apt.duration_min} min
+                      <p className="text-xs sm:text-sm text-[#6f787e] mt-0.5">
+                        <span className="block sm:inline capitalize">{fmtDate(dt)}</span>
+                        <span className="sm:before:content-['_·_']">{fmtTime(dt)} · {apt.duration_min} min</span>
                       </p>
-                    </div>
-                    <span className="text-xs font-semibold px-3 py-1 rounded-full shrink-0"
-                      style={{ background: sc.bg, color: sc.text }}>
-                      {STATUS_LABELS[apt.status]}
-                    </span>
-                    {listFilter === 'upcoming' && apt.status === 'confirmed' && (
-                      <Link href={`/practitioner/consultation/${apt.id}/waiting`}
-                        onClick={e => e.stopPropagation()}
-                        className="px-3 py-1.5 rounded-full text-xs font-bold text-white shrink-0"
-                        style={{ background: '#006685' }}>
-                        Rejoindre →
-                      </Link>
-                    )}
-                    {listFilter === 'upcoming' && apt.status === 'pending' && (
-                      <div className="flex gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
-                        <button onClick={() => updateStatus.mutate({ id: apt.id, status: 'confirmed' })}
-                          disabled={updateStatus.isPending}
-                          className="px-3 py-1.5 rounded-full text-xs font-bold text-white disabled:opacity-60"
-                          style={{ background: '#1d7a3a' }}>
-                          Confirmer
-                        </button>
-                        <button onClick={() => updateStatus.mutate({ id: apt.id, status: 'cancelled' })}
-                          disabled={updateStatus.isPending}
-                          className="px-3 py-1.5 rounded-full text-xs font-bold text-red-600 bg-red-50 border border-red-200 disabled:opacity-60">
-                          Annuler
-                        </button>
+                      {listFilter === 'upcoming' && apt.status === 'confirmed' && (
+                        <Link href={`/practitioner/consultation/${apt.id}/waiting`}
+                          onClick={e => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 mt-1.5 px-3 py-1 rounded-full text-xs font-bold text-white"
+                          style={{ background: '#006685' }}>
+                          <Icon name="videocam" size={12} color="#fff" />
+                          Rejoindre
+                        </Link>
+                      )}
+                      {listFilter === 'upcoming' && apt.status === 'pending' && (
+                        <div className="flex gap-1.5 mt-1.5" onClick={e => e.stopPropagation()}>
+                          <button onClick={() => updateStatus.mutate({ id: apt.id, status: 'confirmed' })}
+                            disabled={updateStatus.isPending}
+                            className="px-3 py-1 rounded-full text-xs font-bold text-white disabled:opacity-60"
+                            style={{ background: '#1d7a3a' }}>
+                            Confirmer
+                          </button>
+                          <button onClick={() => updateStatus.mutate({ id: apt.id, status: 'cancelled' })}
+                            disabled={updateStatus.isPending}
+                            className="px-3 py-1 rounded-full text-xs font-bold text-red-600 bg-red-50 border border-red-200 disabled:opacity-60">
+                            Annuler
+                          </button>
                       </div>
                     )}
                   </div>

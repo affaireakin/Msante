@@ -232,7 +232,7 @@ export default function CollaboratorsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-black text-[#0b1c30]">Utilisateurs</h1>
           <p className="text-sm text-[#6f787e] mt-1">Gestion de l&apos;équipe, patients et praticiens</p>
@@ -240,7 +240,7 @@ export default function CollaboratorsPage() {
         {(tab === 'invitations' || tab === 'team') && (
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 bg-[#006685] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#006685]/20 transition"
+            className="flex items-center gap-2 bg-[#006685] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#006685]/20 transition flex-shrink-0"
           >
             <span className="material-symbols-outlined text-[18px]">person_add</span>
             Inviter un collaborateur

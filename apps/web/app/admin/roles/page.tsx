@@ -215,13 +215,13 @@ export default function RolesPage() {
       {showModal && <AddProfessionModal onClose={() => setShowModal(false)} />}
 
       <div className="space-y-6">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between flex-wrap gap-3">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-[#0b1c30]">Rôles &amp; Permissions</h1>
             <p className="mt-1 text-sm text-[#6f787e]">Droits cliniques par profession — le patient affine ensuite individuellement</p>
           </div>
           <button onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90 flex-shrink-0"
             style={{ backgroundColor: '#006685' }}>
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

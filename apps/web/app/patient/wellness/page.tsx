@@ -163,7 +163,7 @@ export default function WellnessPage() {
           <p className="text-sm text-[#6f787e] mt-2 max-w-md mx-auto">
             Trackez votre humeur quotidiennement, écrivez dans votre journal et parlez à Mounima.
           </p>
-          <div className="flex items-center justify-center gap-3 mt-5">
+          <div className="flex items-center justify-center gap-3 mt-5 flex-wrap">
             <Link href="/patient/wellness/mood" className="flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg transition-all">
               <Icon name="mood" style={{ fontSize: '18px', color: '#fff' }} />
               Premier check-in

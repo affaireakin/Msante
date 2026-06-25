@@ -259,7 +259,7 @@ export default function DisputesPage() {
         ))}
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Table */}
         <div className="flex-1 min-w-0">
           {isLoading ? (
@@ -341,7 +341,7 @@ export default function DisputesPage() {
 
         {/* Detail panel */}
         {selected && (
-          <div className="w-80 flex-shrink-0">
+          <div className="w-full lg:w-80 flex-shrink-0">
             <div className="rounded-2xl sticky top-4 overflow-hidden"
               style={{ backgroundColor: 'rgba(255,255,255,0.80)', border: '1px solid rgba(255,255,255,0.80)' }}>
 

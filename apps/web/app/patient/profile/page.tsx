@@ -201,7 +201,7 @@ export default function PatientProfilePage() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-black text-[#0b1c30]">Mon profil</h1>
           <p className="text-sm text-[#6f787e] mt-1">Gérez vos informations personnelles et médicales</p>
@@ -209,7 +209,7 @@ export default function PatientProfilePage() {
         <button
           onClick={() => saveMutation.mutate()}
           disabled={saveMutation.isPending}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:shadow-lg disabled:opacity-50"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:shadow-lg disabled:opacity-50 flex-shrink-0"
           style={{ backgroundColor: saved ? '#1d7a3a' : '#006685' }}
         >
           <Icon name={saved ? 'check' : 'save'} size={18} color="#fff" />

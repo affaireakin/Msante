@@ -254,13 +254,13 @@ export default function FinancePage() {
     <div className="space-y-6" style={{ fontFamily: 'Manrope' }}>
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-[#0b1c30]">Live Ledger</h1>
           <p className="text-sm text-[#6f787e] mt-1">Distribution des revenus en temps réel</p>
         </div>
         <div
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold"
+          className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold flex-shrink-0"
           style={{ backgroundColor: '#e5eeff', color: '#006685' }}
         >
           <span

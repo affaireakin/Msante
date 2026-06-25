@@ -608,6 +608,7 @@ export default function PatientsPage() {
       </div>
 
       {/* Onglets principaux */}
+      <div className="overflow-x-auto pb-1">
       <div className="flex gap-1 p-1 bg-white/60 backdrop-blur-sm border border-white/80 rounded-2xl w-fit">
         {MAIN_TABS.map(tab => (
           <button key={tab.id} onClick={() => setMainTab(tab.id)}
@@ -625,6 +626,7 @@ export default function PatientsPage() {
             )}
           </button>
         ))}
+      </div>
       </div>
 
       {/* Onglet 2 — Demandes en attente */}
@@ -1080,7 +1082,6 @@ export default function PatientsPage() {
           </div>
         </div>
       )}
-      </div>
       </div>
     </div>
   )

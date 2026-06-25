@@ -358,7 +358,7 @@ export default function WorkflowsPage() {
     <div className="space-y-8 max-w-5xl">
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-black text-[#0b1c30]">Automatisations</h1>
           <p className="text-sm text-[#6f787e] mt-1">

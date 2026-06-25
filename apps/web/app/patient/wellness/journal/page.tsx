@@ -44,9 +44,9 @@ export default function JournalListPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <Link href="/patient/wellness" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/70 border border-slate-200/50 text-[#6f787e] hover:bg-white transition-colors">
+          <Link href="/patient/wellness" className="w-9 h-9 flex items-center justify-center rounded-full bg-white/70 border border-slate-200/50 text-[#6f787e] hover:bg-white transition-colors flex-shrink-0">
             <Icon name="arrow_back" />
           </Link>
           <div>
@@ -56,7 +56,7 @@ export default function JournalListPage() {
         </div>
         <Link
           href="/patient/wellness/journal/new"
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#006685]/20 transition-all"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#006685]/20 transition-all flex-shrink-0"
         >
           <Icon name="edit" style={{ color: '#fff', fontSize: '18px' }} />
           Nouvelle entrée

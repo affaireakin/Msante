@@ -147,13 +147,13 @@ export default function PatientDisputesPage() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-black text-[#0b1c30]">Mes litiges</h1>
           <p className="text-sm text-[#6f787e] mt-1">Suivi de vos réclamations et dossiers en cours</p>
         </div>
         <button onClick={() => setShowNew(true)}
-          className="flex items-center gap-2 bg-[#006685] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#006685]/20 transition">
+          className="flex items-center gap-2 bg-[#006685] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#006685]/20 transition flex-shrink-0">
           <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>add</span>
           Ouvrir un litige
         </button>

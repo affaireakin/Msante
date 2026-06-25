@@ -388,7 +388,7 @@ export default function PractitionerAnalyticsPage() {
         {/* Session type breakdown */}
         {data.typeChart.length > 0 && (
           <ChartCard title="Répartition par type de séance">
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-6 flex-wrap">
               <ResponsiveContainer width={140} height={140}>
                 <PieChart>
                   <Pie
