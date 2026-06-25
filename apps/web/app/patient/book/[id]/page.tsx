@@ -377,7 +377,7 @@ export default function BookingPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#f8f9ff] overflow-x-hidden">
+    <div className="-mx-4 md:-mx-8 min-h-screen bg-[#f8f9ff]">
       {/* Header */}
       <header className="bg-white/70 backdrop-blur-xl border-b border-slate-200/50 px-4 sm:px-6 py-4 flex items-center gap-4 sticky top-0 z-20">
         <button onClick={() => {
@@ -402,7 +402,7 @@ export default function BookingPage() {
         </div>
       </header>
 
-      <main className="w-full max-w-2xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
         {/* Practitioner card */}
         <div className="rounded-2xl p-5 flex items-center gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
           <div className="w-14 h-14 rounded-full bg-[#006685] flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
