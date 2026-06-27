@@ -1,9 +1,9 @@
 import {
   View, Text, ScrollView, TouchableOpacity,
-  RefreshControl, ActivityIndicator,
+  RefreshControl, ActivityIndicator, Alert,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { supabase } from '@/services/supabase'
@@ -65,7 +65,7 @@ function isUpcoming(iso: string) {
   return new Date(iso) > new Date()
 }
 
-function AppointmentCard({ appt, onJoin }: { appt: AppointmentRow; onJoin: () => void }) {
+function AppointmentCard({ appt, onJoin, onCancel }: { appt: AppointmentRow; onJoin: () => void; onCancel: () => void }) {
   const { px, fs, scale } = useResponsive()
   const status = STATUS_CONFIG[appt.status]
   const practitioner = appt.practitioners
@@ -75,6 +75,7 @@ function AppointmentCard({ appt, onJoin }: { appt: AppointmentRow; onJoin: () =>
   const currency = practitioner?.session_currency ?? 'XOF'
   const upcoming = isUpcoming(appt.scheduled_at)
   const canJoin = appt.status === 'confirmed' && upcoming && appt.type === 'video'
+  const canCancel = upcoming && (appt.status === 'pending' || appt.status === 'confirmed')
 
   return (
     <View style={{
@@ -134,18 +135,27 @@ function AppointmentCard({ appt, onJoin }: { appt: AppointmentRow; onJoin: () =>
         </View>
       </View>
 
-      {/* Join button */}
-      {canJoin && (
-        <View style={{ paddingHorizontal: scale(16), paddingBottom: scale(16) }}>
-          <TouchableOpacity
-            onPress={onJoin}
-            style={{ backgroundColor: '#006685', borderRadius: scale(14), paddingVertical: scale(13), alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: scale(8) }}
-          >
-            <MaterialIcons name="videocam" size={scale(18)} color="#fff" />
-            <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
-              Rejoindre la session
-            </Text>
-          </TouchableOpacity>
+      {/* Action buttons */}
+      {(canJoin || canCancel) && (
+        <View style={{ paddingHorizontal: scale(16), paddingBottom: scale(16), flexDirection: 'row', gap: scale(8) }}>
+          {canJoin && (
+            <TouchableOpacity
+              onPress={onJoin}
+              style={{ flex: 1, backgroundColor: '#006685', borderRadius: scale(14), paddingVertical: scale(13), alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: scale(8) }}
+            >
+              <MaterialIcons name="videocam" size={scale(18)} color="#fff" />
+              <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>Rejoindre</Text>
+            </TouchableOpacity>
+          )}
+          {canCancel && (
+            <TouchableOpacity
+              onPress={onCancel}
+              style={{ flex: canJoin ? 0 : 1, paddingHorizontal: scale(16), backgroundColor: '#fce4ec', borderRadius: scale(14), paddingVertical: scale(13), alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: scale(6) }}
+            >
+              <MaterialIcons name="cancel" size={scale(17)} color="#ba1a1a" />
+              {!canJoin && <Text style={{ color: '#ba1a1a', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>Annuler</Text>}
+            </TouchableOpacity>
+          )}
         </View>
       )}
 
@@ -188,11 +198,33 @@ export default function AppointmentsScreen() {
     },
   })
 
+  const qc = useQueryClient()
   const upcoming = (data ?? []).filter(a => isUpcoming(a.scheduled_at) && a.status !== 'cancelled')
   const past = (data ?? []).filter(a => !isUpcoming(a.scheduled_at) || a.status === 'cancelled')
 
   function handleJoin(appt: AppointmentRow) {
     router.push(`/(patient)/consultation/waiting?appointmentId=${appt.id}` as never)
+  }
+
+  function handleCancel(appt: AppointmentRow) {
+    Alert.alert(
+      'Annuler le rendez-vous',
+      `Souhaitez-vous annuler le rendez-vous du ${formatDate(appt.scheduled_at)} à ${formatTime(appt.scheduled_at)} ?`,
+      [
+        { text: 'Retour', style: 'cancel' },
+        {
+          text: 'Confirmer l\'annulation',
+          style: 'destructive',
+          onPress: async () => {
+            const { error } = await supabase
+              .from('appointments')
+              .update({ status: 'cancelled', cancellation_reason: 'Annulé par le patient' })
+              .eq('id', appt.id)
+            if (!error) qc.invalidateQueries({ queryKey: ['patient-appointments'] })
+          },
+        },
+      ]
+    )
   }
 
   return (
@@ -242,7 +274,7 @@ export default function AppointmentsScreen() {
                 À venir
               </Text>
               {upcoming.map(a => (
-                <AppointmentCard key={a.id} appt={a} onJoin={() => handleJoin(a)} />
+                <AppointmentCard key={a.id} appt={a} onJoin={() => handleJoin(a)} onCancel={() => handleCancel(a)} />
               ))}
             </View>
           )}
@@ -254,7 +286,7 @@ export default function AppointmentsScreen() {
                 Historique
               </Text>
               {past.map(a => (
-                <AppointmentCard key={a.id} appt={a} onJoin={() => handleJoin(a)} />
+                <AppointmentCard key={a.id} appt={a} onJoin={() => handleJoin(a)} onCancel={() => handleCancel(a)} />
               ))}
             </View>
           )}

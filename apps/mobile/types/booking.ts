@@ -53,6 +53,7 @@ export interface PractitionerFilter {
   language?: string
   maxPrice?: number
   hasAvailability?: boolean
+  acceptingNewPatients?: boolean
 }
 
 export interface CreateAppointmentRequest {

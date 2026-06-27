@@ -25,6 +25,23 @@ export default function BookingScreen() {
   const { practitionerId } = useLocalSearchParams<{ practitionerId: string }>()
   const router = useRouter()
   const { data: practitioner } = usePractitioner(practitionerId)
+
+  const { data: isBlocked } = useQuery({
+    queryKey: ['patient-block', practitionerId],
+    enabled: !!practitionerId,
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return false
+      const { data } = await supabase
+        .from('practitioner_patient_blocks')
+        .select('id, unblocked_at')
+        .eq('practitioner_id', practitionerId)
+        .eq('patient_id', user.id)
+        .maybeSingle()
+      return !!data && !data.unblocked_at
+    },
+  })
+
   const { data: slots, isLoading } = useAvailability(
     practitionerId,
     practitioner?.session_duration_min ?? 60
@@ -78,6 +95,44 @@ export default function BookingScreen() {
       setAmount(practitioner.session_price, practitioner.session_currency)
     }
     router.push('/(patient)/confirm-session')
+  }
+
+  if (isBlocked) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+        <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: '#fce4ec', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+          <MaterialIcons name="block" size={36} color="#ba1a1a" />
+        </View>
+        <Text style={{ fontSize: 18, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center', marginBottom: 8 }}>
+          Réservation impossible
+        </Text>
+        <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center', lineHeight: 22 }}>
+          Ce praticien ne peut pas vous recevoir en consultation pour le moment.
+        </Text>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 24, backgroundColor: '#006685', borderRadius: 14, paddingHorizontal: 24, paddingVertical: 12 }}>
+          <Text style={{ color: '#fff', fontWeight: '700', fontFamily: 'Manrope' }}>Retour</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    )
+  }
+
+  if (practitioner && practitioner.accepting_new_patients === false) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+        <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: '#fff8e1', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+          <MaterialIcons name="person-off" size={36} color="#705d00" />
+        </View>
+        <Text style={{ fontSize: 18, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center', marginBottom: 8 }}>
+          Nouveaux patients non acceptés
+        </Text>
+        <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center', lineHeight: 22 }}>
+          Ce praticien n'accepte pas de nouveaux patients actuellement. Consultez d'autres professionnels disponibles.
+        </Text>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 24, backgroundColor: '#006685', borderRadius: 14, paddingHorizontal: 24, paddingVertical: 12 }}>
+          <Text style={{ color: '#fff', fontWeight: '700', fontFamily: 'Manrope' }}>Voir d'autres praticiens</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    )
   }
 
   return (

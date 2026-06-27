@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, FlatList, TextInput, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -15,10 +15,12 @@ export default function FindPractitionersScreen() {
   const [search, setSearch] = useState('')
   const [speciality, setSpeciality] = useState<string | null>(null)
   const [language, setLanguage] = useState<string | null>(null)
+  const [acceptingNewOnly, setAcceptingNewOnly] = useState(false)
 
   const { data: practitioners, isLoading, error } = usePractitioners({
     speciality: speciality ?? undefined,
     language: language ?? undefined,
+    acceptingNewPatients: acceptingNewOnly || undefined,
   })
 
   const { setPractitioner } = useBookingStore()
@@ -88,6 +90,26 @@ export default function FindPractitionersScreen() {
           onSpecialityChange={setSpeciality}
           onLanguageChange={setLanguage}
         />
+        {/* Toggle accepte nouveaux patients */}
+        <TouchableOpacity
+          onPress={() => setAcceptingNewOnly(v => !v)}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), paddingVertical: scale(4) }}
+        >
+          <View style={{
+            width: scale(40), height: scale(22), borderRadius: scale(11),
+            backgroundColor: acceptingNewOnly ? '#006685' : '#bec8ce',
+            justifyContent: 'center', paddingHorizontal: 2,
+          }}>
+            <View style={{
+              width: scale(18), height: scale(18), borderRadius: scale(9),
+              backgroundColor: '#fff',
+              transform: [{ translateX: acceptingNewOnly ? scale(18) : 0 }],
+            }} />
+          </View>
+          <Text style={{ fontSize: fs.sm, color: '#3f484d', fontFamily: 'Manrope', fontWeight: '600' }}>
+            Accepte de nouveaux patients
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {isLoading ? (

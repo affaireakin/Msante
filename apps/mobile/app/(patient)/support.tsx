@@ -124,6 +124,21 @@ export default function SupportScreen() {
           <MaterialIcons name="arrow-forward-ios" size={16} color="#006685" />
         </TouchableOpacity>
 
+        {/* Litiges */}
+        <TouchableOpacity
+          onPress={() => router.push('/(patient)/disputes')}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: 'rgba(255,255,255,0.70)', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.80)', padding: 16 }}
+        >
+          <View style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: '#fff8e1', alignItems: 'center', justifyContent: 'center' }}>
+            <MaterialIcons name="gavel" size={24} color="#705d00" />
+          </View>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ fontSize: 15, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>Litiges & réclamations</Text>
+            <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>Signalez un problème avec une consultation</Text>
+          </View>
+          <MaterialIcons name="arrow-forward-ios" size={16} color="#705d00" />
+        </TouchableOpacity>
+
         {/* FAQ */}
         <View style={{ gap: 8 }}>
           <Text style={{ fontSize: 13, fontWeight: '800', color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>

@@ -26,6 +26,9 @@ export function usePractitioners(filters: PractitionerFilter = {}) {
       if (filters.maxPrice) {
         query = query.lte('session_price', filters.maxPrice)
       }
+      if (filters.acceptingNewPatients) {
+        query = query.eq('accepting_new_patients', true)
+      }
 
       const { data, error } = await query.order('rating', { ascending: false })
       if (error) throw error
