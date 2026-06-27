@@ -116,6 +116,14 @@ export default function PractitionerLayout() {
         name="schedule-blocks"
         options={{ href: null }}
       />
+      <Tabs.Screen
+        name="analytics"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="notes-cliniques"
+        options={{ href: null }}
+      />
     </Tabs>
   )
 }

@@ -355,6 +355,64 @@ export default function DashboardScreen() {
           )}
         </View>
 
+        {/* Quick Actions */}
+        <View style={{ gap: 10 }}>
+          <Text
+            style={{
+              fontFamily: 'Manrope',
+              fontSize: 20,
+              fontWeight: '600',
+              color: '#0b1c30',
+              letterSpacing: -0.3,
+              paddingHorizontal: 4,
+            }}
+          >
+            Raccourcis
+          </Text>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <TouchableOpacity
+              onPress={() => router.push('/(practitioner)/analytics')}
+              style={{
+                flex: 1,
+                backgroundColor: 'rgba(255,255,255,0.90)',
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: '#e5eeff',
+                padding: 16,
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+                <MaterialIcons name="bar-chart" size={22} color="#006685" />
+              </View>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#0b1c30', textAlign: 'center' }}>
+                Analytics
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push('/(practitioner)/notes-cliniques')}
+              style={{
+                flex: 1,
+                backgroundColor: 'rgba(255,255,255,0.90)',
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: '#e5eeff',
+                padding: 16,
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+                <MaterialIcons name="description" size={22} color="#006685" />
+              </View>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#0b1c30', textAlign: 'center' }}>
+                Notes cliniques
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* Recent Activity */}
         <View style={{ gap: 12 }}>
           <Text
