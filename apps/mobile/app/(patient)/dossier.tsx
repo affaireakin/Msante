@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   RefreshControl,
-  ActivityIndicator,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
@@ -390,6 +389,66 @@ export default function DossierScreen() {
             </Text>
           </View>
         )}
+      </View>
+
+      {/* Quick link — ordonnances */}
+      <View style={{ paddingHorizontal: px, marginBottom: scale(10) }}>
+        <TouchableOpacity
+          onPress={() => router.push('/(patient)/prescriptions' as never)}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: 'rgba(255,255,255,0.88)',
+            borderRadius: scale(14),
+            borderWidth: 1,
+            borderColor: '#e5eeff',
+            paddingHorizontal: scale(14),
+            paddingVertical: scale(11),
+            shadowColor: '#006685',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.05,
+            shadowRadius: 8,
+            elevation: 1,
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(10) }}>
+            <View
+              style={{
+                width: scale(32),
+                height: scale(32),
+                borderRadius: scale(10),
+                backgroundColor: '#e5eeff',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <MaterialIcons name="receipt-long" size={scale(16)} color="#006685" />
+            </View>
+            <View>
+              <Text
+                style={{
+                  fontSize: fs.md,
+                  fontWeight: '700',
+                  color: '#0b1c30',
+                  fontFamily: 'Manrope',
+                }}
+              >
+                Mes ordonnances
+              </Text>
+              <Text
+                style={{
+                  fontSize: fs.xs,
+                  color: '#6f787e',
+                  fontFamily: 'Manrope',
+                }}
+              >
+                Voir tous mes documents médicaux
+              </Text>
+            </View>
+          </View>
+          <MaterialIcons name="arrow-forward-ios" size={scale(14)} color="#006685" />
+        </TouchableOpacity>
       </View>
 
       {/* Search bar */}

@@ -114,6 +114,7 @@ export default function PatientLayout() {
       <Tabs.Screen name="dossier" options={{ href: null }} />
       <Tabs.Screen name="permissions" options={{ href: null }} />
       <Tabs.Screen name="disputes" options={{ href: null }} />
+      <Tabs.Screen name="prescriptions" options={{ href: null }} />
     </Tabs>
   )
 }
