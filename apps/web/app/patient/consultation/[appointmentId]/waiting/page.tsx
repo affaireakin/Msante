@@ -123,10 +123,19 @@ export default function PatientWaitingRoom() {
     }
   }
 
+  // Show appointment time in user's local browser timezone
   const formattedDate = appointment
     ? new Date(appointment.scheduledAt).toLocaleString('fr-FR', {
         dateStyle: 'long',
         timeStyle: 'short',
+      })
+    : ''
+
+  // Secondary label: Dakar time for reference
+  const formattedDateDakar = appointment
+    ? new Date(appointment.scheduledAt).toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit',
         timeZone: 'Africa/Dakar',
       })
     : ''
@@ -214,6 +223,9 @@ export default function PatientWaitingRoom() {
                         Date &amp; heure
                       </p>
                       <p className="text-sm font-semibold text-[#0b1c30]">{formattedDate}</p>
+                      {formattedDateDakar && formattedDateDakar !== new Date(appointment!.scheduledAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) && (
+                        <p className="text-[10px] text-[#6f787e]">{formattedDateDakar} heure Dakar</p>
+                      )}
                     </div>
                   </div>
 
@@ -277,7 +289,7 @@ export default function PatientWaitingRoom() {
                   Accès disponible à{' '}
                   <strong>
                     {new Date(new Date(appointment.scheduledAt).getTime() - 5 * 60 * 1000)
-                      .toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Dakar' })}
+                      .toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                   </strong>
                   {' '}— dans {minsLeft} min
                 </div>

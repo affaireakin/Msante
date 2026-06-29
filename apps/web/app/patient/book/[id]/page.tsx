@@ -269,7 +269,8 @@ export default function BookingPage() {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) { router.push('/auth/login'); return }
 
-      const scheduled_at = `${selectedSlot.date}T${selectedSlot.start_time}:00`
+      // Explicit UTC (Z) — availability times are defined in Dakar/UTC+0
+      const scheduled_at = `${selectedSlot.date}T${selectedSlot.start_time}:00Z`
 
       // Server-side double-booking check — catches race conditions and stale UI data
       const { count: conflictCount } = await supabase
@@ -520,9 +521,14 @@ export default function BookingPage() {
 
                 {selectedDate && (
                   <div>
-                    <p className="text-sm font-bold text-[#0b1c30] mb-2">
-                      Créneaux disponibles — {formatDateLong(selectedDate)}
-                    </p>
+                    <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
+                      <p className="text-sm font-bold text-[#0b1c30]">
+                        Créneaux disponibles — {formatDateLong(selectedDate)}
+                      </p>
+                      <span className="text-[10px] bg-[#e5eeff] text-[#006685] font-semibold px-2 py-0.5 rounded-full">
+                        🕐 Heure Dakar (UTC+0)
+                      </span>
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {(grouped.get(selectedDate) ?? []).map(slot => {
                         const key = `${slot.date}-${slot.start_time}`
