@@ -44,30 +44,31 @@ function generateSlots(
   const minDelay = settings.min_booking_delay_h * 60 * 60 * 1000
   const earliest = new Date(now.getTime() + minDelay)
   const latest = new Date(now)
-  latest.setDate(latest.getDate() + settings.max_booking_days_ahead)
+  latest.setUTCDate(latest.getUTCDate() + settings.max_booking_days_ahead)
 
-  // Use local date string to avoid UTC-vs-local day mismatch
-  function localDateStr(d: Date) {
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  // Use UTC dates — slot times are stored in Dakar/UTC+0, so UTC is the canonical reference.
+  // Local-time methods would cause France (UTC+2) browsers to skip today or mismap day-of-week.
+  function utcDateStr(d: Date) {
+    return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`
   }
 
-  // Build blocked set
+  // Build blocked set (UTC dates)
   const blockedDates = new Set<string>()
   for (const b of blocked) {
-    const d = new Date(b.start_date + 'T00:00:00')
-    const end = new Date(b.end_date + 'T00:00:00')
+    const d = new Date(b.start_date + 'T00:00:00Z')
+    const end = new Date(b.end_date + 'T00:00:00Z')
     while (d <= end) {
-      blockedDates.add(localDateStr(d))
-      d.setDate(d.getDate() + 1)
+      blockedDates.add(utcDateStr(d))
+      d.setUTCDate(d.getUTCDate() + 1)
     }
   }
 
-  // Walk each day in window
+  // Walk each day in window (UTC — keeps day-of-week consistent with Dakar timezone)
   const cursor = new Date(earliest)
-  cursor.setHours(0, 0, 0, 0)
+  cursor.setUTCHours(0, 0, 0, 0)
   while (cursor <= latest) {
-    const dateStr = localDateStr(cursor)
-    const dow = cursor.getDay()
+    const dateStr = utcDateStr(cursor)
+    const dow = cursor.getUTCDay()
 
     if (!blockedDates.has(dateStr)) {
       const daySlots = weekly.filter(w => w.is_active && w.day_of_week === dow)
@@ -86,7 +87,8 @@ function generateSlots(
             const startStr = `${pad(Math.floor(cur / 60))}:${pad(cur % 60)}`
             const endMin2 = cur + ctype.duration_min
             const endStr = `${pad(Math.floor(endMin2 / 60))}:${pad(endMin2 % 60)}`
-            const slotDt = new Date(`${dateStr}T${startStr}:00`)
+            // Parse slot as UTC (Dakar = UTC+0), compare against UTC earliest
+            const slotDt = new Date(`${dateStr}T${startStr}:00Z`)
             const takenKey = `${dateStr}T${startStr}:00`
 
             if (slotDt >= earliest) {
@@ -97,7 +99,7 @@ function generateSlots(
         }
       }
     }
-    cursor.setDate(cursor.getDate() + 1)
+    cursor.setUTCDate(cursor.getUTCDate() + 1)
   }
   return slots
 }
