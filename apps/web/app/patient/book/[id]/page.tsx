@@ -380,9 +380,9 @@ export default function BookingPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#f8f9ff]">
+    <div className="min-h-screen bg-[#f8f9ff] overflow-x-hidden">
       {/* Header */}
-      <header className="bg-white/70 backdrop-blur-xl border-b border-slate-200/50 py-4 flex items-center gap-4 sticky top-0 z-20">
+      <header className="bg-white/70 backdrop-blur-xl border-b border-slate-200/50 px-4 sm:px-6 py-4 flex items-center gap-3 sm:gap-4 sticky top-0 z-20">
         <button onClick={() => {
           if (step === 'slot') setStep('type')
           else if (step === 'confirm') setStep('slot')
@@ -405,7 +405,7 @@ export default function BookingPage() {
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto py-4 space-y-6">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-4 space-y-6">
         {/* Practitioner card */}
         <div className="rounded-2xl p-5 flex items-center gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
           <div className="w-14 h-14 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] font-bold text-xl flex-shrink-0">
