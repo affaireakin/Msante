@@ -15,7 +15,7 @@ export function StepIndicator({ total, current }: StepIndicatorProps) {
             height: 8,
             borderRadius: 4,
             width: i === current ? 32 : 8,
-            backgroundColor: i === current ? '#006685' : '#bec8ce',
+            backgroundColor: i === current ? '#82d8ff' : '#bec8ce',
           }}
         />
       ))}

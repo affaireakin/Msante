@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
@@ -110,7 +110,7 @@ const DEFAULT_STATE: PermissionState = {
 function ToggleSwitch({ checked, onChange, id }: { checked: boolean; onChange: (val: boolean) => void; id: string }) {
   return (
     <button type="button" id={id} role="switch" aria-checked={checked} onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#006685] focus:ring-offset-2 ${checked ? 'bg-[#006685]' : 'bg-slate-300'}`}>
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#82d8ff] focus:ring-offset-2 ${checked ? 'bg-[#82d8ff]' : 'bg-slate-300'}`}>
       <span className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${checked ? 'translate-x-6' : 'translate-x-1'}`} />
     </button>
   )
@@ -208,7 +208,7 @@ export default function EditProfessionPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
         <p className="text-sm font-semibold text-red-500">Profession introuvable</p>
-        <Link href="/admin/roles" className="text-sm font-medium text-[#006685] underline">Retour à la liste</Link>
+        <Link href="/admin/roles" className="text-sm font-medium text-[#82d8ff] underline">Retour à la liste</Link>
       </div>
     )
   }
@@ -234,7 +234,7 @@ export default function EditProfessionPage() {
 
       {/* Status badges */}
       <div className="flex items-center gap-3 flex-wrap">
-        <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold bg-[#e5eeff] text-[#006685]">
+        <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold bg-[#e5eeff] text-[#82d8ff]">
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
           </svg>
@@ -271,7 +271,7 @@ export default function EditProfessionPage() {
       {PERMISSION_GROUPS.map(group => (
         <div key={group.group} className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm overflow-hidden">
           <div className="px-5 py-3.5 border-b border-slate-100/70 flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#006685]" style={{ fontSize: '18px' }}>{group.icon}</span>
+            <span className="material-symbols-outlined text-[#82d8ff]" style={{ fontSize: '18px' }}>{group.icon}</span>
             <h2 className="text-sm font-semibold text-[#0b1c30]">{group.group}</h2>
           </div>
           <div className="divide-y divide-slate-100/70">
@@ -340,7 +340,7 @@ export default function EditProfessionPage() {
           <textarea value={permissions.description}
             onChange={e => { setPermissions(p => ({ ...p, description: e.target.value })); setIsDirty(true) }}
             rows={3} placeholder="Contexte clinique, responsabilités…"
-            className="w-full rounded-xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-[#0b1c30] placeholder-[#6f787e] outline-none focus:border-[#006685] resize-none transition-colors" />
+            className="w-full rounded-xl border border-slate-200/70 bg-white/80 px-4 py-3 text-sm text-[#0b1c30] placeholder-[#6f787e] outline-none focus:border-[#82d8ff] resize-none transition-colors" />
         </div>
       </div>
 
@@ -351,7 +351,7 @@ export default function EditProfessionPage() {
         </Link>
         <button onClick={() => updateMutation.mutate(permissions)} disabled={updateMutation.isPending || !isDirty}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ backgroundColor: '#006685' }}>
+          style={{ backgroundColor: '#82d8ff' }}>
           {updateMutation.isPending ? (
             <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Enregistrement…</>
           ) : (

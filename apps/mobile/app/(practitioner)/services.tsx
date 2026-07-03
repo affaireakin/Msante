@@ -151,13 +151,13 @@ function ServiceFormModal({
                         style={{
                           flex: 1, paddingVertical: 10, borderRadius: 12,
                           alignItems: 'center', gap: 4,
-                          backgroundColor: active ? '#006685' : '#e5eeff',
-                          borderWidth: 1.5, borderColor: active ? '#006685' : 'transparent',
+                          backgroundColor: active ? '#82d8ff' : '#e5eeff',
+                          borderWidth: 1.5, borderColor: active ? '#82d8ff' : 'transparent',
                         }}>
-                        <MaterialIcons name={t.icon as 'videocam'} size={18} color={active ? '#fff' : '#006685'} />
+                        <MaterialIcons name={t.icon as 'videocam'} size={18} color={active ? '#fff' : '#82d8ff'} />
                         <Text style={{
                           fontFamily: 'Manrope', fontSize: 11, fontWeight: '700',
-                          color: active ? '#fff' : '#006685',
+                          color: active ? '#fff' : '#82d8ff',
                         }}>{t.label}</Text>
                       </TouchableOpacity>
                     )
@@ -181,12 +181,12 @@ function ServiceFormModal({
                         <TouchableOpacity key={d} onPress={() => setValue('duration_min', d)}
                           style={{
                             width: 58, paddingVertical: 10, borderRadius: 10, alignItems: 'center',
-                            backgroundColor: active ? '#006685' : '#e5eeff',
-                            borderWidth: 1.5, borderColor: active ? '#006685' : 'transparent',
+                            backgroundColor: active ? '#82d8ff' : '#e5eeff',
+                            borderWidth: 1.5, borderColor: active ? '#82d8ff' : 'transparent',
                           }}>
                           <Text style={{
                             fontFamily: 'Manrope', fontSize: 14, fontWeight: '700',
-                            color: active ? '#fff' : '#006685',
+                            color: active ? '#fff' : '#82d8ff',
                           }}>{d}</Text>
                         </TouchableOpacity>
                       )
@@ -254,7 +254,7 @@ function ServiceCard({
           width: 44, height: 44, borderRadius: 12,
           backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>
-          <MaterialIcons name="medical-services" size={20} color="#006685" />
+          <MaterialIcons name="medical-services" size={20} color="#82d8ff" />
         </View>
 
         {/* Content */}
@@ -271,8 +271,8 @@ function ServiceCard({
                 paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999,
                 backgroundColor: '#e5eeff',
               }}>
-                <MaterialIcons name={typeIcons[t] as 'videocam'} size={12} color="#006685" />
-                <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '600', color: '#006685' }}>
+                <MaterialIcons name={typeIcons[t] as 'videocam'} size={12} color="#82d8ff" />
+                <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '600', color: '#82d8ff' }}>
                   {typeLabels[t]}
                 </Text>
               </View>
@@ -290,7 +290,7 @@ function ServiceCard({
             {service.price != null && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                 <MaterialIcons name="payments" size={14} color="#6f787e" />
-                <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#006685' }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#82d8ff' }}>
                   {Number(service.price).toLocaleString('fr-FR')} XOF
                 </Text>
               </View>
@@ -302,7 +302,7 @@ function ServiceCard({
         <View style={{ gap: 8, flexShrink: 0 }}>
           <TouchableOpacity onPress={onEdit}
             style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-            <MaterialIcons name="edit" size={16} color="#006685" />
+            <MaterialIcons name="edit" size={16} color="#82d8ff" />
           </TouchableOpacity>
           <TouchableOpacity onPress={onDelete}
             style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#ffdad6', alignItems: 'center', justifyContent: 'center' }}>
@@ -369,7 +369,7 @@ export default function ServicesScreen() {
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <TouchableOpacity onPress={() => router.back()}
             style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-            <MaterialIcons name="arrow-back" size={20} color="#006685" />
+            <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
           </TouchableOpacity>
           <View>
             <Text style={{ fontFamily: 'Manrope', fontSize: 18, fontWeight: '700', color: '#0b1c30' }}>
@@ -385,7 +385,7 @@ export default function ServicesScreen() {
           style={{
             flexDirection: 'row', alignItems: 'center', gap: 6,
             paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999,
-            backgroundColor: '#006685',
+            backgroundColor: '#82d8ff',
           }}>
           <MaterialIcons name="add" size={18} color="#fff" />
           <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#fff' }}>
@@ -411,7 +411,7 @@ export default function ServicesScreen() {
               width: 72, height: 72, borderRadius: 36,
               backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center',
             }}>
-              <MaterialIcons name="medical-services" size={32} color="#006685" />
+              <MaterialIcons name="medical-services" size={32} color="#82d8ff" />
             </View>
             <View style={{ alignItems: 'center', gap: 6 }}>
               <Text style={{ fontFamily: 'Manrope', fontSize: 17, fontWeight: '700', color: '#0b1c30' }}>
@@ -425,7 +425,7 @@ export default function ServicesScreen() {
               style={{
                 flexDirection: 'row', alignItems: 'center', gap: 8,
                 paddingHorizontal: 24, paddingVertical: 12, borderRadius: 999,
-                backgroundColor: '#006685', marginTop: 8,
+                backgroundColor: '#82d8ff', marginTop: 8,
               }}>
               <MaterialIcons name="add" size={18} color="#fff" />
               <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#fff' }}>

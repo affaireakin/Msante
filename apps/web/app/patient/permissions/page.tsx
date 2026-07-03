@@ -20,7 +20,7 @@ const EXPIRY_OPTIONS = [
 ]
 
 const ACCESS_LEVELS = [
-  { value: 'full',           label: 'Accès complet',    color: '#006685', desc: 'Toutes les données' },
+  { value: 'full',           label: 'Accès complet',    color: '#82d8ff', desc: 'Toutes les données' },
   { value: 'limited',        label: 'Limité',           color: '#705d00', desc: 'Informations essentielles' },
   { value: 'document_only',  label: 'Documents seuls',  color: '#475569', desc: 'Fichiers uniquement' },
   { value: 'emergency_only', label: 'Urgence',          color: '#ba1a1a', desc: 'En cas d\'urgence seulement' },
@@ -194,9 +194,9 @@ function EditDrawer({
                 <button key={opt.value} onClick={() => setState(s => ({ ...s, expiry: opt.value }))}
                   className="px-3 py-1.5 rounded-xl text-xs font-medium border transition-all"
                   style={{
-                    borderColor: state.expiry === opt.value ? '#006685' : '#e2e8f0',
+                    borderColor: state.expiry === opt.value ? '#82d8ff' : '#e2e8f0',
                     backgroundColor: state.expiry === opt.value ? '#e5eeff' : 'transparent',
-                    color: state.expiry === opt.value ? '#006685' : '#3f484d',
+                    color: state.expiry === opt.value ? '#82d8ff' : '#3f484d',
                   }}>
                   {opt.label}
                 </button>
@@ -222,7 +222,7 @@ function EditDrawer({
                       <span className="text-sm text-[#0b1c30]">{t.label}</span>
                     </div>
                     <button type="button" onClick={() => setState(s => ({ ...s, [t.key]: !checked }))}
-                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${checked ? 'bg-[#006685]' : 'bg-slate-300'}`}>
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${checked ? 'bg-[#82d8ff]' : 'bg-slate-300'}`}>
                       <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-4' : 'translate-x-1'}`} />
                     </button>
                   </div>
@@ -236,7 +236,7 @@ function EditDrawer({
             <p className="text-xs font-semibold text-[#3f484d] uppercase tracking-wider mb-2">Note personnelle</p>
             <textarea value={state.notes} onChange={e => setState(s => ({ ...s, notes: e.target.value }))}
               rows={2} placeholder="Raison de cet accès, remarques…"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-[#0b1c30] placeholder-slate-400 outline-none focus:border-[#006685] resize-none" />
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-[#0b1c30] placeholder-slate-400 outline-none focus:border-[#82d8ff] resize-none" />
           </div>
         </div>
 
@@ -244,7 +244,7 @@ function EditDrawer({
         <div className="px-6 py-4 border-t border-slate-100 space-y-2">
           <button onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}
             className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50 transition-all active:scale-95"
-            style={{ backgroundColor: '#006685' }}>
+            style={{ backgroundColor: '#82d8ff' }}>
             {saveMutation.isPending
               ? <><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Enregistrement…</>
               : <><Icon name="save" size={16} color="#fff" />Enregistrer</>}
@@ -278,7 +278,7 @@ export default function PatientPermissionsPage() {
 
       {/* Info banner */}
       <div className="flex items-start gap-3 bg-[#e5eeff] border border-[#bee9ff] rounded-xl px-4 py-3">
-        <Icon name="shield_person" size={18} color="#006685" />
+        <Icon name="shield_person" size={18} color="#82d8ff" />
         <div className="text-xs text-[#005e7a] leading-relaxed">
           <strong>Vous contrôlez vos données.</strong> Les permissions ici s'appliquent par-dessus les règles de votre profession. Un praticien ne peut jamais accéder à plus que ce que vous autorisez ici.
         </div>
@@ -287,7 +287,7 @@ export default function PatientPermissionsPage() {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 text-center shadow-sm">
-          <p className="text-2xl font-black text-[#006685]">{active.length}</p>
+          <p className="text-2xl font-black text-[#82d8ff]">{active.length}</p>
           <p className="text-xs text-slate-500 mt-0.5">Accès actifs</p>
         </div>
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 text-center shadow-sm">
@@ -343,7 +343,7 @@ function PermCard({ perm, onEdit, dimmed }: { perm: PatientPermission; onEdit: (
     <div className={`bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm p-4 transition-all ${dimmed ? 'opacity-50' : 'hover:shadow-md'}`}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-full bg-[#e5eeff] flex items-center justify-center text-[#006685] text-sm font-bold flex-shrink-0">
+          <div className="w-10 h-10 rounded-full bg-[#e5eeff] flex items-center justify-center text-[#82d8ff] text-sm font-bold flex-shrink-0">
             {initials(perm.pract_name)}
           </div>
           <div className="min-w-0">
@@ -359,8 +359,8 @@ function PermCard({ perm, onEdit, dimmed }: { perm: PatientPermission; onEdit: (
             <p className="text-xs text-slate-400 capitalize mt-0.5">{perm.pract_speciality}</p>
           </div>
         </div>
-        <button onClick={onEdit} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#006685] bg-[#e5eeff] hover:bg-[#bee9ff] transition-colors flex-shrink-0">
-          <Icon name="edit" size={14} color="#006685" />
+        <button onClick={onEdit} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#82d8ff] bg-[#e5eeff] hover:bg-[#bee9ff] transition-colors flex-shrink-0">
+          <Icon name="edit" size={14} color="#82d8ff" />
           Modifier
         </button>
       </div>

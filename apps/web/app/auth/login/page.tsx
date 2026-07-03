@@ -74,12 +74,12 @@ function LoginForm() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 justify-center">
-            <div className="w-10 h-10 rounded-xl bg-[#006685] flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-[#82d8ff] flex items-center justify-center shadow-md">
               <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>medical_services</span>
             </div>
             <div className="text-left">
               <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
-              <p className="text-[10px] text-[#006685] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
+              <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
             </div>
           </Link>
         </div>
@@ -100,7 +100,7 @@ function LoginForm() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="vous@example.com"
                 required
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all"
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
               />
             </div>
 
@@ -108,7 +108,7 @@ function LoginForm() {
             <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Mot de passe</label>
-                <Link href="/auth/forgot-password" className="text-xs text-[#006685] hover:underline">Mot de passe oublié ?</Link>
+                <Link href="/auth/forgot-password" className="text-xs text-[#82d8ff] hover:underline">Mot de passe oublié ?</Link>
               </div>
               <div className="relative">
                 <input
@@ -117,12 +117,12 @@ function LoginForm() {
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full px-4 py-3 pr-12 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all"
+                  className="w-full px-4 py-3 pr-12 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPwd(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6f787e] hover:text-[#006685] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6f787e] hover:text-[#82d8ff] transition-colors"
                   tabIndex={-1}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
@@ -142,7 +142,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              className="w-full py-3.5 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? 'Connexion en cours...' : 'Se connecter'}
             </button>
@@ -151,14 +151,14 @@ function LoginForm() {
           <div className="mt-6 pt-6 border-t border-slate-100 text-center">
             <p className="text-sm text-slate-400">
               Pas encore de compte ?{' '}
-              <Link href="/auth/signup" className="text-[#006685] font-semibold hover:underline">S&apos;inscrire</Link>
+              <Link href="/auth/signup" className="text-[#82d8ff] font-semibold hover:underline">S&apos;inscrire</Link>
             </p>
           </div>
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">
           Pour une expérience optimale, les patients peuvent aussi utiliser{' '}
-          <span className="text-[#006685] font-medium">l&apos;application mobile M-Santé</span>
+          <span className="text-[#82d8ff] font-medium">l&apos;application mobile M-Santé</span>
         </p>
       </div>
     </div>

@@ -84,12 +84,12 @@ export default function VerifyOtpScreen() {
             onPress={() => router.back()}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 24, alignSelf: 'flex-start' }}
           >
-            <MaterialIcons name="arrow-back" size={20} color="#006685" />
-            <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>Retour</Text>
+            <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
+            <Text style={{ fontSize: 14, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }}>Retour</Text>
           </TouchableOpacity>
 
           <View style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-            <MaterialIcons name="mark-email-read" size={26} color="#006685" />
+            <MaterialIcons name="mark-email-read" size={26} color="#82d8ff" />
           </View>
 
           <Text style={{ fontSize: 26, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5, marginBottom: 8 }}>
@@ -114,7 +114,7 @@ export default function VerifyOtpScreen() {
                     style={{
                       width: 46, height: 56, borderRadius: 12,
                       borderWidth: isFocused ? 2 : 1.5,
-                      borderColor: isFocused ? '#006685' : char ? '#82d8ff' : '#bec8ce',
+                      borderColor: isFocused ? '#82d8ff' : char ? '#82d8ff' : '#bec8ce',
                       backgroundColor: char ? '#eff4ff' : '#ffffff',
                       alignItems: 'center', justifyContent: 'center',
                     }}
@@ -125,7 +125,7 @@ export default function VerifyOtpScreen() {
                       </Text>
                     ) : (
                       isFocused && (
-                        <View style={{ width: 2, height: 22, backgroundColor: '#006685', borderRadius: 1 }} />
+                        <View style={{ width: 2, height: 22, backgroundColor: '#82d8ff', borderRadius: 1 }} />
                       )
                     )}
                   </View>
@@ -168,7 +168,7 @@ export default function VerifyOtpScreen() {
           <TouchableOpacity onPress={handleResend} disabled={cooldown > 0}>
             <Text style={{
               fontSize: 14, fontWeight: '700', fontFamily: 'Manrope',
-              color: cooldown > 0 ? '#bec8ce' : '#006685',
+              color: cooldown > 0 ? '#bec8ce' : '#82d8ff',
             }}>
               {cooldown > 0 ? `Renvoyer (${cooldown}s)` : 'Renvoyer'}
             </Text>

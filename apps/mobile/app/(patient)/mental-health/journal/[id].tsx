@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+﻿import { useEffect } from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter, useLocalSearchParams } from 'expo-router'
@@ -45,7 +45,7 @@ export default function JournalDetail() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
       <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <TouchableOpacity onPress={() => router.back()}>
-          <MaterialIcons name="arrow-back" size={24} color="#006685" />
+          <MaterialIcons name="arrow-back" size={24} color="#82d8ff" />
         </TouchableOpacity>
         <Text style={{ fontSize: 18, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', flex: 1 }} numberOfLines={1}>
           {entry?.title ?? 'Entrée journal'}
@@ -58,7 +58,7 @@ export default function JournalDetail() {
           padding: 24,
           borderWidth: 1,
           borderColor: 'rgba(255,255,255,0.5)',
-          shadowColor: '#006685',
+          shadowColor: '#82d8ff',
           shadowOffset: { width: 0, height: 10 },
           shadowOpacity: 0.05,
           shadowRadius: 30,
@@ -80,8 +80,8 @@ export default function JournalDetail() {
         )}
         {analyze.isPending && (
           <View style={{ backgroundColor: 'rgba(190,233,255,0.2)', borderRadius: 16, padding: 16, alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'center' }}>
-            <MaterialIcons name="auto-awesome" size={16} color="#006685" />
-            <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope' }}>Mounima analyse votre entrée...</Text>
+            <MaterialIcons name="auto-awesome" size={16} color="#82d8ff" />
+            <Text style={{ fontSize: 14, color: '#82d8ff', fontFamily: 'Manrope' }}>Mounima analyse votre entrée...</Text>
           </View>
         )}
       </ScrollView>

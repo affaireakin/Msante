@@ -8,7 +8,7 @@ type IconName = React.ComponentProps<typeof MaterialIcons>['name']
 
 const EMERGENCY_CONTACTS = [
   { label: 'SAMU Sénégal', number: '15', icon: 'local-hospital' as IconName, color: '#ba1a1a', bg: '#ffdad6' },
-  { label: 'SOS Amitié', number: '+221 33 823 8020', icon: 'support-agent' as IconName, color: '#006685', bg: '#e5eeff' },
+  { label: 'SOS Amitié', number: '+221 33 823 8020', icon: 'support-agent' as IconName, color: '#82d8ff', bg: '#e5eeff' },
   { label: 'Police', number: '17', icon: 'local-police' as IconName, color: '#705d00', bg: '#fff8e1' },
 ]
 
@@ -115,13 +115,13 @@ export default function SupportScreen() {
           style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: 'rgba(255,255,255,0.70)', borderRadius: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.80)', padding: 16 }}
         >
           <View style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-            <MaterialIcons name="chat-bubble-outline" size={24} color="#006685" />
+            <MaterialIcons name="chat-bubble-outline" size={24} color="#82d8ff" />
           </View>
           <View style={{ flex: 1, gap: 2 }}>
             <Text style={{ fontSize: 15, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>Messagerie sécurisée</Text>
             <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>Échangez avec vos praticiens</Text>
           </View>
-          <MaterialIcons name="arrow-forward-ios" size={16} color="#006685" />
+          <MaterialIcons name="arrow-forward-ios" size={16} color="#82d8ff" />
         </TouchableOpacity>
 
         {/* Litiges */}
@@ -141,7 +141,7 @@ export default function SupportScreen() {
 
         {/* FAQ */}
         <View style={{ gap: 8 }}>
-          <Text style={{ fontSize: 13, fontWeight: '800', color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
+          <Text style={{ fontSize: 13, fontWeight: '800', color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
             Questions fréquentes
           </Text>
           {FAQ.map((item, i) => (
@@ -179,7 +179,7 @@ export default function SupportScreen() {
 
         {/* Contact support */}
         <View style={{ gap: 8 }}>
-          <Text style={{ fontSize: 13, fontWeight: '800', color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
+          <Text style={{ fontSize: 13, fontWeight: '800', color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>
             Contacter le support
           </Text>
           {CONTACT_CHANNELS.map(c => (
@@ -193,7 +193,7 @@ export default function SupportScreen() {
               }}
             >
               <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name={c.icon} size={20} color="#006685" />
+                <MaterialIcons name={c.icon} size={20} color="#82d8ff" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>{c.label}</Text>

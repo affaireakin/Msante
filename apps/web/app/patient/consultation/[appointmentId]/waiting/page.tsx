@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -160,7 +160,7 @@ export default function PatientWaitingRoom() {
       {/* Header */}
       <header className="fixed top-0 w-full z-50 flex items-center justify-between px-6 py-4 bg-white/70 backdrop-blur-xl border-b border-sky-100/20 shadow-[0_8px_32px_0_rgba(130,216,255,0.08)]">
         <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-[#006685] text-3xl select-none">
+          <span className="material-symbols-outlined text-[#82d8ff] text-3xl select-none">
             favorite
           </span>
           <div>
@@ -170,8 +170,8 @@ export default function PatientWaitingRoom() {
             <p className="text-xs text-slate-500 font-medium">Espace Patient</p>
           </div>
           <div className="ml-3 flex items-center gap-1.5 bg-[#e5eeff]/50 border border-[#d3e4fe] px-3 py-1.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#006685] inline-block" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.05em] text-[#006685]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#82d8ff] inline-block" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.05em] text-[#82d8ff]">
               Consultation
             </span>
           </div>
@@ -198,7 +198,7 @@ export default function PatientWaitingRoom() {
               {appointment && (
                 <div className="bg-[#eff4ff]/80 rounded-xl p-4 border border-[#d3e4fe]/50 mb-6 space-y-3">
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[#006685] text-xl select-none">
+                    <span className="material-symbols-outlined text-[#82d8ff] text-xl select-none">
                       medical_services
                     </span>
                     <div>
@@ -215,7 +215,7 @@ export default function PatientWaitingRoom() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[#006685] text-xl select-none">
+                    <span className="material-symbols-outlined text-[#82d8ff] text-xl select-none">
                       schedule
                     </span>
                     <div>
@@ -230,7 +230,7 @@ export default function PatientWaitingRoom() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[#006685] text-xl select-none">
+                    <span className="material-symbols-outlined text-[#82d8ff] text-xl select-none">
                       timer
                     </span>
                     <div>
@@ -244,7 +244,7 @@ export default function PatientWaitingRoom() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[#006685] text-xl select-none">
+                    <span className="material-symbols-outlined text-[#82d8ff] text-xl select-none">
                       videocam
                     </span>
                     <div>
@@ -285,7 +285,7 @@ export default function PatientWaitingRoom() {
 
               {/* 5-min window info */}
               {!canJoin && minsLeft !== null && appointment && (
-                <div className="bg-[#eff4ff] border border-[#d3e4fe] rounded-xl px-4 py-3 mb-4 text-xs text-[#006685] text-center">
+                <div className="bg-[#eff4ff] border border-[#d3e4fe] rounded-xl px-4 py-3 mb-4 text-xs text-[#82d8ff] text-center">
                   Accès disponible à{' '}
                   <strong>
                     {new Date(new Date(appointment.scheduledAt).getTime() - 5 * 60 * 1000)
@@ -302,7 +302,7 @@ export default function PatientWaitingRoom() {
               <button
                 onClick={() => void handleJoin()}
                 disabled={isJoining || !canJoin}
-                className="w-full py-3 rounded-xl bg-[#006685] text-white font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#005575] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_16px_rgba(0,102,133,0.2)]"
+                className="w-full py-3 rounded-xl bg-[#82d8ff] text-[#0b1c30] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#5ab8e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_16px_rgba(0,102,133,0.2)]"
               >
                 <span className="material-symbols-outlined text-xl select-none">video_call</span>
                 {isJoining

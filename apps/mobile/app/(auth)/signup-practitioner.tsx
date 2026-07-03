@@ -52,13 +52,13 @@ export default function SignupPractitionerScreen() {
             onPress={() => router.back()}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 20, alignSelf: 'flex-start' }}
           >
-            <MaterialIcons name="arrow-back" size={20} color="#006685" />
-            <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>Retour</Text>
+            <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
+            <Text style={{ fontSize: 14, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }}>Retour</Text>
           </TouchableOpacity>
 
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 8 }}>
             <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-              <MaterialIcons name="medical-services" size={22} color="#006685" />
+              <MaterialIcons name="medical-services" size={22} color="#82d8ff" />
             </View>
             <View>
               <Text style={{ fontSize: 24, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5 }}>
@@ -78,10 +78,10 @@ export default function SignupPractitionerScreen() {
           }}>
             <MaterialIcons
               name={practitionerType === 'wellness' ? 'self-improvement' : 'local-hospital'}
-              size={20} color="#006685"
+              size={20} color="#82d8ff"
             />
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 13, fontWeight: '700', color: '#006685', fontFamily: 'Manrope' }}>
+              <Text style={{ fontSize: 13, fontWeight: '700', color: '#82d8ff', fontFamily: 'Manrope' }}>
                 {practitionerType === 'wellness' ? 'Praticien bien-être' : 'Professionnel de santé'}
               </Text>
               {speciality ? (
@@ -89,7 +89,7 @@ export default function SignupPractitionerScreen() {
               ) : null}
             </View>
             <TouchableOpacity onPress={() => router.back()}>
-              <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>Modifier</Text>
+              <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }}>Modifier</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -159,8 +159,8 @@ export default function SignupPractitionerScreen() {
           >
             <View style={{
               width: 20, height: 20, borderRadius: 5, borderWidth: 2,
-              borderColor: acceptedCgu ? '#006685' : '#bec8ce',
-              backgroundColor: acceptedCgu ? '#006685' : 'transparent',
+              borderColor: acceptedCgu ? '#82d8ff' : '#bec8ce',
+              backgroundColor: acceptedCgu ? '#82d8ff' : 'transparent',
               alignItems: 'center', justifyContent: 'center', marginTop: 1, flexShrink: 0,
             }}>
               {acceptedCgu && <MaterialIcons name="check" size={13} color="#fff" />}
@@ -168,7 +168,7 @@ export default function SignupPractitionerScreen() {
             <Text style={{ fontSize: 12, color: '#3f484d', fontFamily: 'Manrope', flex: 1, lineHeight: 18 }}>
               J'accepte les{' '}
               <Text
-                style={{ color: '#006685', fontWeight: '700' }}
+                style={{ color: '#82d8ff', fontWeight: '700' }}
                 onPress={() => router.push('/(auth)/cgu' as never)}
               >
                 Conditions Générales d'Utilisation
@@ -184,7 +184,7 @@ export default function SignupPractitionerScreen() {
         <TouchableOpacity onPress={() => router.push('/(auth)/login')} style={{ paddingVertical: 16 }}>
           <Text style={{ textAlign: 'center', fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>
             Déjà un compte ?{' '}
-            <Text style={{ color: '#006685', fontWeight: '700' }}>Se connecter</Text>
+            <Text style={{ color: '#82d8ff', fontWeight: '700' }}>Se connecter</Text>
           </Text>
         </TouchableOpacity>
       </ScrollView>

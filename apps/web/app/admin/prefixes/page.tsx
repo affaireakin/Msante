@@ -36,7 +36,7 @@ const EMPTY_FORM: PrefixForm = {
 // ─── Role config ─────────────────────────────────────────────────────────────
 
 const ROLES: { id: AllowedRole; label: string; bg: string; color: string }[] = [
-  { id: 'practitioner', label: 'Médecin',         bg: '#e5eeff', color: '#006685' },
+  { id: 'practitioner', label: 'Médecin',         bg: '#e5eeff', color: '#82d8ff' },
   { id: 'patient',      label: 'Patient',          bg: '#e8f5e9', color: '#1d7a3a' },
   { id: 'admin',        label: 'Administrateur',   bg: '#ede9fe', color: '#7c3aed' },
 ]
@@ -101,7 +101,7 @@ function PrefixModal({
               value={form.prefix}
               onChange={e => setForm(f => ({ ...f, prefix: e.target.value }))}
               placeholder="Dr, Pr, M., Mme…"
-              className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all text-sm font-bold"
+              className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all text-sm font-bold"
             />
           </div>
           <div className="flex flex-col gap-1">
@@ -110,7 +110,7 @@ function PrefixModal({
               value={form.label}
               onChange={e => setForm(f => ({ ...f, label: e.target.value }))}
               placeholder="Docteur, Professeur…"
-              className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all text-sm"
+              className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all text-sm"
             />
           </div>
         </div>
@@ -124,7 +124,7 @@ function PrefixModal({
                   type="checkbox"
                   checked={form.allowed_roles.includes(r.id)}
                   onChange={() => toggleRole(r.id)}
-                  className="w-4 h-4 accent-[#006685]"
+                  className="w-4 h-4 accent-[#82d8ff]"
                 />
                 <span className="text-sm font-medium text-[#0b1c30]">{r.label}</span>
                 <span className="text-xs text-[#6f787e] ml-auto">{r.id}</span>
@@ -142,7 +142,7 @@ function PrefixModal({
             type="button"
             onClick={() => setForm(f => ({ ...f, is_active: !f.is_active }))}
             className="relative w-11 h-6 rounded-full transition-colors"
-            style={{ backgroundColor: form.is_active ? '#006685' : '#bec8ce' }}
+            style={{ backgroundColor: form.is_active ? '#82d8ff' : '#bec8ce' }}
           >
             <span
               className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform"
@@ -161,7 +161,7 @@ function PrefixModal({
           <button
             disabled={!valid || saving}
             onClick={() => onSave(form)}
-            className="flex-1 py-3 bg-[#006685] text-white font-bold rounded-xl text-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-40"
+            className="flex-1 py-3 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl text-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-40"
           >
             {saving ? 'Enregistrement…' : 'Enregistrer'}
           </button>
@@ -251,7 +251,7 @@ export default function AdminPrefixesPage() {
         </div>
         <button
           onClick={() => setModal({ mode: 'create' })}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all"
         >
           <span className="text-lg leading-none">+</span>
           Ajouter un préfixe
@@ -261,7 +261,7 @@ export default function AdminPrefixesPage() {
       {/* KPI cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: 'Total actifs',      value: active,      bg: '#e5eeff', color: '#006685', icon: '🏷️' },
+          { label: 'Total actifs',      value: active,      bg: '#e5eeff', color: '#82d8ff', icon: '🏷️' },
           { label: 'Médicaux uniquement', value: medicalOnly,  bg: '#e8f5e9', color: '#1d7a3a', icon: '🩺' },
           { label: 'Inactifs',          value: inactive,    bg: '#ffdad6', color: '#ba1a1a', icon: '⏸️' },
         ].map(kpi => (
@@ -281,7 +281,7 @@ export default function AdminPrefixesPage() {
 
       {/* Explanation banner */}
       <div className="bg-[#e5eeff] border border-[#c5d8f5] rounded-xl px-5 py-3 flex items-start gap-3">
-        <span className="text-[#006685] text-lg mt-0.5">ℹ️</span>
+        <span className="text-[#82d8ff] text-lg mt-0.5">ℹ️</span>
         <div className="text-sm text-[#005e7a]">
           <span className="font-bold">Impact plateforme :</span> le préfixe attribué à un utilisateur s&apos;affiche automatiquement dans la messagerie, les ordonnances, les rendez-vous, la liste des médecins et les PDF exportés.
         </div>
@@ -332,7 +332,7 @@ export default function AdminPrefixesPage() {
                     <button
                       onClick={() => toggleMutation.mutate({ id: row.id, is_active: !row.is_active })}
                       className="relative w-10 h-5 rounded-full transition-colors flex-shrink-0"
-                      style={{ backgroundColor: row.is_active ? '#006685' : '#bec8ce' }}
+                      style={{ backgroundColor: row.is_active ? '#82d8ff' : '#bec8ce' }}
                       title={row.is_active ? 'Désactiver' : 'Activer'}
                     >
                       <span
@@ -345,7 +345,7 @@ export default function AdminPrefixesPage() {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => setModal({ mode: 'edit', row })}
-                        className="p-2 rounded-lg text-[#006685] hover:bg-[#e5eeff] transition-colors text-xs font-bold"
+                        className="p-2 rounded-lg text-[#82d8ff] hover:bg-[#e5eeff] transition-colors text-xs font-bold"
                         title="Modifier"
                       >
                         ✏️
@@ -371,7 +371,7 @@ export default function AdminPrefixesPage() {
         <h3 className="text-sm font-bold text-[#0b1c30] mb-3">Attribution des préfixes</h3>
         <p className="text-sm text-[#6f787e] mb-4">
           Les préfixes s&apos;attribuent depuis la fiche de chaque utilisateur dans{' '}
-          <a href="/admin/users" className="text-[#006685] font-semibold hover:underline">Gestion des utilisateurs</a>.
+          <a href="/admin/users" className="text-[#82d8ff] font-semibold hover:underline">Gestion des utilisateurs</a>.
           Seuls les rôles autorisés par le préfixe apparaissent dans la liste déroulante de l&apos;utilisateur concerné.
         </p>
         <div className="grid grid-cols-2 gap-3">

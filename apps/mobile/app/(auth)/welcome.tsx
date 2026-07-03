@@ -39,7 +39,7 @@ export default function WelcomeScreen() {
             borderWidth: 1, borderColor: '#82d8ff',
           }}>
             <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ade80' }} />
-            <Text style={{ fontSize: 11, fontWeight: '700', color: '#006685', fontFamily: 'Manrope', letterSpacing: 0.5 }}>
+            <Text style={{ fontSize: 11, fontWeight: '700', color: '#82d8ff', fontFamily: 'Manrope', letterSpacing: 0.5 }}>
               98% SATISFACTION PATIENT
             </Text>
           </View>
@@ -66,10 +66,10 @@ export default function WelcomeScreen() {
                 backgroundColor: '#fff', borderRadius: 20,
                 paddingHorizontal: 12, paddingVertical: 8,
                 borderWidth: 1, borderColor: '#e5eeff',
-                shadowColor: '#006685', shadowOffset: { width: 0, height: 2 },
+                shadowColor: '#82d8ff', shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.04, shadowRadius: 8, elevation: 1,
               }}>
-                <MaterialIcons name={f.icon} size={14} color="#006685" />
+                <MaterialIcons name={f.icon} size={14} color="#82d8ff" />
                 <Text style={{ fontSize: 11, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>
                   {f.label}
                 </Text>
@@ -92,7 +92,7 @@ export default function WelcomeScreen() {
           <TouchableOpacity onPress={() => router.push('/(auth)/login')} style={{ paddingVertical: 8 }}>
             <Text style={{ textAlign: 'center', fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>
               Déjà un compte ?{' '}
-              <Text style={{ color: '#006685', fontWeight: '700' }}>Se connecter</Text>
+              <Text style={{ color: '#82d8ff', fontWeight: '700' }}>Se connecter</Text>
             </Text>
           </TouchableOpacity>
         </View>

@@ -128,7 +128,7 @@ function DayRow({ slot, onChange }: { slot: DaySlot; onChange: (u: DaySlot) => v
         value={slot.is_active}
         onValueChange={(v) => onChange({ ...slot, is_active: v })}
         trackColor={{ false: '#cbcdcf', true: '#82d8ff' }}
-        thumbColor={slot.is_active ? '#006685' : '#f8f9ff'}
+        thumbColor={slot.is_active ? '#82d8ff' : '#f8f9ff'}
         style={{ transform: [{ scaleX: 0.85 }, { scaleY: 0.85 }] }}
       />
       <Text style={{ width: 32, fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#0b1c30' }}>
@@ -179,7 +179,7 @@ function ServiceCard({
             </Text>
           </View>
         </View>
-        <Text style={{ fontFamily: 'Manrope', fontSize: 16, fontWeight: '800', color: '#006685' }}>
+        <Text style={{ fontFamily: 'Manrope', fontSize: 16, fontWeight: '800', color: '#82d8ff' }}>
           {service.price.toLocaleString()} {service.currency}
         </Text>
       </View>
@@ -192,7 +192,7 @@ function ServiceCard({
             backgroundColor: service.is_active ? '#ffdad6' : '#e5eeff',
           }}
         >
-          <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: service.is_active ? '#ba1a1a' : '#006685' }}>
+          <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: service.is_active ? '#ba1a1a' : '#82d8ff' }}>
             {service.is_active ? 'Désactiver' : 'Activer'}
           </Text>
         </TouchableOpacity>
@@ -200,7 +200,7 @@ function ServiceCard({
           onPress={onEdit}
           style={{ flex: 1, paddingVertical: 8, borderRadius: 999, alignItems: 'center', backgroundColor: '#e5eeff' }}
         >
-          <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#006685' }}>Modifier</Text>
+          <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#82d8ff' }}>Modifier</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onDelete}
@@ -264,12 +264,12 @@ function ServiceModal({
                   style={{
                     flex: 1, paddingVertical: 10, borderRadius: 12, alignItems: 'center', gap: 4,
                     borderWidth: 2,
-                    borderColor: draft.type === t.value ? '#006685' : '#e5eeff',
+                    borderColor: draft.type === t.value ? '#82d8ff' : '#e5eeff',
                     backgroundColor: draft.type === t.value ? '#e5eeff' : 'rgba(255,255,255,0.60)',
                   }}
                 >
                   <Text style={{ fontSize: 18 }}>{t.emoji}</Text>
-                  <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: draft.type === t.value ? '#006685' : '#6f787e' }}>{t.label}</Text>
+                  <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: draft.type === t.value ? '#82d8ff' : '#6f787e' }}>{t.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -286,11 +286,11 @@ function ServiceModal({
                   style={{
                     paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999,
                     borderWidth: 2,
-                    borderColor: draft.duration_min === d ? '#006685' : '#e5eeff',
+                    borderColor: draft.duration_min === d ? '#82d8ff' : '#e5eeff',
                     backgroundColor: draft.duration_min === d ? '#e5eeff' : 'rgba(255,255,255,0.60)',
                   }}
                 >
-                  <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: draft.duration_min === d ? '#006685' : '#6f787e' }}>
+                  <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: draft.duration_min === d ? '#82d8ff' : '#6f787e' }}>
                     {d} min
                   </Text>
                 </TouchableOpacity>
@@ -311,7 +311,7 @@ function ServiceModal({
                 style={{ flex: 1, height: 48, borderRadius: 12, borderWidth: 1, borderColor: '#bec8ce', paddingHorizontal: 16, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', backgroundColor: 'rgba(255,255,255,0.80)' }}
               />
               <View style={{ paddingHorizontal: 14, paddingVertical: 12, backgroundColor: '#e5eeff', borderRadius: 12 }}>
-                <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#006685' }}>XOF</Text>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#82d8ff' }}>XOF</Text>
               </View>
             </View>
           </View>
@@ -324,7 +324,7 @@ function ServiceModal({
             <TouchableOpacity
               onPress={() => onSave(draft)}
               disabled={isSaving || !draft.name.trim() || draft.price <= 0}
-              style={{ flex: 1, paddingVertical: 14, borderRadius: 999, alignItems: 'center', backgroundColor: '#006685', opacity: (isSaving || !draft.name.trim() || draft.price <= 0) ? 0.5 : 1 }}
+              style={{ flex: 1, paddingVertical: 14, borderRadius: 999, alignItems: 'center', backgroundColor: '#82d8ff', opacity: (isSaving || !draft.name.trim() || draft.price <= 0) ? 0.5 : 1 }}
             >
               {isSaving
                 ? <ActivityIndicator color="#fff" size="small" />
@@ -439,13 +439,13 @@ export default function AvailabilityScreen() {
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingVertical: 12, backgroundColor: 'rgba(255,255,255,0.70)', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.20)' }}>
         <TouchableOpacity onPress={() => router.back()} style={{ padding: 4 }}>
-          <MaterialIcons name="arrow-back" size={22} color="#006685" />
+          <MaterialIcons name="arrow-back" size={22} color="#82d8ff" />
         </TouchableOpacity>
         <Text style={{ fontFamily: 'Manrope', fontSize: 17, fontWeight: '700', color: '#0b1c30' }}>
           Disponibilités & Prestations
         </Text>
         {isDirty ? (
-          <TouchableOpacity onPress={handleSave} disabled={isSaving} style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999, backgroundColor: '#006685', opacity: isSaving ? 0.6 : 1 }}>
+          <TouchableOpacity onPress={handleSave} disabled={isSaving} style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999, backgroundColor: '#82d8ff', opacity: isSaving ? 0.6 : 1 }}>
             {isSaving ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#fff' }}>Enregistrer</Text>}
           </TouchableOpacity>
         ) : (
@@ -461,7 +461,7 @@ export default function AvailabilityScreen() {
         <GlassCard>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 }}>
             <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-              <MaterialIcons name="repeat" size={20} color="#006685" />
+              <MaterialIcons name="repeat" size={20} color="#82d8ff" />
             </View>
             <View>
               <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#0b1c30' }}>Planning hebdomadaire</Text>
@@ -488,7 +488,7 @@ export default function AvailabilityScreen() {
         <GlassCard>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 }}>
             <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-              <MaterialIcons name="tune" size={20} color="#006685" />
+              <MaterialIcons name="tune" size={20} color="#82d8ff" />
             </View>
             <View>
               <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#0b1c30' }}>Types par jour</Text>
@@ -523,7 +523,7 @@ export default function AvailabilityScreen() {
                         style={{
                           flexDirection: 'row', alignItems: 'center', gap: 4,
                           paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999,
-                          backgroundColor: on ? '#006685' : 'rgba(190,200,206,0.25)',
+                          backgroundColor: on ? '#82d8ff' : 'rgba(190,200,206,0.25)',
                         }}
                       >
                         <Text style={{ fontSize: 12 }}>{emoji}</Text>
@@ -555,13 +555,13 @@ export default function AvailabilityScreen() {
               onPress={() => setServiceModal({ visible: true, editId: undefined, draft: EMPTY_DRAFT })}
               style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: '#e5eeff' }}
             >
-              <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#006685' }}>+</Text>
-              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#006685' }}>Ajouter</Text>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#82d8ff' }}>+</Text>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#82d8ff' }}>Ajouter</Text>
             </TouchableOpacity>
           </View>
 
           {servicesLoading ? (
-            <ActivityIndicator color="#006685" />
+            <ActivityIndicator color="#82d8ff" />
           ) : services.length === 0 ? (
             <View style={{ alignItems: 'center', paddingVertical: 20, gap: 8 }}>
               <Text style={{ fontSize: 32 }}>📋</Text>
@@ -604,8 +604,8 @@ export default function AvailabilityScreen() {
               onPress={() => setShowExcModal(true)}
               style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: '#e5eeff' }}
             >
-              <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#006685' }}>+</Text>
-              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#006685' }}>Ajouter</Text>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#82d8ff' }}>+</Text>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#82d8ff' }}>Ajouter</Text>
             </TouchableOpacity>
           </View>
 
@@ -648,13 +648,13 @@ export default function AvailabilityScreen() {
               onPress={() => router.push('/(practitioner)/schedule-blocks/new')}
               style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: '#e5eeff' }}
             >
-              <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#006685' }}>+</Text>
-              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#006685' }}>Bloquer</Text>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#82d8ff' }}>+</Text>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#82d8ff' }}>Bloquer</Text>
             </TouchableOpacity>
           </View>
 
           {blocksLoading ? (
-            <ActivityIndicator color="#006685" />
+            <ActivityIndicator color="#82d8ff" />
           ) : scheduleBlocks.length === 0 ? (
             <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#6f787e', textAlign: 'center', paddingVertical: 8, fontStyle: 'italic' }}>
               Aucune période bloquée
@@ -719,7 +719,7 @@ export default function AvailabilityScreen() {
               <TouchableOpacity onPress={() => setShowExcModal(false)} style={{ flex: 1, paddingVertical: 14, borderRadius: 999, alignItems: 'center', borderWidth: 1, borderColor: '#bec8ce', backgroundColor: 'rgba(255,255,255,0.60)' }}>
                 <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '600', color: '#3f484d' }}>Annuler</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleAddException} disabled={addException.isPending} style={{ flex: 1, paddingVertical: 14, borderRadius: 999, alignItems: 'center', backgroundColor: '#006685', opacity: addException.isPending ? 0.6 : 1 }}>
+              <TouchableOpacity onPress={handleAddException} disabled={addException.isPending} style={{ flex: 1, paddingVertical: 14, borderRadius: 999, alignItems: 'center', backgroundColor: '#82d8ff', opacity: addException.isPending ? 0.6 : 1 }}>
                 <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#fff' }}>Confirmer</Text>
               </TouchableOpacity>
             </View>

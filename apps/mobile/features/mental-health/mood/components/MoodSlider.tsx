@@ -26,7 +26,7 @@ export function MoodSlider({ value, onChange }: Props) {
         onValueChange={onChange}
         minimumTrackTintColor={`hsl(${120 - pct * 120}, 60%, 45%)`}
         maximumTrackTintColor="#e5eeff"
-        thumbTintColor="#006685"
+        thumbTintColor="#82d8ff"
         style={{ height: 40 }}
       />
       <View className="flex-row justify-between">

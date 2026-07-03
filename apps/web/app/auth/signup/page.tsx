@@ -98,12 +98,12 @@ export default function SignupPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 justify-center">
-            <div className="w-10 h-10 rounded-xl bg-[#006685] flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-[#82d8ff] flex items-center justify-center shadow-md">
               <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>medical_services</span>
             </div>
             <div className="text-left">
               <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
-              <p className="text-[10px] text-[#006685] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
+              <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
             </div>
           </Link>
         </div>
@@ -124,7 +124,7 @@ export default function SignupPage() {
                 type="button"
                 onClick={() => handleRoleChange(value)}
                 className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${
-                  role === value ? 'bg-white text-[#006685] shadow-sm' : 'text-slate-500 hover:text-[#006685]'
+                  role === value ? 'bg-white text-[#82d8ff] shadow-sm' : 'text-slate-500 hover:text-[#82d8ff]'
                 }`}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>{icon}</span>
@@ -148,12 +148,12 @@ export default function SignupPage() {
                     onClick={() => handlePractTypeChange(value)}
                     className={`p-4 rounded-xl border-2 text-left transition-all ${
                       practType === value
-                        ? 'border-[#006685] bg-[#e5eeff]'
-                        : 'border-[#bec8ce] bg-[#f8f9ff] hover:border-[#006685]/40'
+                        ? 'border-[#82d8ff] bg-[#e5eeff]'
+                        : 'border-[#bec8ce] bg-[#f8f9ff] hover:border-[#82d8ff]/40'
                     }`}
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: '22px', color: practType === value ? '#006685' : '#6f787e' }}>{icon}</span>
-                    <p className={`text-sm font-bold mt-1 ${practType === value ? 'text-[#006685]' : 'text-[#0b1c30]'}`}>{label}</p>
+                    <span className="material-symbols-outlined" style={{ fontSize: '22px', color: practType === value ? '#82d8ff' : '#6f787e' }}>{icon}</span>
+                    <p className={`text-sm font-bold mt-1 ${practType === value ? 'text-[#82d8ff]' : 'text-[#0b1c30]'}`}>{label}</p>
                     <p className="text-xs text-[#6f787e] mt-0.5 leading-snug">{desc}</p>
                   </button>
                 ))}
@@ -172,7 +172,7 @@ export default function SignupPage() {
                 onChange={e => setFullName(e.target.value)}
                 placeholder={role === 'practitioner' ? 'Aminata Diallo' : 'Moussa Ndiaye'}
                 required
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all"
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
               />
             </div>
 
@@ -185,7 +185,7 @@ export default function SignupPage() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="vous@example.com"
                 required
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all"
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
               />
             </div>
 
@@ -200,12 +200,12 @@ export default function SignupPage() {
                   placeholder="Minimum 6 caractères"
                   required
                   minLength={6}
-                  className="w-full px-4 py-3 pr-12 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all"
+                  className="w-full px-4 py-3 pr-12 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPwd(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6f787e] hover:text-[#006685] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6f787e] hover:text-[#82d8ff] transition-colors"
                   tabIndex={-1}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
@@ -223,7 +223,7 @@ export default function SignupPage() {
                   value={speciality}
                   onChange={e => setSpeciality(e.target.value)}
                   required
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all"
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
                 >
                   <option value="">Choisir une spécialité</option>
                   {specialityList.map(s => <option key={s}>{s}</option>)}
@@ -251,11 +251,11 @@ export default function SignupPage() {
                 type="checkbox"
                 checked={acceptedCGU}
                 onChange={e => setAcceptedCGU(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-[#bec8ce] text-[#006685] accent-[#006685] flex-shrink-0"
+                className="mt-0.5 w-4 h-4 rounded border-[#bec8ce] text-[#82d8ff] accent-[#82d8ff] flex-shrink-0"
               />
               <span className="text-xs text-slate-500 leading-relaxed">
                 En validant votre inscription, vous acceptez les{' '}
-                <Link href="/cgu" target="_blank" className="text-[#006685] font-semibold hover:underline">
+                <Link href="/cgu" target="_blank" className="text-[#82d8ff] font-semibold hover:underline">
                   Conditions Générales d&apos;Utilisation
                 </Link>
                 {' '}de M-Santé.
@@ -265,7 +265,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading || !acceptedCGU}
-              className="w-full py-3.5 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              className="w-full py-3.5 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? 'Création du compte...' : `Créer mon compte ${role === 'practitioner' ? 'praticien' : 'patient'}`}
             </button>
@@ -274,7 +274,7 @@ export default function SignupPage() {
           <div className="mt-6 pt-6 border-t border-slate-100 text-center">
             <p className="text-sm text-slate-400">
               Déjà un compte ?{' '}
-              <Link href="/auth/login" className="text-[#006685] font-semibold hover:underline">Se connecter</Link>
+              <Link href="/auth/login" className="text-[#82d8ff] font-semibold hover:underline">Se connecter</Link>
             </p>
           </div>
         </div>

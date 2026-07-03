@@ -94,7 +94,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           <img src="/logo.png" alt="M-Santé" className="w-10 h-10 rounded-xl object-cover shadow-sm" />
           <div className="flex-1">
             <h1 className="text-lg font-black tracking-tighter text-[#0b1c30]">M-Santé</h1>
-            <p className="text-xs text-[#006685] font-semibold tracking-wide uppercase">Espace Patient</p>
+            <p className="text-xs text-[#82d8ff] font-semibold tracking-wide uppercase">Espace Patient</p>
           </div>
           <button
             className="md:hidden p-1.5 rounded-lg text-slate-400 hover:bg-slate-100"
@@ -109,7 +109,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
         {/* Profil */}
         <div className="px-4 py-4 border-b border-slate-100/60">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-[#e5eeff]">
-            <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+            <div className="w-9 h-9 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-sm font-bold flex-shrink-0">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
@@ -130,11 +130,11 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? 'bg-sky-50 text-[#006685] font-semibold border-r-4 border-[#006685] -mr-3 pr-4'
+                    ? 'bg-sky-50 text-[#82d8ff] font-semibold border-r-4 border-[#82d8ff] -mr-3 pr-4'
                     : 'text-[#3f484d] hover:translate-x-1 hover:bg-slate-50/50'
                 }`}
               >
-                <span className={isActive ? 'text-[#006685]' : 'text-[#6f787e]'}>
+                <span className={isActive ? 'text-[#82d8ff]' : 'text-[#6f787e]'}>
                   <Icon name={item.icon} />
                 </span>
                 <span className="flex-1">{item.label}</span>
@@ -153,7 +153,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           <Link
             href="/patient/practitioners"
             onClick={() => setSidebarOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#006685] hover:shadow-lg hover:shadow-[#006685]/20 transition-all"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-[#0b1c30] bg-[#82d8ff] hover:shadow-lg hover:shadow-[#82d8ff]/20 transition-all"
           >
             <Icon name="add_circle" />
             Nouveau rendez-vous
@@ -182,7 +182,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           <div className="flex items-center gap-3">
             {/* Hamburger mobile */}
             <button
-              className="md:hidden p-2 rounded-lg text-[#006685] hover:bg-white/50 transition-colors"
+              className="md:hidden p-2 rounded-lg text-[#82d8ff] hover:bg-white/50 transition-colors"
               onClick={() => setSidebarOpen(true)}
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -202,7 +202,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
           </div>
           <div className="flex items-center gap-3">
             {userId && <NotificationBell userId={userId} />}
-            <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold shadow-sm">
+            <div className="w-9 h-9 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-sm font-bold shadow-sm">
               {initials}
             </div>
           </div>

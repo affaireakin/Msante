@@ -38,13 +38,13 @@ export default function ForgotPasswordScreen() {
           onPress={() => router.back()}
           style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 20, alignSelf: 'flex-start' }}
         >
-          <MaterialIcons name="arrow-back" size={20} color="#006685" />
-          <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>Retour</Text>
+          <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
+          <Text style={{ fontSize: 14, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }}>Retour</Text>
         </TouchableOpacity>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 6 }}>
           <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-            <MaterialIcons name="lock-reset" size={22} color="#006685" />
+            <MaterialIcons name="lock-reset" size={22} color="#82d8ff" />
           </View>
           <View>
             <Text style={{ fontSize: 24, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5 }}>
@@ -64,7 +64,7 @@ export default function ForgotPasswordScreen() {
             width: 72, height: 72, borderRadius: 36,
             backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center',
           }}>
-            <MaterialIcons name="mark-email-read" size={36} color="#006685" />
+            <MaterialIcons name="mark-email-read" size={36} color="#82d8ff" />
           </View>
 
           <View style={{ alignItems: 'center', gap: 8 }}>

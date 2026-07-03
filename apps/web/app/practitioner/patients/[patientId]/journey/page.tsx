@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
@@ -337,7 +337,7 @@ export default function WellnessJourneyPage() {
         <p className="text-sm text-[#6f787e] mt-1">{error instanceof Error ? error.message : 'Erreur inconnue'}</p>
         <button
           onClick={() => router.back()}
-          className="mt-4 px-4 py-2 rounded-full text-sm font-bold bg-[#006685] text-white hover:bg-[#005070] transition-colors"
+          className="mt-4 px-4 py-2 rounded-full text-sm font-bold bg-[#82d8ff] text-[#0b1c30] hover:bg-[#005070] transition-colors"
         >
           Retour
         </button>
@@ -376,7 +376,7 @@ export default function WellnessJourneyPage() {
             <h1 className="text-2xl font-black text-[#0b1c30] tracking-tight">
               Parcours bien-être
             </h1>
-            <span className="text-2xl font-black text-[#006685]">— {data.patient.full_name}</span>
+            <span className="text-2xl font-black text-[#82d8ff]">— {data.patient.full_name}</span>
           </div>
           <p className="text-sm text-[#6f787e] mt-0.5 flex items-center gap-1">
             <Icon name="calendar_today" size={13} color="#6f787e" />
@@ -431,7 +431,7 @@ export default function WellnessJourneyPage() {
             label: 'Adhérence bien-être',
             value: `${metrics.adherence}%`,
             sub: '30 derniers jours',
-            accent: '#006685',
+            accent: '#82d8ff',
             bg: '#e5eeff',
           },
           {
@@ -447,7 +447,7 @@ export default function WellnessJourneyPage() {
             label: 'Sessions complétées',
             value: String(metrics.completed),
             sub: 'Toutes périodes',
-            accent: '#006685',
+            accent: '#82d8ff',
             bg: '#e5eeff',
           },
           {
@@ -495,7 +495,7 @@ export default function WellnessJourneyPage() {
         }}
       >
         <div className="flex items-center gap-2 mb-5">
-          <Icon name="show_chart" size={18} color="#006685" />
+          <Icon name="show_chart" size={18} color="#82d8ff" />
           <h2 className="text-base font-bold text-[#0b1c30]">Tendance humeur — 30 derniers jours</h2>
         </div>
 
@@ -537,10 +537,10 @@ export default function WellnessJourneyPage() {
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#006685"
+                stroke="#82d8ff"
                 strokeWidth={2.5}
-                dot={{ fill: '#006685', strokeWidth: 0, r: 3 }}
-                activeDot={{ r: 6, fill: '#006685', stroke: '#fff', strokeWidth: 2 }}
+                dot={{ fill: '#82d8ff', strokeWidth: 0, r: 3 }}
+                activeDot={{ r: 6, fill: '#82d8ff', stroke: '#fff', strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -557,7 +557,7 @@ export default function WellnessJourneyPage() {
         }}
       >
         <div className="flex items-center gap-2 mb-5">
-          <Icon name="timeline" size={18} color="#006685" />
+          <Icon name="timeline" size={18} color="#82d8ff" />
           <h2 className="text-base font-bold text-[#0b1c30]">Jalons du parcours</h2>
         </div>
 
@@ -618,7 +618,7 @@ export default function WellnessJourneyPage() {
         }}
       >
         <div className="flex items-center gap-2 mb-5">
-          <Icon name="history" size={18} color="#006685" />
+          <Icon name="history" size={18} color="#82d8ff" />
           <h2 className="text-base font-bold text-[#0b1c30]">Activité récente — humeur</h2>
         </div>
 
@@ -655,7 +655,7 @@ export default function WellnessJourneyPage() {
                           <span
                             key={em}
                             className="text-xs px-2 py-0.5 rounded-full font-medium"
-                            style={{ backgroundColor: '#e5eeff', color: '#006685' }}
+                            style={{ backgroundColor: '#e5eeff', color: '#82d8ff' }}
                           >
                             {em}
                           </span>
@@ -688,7 +688,7 @@ export default function WellnessJourneyPage() {
         }}
       >
         <div className="flex items-center gap-2 mb-4">
-          <Icon name="bolt" size={18} color="#006685" />
+          <Icon name="bolt" size={18} color="#82d8ff" />
           <h2 className="text-base font-bold text-[#0b1c30]">Actions rapides</h2>
         </div>
 
@@ -696,7 +696,7 @@ export default function WellnessJourneyPage() {
           <a
             href="/practitioner/appointments"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-colors hover:bg-[#005070]"
-            style={{ backgroundColor: '#006685' }}
+            style={{ backgroundColor: '#82d8ff' }}
           >
             <Icon name="event_add" size={16} color="#fff" />
             Planifier un RDV
@@ -709,13 +709,13 @@ export default function WellnessJourneyPage() {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-colors"
             style={{
               backgroundColor: 'transparent',
-              border: '1.5px solid #006685',
-              color: '#006685',
+              border: '1.5px solid #82d8ff',
+              color: '#82d8ff',
               opacity: 0.5,
               cursor: 'not-allowed',
             }}
           >
-            <Icon name="mail" size={16} color="#006685" />
+            <Icon name="mail" size={16} color="#82d8ff" />
             Envoyer un message
           </button>
         </div>

@@ -16,7 +16,7 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
         border: '1px solid rgba(255,255,255,0.80)',
       }}
     >
-      <h3 className="text-xs font-bold text-[#006685] uppercase tracking-widest">{title}</h3>
+      <h3 className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest">{title}</h3>
       {children}
     </div>
   )
@@ -41,7 +41,7 @@ function KpiCard({
       }}
     >
       <div className="w-10 h-10 rounded-xl bg-[#e5eeff] flex items-center justify-center flex-shrink-0">
-        <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#006685' }}>{icon}</span>
+        <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#82d8ff' }}>{icon}</span>
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs text-[#6f787e] font-medium">{label}</p>
@@ -161,7 +161,7 @@ function useAnalytics(practId: string | null) {
         }
       }
       const typeChart = [
-        { name: 'Vidéo', value: typeMap['video'], color: '#006685' },
+        { name: 'Vidéo', value: typeMap['video'], color: '#82d8ff' },
         { name: 'Audio', value: typeMap['audio'], color: '#82d8ff' },
         { name: 'Chat',  value: typeMap['chat'],  color: '#ffde5c' },
       ].filter(t => t.value > 0)
@@ -347,8 +347,8 @@ export default function PractitionerAnalyticsPage() {
           <AreaChart data={data.revenueChart} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
             <defs>
               <linearGradient id="revGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#006685" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#006685" stopOpacity={0} />
+                <stop offset="5%" stopColor="#82d8ff" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#82d8ff" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.04)" />
@@ -363,7 +363,7 @@ export default function PractitionerAnalyticsPage() {
             <Area
               type="monotone"
               dataKey="revenue"
-              stroke="#006685"
+              stroke="#82d8ff"
               strokeWidth={2}
               fill="url(#revGradient)"
             />
@@ -379,7 +379,7 @@ export default function PractitionerAnalyticsPage() {
             <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#6f787e' }} />
             <YAxis tick={{ fontSize: 11, fill: '#6f787e' }} allowDecimals={false} />
             <Tooltip formatter={(v) => [v, 'Séances']} />
-            <Bar dataKey="count" fill="#006685" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="count" fill="#82d8ff" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </ChartCard>
@@ -427,7 +427,7 @@ export default function PractitionerAnalyticsPage() {
             {[
               { label: 'Taux de no-show', value: data.noShowRate, color: '#ba1a1a' },
               { label: 'Taux de rebooking', value: data.rebookingRate, color: '#1d7a3a' },
-              { label: "Taux d'occupation", value: data.occupancyRate, color: '#006685' },
+              { label: "Taux d'occupation", value: data.occupancyRate, color: '#82d8ff' },
             ].map(m => (
               <div key={m.label} className="space-y-1.5">
                 <div className="flex items-center justify-between">
@@ -444,7 +444,7 @@ export default function PractitionerAnalyticsPage() {
             ))}
             <div className="pt-2 border-t border-slate-100 flex gap-4">
               <div className="flex-1 text-center">
-                <p className="text-xl font-black text-[#006685]">{data.newCount}</p>
+                <p className="text-xl font-black text-[#82d8ff]">{data.newCount}</p>
                 <p className="text-xs text-[#6f787e]">nouveaux patients ce mois</p>
               </div>
               <div className="flex-1 text-center">
@@ -464,7 +464,7 @@ export default function PractitionerAnalyticsPage() {
               const maxCount = data.top5[0]?.count ?? 1
               return (
                 <div key={p.id} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#006685] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-xs font-bold flex-shrink-0">
                     {i + 1}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -473,12 +473,12 @@ export default function PractitionerAnalyticsPage() {
                     </p>
                     <div className="h-1.5 rounded-full bg-slate-100 mt-1 overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-[#006685]"
+                        className="h-full rounded-full bg-[#82d8ff]"
                         style={{ width: `${(p.count / maxCount) * 100}%` }}
                       />
                     </div>
                   </div>
-                  <span className="text-sm font-bold text-[#006685] flex-shrink-0">{p.count}</span>
+                  <span className="text-sm font-bold text-[#82d8ff] flex-shrink-0">{p.count}</span>
                 </div>
               )
             })}

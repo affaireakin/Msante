@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+﻿import { useState, useCallback } from 'react'
 import {
   View,
   Text,
@@ -40,7 +40,7 @@ const NOTE_TYPES: NoteTypeConfig[] = [
   {
     key: 'observation',
     label: 'Observation',
-    color: '#006685',
+    color: '#82d8ff',
     bg: '#e5eeff',
     icon: 'visibility',
   },
@@ -221,7 +221,7 @@ function NoteCard({ note }: { note: PatientNote }) {
                   fontFamily: 'Manrope',
                   fontSize: fs.xs,
                   fontWeight: '600',
-                  color: '#006685',
+                  color: '#82d8ff',
                 }}
               >
                 #{tag}
@@ -258,7 +258,7 @@ function EmptyState({ patientName }: { patientName: string }) {
           justifyContent: 'center',
         }}
       >
-        <MaterialIcons name="note-alt" size={scale(28)} color="#006685" />
+        <MaterialIcons name="note-alt" size={scale(28)} color="#82d8ff" />
       </View>
       <Text
         style={{
@@ -608,7 +608,7 @@ function NewNoteModal({ visible, patientId, onClose }: NewNoteModalProps) {
                   width: scale(40),
                   height: scale(40),
                   borderRadius: scale(12),
-                  backgroundColor: '#006685',
+                  backgroundColor: '#82d8ff',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
@@ -647,12 +647,12 @@ function NewNoteModal({ visible, patientId, onClose }: NewNoteModalProps) {
                         fontFamily: 'Manrope',
                         fontSize: fs.sm,
                         fontWeight: '600',
-                        color: '#006685',
+                        color: '#82d8ff',
                       }}
                     >
                       #{tag}
                     </Text>
-                    <MaterialIcons name="close" size={scale(12)} color="#006685" />
+                    <MaterialIcons name="close" size={scale(12)} color="#82d8ff" />
                   </TouchableOpacity>
                 ))}
               </View>
@@ -674,7 +674,7 @@ function NewNoteModal({ visible, patientId, onClose }: NewNoteModalProps) {
               }}
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(10), flex: 1 }}>
-                <MaterialIcons name="share" size={scale(18)} color="#006685" />
+                <MaterialIcons name="share" size={scale(18)} color="#82d8ff" />
                 <View style={{ flex: 1 }}>
                   <Text
                     style={{
@@ -702,7 +702,7 @@ function NewNoteModal({ visible, patientId, onClose }: NewNoteModalProps) {
                 value={isShared}
                 onValueChange={setIsShared}
                 trackColor={{ false: '#bec8ce', true: '#82d8ff' }}
-                thumbColor={isShared ? '#006685' : '#f8f9ff'}
+                thumbColor={isShared ? '#82d8ff' : '#f8f9ff'}
               />
             </View>
 
@@ -714,7 +714,7 @@ function NewNoteModal({ visible, patientId, onClose }: NewNoteModalProps) {
                 paddingVertical: scale(15),
                 borderRadius: 999,
                 backgroundColor:
-                  createNote.isPending || !content.trim() ? '#bec8ce' : '#006685',
+                  createNote.isPending || !content.trim() ? '#bec8ce' : '#82d8ff',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexDirection: 'row',
@@ -812,7 +812,7 @@ export default function PatientNotesScreen() {
               fontFamily: 'Manrope',
               fontWeight: '800',
               fontSize: fs.sm,
-              color: '#006685',
+              color: '#82d8ff',
             }}
           >
             {initials}
@@ -853,7 +853,7 @@ export default function PatientNotesScreen() {
             paddingHorizontal: scale(12),
             paddingVertical: scale(8),
             borderRadius: 999,
-            backgroundColor: '#006685',
+            backgroundColor: '#82d8ff',
           }}
         >
           <MaterialIcons name="add" size={scale(16)} color="#fff" />
@@ -873,7 +873,7 @@ export default function PatientNotesScreen() {
       {/* List */}
       {isLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="large" color="#006685" />
+          <ActivityIndicator size="large" color="#82d8ff" />
         </View>
       ) : (
         <FlatList

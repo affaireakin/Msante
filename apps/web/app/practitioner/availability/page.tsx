@@ -50,7 +50,7 @@ const MODE_OPTIONS = [
   { value: 'video',      label: 'Téléconsultation',   icon: 'videocam' },
 ]
 
-const PRESET_COLORS = ['#006685','#1d7a3a','#705d00','#ba1a1a','#6d28d9','#0f766e','#c2410c','#1d4ed8']
+const PRESET_COLORS = ['#82d8ff','#1d7a3a','#705d00','#ba1a1a','#6d28d9','#0f766e','#c2410c','#1d4ed8']
 
 function pad(n: number) { return String(n).padStart(2,'0') }
 
@@ -66,7 +66,7 @@ function Icon({ name, size=18, color }: { name: string; size?: number; color?: s
 function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <button type="button" onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${checked ? 'bg-[#006685]' : 'bg-slate-300'}`}>
+      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${checked ? 'bg-[#82d8ff]' : 'bg-slate-300'}`}>
       <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-4' : 'translate-x-1'}`} />
     </button>
   )
@@ -118,9 +118,9 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
 
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<ConsultationType | null>(null)
-  const [form, setForm] = useState<{ name: string; duration_min: number; price: string; currency: string; color: string; description: string; mode: 'presentiel' | 'video' | 'both' }>({ name: '', duration_min: 30, price: '', currency: 'XOF', color: '#006685', description: '', mode: 'both' })
+  const [form, setForm] = useState<{ name: string; duration_min: number; price: string; currency: string; color: string; description: string; mode: 'presentiel' | 'video' | 'both' }>({ name: '', duration_min: 30, price: '', currency: 'XOF', color: '#82d8ff', description: '', mode: 'both' })
 
-  function openNew() { setForm({ name:'', duration_min:30, price:'', currency:'XOF', color:'#006685', description:'', mode:'both' }); setEditing(null); setShowForm(true) }
+  function openNew() { setForm({ name:'', duration_min:30, price:'', currency:'XOF', color:'#82d8ff', description:'', mode:'both' }); setEditing(null); setShowForm(true) }
   function openEdit(t: ConsultationType) {
     setForm({ name:t.name, duration_min:t.duration_min, price:t.price?.toString()??'', currency:t.currency, color:t.color, description:t.description??'', mode:t.mode })
     setEditing(t); setShowForm(true)
@@ -161,7 +161,7 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500">{types.length} type{types.length !== 1 ? 's' : ''} configuré{types.length !== 1 ? 's' : ''}</p>
-        <button onClick={openNew} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white" style={{ backgroundColor: '#006685' }}>
+        <button onClick={openNew} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white" style={{ backgroundColor: '#82d8ff' }}>
           <Icon name="add" size={16} color="#fff" />Nouveau type
         </button>
       </div>
@@ -182,8 +182,8 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="text-sm font-semibold text-[#0b1c30]">{t.name}</p>
                     <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">{t.duration_min} min</span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-[#e5eeff] text-[#006685]">
-                      <Icon name={modeOpt?.icon ?? 'sync_alt'} size={11} color="#006685" /> {modeOpt?.label}
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-[#e5eeff] text-[#82d8ff]">
+                      <Icon name={modeOpt?.icon ?? 'sync_alt'} size={11} color="#82d8ff" /> {modeOpt?.label}
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">
@@ -217,7 +217,7 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Nom</label>
                 <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="ex: Consultation générale"
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#006685]" />
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -227,7 +227,7 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
                     {[15,20,30,45,60,90].map(d => (
                       <button key={d} onClick={() => setForm(f => ({ ...f, duration_min: d }))}
                         className="px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all"
-                        style={{ backgroundColor: form.duration_min === d ? '#006685' : '#f8f9ff', color: form.duration_min === d ? '#fff' : '#6f787e', borderColor: form.duration_min === d ? '#006685' : '#e2e8f0' }}>
+                        style={{ backgroundColor: form.duration_min === d ? '#82d8ff' : '#f8f9ff', color: form.duration_min === d ? '#fff' : '#6f787e', borderColor: form.duration_min === d ? '#82d8ff' : '#e2e8f0' }}>
                         {d}
                       </button>
                     ))}
@@ -237,7 +237,7 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Tarif</label>
                   <div className="flex gap-1.5">
                     <input type="number" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="15000"
-                      className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#006685] min-w-0" />
+                      className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff] min-w-0" />
                     <select value={form.currency} onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}
                       className="px-2 py-2 border border-slate-200 rounded-xl text-xs outline-none bg-white">
                       <option value="XOF">XOF</option><option value="EUR">EUR</option><option value="USD">USD</option>
@@ -252,8 +252,8 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
                   {MODE_OPTIONS.map(opt => (
                     <button key={opt.value} onClick={() => setForm(f => ({ ...f, mode: opt.value as typeof form.mode }))}
                       className="py-2 rounded-xl text-xs font-semibold border flex flex-col items-center gap-1 transition-all"
-                      style={{ borderColor: form.mode === opt.value ? '#006685' : '#e2e8f0', backgroundColor: form.mode === opt.value ? '#e5eeff' : '#f8f9ff', color: form.mode === opt.value ? '#006685' : '#6f787e' }}>
-                      <Icon name={opt.icon} size={16} color={form.mode === opt.value ? '#006685' : '#6f787e'} />
+                      style={{ borderColor: form.mode === opt.value ? '#82d8ff' : '#e2e8f0', backgroundColor: form.mode === opt.value ? '#e5eeff' : '#f8f9ff', color: form.mode === opt.value ? '#82d8ff' : '#6f787e' }}>
+                      <Icon name={opt.icon} size={16} color={form.mode === opt.value ? '#82d8ff' : '#6f787e'} />
                       <span>{opt.label}</span>
                     </button>
                   ))}
@@ -274,14 +274,14 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Description (optionnelle)</label>
                 <input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="ex: Pour les nouveaux patients"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#006685]" />
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
               </div>
             </div>
 
             <div className="flex gap-3 mt-6">
               <button onClick={() => setShowForm(false)} className="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-500 hover:bg-slate-50">Annuler</button>
               <button onClick={() => save.mutate()} disabled={!form.name || save.isPending}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#006685' }}>
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#82d8ff' }}>
                 {save.isPending ? 'Enregistrement…' : 'Enregistrer'}
               </button>
             </div>
@@ -361,8 +361,8 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100/60">
               <p className="text-sm font-semibold text-[#0b1c30]">{dayName}</p>
               <button onClick={() => openForm(day)}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-[#006685] bg-[#e5eeff] hover:bg-[#bee9ff] transition-colors">
-                <Icon name="add" size={13} color="#006685" />Ajouter
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-[#82d8ff] bg-[#e5eeff] hover:bg-[#bee9ff] transition-colors">
+                <Icon name="add" size={13} color="#82d8ff" />Ajouter
               </button>
             </div>
 
@@ -407,19 +407,19 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowForm(null)} />
           <div className="relative bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl overflow-y-auto max-h-[90vh]">
             <h3 className="text-lg font-bold text-[#0b1c30] mb-1">Ajouter une plage</h3>
-            <p className="text-sm text-[#006685] font-semibold mb-4">{DAYS[showForm]}</p>
+            <p className="text-sm text-[#82d8ff] font-semibold mb-4">{DAYS[showForm]}</p>
 
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Début</label>
                   <input type="time" value={form.start_time} onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Fin</label>
                   <input type="time" value={form.end_time} onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
                 </div>
               </div>
 
@@ -427,7 +427,7 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Lieu</label>
                   <select value={form.location_id} onChange={e => setForm(f => ({ ...f, location_id: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none bg-white focus:border-[#006685]">
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none bg-white focus:border-[#82d8ff]">
                     <option value="">Sans lieu spécifique</option>
                     {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
                   </select>
@@ -447,7 +447,7 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
                           <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: t.color }} />
                           <span className="text-sm text-[#0b1c30] flex-1">{t.name}</span>
                           <span className="text-xs text-slate-400">{t.duration_min} min</span>
-                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${checked ? 'bg-[#006685] border-[#006685]' : 'border-slate-300'}`}>
+                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${checked ? 'bg-[#82d8ff] border-[#82d8ff]' : 'border-slate-300'}`}>
                             {checked && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
                           </div>
                         </label>
@@ -462,7 +462,7 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
                   {form.type_ids.map(tid => {
                     const t = types.find(x => x.id === tid)!
                     const count = generateSlotCount(form.start_time, form.end_time, t.duration_min)
-                    return <p key={tid} className="text-xs text-[#006685]">{t.name}: <strong>{count} créneaux</strong> de {t.duration_min} min</p>
+                    return <p key={tid} className="text-xs text-[#82d8ff]">{t.name}: <strong>{count} créneaux</strong> de {t.duration_min} min</p>
                   })}
                 </div>
               )}
@@ -471,7 +471,7 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
             <div className="flex gap-3 mt-5">
               <button onClick={() => setShowForm(null)} className="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-500">Annuler</button>
               <button onClick={() => add.mutate()} disabled={add.isPending || !form.start_time || !form.end_time || form.start_time >= form.end_time}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#006685' }}>
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#82d8ff' }}>
                 {add.isPending ? 'Enregistrement…' : 'Enregistrer'}
               </button>
             </div>
@@ -526,7 +526,7 @@ function BlockedTab({ data }: { data: ReturnType<typeof useAvailData>['data'] })
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500">Les créneaux dans ces périodes disparaissent automatiquement.</p>
         <button onClick={() => { setForm({ start_date: '', end_date: '', start_time: '', end_time: '', reason_type: 'vacation', reason_label: '', all_day: true }); setShowForm(true) }}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white" style={{ backgroundColor: '#006685' }}>
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white" style={{ backgroundColor: '#82d8ff' }}>
           <Icon name="event_busy" size={16} color="#fff" />Bloquer une période
         </button>
       </div>
@@ -572,13 +572,13 @@ function BlockedTab({ data }: { data: ReturnType<typeof useAvailData>['data'] })
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Date début</label>
                   <input type="date" value={form.start_date} min={new Date().toISOString().split('T')[0]}
                     onChange={e => setForm(f => ({ ...f, start_date: e.target.value, end_date: f.end_date || e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Date fin</label>
                   <input type="date" value={form.end_date} min={form.start_date || new Date().toISOString().split('T')[0]}
                     onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
                 </div>
               </div>
 
@@ -592,12 +592,12 @@ function BlockedTab({ data }: { data: ReturnType<typeof useAvailData>['data'] })
                   <div>
                     <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Début</label>
                     <input type="time" value={form.start_time} onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Fin</label>
                     <input type="time" value={form.end_time} onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
                   </div>
                 </div>
               )}
@@ -619,7 +619,7 @@ function BlockedTab({ data }: { data: ReturnType<typeof useAvailData>['data'] })
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Libellé personnalisé (optionnel)</label>
                 <input value={form.reason_label} onChange={e => setForm(f => ({ ...f, reason_label: e.target.value }))} placeholder="ex: Vacances d'été"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
               </div>
             </div>
 
@@ -669,7 +669,7 @@ function LocationsTab({ data }: { data: ReturnType<typeof useAvailData>['data'] 
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500">Cabinet, clinique, hôpital, domicile…</p>
         <button onClick={() => { setForm({ name:'', address:'', city:'', is_teleconsult:false }); setShowForm(true) }}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white" style={{ backgroundColor: '#006685' }}>
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white" style={{ backgroundColor: '#82d8ff' }}>
           <Icon name="add_location" size={16} color="#fff" />Ajouter un lieu
         </button>
       </div>
@@ -684,7 +684,7 @@ function LocationsTab({ data }: { data: ReturnType<typeof useAvailData>['data'] 
           {locations.map(l => (
             <div key={l.id} className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 flex items-center gap-3 shadow-sm">
               <div className="w-10 h-10 rounded-xl bg-[#e5eeff] flex items-center justify-center flex-shrink-0">
-                <Icon name={l.is_teleconsult ? 'videocam' : 'location_on'} size={20} color="#006685" />
+                <Icon name={l.is_teleconsult ? 'videocam' : 'location_on'} size={20} color="#82d8ff" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-[#0b1c30]">{l.name}</p>
@@ -707,17 +707,17 @@ function LocationsTab({ data }: { data: ReturnType<typeof useAvailData>['data'] 
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Nom du lieu</label>
                 <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="ex: Cabinet principal"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
               </div>
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Adresse</label>
                 <input value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} placeholder="ex: 12 rue de la Santé"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
               </div>
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Ville</label>
                 <input value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} placeholder="ex: Dakar"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#006685]" />
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
               </div>
               <div className="flex items-center justify-between py-1">
                 <span className="text-sm text-[#0b1c30]">Lieu de téléconsultation</span>
@@ -727,7 +727,7 @@ function LocationsTab({ data }: { data: ReturnType<typeof useAvailData>['data'] 
             <div className="flex gap-3 mt-5">
               <button onClick={() => setShowForm(false)} className="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-500">Annuler</button>
               <button onClick={() => add.mutate()} disabled={!form.name || add.isPending}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#006685' }}>
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#82d8ff' }}>
                 {add.isPending ? 'Enregistrement…' : 'Ajouter'}
               </button>
             </div>
@@ -778,7 +778,7 @@ function SettingsTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
             <div className="flex items-center gap-2 flex-shrink-0">
               <input type="number" value={form[key] ?? ''} min={min} max={max}
                 onChange={e => upd(key, parseInt(e.target.value) || 0)}
-                className="w-20 px-3 py-1.5 border border-slate-200 rounded-xl text-sm text-center outline-none focus:border-[#006685]" />
+                className="w-20 px-3 py-1.5 border border-slate-200 rounded-xl text-sm text-center outline-none focus:border-[#82d8ff]" />
               <span className="text-xs text-slate-400">{unit}</span>
             </div>
           </div>
@@ -791,7 +791,7 @@ function SettingsTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
         <input type="number" value={form.max_patients_per_day ?? ''} min={1}
           onChange={e => upd('max_patients_per_day', e.target.value ? parseInt(e.target.value) : null)}
           placeholder="Illimité"
-          className="w-28 px-3 py-1.5 border border-slate-200 rounded-xl text-sm text-center outline-none focus:border-[#006685]" />
+          className="w-28 px-3 py-1.5 border border-slate-200 rounded-xl text-sm text-center outline-none focus:border-[#82d8ff]" />
       </div>
 
       {[
@@ -809,7 +809,7 @@ function SettingsTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
 
       <button onClick={() => save.mutate()} disabled={!dirty || save.isPending}
         className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90 disabled:opacity-40"
-        style={{ backgroundColor: '#006685' }}>
+        style={{ backgroundColor: '#82d8ff' }}>
         {save.isPending ? 'Enregistrement…' : saved ? '✓ Enregistré' : 'Enregistrer les paramètres'}
       </button>
     </div>
@@ -859,7 +859,7 @@ export default function AvailabilityPage() {
           <button key={t.key} onClick={() => setTab(t.key)}
             className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all flex-shrink-0"
             style={tab === t.key
-              ? { backgroundColor: '#006685', color: '#fff' }
+              ? { backgroundColor: '#82d8ff', color: '#fff' }
               : { backgroundColor: 'rgba(255,255,255,0.60)', color: '#3f484d', border: '1px solid rgba(190,200,206,0.40)' }}>
             <Icon name={t.icon} size={15} color={tab === t.key ? '#fff' : '#6f787e'} />
             {t.label}

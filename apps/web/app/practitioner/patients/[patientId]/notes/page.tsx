@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -45,7 +45,7 @@ type NoteType = typeof NOTE_TYPES[number]['value']
 
 function noteTypeColors(type: NoteType): { bg: string; text: string } {
   switch (type) {
-    case 'observation':       return { bg: '#e5eeff', text: '#006685' }
+    case 'observation':       return { bg: '#e5eeff', text: '#82d8ff' }
     case 'compte_rendu':      return { bg: '#dcfce7', text: '#1d7a3a' }
     case 'note_suivi':        return { bg: '#fef9c3', text: '#705d00' }
     case 'bilan':             return { bg: '#f1f5f9', text: '#475569' }
@@ -144,7 +144,7 @@ function TabNav({ patientId }: { patientId: string }) {
           href={tab.href}
           className={`px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
             tab.key === 'notes'
-              ? 'border-b-2 border-[#006685] text-[#006685]'
+              ? 'border-b-2 border-[#82d8ff] text-[#82d8ff]'
               : 'text-slate-500 hover:text-slate-700'
           }`}
         >
@@ -168,7 +168,7 @@ function PatientHeader({ patient, patientId }: { patient: PatientInfo; patientId
       </Link>
       <div
         className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-bold text-base select-none"
-        style={{ background: '#e5eeff', color: '#006685' }}
+        style={{ background: '#e5eeff', color: '#82d8ff' }}
       >
         {initials(patient.full_name)}
       </div>
@@ -230,7 +230,7 @@ function NewNoteModal({ patientId, practitionerId, onClose }: NewNoteModalProps)
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-[#0b1c30] flex items-center gap-2">
-            <Icon name="note_add" size={18} color="#006685" />
+            <Icon name="note_add" size={18} color="#82d8ff" />
             Nouvelle note
           </h2>
           <button
@@ -252,7 +252,7 @@ function NewNoteModal({ patientId, practitionerId, onClose }: NewNoteModalProps)
             <select
               value={noteType}
               onChange={e => setNoteType(e.target.value as NoteType)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff]"
             >
               {NOTE_TYPES.map(t => (
                 <option key={t.value} value={t.value}>{t.label}</option>
@@ -268,7 +268,7 @@ function NewNoteModal({ patientId, practitionerId, onClose }: NewNoteModalProps)
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="Titre de la note…"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff]"
             />
           </div>
 
@@ -280,7 +280,7 @@ function NewNoteModal({ patientId, practitionerId, onClose }: NewNoteModalProps)
               onChange={e => setContent(e.target.value)}
               rows={5}
               placeholder="Rédigez votre note ici…"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685] resize-none"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff] resize-none"
             />
           </div>
 
@@ -292,7 +292,7 @@ function NewNoteModal({ patientId, practitionerId, onClose }: NewNoteModalProps)
               value={tagsInput}
               onChange={e => setTagsInput(e.target.value)}
               placeholder="anxiété, sommeil, suivi…"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff]"
             />
           </div>
 
@@ -302,7 +302,7 @@ function NewNoteModal({ patientId, practitionerId, onClose }: NewNoteModalProps)
               type="checkbox"
               checked={isShared}
               onChange={e => setIsShared(e.target.checked)}
-              className="w-4 h-4 accent-[#006685]"
+              className="w-4 h-4 accent-[#82d8ff]"
             />
             <span className="text-sm text-slate-700">Partager avec le patient</span>
           </label>
@@ -319,7 +319,7 @@ function NewNoteModal({ patientId, practitionerId, onClose }: NewNoteModalProps)
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
             className="px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors disabled:opacity-60"
-            style={{ background: '#006685' }}
+            style={{ background: '#82d8ff' }}
           >
             {mutation.isPending ? 'Enregistrement…' : 'Enregistrer'}
           </button>
@@ -344,8 +344,8 @@ function NoteCard({ note }: { note: NoteRow }) {
             {noteTypeLabel(note.note_type)}
           </span>
           {note.is_shared_with_patient && (
-            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#e5eeff] text-[#006685] flex items-center gap-1">
-              <Icon name="share" size={12} color="#006685" />
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#e5eeff] text-[#82d8ff] flex items-center gap-1">
+              <Icon name="share" size={12} color="#82d8ff" />
               Partagé
             </span>
           )}
@@ -439,7 +439,7 @@ export default function PatientNotesPage() {
             <button
               onClick={() => setShowModal(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors"
-              style={{ background: '#006685' }}
+              style={{ background: '#82d8ff' }}
             >
               <Icon name="note_add" size={16} color="#ffffff" />
               Nouvelle note
@@ -454,7 +454,7 @@ export default function PatientNotesPage() {
               <button
                 onClick={() => setShowModal(true)}
                 className="mt-4 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors"
-                style={{ background: '#006685' }}
+                style={{ background: '#82d8ff' }}
               >
                 Créer une note
               </button>

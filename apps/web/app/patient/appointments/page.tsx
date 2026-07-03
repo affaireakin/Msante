@@ -13,7 +13,7 @@ type Filter = 'all' | 'upcoming' | 'completed' | 'cancelled'
 const STATUS_CONFIG: Record<string, { bg: string; text: string; label: string; icon: string }> = {
   confirmed: { bg: '#e8f5e9', text: '#1d7a3a', label: 'Confirmé',  icon: 'check_circle' },
   pending:   { bg: '#fff8e1', text: '#705d00', label: 'En attente', icon: 'schedule' },
-  completed: { bg: '#e5eeff', text: '#006685', label: 'Terminé',    icon: 'task_alt' },
+  completed: { bg: '#e5eeff', text: '#82d8ff', label: 'Terminé',    icon: 'task_alt' },
   cancelled: { bg: '#ffdad6', text: '#ba1a1a', label: 'Annulé',     icon: 'cancel' },
   no_show:   { bg: '#ffdad6', text: '#ba1a1a', label: 'Absent',     icon: 'person_off' },
 }
@@ -89,7 +89,7 @@ export default function AppointmentsPage() {
           <h1 className="text-2xl font-black text-[#0b1c30]">Mes rendez-vous</h1>
           <p className="text-sm text-[#6f787e] mt-1">{data.length} rendez-vous</p>
         </div>
-        <Link href="/patient/practitioners" className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#006685]/20 transition-all">
+        <Link href="/patient/practitioners" className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#82d8ff]/20 transition-all">
           <Icon name="add" style={{ fontSize: '18px' }} />
           <span className="hidden sm:inline">Nouveau RDV</span>
           <span className="sm:hidden">Nouveau</span>
@@ -104,7 +104,7 @@ export default function AppointmentsPage() {
             onClick={() => setFilter(f.key)}
             className="flex-shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-all"
             style={{
-              backgroundColor: filter === f.key ? '#006685' : 'rgba(255,255,255,0.70)',
+              backgroundColor: filter === f.key ? '#82d8ff' : 'rgba(255,255,255,0.70)',
               color: filter === f.key ? '#fff' : '#6f787e',
               border: filter === f.key ? 'none' : '1px solid rgba(190,200,206,0.50)',
             }}
@@ -123,7 +123,7 @@ export default function AppointmentsPage() {
         <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
           <Icon name="calendar_today" style={{ fontSize: '48px', color: '#bec8ce' }} />
           <p className="font-semibold text-[#0b1c30] mt-3">Aucun rendez-vous</p>
-          <Link href="/patient/practitioners" className="mt-4 inline-block px-6 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#006685]/20 transition-all">
+          <Link href="/patient/practitioners" className="mt-4 inline-block px-6 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#82d8ff]/20 transition-all">
             Réserver maintenant
           </Link>
         </div>
@@ -144,8 +144,8 @@ export default function AppointmentsPage() {
               <div key={apt.id} className="rounded-2xl p-4 sm:p-5 flex items-start gap-3 sm:gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)', opacity: isPast && apt.status === 'pending' ? 0.7 : 1 }}>
                 {/* Date box */}
                 <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#e5eeff] flex flex-col items-center justify-center flex-shrink-0">
-                  <span className="text-lg sm:text-xl font-black text-[#006685] leading-none">{dt.getDate()}</span>
-                  <span className="text-[10px] sm:text-xs text-[#006685] font-semibold uppercase">
+                  <span className="text-lg sm:text-xl font-black text-[#82d8ff] leading-none">{dt.getDate()}</span>
+                  <span className="text-[10px] sm:text-xs text-[#82d8ff] font-semibold uppercase">
                     {dt.toLocaleDateString('fr-FR', { month: 'short', timeZone: 'Africa/Dakar' })}
                   </span>
                 </div>
@@ -181,7 +181,7 @@ export default function AppointmentsPage() {
                           key={doc.id}
                           href={`/patient/document/${doc.id}`}
                           target="_blank"
-                          className="inline-flex items-center gap-1 text-xs font-bold text-[#006685] bg-[#e5eeff] px-2 py-0.5 rounded-full hover:bg-[#d3e4fe] transition-colors"
+                          className="inline-flex items-center gap-1 text-xs font-bold text-[#82d8ff] bg-[#e5eeff] px-2 py-0.5 rounded-full hover:bg-[#d3e4fe] transition-colors"
                         >
                           <Icon name="description" style={{ fontSize: '12px' }} />
                           {DOC_TYPE_SHORT[doc.document_type] ?? 'Document'}
@@ -192,7 +192,7 @@ export default function AppointmentsPage() {
 
                   {/* Join link */}
                   {apt.status === 'confirmed' && !isPast && (
-                    <Link href={`/patient/consultation/${apt.id}/waiting`} className="inline-flex items-center gap-1 mt-2 text-xs font-bold text-[#006685] hover:underline">
+                    <Link href={`/patient/consultation/${apt.id}/waiting`} className="inline-flex items-center gap-1 mt-2 text-xs font-bold text-[#82d8ff] hover:underline">
                       <Icon name="video_call" style={{ fontSize: '14px' }} />
                       Rejoindre la consultation →
                     </Link>

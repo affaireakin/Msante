@@ -14,7 +14,7 @@ const QUICK_ACTIONS = [
     label: 'Respiration',
     desc: 'Cohérence cardiaque guidée',
     bg: '#e5eeff',
-    accent: '#006685',
+    accent: '#82d8ff',
     route: '/(patient)/mental-health/meditation/session',
     params: { technique: 'coherence', duration: '300', title: 'Cohérence cardiaque' },
   },
@@ -57,7 +57,7 @@ export default function AssistantTab() {
         borderRadius: scale(55),
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#006685',
+        backgroundColor: '#82d8ff',
         shadowColor: '#82d8ff',
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.9,
@@ -76,8 +76,8 @@ export default function AssistantTab() {
           Je vous écoute...
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: scale(4), backgroundColor: '#e5eeff', paddingHorizontal: scale(12), paddingVertical: scale(4), borderRadius: 20 }}>
-          <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#006685' }} />
-          <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#006685', fontFamily: 'Manrope', letterSpacing: 0.5 }}>MOUNIMA · IA BIENVEILLANTE</Text>
+          <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#82d8ff' }} />
+          <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#82d8ff', fontFamily: 'Manrope', letterSpacing: 0.5 }}>MOUNIMA · IA BIENVEILLANTE</Text>
         </View>
       </View>
 
@@ -149,17 +149,17 @@ export default function AssistantTab() {
         {/* Header */}
         <View style={{ paddingHorizontal: px, paddingTop: scale(20), paddingBottom: scale(12), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(10) }}>
-            <View style={{ width: scale(36), height: scale(36), borderRadius: scale(10), backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: scale(36), height: scale(36), borderRadius: scale(10), backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
               <MaterialIcons name="medical-services" size={scale(20)} color="#fff" />
             </View>
             <View>
               <Text style={{ fontSize: fs.lg, fontWeight: '900', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.3 }}>M-Santé</Text>
-              <Text style={{ fontSize: scale(9), color: '#006685', fontFamily: 'Manrope', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8 }}>Health Sanctuary</Text>
+              <Text style={{ fontSize: scale(9), color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8 }}>Health Sanctuary</Text>
             </View>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(6) }}>
             <Text style={{ fontSize: fs.md, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>Mounima</Text>
-            <MaterialIcons name="favorite" size={scale(16)} color="#006685" />
+            <MaterialIcons name="favorite" size={scale(16)} color="#82d8ff" />
           </View>
         </View>
 
@@ -250,7 +250,7 @@ export default function AssistantTab() {
                 width: scale(40),
                 height: scale(40),
                 borderRadius: scale(20),
-                backgroundColor: '#006685',
+                backgroundColor: '#82d8ff',
                 alignItems: 'center',
                 justifyContent: 'center',
                 opacity: !input.trim() || isLoading ? 0.4 : 1,

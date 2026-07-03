@@ -16,7 +16,7 @@ const TABS: { key: FilterTab; label: string }[] = [
   { key: 'blocked', label: 'Bloqués' },
 ]
 
-const AVATAR_COLORS = ['#006685', '#705d00', '#1d7a3a', '#5c5f61', '#ba1a1a']
+const AVATAR_COLORS = ['#82d8ff', '#705d00', '#1d7a3a', '#5c5f61', '#ba1a1a']
 
 function PatientCard({
   patient,
@@ -116,7 +116,7 @@ function PatientCard({
             backgroundColor: '#eff4ff',
           }}
         >
-          <MaterialIcons name="event" size={15} color="#006685" style={{ marginTop: 1 }} />
+          <MaterialIcons name="event" size={15} color="#82d8ff" style={{ marginTop: 1 }} />
           <View style={{ flex: 1 }}>
             <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e' }}>
               Dernière consultation :{' '}
@@ -168,7 +168,7 @@ function PatientCard({
             flexDirection: 'row',
             justifyContent: 'center',
             gap: 6,
-            backgroundColor: '#006685',
+            backgroundColor: '#82d8ff',
           }}
         >
           <MaterialIcons name="chat-bubble" size={15} color="#fff" />
@@ -190,12 +190,12 @@ function PatientCard({
             paddingVertical: 9,
             borderRadius: 999,
             borderWidth: 1,
-            borderColor: '#006685',
+            borderColor: '#82d8ff',
             backgroundColor: 'rgba(0,102,133,0.06)',
           }}
         >
-          <MaterialIcons name="lock-open" size={14} color="#006685" />
-          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#006685' }}>
+          <MaterialIcons name="lock-open" size={14} color="#82d8ff" />
+          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#82d8ff' }}>
             Débloquer ce patient
           </Text>
         </TouchableOpacity>
@@ -294,12 +294,12 @@ function BlockedCard({ block, onUnblock }: { block: PatientBlock; onUnblock: () 
           paddingVertical: 9,
           borderRadius: 999,
           borderWidth: 1,
-          borderColor: '#006685',
+          borderColor: '#82d8ff',
           backgroundColor: 'rgba(0,102,133,0.06)',
         }}
       >
-        <MaterialIcons name="lock-open" size={14} color="#006685" />
-        <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#006685' }}>
+        <MaterialIcons name="lock-open" size={14} color="#82d8ff" />
+        <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#82d8ff' }}>
           Débloquer
         </Text>
       </TouchableOpacity>
@@ -448,8 +448,8 @@ export default function PatientsScreen() {
                 paddingVertical: 8,
                 borderRadius: 999,
                 borderWidth: 1,
-                backgroundColor: activeTab === tab.key ? '#006685' : 'rgba(255,255,255,0.60)',
-                borderColor: activeTab === tab.key ? '#006685' : 'rgba(190,200,206,0.50)',
+                backgroundColor: activeTab === tab.key ? '#82d8ff' : 'rgba(255,255,255,0.60)',
+                borderColor: activeTab === tab.key ? '#82d8ff' : 'rgba(190,200,206,0.50)',
               }}
             >
               <Text

@@ -92,7 +92,7 @@ export default function PaymentProcessingScreen() {
     } else {
       await WebBrowser.openBrowserAsync(checkoutUrl, {
         showTitle: true,
-        toolbarColor: '#006685',
+        toolbarColor: '#82d8ff',
       })
     }
     setStage('verifying')
@@ -135,7 +135,7 @@ export default function PaymentProcessingScreen() {
           ? <Text style={{ fontSize: 40 }}>❌</Text>
           : stage === 'redirect'
             ? <Text style={{ fontSize: 40 }}>{provider === 'wave' ? '💙' : provider === 'card' ? '💳' : '🟠'}</Text>
-            : <ActivityIndicator color="#006685" size="large" />
+            : <ActivityIndicator color="#82d8ff" size="large" />
         }
       </View>
 
@@ -157,7 +157,7 @@ export default function PaymentProcessingScreen() {
       {stage === 'redirect' && checkoutUrl && (
         <TouchableOpacity
           onPress={() => void handleOpenPayDunya()}
-          style={{ backgroundColor: '#006685', paddingHorizontal: 36, paddingVertical: 16, borderRadius: 999, shadowColor: '#006685', shadowOpacity: 0.3, shadowRadius: 16, elevation: 6 }}
+          style={{ backgroundColor: '#82d8ff', paddingHorizontal: 36, paddingVertical: 16, borderRadius: 999, shadowColor: '#82d8ff', shadowOpacity: 0.3, shadowRadius: 16, elevation: 6 }}
         >
           <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: 'Manrope' }}>
             Ouvrir PayDunya →

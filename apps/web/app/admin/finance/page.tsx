@@ -58,7 +58,7 @@ const PROVIDER_LABELS: Record<string, string> = {
 }
 
 const PROVIDER_COLORS: Record<string, string> = {
-  wave: '#006685',
+  wave: '#82d8ff',
   orange_money: '#e65c00',
   card: '#5c35d4',
   stripe: '#635bff',
@@ -136,12 +136,12 @@ function KpiCard({
       style={CARD_STYLE}
     >
       <div className="flex items-center justify-between">
-        <p className="text-xs font-bold text-[#006685] uppercase tracking-widest">{label}</p>
+        <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest">{label}</p>
         <span
           className="w-9 h-9 flex items-center justify-center rounded-xl material-symbols-outlined text-[22px]"
           style={{
             backgroundColor: accent ? '#ffde5c' : '#e5eeff',
-            color: accent ? '#705d00' : '#006685',
+            color: accent ? '#705d00' : '#82d8ff',
           }}
         >
           {icon}
@@ -166,7 +166,7 @@ export default function FinancePage() {
 
   // ── Pie data ──
   const pieData = [
-    { name: 'Praticiens (80%)', value: practitionerShare, color: '#006685' },
+    { name: 'Praticiens (80%)', value: practitionerShare, color: '#82d8ff' },
     { name: 'Plateforme (20%)', value: platformShare, color: '#ffde5c' },
   ]
 
@@ -261,7 +261,7 @@ export default function FinancePage() {
         </div>
         <div
           className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold flex-shrink-0"
-          style={{ backgroundColor: '#e5eeff', color: '#006685' }}
+          style={{ backgroundColor: '#e5eeff', color: '#82d8ff' }}
         >
           <span
             className="material-symbols-outlined text-base"
@@ -309,7 +309,7 @@ export default function FinancePage() {
         style={CARD_STYLE}
       >
         <div className="flex items-center justify-between mb-3">
-          <p className="text-xs font-bold text-[#006685] uppercase tracking-widest">Progression objectif mensuel</p>
+          <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Progression objectif mensuel</p>
           <span className="text-xs font-semibold text-[#705d00]">{goalPct.toFixed(1)}%</span>
         </div>
         <div
@@ -336,7 +336,7 @@ export default function FinancePage() {
 
         {/* Pie chart */}
         <div className="p-5" style={CARD_STYLE}>
-          <p className="text-xs font-bold text-[#006685] uppercase tracking-widest mb-4">
+          <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest mb-4">
             Distribution des revenus
           </p>
           {grossRevenue > 0 ? (
@@ -413,7 +413,7 @@ export default function FinancePage() {
 
         {/* Provider breakdown table */}
         <div className="p-5 overflow-x-auto" style={CARD_STYLE}>
-          <p className="text-xs font-bold text-[#006685] uppercase tracking-widest mb-4">
+          <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest mb-4">
             Répartition par provider
           </p>
           {providerBreakdown.length > 0 ? (
@@ -423,7 +423,7 @@ export default function FinancePage() {
                   {['Provider', 'Transactions', 'Total', '% du CA'].map((h) => (
                     <th
                       key={h}
-                      className="text-left pb-3 text-xs font-bold text-[#006685] uppercase tracking-widest"
+                      className="text-left pb-3 text-xs font-bold text-[#82d8ff] uppercase tracking-widest"
                     >
                       {h}
                     </th>
@@ -465,7 +465,7 @@ export default function FinancePage() {
               </tbody>
               <tfoot>
                 <tr className="border-t border-slate-200/60">
-                  <td className="pt-3 text-xs font-bold text-[#006685] uppercase tracking-widest" colSpan={2}>Total</td>
+                  <td className="pt-3 text-xs font-bold text-[#82d8ff] uppercase tracking-widest" colSpan={2}>Total</td>
                   <td className="pt-3 text-sm font-bold text-[#0b1c30]" colSpan={2}>{formatXOF(grossRevenue)}</td>
                 </tr>
               </tfoot>
@@ -482,7 +482,7 @@ export default function FinancePage() {
       <div className="p-5" style={CARD_STYLE}>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-xs font-bold text-[#006685] uppercase tracking-widest">
+            <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest">
               Simulation auto-payout
             </p>
             <p className="text-xs text-[#6f787e] mt-0.5">Top 10 praticiens · part 80%</p>
@@ -502,7 +502,7 @@ export default function FinancePage() {
               <thead>
                 <tr className="border-b border-slate-100">
                   {['Praticien', 'Revenus bruts', 'Virement (80%)', 'Provider', 'Statut'].map((h) => (
-                    <th key={h} className="text-left pb-3 text-xs font-bold text-[#006685] uppercase tracking-widest pr-4">
+                    <th key={h} className="text-left pb-3 text-xs font-bold text-[#82d8ff] uppercase tracking-widest pr-4">
                       {h}
                     </th>
                   ))}
@@ -516,7 +516,7 @@ export default function FinancePage() {
                       <div className="flex items-center gap-3">
                         <div
                           className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
-                          style={{ backgroundColor: '#006685' }}
+                          style={{ backgroundColor: '#82d8ff' }}
                         >
                           {row.initials}
                         </div>
@@ -529,7 +529,7 @@ export default function FinancePage() {
                     </td>
                     {/* Virement 80% */}
                     <td className="py-3 pr-4">
-                      <span className="text-sm font-bold" style={{ color: '#006685' }}>
+                      <span className="text-sm font-bold" style={{ color: '#82d8ff' }}>
                         {formatXOF(row.payout)}
                       </span>
                     </td>
@@ -571,12 +571,12 @@ export default function FinancePage() {
               {/* Summary footer */}
               <tfoot>
                 <tr className="border-t border-slate-200/60">
-                  <td className="pt-3 text-xs font-bold text-[#006685] uppercase tracking-widest">Total top 10</td>
+                  <td className="pt-3 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Total top 10</td>
                   <td className="pt-3 text-sm font-bold text-[#0b1c30]">
                     {formatXOF(topPayouts.reduce((s, r) => s + r.gross, 0))}
                   </td>
                   <td className="pt-3">
-                    <span className="text-sm font-bold" style={{ color: '#006685' }}>
+                    <span className="text-sm font-bold" style={{ color: '#82d8ff' }}>
                       {formatXOF(topPayouts.reduce((s, r) => s + r.payout, 0))}
                     </span>
                   </td>

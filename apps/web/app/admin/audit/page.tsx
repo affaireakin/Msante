@@ -85,7 +85,7 @@ export default function AuditPage() {
             <select
               value={action}
               onChange={e => { setAction(e.target.value); setPage(0) }}
-              className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-[#006685]"
+              className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-[#82d8ff]"
             >
               <option value="">Toutes les actions</option>
               {ACTION_KEYS.map(k => (
@@ -96,12 +96,12 @@ export default function AuditPage() {
           <div>
             <label className="text-xs font-semibold text-[#6f787e] uppercase tracking-wide">Du</label>
             <input type="date" value={dateFrom} onChange={e => { setDateFrom(e.target.value); setPage(0) }}
-              className="mt-1 block rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-[#006685]" />
+              className="mt-1 block rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-[#82d8ff]" />
           </div>
           <div>
             <label className="text-xs font-semibold text-[#6f787e] uppercase tracking-wide">Au</label>
             <input type="date" value={dateTo} onChange={e => { setDateTo(e.target.value); setPage(0) }}
-              className="mt-1 block rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-[#006685]" />
+              className="mt-1 block rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-[#82d8ff]" />
           </div>
           {(action || dateFrom || dateTo) && (
             <button onClick={resetFilters}
@@ -119,7 +119,7 @@ export default function AuditPage() {
       {/* Table */}
       <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
         {isLoading ? (
-          <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" /></div>
+          <div className="flex justify-center py-16"><div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" /></div>
         ) : logs.length === 0 ? (
           <div className="py-16 text-center space-y-2">
             <span className="material-symbols-outlined text-4xl text-slate-300">history</span>
@@ -201,7 +201,7 @@ export default function AuditPage() {
                 const pg = Math.max(0, Math.min(totalPages - 5, page - 2)) + i
                 return (
                   <button key={pg} onClick={() => setPage(pg)}
-                    className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors ${pg === page ? 'bg-[#006685] text-white' : 'hover:bg-slate-100 text-[#6f787e]'}`}>
+                    className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors ${pg === page ? 'bg-[#82d8ff] text-[#0b1c30]' : 'hover:bg-slate-100 text-[#6f787e]'}`}>
                     {pg + 1}
                   </button>
                 )

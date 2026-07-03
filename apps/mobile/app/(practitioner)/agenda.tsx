@@ -27,7 +27,7 @@ function InitialsAvatar({ initials, size }: { initials: string; size: number }) 
   return (
     <View style={{
       width: size, height: size, borderRadius: size / 2,
-      backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center',
+      backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center',
     }}>
       <Text style={{ color: '#fff', fontFamily: 'Manrope', fontWeight: '700', fontSize: size * 0.35 }}>
         {initials}
@@ -55,7 +55,7 @@ function AppointmentCard({
       borderWidth: urgent ? 1.5 : 1,
       borderColor: urgent ? '#ba1a1a' : '#e5eeff',
       overflow: 'hidden',
-      shadowColor: urgent ? '#ba1a1a' : '#006685',
+      shadowColor: urgent ? '#ba1a1a' : '#82d8ff',
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.07,
       shadowRadius: 12,
@@ -86,7 +86,7 @@ function AppointmentCard({
           </View>
           {/* Type badge */}
           <View style={{ backgroundColor: isVideo ? '#e5eeff' : '#f0fdf4', borderRadius: scale(8), paddingHorizontal: scale(8), paddingVertical: scale(3) }}>
-            <Text style={{ fontSize: scale(9), fontWeight: '700', color: isVideo ? '#006685' : '#1d7a3a', fontFamily: 'Manrope' }}>
+            <Text style={{ fontSize: scale(9), fontWeight: '700', color: isVideo ? '#82d8ff' : '#1d7a3a', fontFamily: 'Manrope' }}>
               {isVideo ? 'Vidéo' : 'Présentiel'}
             </Text>
           </View>
@@ -99,8 +99,8 @@ function AppointmentCard({
           borderRadius: scale(10), backgroundColor: '#f8f9ff',
           borderWidth: 1, borderColor: '#e5eeff',
         }}>
-          <MaterialIcons name="event" size={scale(15)} color="#006685" />
-          <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#006685', fontWeight: '600' }}>
+          <MaterialIcons name="event" size={scale(15)} color="#82d8ff" />
+          <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#82d8ff', fontWeight: '600' }}>
             {formatDateTime(appt.scheduledAt)}
           </Text>
         </View>
@@ -117,7 +117,7 @@ function AppointmentCard({
           <TouchableOpacity
             onPress={onApprove}
             disabled={isWorking}
-            style={{ flex: 2, paddingVertical: scale(11), borderRadius: 9999, alignItems: 'center', backgroundColor: '#006685', opacity: isWorking ? 0.5 : 1 }}
+            style={{ flex: 2, paddingVertical: scale(11), borderRadius: 9999, alignItems: 'center', backgroundColor: '#82d8ff', opacity: isWorking ? 0.5 : 1 }}
           >
             <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#fff' }}>Approuver</Text>
           </TouchableOpacity>
@@ -125,7 +125,7 @@ function AppointmentCard({
             disabled={isWorking}
             style={{ flex: 2, paddingVertical: scale(11), borderRadius: 9999, alignItems: 'center', borderWidth: 1, borderColor: '#bec8ce', backgroundColor: 'rgba(255,255,255,0.6)' }}
           >
-            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '600', color: '#006685' }}>Reporter</Text>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '600', color: '#82d8ff' }}>Reporter</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={onDecline}
@@ -195,7 +195,7 @@ export default function AgendaScreen() {
         <View style={{ flexDirection: 'row', gap: scale(8) }}>
           {pending.length > 0 && (
             <View style={{ paddingHorizontal: scale(10), paddingVertical: scale(5), borderRadius: 9999, backgroundColor: '#e5eeff' }}>
-              <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#006685' }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#82d8ff' }}>
                 {pending.length} Demande{pending.length > 1 ? 's' : ''}
               </Text>
             </View>
@@ -214,7 +214,7 @@ export default function AgendaScreen() {
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingHorizontal: px, paddingTop: scale(20), paddingBottom: 100, gap: scale(24) }}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#006685" />}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#82d8ff" />}
       >
         {/* Pending Approvals section */}
         <View style={{ gap: scale(12) }}>
@@ -224,7 +224,7 @@ export default function AgendaScreen() {
             </Text>
             {pending.length > 0 && (
               <View style={{ paddingHorizontal: scale(10), paddingVertical: scale(4), borderRadius: 9999, backgroundColor: '#e5eeff' }}>
-                <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#006685' }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#82d8ff' }}>
                   {pending.length} requête{pending.length > 1 ? 's' : ''}
                 </Text>
               </View>
@@ -287,7 +287,7 @@ export default function AgendaScreen() {
                   </View>
                 </View>
                 <View style={{ backgroundColor: '#e5eeff', borderRadius: scale(10), paddingHorizontal: scale(10), paddingVertical: scale(5) }}>
-                  <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#006685' }}>
+                  <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#82d8ff' }}>
                     {new Date(appt.scheduledAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Dakar' })}
                   </Text>
                 </View>

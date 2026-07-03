@@ -196,8 +196,8 @@ export default function MoodAnalyticsScreen() {
             onPress={() => router.back()}
             style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 4 }}
           >
-            <MaterialIcons name="arrow-back" size={20} color="#006685" />
-            <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: '500' }}>Retour</Text>
+            <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
+            <Text style={{ color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '500' }}>Retour</Text>
           </TouchableOpacity>
           <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>
             Mes statistiques
@@ -250,7 +250,7 @@ export default function MoodAnalyticsScreen() {
                 style={{
                   fontSize: 28,
                   fontWeight: '900',
-                  color: '#006685',
+                  color: '#82d8ff',
                   fontFamily: 'Manrope',
                 }}
               >
@@ -314,7 +314,7 @@ export default function MoodAnalyticsScreen() {
                         backgroundColor:
                           d.score !== null
                             ? isToday
-                              ? '#006685'
+                              ? '#82d8ff'
                               : scoreColor(d.score) + '99'
                             : 'rgba(190,200,206,0.3)',
                       }}
@@ -368,7 +368,7 @@ export default function MoodAnalyticsScreen() {
                       style={{
                         fontFamily: 'Manrope',
                         fontSize: 13,
-                        color: '#006685',
+                        color: '#82d8ff',
                         fontWeight: '600',
                       }}
                     >
@@ -415,7 +415,7 @@ export default function MoodAnalyticsScreen() {
                     fontFamily: 'Manrope',
                     fontSize: 13,
                     fontWeight: '700',
-                    color: '#006685',
+                    color: '#82d8ff',
                   }}
                 >
                   {stats.meditThisMonth} / 8
@@ -432,7 +432,7 @@ export default function MoodAnalyticsScreen() {
                   style={{
                     height: 6,
                     borderRadius: 999,
-                    backgroundColor: '#006685',
+                    backgroundColor: '#82d8ff',
                     width: `${Math.min((stats.meditThisMonth / 8) * 100, 100)}%`,
                   }}
                 />
@@ -456,7 +456,7 @@ export default function MoodAnalyticsScreen() {
                     fontFamily: 'Manrope',
                     fontSize: 13,
                     fontWeight: '700',
-                    color: '#006685',
+                    color: '#82d8ff',
                   }}
                 >
                   {stats.journalThisWeek}
@@ -495,7 +495,7 @@ export default function MoodAnalyticsScreen() {
                       ? 'rgba(190,200,206,0.25)'
                       : actions === 1
                       ? 'rgba(0,102,133,0.25)'
-                      : '#006685'
+                      : '#82d8ff'
                   return (
                     <View
                       key={d.date}

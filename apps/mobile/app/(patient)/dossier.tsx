@@ -37,7 +37,7 @@ type EventConfig = {
 const EVENT_CONFIG: Record<HistoryEvent['event_type'], EventConfig> = {
   consultation: {
     icon: 'local-hospital',
-    color: '#006685',
+    color: '#82d8ff',
     bg: '#e5eeff',
     label: 'Consultation',
   },
@@ -171,7 +171,7 @@ function TimelineItem({
             borderRadius: scale(16),
             borderWidth: 1,
             borderColor: '#e5eeff',
-            shadowColor: '#006685',
+            shadowColor: '#82d8ff',
             shadowOffset: { width: 0, height: 3 },
             shadowOpacity: 0.06,
             shadowRadius: 10,
@@ -374,14 +374,14 @@ export default function DossierScreen() {
               paddingHorizontal: scale(10),
               paddingVertical: scale(4),
               borderWidth: 1,
-              borderColor: '#006685' + '30',
+              borderColor: '#82d8ff' + '30',
             }}
           >
             <Text
               style={{
                 fontSize: fs.xs,
                 fontWeight: '700',
-                color: '#006685',
+                color: '#82d8ff',
                 fontFamily: 'Manrope',
               }}
             >
@@ -405,7 +405,7 @@ export default function DossierScreen() {
             borderColor: '#e5eeff',
             paddingHorizontal: scale(14),
             paddingVertical: scale(11),
-            shadowColor: '#006685',
+            shadowColor: '#82d8ff',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.05,
             shadowRadius: 8,
@@ -423,7 +423,7 @@ export default function DossierScreen() {
                 justifyContent: 'center',
               }}
             >
-              <MaterialIcons name="receipt-long" size={scale(16)} color="#006685" />
+              <MaterialIcons name="receipt-long" size={scale(16)} color="#82d8ff" />
             </View>
             <View>
               <Text
@@ -447,7 +447,7 @@ export default function DossierScreen() {
               </Text>
             </View>
           </View>
-          <MaterialIcons name="arrow-forward-ios" size={scale(14)} color="#006685" />
+          <MaterialIcons name="arrow-forward-ios" size={scale(14)} color="#82d8ff" />
         </TouchableOpacity>
       </View>
 
@@ -548,7 +548,7 @@ export default function DossierScreen() {
             <RefreshControl
               refreshing={isRefetching}
               onRefresh={refetch}
-              tintColor="#006685"
+              tintColor="#82d8ff"
             />
           }
           renderItem={({ item, index }) => (
@@ -579,7 +579,7 @@ export default function DossierScreen() {
                 <MaterialIcons
                   name="history"
                   size={scale(38)}
-                  color="#006685"
+                  color="#82d8ff"
                 />
               </View>
               <Text

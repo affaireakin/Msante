@@ -26,7 +26,7 @@ function ChatBubble({ message }: { message: AmiMessage }) {
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-2`}>
       {!isUser && (
-        <div className="w-8 h-8 rounded-full bg-[#006685] flex items-center justify-center mr-2 flex-shrink-0 mt-1">
+        <div className="w-8 h-8 rounded-full bg-[#82d8ff] flex items-center justify-center mr-2 flex-shrink-0 mt-1">
           <Icon name="favorite" style={{ fontSize: '14px', color: '#fff' }} />
         </div>
       )}
@@ -35,7 +35,7 @@ function ChatBubble({ message }: { message: AmiMessage }) {
           maxWidth: '72%',
           padding: '12px 16px',
           borderRadius: isUser ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-          backgroundColor: isUser ? '#006685' : 'rgba(229,238,255,0.80)',
+          backgroundColor: isUser ? '#82d8ff' : 'rgba(229,238,255,0.80)',
           border: isUser ? 'none' : '1px solid rgba(255,255,255,0.80)',
           backdropFilter: isUser ? 'none' : 'blur(8px)',
         }}
@@ -85,7 +85,7 @@ function WelcomeState() {
       <div
         className="w-32 h-32 rounded-full flex items-center justify-center"
         style={{
-          backgroundColor: '#006685',
+          backgroundColor: '#82d8ff',
           boxShadow: '0 0 60px 20px rgba(130,216,255,0.30)',
         }}
       >
@@ -115,7 +115,7 @@ function WelcomeState() {
               backdropFilter: 'blur(12px)',
             }}
           >
-            <Icon name={card.icon} style={{ fontSize: '28px', color: '#006685' }} />
+            <Icon name={card.icon} style={{ fontSize: '28px', color: '#82d8ff' }} />
             <p className="text-xs font-semibold text-[#0b1c30] mt-2" style={{ fontFamily: 'Manrope' }}>
               {card.label}
             </p>
@@ -218,12 +218,12 @@ export default function AssistantPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-xs font-bold text-[#006685] uppercase tracking-widest" style={{ fontFamily: 'Manrope' }}>
+          <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest" style={{ fontFamily: 'Manrope' }}>
             M-Santé
           </p>
           <h1 className="text-2xl font-black text-[#0b1c30] flex items-center gap-2" style={{ fontFamily: 'Manrope' }}>
             Mounima
-            <Icon name="favorite" style={{ fontSize: '22px', color: '#006685' }} />
+            <Icon name="favorite" style={{ fontSize: '22px', color: '#82d8ff' }} />
           </h1>
         </div>
         <div
@@ -256,7 +256,7 @@ export default function AssistantPage() {
               {showCrisis && <CrisisBanner />}
               {isLoading && (
                 <div className="flex justify-start mb-2">
-                  <div className="w-8 h-8 rounded-full bg-[#006685] flex items-center justify-center mr-2 flex-shrink-0 mt-1">
+                  <div className="w-8 h-8 rounded-full bg-[#82d8ff] flex items-center justify-center mr-2 flex-shrink-0 mt-1">
                     <Icon name="favorite" style={{ fontSize: '14px', color: '#fff' }} />
                   </div>
                   <div
@@ -270,7 +270,7 @@ export default function AssistantPage() {
                       {[0, 150, 300].map(delay => (
                         <div
                           key={delay}
-                          className="w-2 h-2 rounded-full bg-[#006685] animate-bounce"
+                          className="w-2 h-2 rounded-full bg-[#82d8ff] animate-bounce"
                           style={{ animationDelay: `${delay}ms` }}
                         />
                       ))}
@@ -317,7 +317,7 @@ export default function AssistantPage() {
               disabled={!input.trim() || isLoading}
               className="w-10 h-10 rounded-full flex items-center justify-center transition-all flex-shrink-0"
               style={{
-                backgroundColor: input.trim() && !isLoading ? '#006685' : '#bec8ce',
+                backgroundColor: input.trim() && !isLoading ? '#82d8ff' : '#bec8ce',
                 cursor: input.trim() && !isLoading ? 'pointer' : 'not-allowed',
               }}
             >

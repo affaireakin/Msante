@@ -116,7 +116,7 @@ function useAnalytics(practId: string | null) {
         }
       }
       const typeChart = [
-        { name: 'Vidéo', value: typeMap['video'], color: '#006685' },
+        { name: 'Vidéo', value: typeMap['video'], color: '#82d8ff' },
         { name: 'Audio', value: typeMap['audio'], color: '#82d8ff' },
         { name: 'Présentiel', value: typeMap['chat'], color: '#ffde5c' },
       ].filter((t) => t.value > 0)
@@ -207,7 +207,7 @@ function SectionTitle({ children }: { children: string }) {
         fontFamily: 'Manrope',
         fontSize: 10,
         fontWeight: '700',
-        color: '#006685',
+        color: '#82d8ff',
         letterSpacing: 1.5,
         textTransform: 'uppercase',
         marginBottom: 10,
@@ -249,7 +249,7 @@ function KpiCard({ label, value, sub, icon, trendValue }: KpiCardProps) {
           marginBottom: 10,
         }}
       >
-        <MaterialIcons name={icon} size={18} color="#006685" />
+        <MaterialIcons name={icon} size={18} color="#82d8ff" />
       </View>
       <Text style={{ fontFamily: 'Manrope', fontSize: 11, color: '#6f787e', fontWeight: '500', marginBottom: 2 }}>
         {label}
@@ -286,7 +286,7 @@ interface BarChartViewProps {
   direction?: 'vertical' | 'horizontal'
 }
 
-function BarChartView({ data, maxHeight = 120, barColor = '#006685', direction = 'vertical' }: BarChartViewProps) {
+function BarChartView({ data, maxHeight = 120, barColor = '#82d8ff', direction = 'vertical' }: BarChartViewProps) {
   const maxVal = Math.max(...data.map((d) => d.value), 1)
 
   if (direction === 'horizontal') {
@@ -396,7 +396,7 @@ export default function PractitionerAnalyticsScreen() {
               marginTop: 16,
               paddingHorizontal: 20,
               paddingVertical: 10,
-              backgroundColor: '#006685',
+              backgroundColor: '#82d8ff',
               borderRadius: 12,
             }}
           >
@@ -426,7 +426,7 @@ export default function PractitionerAnalyticsScreen() {
         }}
       >
         <View style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-          <MaterialIcons name="bar-chart" size={20} color="#006685" />
+          <MaterialIcons name="bar-chart" size={20} color="#82d8ff" />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={{ fontFamily: 'Manrope', fontSize: 18, fontWeight: '800', color: '#0b1c30', letterSpacing: -0.3 }}>
@@ -446,7 +446,7 @@ export default function PractitionerAnalyticsScreen() {
           <RefreshControl
             refreshing={isFetching && !isLoading}
             onRefresh={refetch}
-            tintColor="#006685"
+            tintColor="#82d8ff"
           />
         }
       >
@@ -533,7 +533,7 @@ export default function PractitionerAnalyticsScreen() {
                 value: r.revenue,
               }))}
               maxHeight={120}
-              barColor="#006685"
+              barColor="#82d8ff"
               direction="vertical"
             />
           )}
@@ -568,7 +568,7 @@ export default function PractitionerAnalyticsScreen() {
                     paddingHorizontal: 12,
                     paddingVertical: 7,
                     borderRadius: 999,
-                    backgroundColor: t.color === '#006685' ? '#e5eeff' : t.color === '#82d8ff' ? '#f0faff' : '#fffbe6',
+                    backgroundColor: t.color === '#82d8ff' ? '#e5eeff' : t.color === '#82d8ff' ? '#f0faff' : '#fffbe6',
                     borderWidth: 1,
                     borderColor: `${t.color}33`,
                   }}
@@ -610,10 +610,10 @@ export default function PractitionerAnalyticsScreen() {
                   alignItems: 'center',
                 }}
               >
-                <Text style={{ fontFamily: 'Manrope', fontSize: 28, fontWeight: '800', color: '#006685' }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 28, fontWeight: '800', color: '#82d8ff' }}>
                   {data?.newCount ?? 0}
                 </Text>
-                <Text style={{ fontFamily: 'Manrope', fontSize: 11, color: '#006685', marginTop: 2 }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 11, color: '#82d8ff', marginTop: 2 }}>
                   Nouveaux
                 </Text>
               </View>
@@ -656,7 +656,7 @@ export default function PractitionerAnalyticsScreen() {
                 label: d.day,
                 value: d.count,
               }))}
-              barColor="#006685"
+              barColor="#82d8ff"
               direction="horizontal"
             />
           )}
@@ -680,7 +680,7 @@ export default function PractitionerAnalyticsScreen() {
               {[
                 { label: 'No-show', value: data?.noShowRate ?? 0, color: '#ba1a1a' },
                 { label: 'Rebooking', value: data?.rebookingRate ?? 0, color: '#1d7a3a' },
-                { label: 'Occupation', value: Math.min(data?.occupancyRate ?? 0, 100), color: '#006685' },
+                { label: 'Occupation', value: Math.min(data?.occupancyRate ?? 0, 100), color: '#82d8ff' },
               ].map((m) => (
                 <View key={m.label}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>

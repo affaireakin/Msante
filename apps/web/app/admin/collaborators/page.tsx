@@ -240,7 +240,7 @@ export default function CollaboratorsPage() {
         {(tab === 'invitations' || tab === 'team') && (
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 bg-[#006685] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#006685]/20 transition flex-shrink-0"
+            className="flex items-center gap-2 bg-[#82d8ff] text-[#0b1c30] px-4 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#82d8ff]/20 transition flex-shrink-0"
           >
             <span className="material-symbols-outlined text-[18px]">person_add</span>
             Inviter un collaborateur
@@ -253,7 +253,7 @@ export default function CollaboratorsPage() {
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap px-2"
-            style={{ backgroundColor: tab === t.key ? '#006685' : 'transparent', color: tab === t.key ? '#fff' : '#6f787e' }}>
+            style={{ backgroundColor: tab === t.key ? '#82d8ff' : 'transparent', color: tab === t.key ? '#fff' : '#6f787e' }}>
             <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>{t.icon}</span>
             {t.label}
           </button>
@@ -268,7 +268,7 @@ export default function CollaboratorsPage() {
             <span className="text-xs text-[#6f787e]">{team.length} membre{team.length > 1 ? 's' : ''}</span>
           </div>
           {loadingTeam ? (
-            <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" /></div>
+            <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" /></div>
           ) : team.length === 0 ? (
             <div className="px-6 py-12 text-center space-y-3">
               <p className="text-[#6f787e] text-sm">Aucun membre trouvé.</p>
@@ -276,7 +276,7 @@ export default function CollaboratorsPage() {
               {currentUserId && (
                 <button
                   onClick={() => setEditingMember({ id: currentUserId, full_name: 'Moi (admin)', email: null, sub_role: 'admin', status: 'active', created_at: new Date().toISOString() })}
-                  className="mx-auto flex items-center gap-2 px-4 py-2 bg-[#006685] text-white text-sm font-semibold rounded-xl hover:shadow-md transition"
+                  className="mx-auto flex items-center gap-2 px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-semibold rounded-xl hover:shadow-md transition"
                 >
                   Modifier mon rôle
                 </button>
@@ -286,7 +286,7 @@ export default function CollaboratorsPage() {
             <div className="divide-y divide-slate-100">
               {team.map(member => (
                 <div key={member.id} className="flex items-center gap-3 px-6 py-4 hover:bg-slate-50/50 transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-sm font-bold flex-shrink-0">
                     {initials(member.full_name)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -304,7 +304,7 @@ export default function CollaboratorsPage() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => { setEditingMember(member); setEditRole(member.sub_role ?? 'admin') }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#006685] text-[#006685] text-xs font-semibold hover:bg-[#006685] hover:text-white transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#82d8ff] text-[#82d8ff] text-xs font-semibold hover:bg-[#82d8ff] hover:text-[#0b1c30] transition-colors"
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>edit</span>
                       Modifier rôle
@@ -339,7 +339,7 @@ export default function CollaboratorsPage() {
             <span className="text-xs text-[#6f787e]">{invitations.length} au total</span>
           </div>
           {loadingInv ? (
-            <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" /></div>
+            <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" /></div>
           ) : (
             <table className="w-full min-w-[600px]">
               <thead className="bg-slate-50/50">
@@ -382,7 +382,7 @@ export default function CollaboratorsPage() {
             <span className="text-xs text-[#6f787e]">{patients.length} au total</span>
           </div>
           {loadingPat ? (
-            <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" /></div>
+            <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" /></div>
           ) : (
             <table className="w-full min-w-[600px]">
               <thead className="bg-slate-50/50">
@@ -395,7 +395,7 @@ export default function CollaboratorsPage() {
                   <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-[#e5eeff] flex items-center justify-center text-xs font-bold text-[#006685]">{initials(p.full_name)}</div>
+                        <div className="w-8 h-8 rounded-full bg-[#e5eeff] flex items-center justify-center text-xs font-bold text-[#82d8ff]">{initials(p.full_name)}</div>
                         <span className="text-sm font-medium text-[#0b1c30]">{p.full_name}</span>
                       </div>
                     </td>
@@ -426,7 +426,7 @@ export default function CollaboratorsPage() {
             <span className="text-xs text-[#6f787e]">{practitioners.length} au total</span>
           </div>
           {loadingPract ? (
-            <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" /></div>
+            <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" /></div>
           ) : (
             <table className="w-full min-w-[600px]">
               <thead className="bg-slate-50/50">
@@ -443,7 +443,7 @@ export default function CollaboratorsPage() {
                     <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-[#006685] flex items-center justify-center text-xs font-bold text-white">{initials(name)}</div>
+                          <div className="w-8 h-8 rounded-full bg-[#82d8ff] flex items-center justify-center text-xs font-bold text-[#0b1c30]">{initials(name)}</div>
                           <span className="text-sm font-medium text-[#0b1c30]">{displayName}</span>
                         </div>
                       </td>
@@ -481,15 +481,15 @@ export default function CollaboratorsPage() {
               <div>
                 <label className="text-sm font-semibold text-[#0b1c30]">Email</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-[#bec8ce] px-4 py-3 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10"
+                  className="mt-1 w-full rounded-xl border border-[#bec8ce] px-4 py-3 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10"
                   placeholder="collaborateur@email.com" />
               </div>
               <div>
                 <label className="text-sm font-semibold text-[#0b1c30] mb-2 block">Rôle & permissions</label>
                 <div className="space-y-2">
                   {COLLAB_ROLES.map(r => (
-                    <label key={r.value} className={`flex items-start gap-3 cursor-pointer p-3 rounded-xl border transition-all ${role === r.value ? 'border-[#006685] bg-[#e5eeff]' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}>
-                      <input type="radio" name="role" value={r.value} checked={role === r.value} onChange={() => setRole(r.value)} className="accent-[#006685] mt-0.5 flex-shrink-0" />
+                    <label key={r.value} className={`flex items-start gap-3 cursor-pointer p-3 rounded-xl border transition-all ${role === r.value ? 'border-[#82d8ff] bg-[#e5eeff]' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}>
+                      <input type="radio" name="role" value={r.value} checked={role === r.value} onChange={() => setRole(r.value)} className="accent-[#82d8ff] mt-0.5 flex-shrink-0" />
                       <div>
                         <span className="text-sm font-semibold text-[#0b1c30] block">{r.label}</span>
                         <span className="text-xs text-[#6f787e] leading-relaxed">{r.description}</span>
@@ -506,7 +506,7 @@ export default function CollaboratorsPage() {
                 Annuler
               </button>
               <button onClick={() => invite.mutate({ email, role })} disabled={!email || invite.isPending}
-                className="flex-1 bg-[#006685] text-white rounded-xl py-2.5 text-sm font-semibold hover:shadow-lg hover:shadow-[#006685]/20 transition disabled:opacity-50">
+                className="flex-1 bg-[#82d8ff] text-[#0b1c30] rounded-xl py-2.5 text-sm font-semibold hover:shadow-lg hover:shadow-[#82d8ff]/20 transition disabled:opacity-50">
                 {invite.isPending ? 'Envoi...' : "Envoyer l'invitation"}
               </button>
             </div>
@@ -522,8 +522,8 @@ export default function CollaboratorsPage() {
             <p className="text-sm text-[#6f787e]">{editingMember.full_name || editingMember.email}</p>
             <div className="space-y-2">
               {COLLAB_ROLES.map(r => (
-                <label key={r.value} className={`flex items-start gap-3 cursor-pointer p-3 rounded-xl border transition-all ${editRole === r.value ? 'border-[#006685] bg-[#e5eeff]' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}>
-                  <input type="radio" name="edit-role" value={r.value} checked={editRole === r.value} onChange={() => setEditRole(r.value)} className="accent-[#006685] mt-0.5 flex-shrink-0" />
+                <label key={r.value} className={`flex items-start gap-3 cursor-pointer p-3 rounded-xl border transition-all ${editRole === r.value ? 'border-[#82d8ff] bg-[#e5eeff]' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}>
+                  <input type="radio" name="edit-role" value={r.value} checked={editRole === r.value} onChange={() => setEditRole(r.value)} className="accent-[#82d8ff] mt-0.5 flex-shrink-0" />
                   <div>
                     <span className="text-sm font-semibold text-[#0b1c30] block">{r.label}</span>
                     <span className="text-xs text-[#6f787e] leading-relaxed">{r.description}</span>
@@ -538,7 +538,7 @@ export default function CollaboratorsPage() {
               </button>
               <button onClick={() => changeRoleMutation.mutate({ id: editingMember.id, sub_role: editRole })}
                 disabled={changeRoleMutation.isPending}
-                className="flex-1 bg-[#006685] text-white rounded-xl py-2.5 text-sm font-semibold disabled:opacity-50 transition">
+                className="flex-1 bg-[#82d8ff] text-[#0b1c30] rounded-xl py-2.5 text-sm font-semibold disabled:opacity-50 transition">
                 {changeRoleMutation.isPending ? 'Enregistrement...' : 'Enregistrer'}
               </button>
             </div>

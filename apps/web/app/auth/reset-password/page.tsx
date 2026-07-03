@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
 
   if (checking) return (
     <div className="glass-card rounded-xl p-8 text-center space-y-4">
-      <div className="w-10 h-10 border-2 border-[#006685] border-t-transparent rounded-full animate-spin mx-auto" />
+      <div className="w-10 h-10 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin mx-auto" />
       <p className="text-slate-500 text-sm">Chargement…</p>
     </div>
   )
@@ -73,7 +73,7 @@ export default function ResetPasswordPage() {
       </p>
       <a
         href="/auth/forgot-password"
-        className="inline-block bg-[#006685] text-white rounded-lg px-6 py-3 font-semibold text-sm hover:bg-[#005470] transition"
+        className="inline-block bg-[#82d8ff] text-[#0b1c30] rounded-lg px-6 py-3 font-semibold text-sm hover:bg-[#005470] transition"
       >
         Réinitialiser à nouveau
       </a>
@@ -132,7 +132,7 @@ export default function ResetPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#006685] text-white rounded-lg py-3 font-semibold text-sm hover:bg-[#005470] transition disabled:opacity-50"
+          className="w-full bg-[#82d8ff] text-[#0b1c30] rounded-lg py-3 font-semibold text-sm hover:bg-[#005470] transition disabled:opacity-50"
         >
           {loading ? 'Enregistrement...' : 'Enregistrer'}
         </button>

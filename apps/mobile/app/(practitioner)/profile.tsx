@@ -60,13 +60,13 @@ function AssetTile({
         style={{
           width: '100%', aspectRatio: 1, borderRadius: 16,
           borderWidth: 1.5, borderStyle: url ? 'solid' : 'dashed',
-          borderColor: url ? '#006685' : '#bec8ce',
+          borderColor: url ? '#82d8ff' : '#bec8ce',
           backgroundColor: url ? '#f0f9ff' : 'rgba(255,255,255,0.6)',
           alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
         }}
       >
         {loading ? (
-          <ActivityIndicator color="#006685" />
+          <ActivityIndicator color="#82d8ff" />
         ) : url ? (
           <>
             <Image source={{ uri: url }} style={{ width: '100%', height: '100%' }} resizeMode={contain ? 'contain' : 'cover'} />
@@ -182,7 +182,7 @@ function EditProfileModal({ visible, onClose }: { visible: boolean; onClose: () 
             <View style={{ gap: 16 }}>
 
               {/* Section perso */}
-              <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#006685', textTransform: 'uppercase', letterSpacing: 1 }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#82d8ff', textTransform: 'uppercase', letterSpacing: 1 }}>
                 Informations personnelles
               </Text>
 
@@ -199,7 +199,7 @@ function EditProfileModal({ visible, onClose }: { visible: boolean; onClose: () 
                 )} />
 
               {/* Section pro */}
-              <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#006685', textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#82d8ff', textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 }}>
                 Informations professionnelles
               </Text>
 
@@ -236,13 +236,13 @@ function EditProfileModal({ visible, onClose }: { visible: boolean; onClose: () 
                     <TouchableOpacity key={d} onPress={() => setValue('session_duration_min', d)}
                       style={{
                         flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center',
-                        backgroundColor: selectedDuration === d ? '#006685' : '#e5eeff',
+                        backgroundColor: selectedDuration === d ? '#82d8ff' : '#e5eeff',
                         borderWidth: 1.5,
-                        borderColor: selectedDuration === d ? '#006685' : 'transparent',
+                        borderColor: selectedDuration === d ? '#82d8ff' : 'transparent',
                       }}>
                       <Text style={{
                         fontFamily: 'Manrope', fontSize: 13, fontWeight: '700',
-                        color: selectedDuration === d ? '#fff' : '#006685',
+                        color: selectedDuration === d ? '#fff' : '#82d8ff',
                       }}>{d}</Text>
                     </TouchableOpacity>
                   ))}
@@ -261,12 +261,12 @@ function EditProfileModal({ visible, onClose }: { visible: boolean; onClose: () 
                       <TouchableOpacity key={l.code} onPress={() => toggleLang(l.code)}
                         style={{
                           paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999,
-                          backgroundColor: active ? '#006685' : '#e5eeff',
-                          borderWidth: 1.5, borderColor: active ? '#006685' : 'transparent',
+                          backgroundColor: active ? '#82d8ff' : '#e5eeff',
+                          borderWidth: 1.5, borderColor: active ? '#82d8ff' : 'transparent',
                         }}>
                         <Text style={{
                           fontFamily: 'Manrope', fontSize: 13, fontWeight: '600',
-                          color: active ? '#fff' : '#006685',
+                          color: active ? '#fff' : '#82d8ff',
                         }}>{l.label}</Text>
                       </TouchableOpacity>
                     )
@@ -336,8 +336,8 @@ export default function ProfileScreen() {
               backgroundColor: '#e5eeff',
             }}
           >
-            <MaterialIcons name="edit" size={16} color="#006685" />
-            <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#006685' }}>
+            <MaterialIcons name="edit" size={16} color="#82d8ff" />
+            <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#82d8ff' }}>
               Éditer
             </Text>
           </TouchableOpacity>
@@ -353,7 +353,7 @@ export default function ProfileScreen() {
           >
             <View style={{
               width: 100, height: 100, borderRadius: 50,
-              backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center',
+              backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center',
               overflow: 'hidden', borderWidth: 3, borderColor: '#bee9ff',
             }}>
               {uploading === 'avatar' ? (
@@ -367,7 +367,7 @@ export default function ProfileScreen() {
             <View style={{
               position: 'absolute', bottom: 2, right: 2,
               width: 28, height: 28, borderRadius: 14,
-              backgroundColor: '#006685', borderWidth: 2, borderColor: '#fff',
+              backgroundColor: '#82d8ff', borderWidth: 2, borderColor: '#fff',
               alignItems: 'center', justifyContent: 'center',
             }}>
               <MaterialIcons name="photo-camera" size={13} color="#fff" />
@@ -405,7 +405,7 @@ export default function ProfileScreen() {
         <GlassCard>
           <View style={{ gap: 14 }}>
             <View style={{ gap: 2 }}>
-              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#006685', textTransform: 'uppercase', letterSpacing: 1.2 }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#82d8ff', textTransform: 'uppercase', letterSpacing: 1.2 }}>
                 Identité professionnelle
               </Text>
               <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e' }}>
@@ -453,7 +453,7 @@ export default function ProfileScreen() {
               const opt = LANG_OPTIONS.find(o => o.code === l)
               return (
                 <View key={l} style={{ paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: '#e5eeff' }}>
-                  <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '600', color: '#006685' }}>
+                  <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '600', color: '#82d8ff' }}>
                     {opt?.label ?? l}
                   </Text>
                 </View>
@@ -472,8 +472,8 @@ export default function ProfileScreen() {
               backgroundColor: '#e5eeff',
             }}
           >
-            <MaterialIcons name="medical-services" size={20} color="#006685" />
-            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#006685' }}>
+            <MaterialIcons name="medical-services" size={20} color="#82d8ff" />
+            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#82d8ff' }}>
               Mes prestations
             </Text>
           </TouchableOpacity>
@@ -486,8 +486,8 @@ export default function ProfileScreen() {
               backgroundColor: '#e5eeff',
             }}
           >
-            <MaterialIcons name="event-available" size={20} color="#006685" />
-            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#006685' }}>
+            <MaterialIcons name="event-available" size={20} color="#82d8ff" />
+            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#82d8ff' }}>
               Gérer mes disponibilités
             </Text>
           </TouchableOpacity>

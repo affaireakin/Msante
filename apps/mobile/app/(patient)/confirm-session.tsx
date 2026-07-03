@@ -77,8 +77,8 @@ export default function ConfirmSessionScreen() {
         {/* Header */}
         <View style={{ marginTop: scale(24), marginBottom: scale(20) }}>
           <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: scale(16), flexDirection: 'row', alignItems: 'center', gap: scale(4) }}>
-            <MaterialIcons name="arrow-back" size={scale(20)} color="#006685" />
-            <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: '600', fontSize: fs.sm }}>Retour</Text>
+            <MaterialIcons name="arrow-back" size={scale(20)} color="#82d8ff" />
+            <Text style={{ color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600', fontSize: fs.sm }}>Retour</Text>
           </TouchableOpacity>
           <Text style={{ fontSize: fs.xxl, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5 }}>
             Confirmer la session
@@ -90,16 +90,16 @@ export default function ConfirmSessionScreen() {
 
         {/* Session type toggle — Video / Audio / Présentiel */}
         <View style={{ marginBottom: scale(20) }}>
-          <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#006685', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(12) }}>
+          <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(12) }}>
             Type de session
           </Text>
           <View style={{ gap: scale(8) }}>
             {SESSION_OPTIONS.map(opt => {
               const active = sessionType === opt.value
-              const activeBorder = opt.danger ? '#ba1a1a' : '#006685'
+              const activeBorder = opt.danger ? '#ba1a1a' : '#82d8ff'
               const activeBg = opt.danger ? 'rgba(186,26,26,0.05)' : 'rgba(0,102,133,0.05)'
-              const iconBg = active ? (opt.danger ? '#ba1a1a' : '#006685') : (opt.danger ? '#fce4ec' : '#e5eeff')
-              const iconColor = active ? '#fff' : (opt.danger ? '#ba1a1a' : '#006685')
+              const iconBg = active ? (opt.danger ? '#ba1a1a' : '#82d8ff') : (opt.danger ? '#fce4ec' : '#e5eeff')
+              const iconColor = active ? '#fff' : (opt.danger ? '#ba1a1a' : '#82d8ff')
               return (
                 <TouchableOpacity
                   key={opt.value}
@@ -146,14 +146,14 @@ export default function ConfirmSessionScreen() {
           padding: scale(18),
           borderWidth: 1,
           borderColor: '#e5eeff',
-          shadowColor: '#006685',
+          shadowColor: '#82d8ff',
           shadowOffset: { width: 0, height: 3 },
           shadowOpacity: 0.05,
           shadowRadius: 12,
           elevation: 2,
           marginBottom: scale(20),
         }}>
-          <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#006685', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(4) }}>
+          <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(4) }}>
             Récapitulatif
           </Text>
 
@@ -168,7 +168,7 @@ export default function ConfirmSessionScreen() {
           <View style={{ borderTopWidth: 1.5, borderTopColor: '#e5eeff', marginTop: scale(8), paddingTop: scale(12), flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <Text style={{ fontSize: fs.lg, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>Total</Text>
             <View style={{ alignItems: 'flex-end' }}>
-              <Text style={{ fontSize: fs.xl, fontWeight: '900', color: '#006685', fontFamily: 'Manrope' }}>
+              <Text style={{ fontSize: fs.xl, fontWeight: '900', color: '#82d8ff', fontFamily: 'Manrope' }}>
                 {amount?.toLocaleString('fr-FR')} {currency}
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
@@ -194,7 +194,7 @@ export default function ConfirmSessionScreen() {
           onPress={() => setSheetVisible(true)}
           disabled={createAppointment.isPending}
           style={{
-            backgroundColor: '#006685',
+            backgroundColor: '#82d8ff',
             borderRadius: scale(14),
             paddingVertical: scale(16),
             alignItems: 'center',

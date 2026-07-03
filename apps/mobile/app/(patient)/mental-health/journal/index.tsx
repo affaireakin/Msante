@@ -15,7 +15,7 @@ export default function JournalList() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
       <View style={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View>
-          <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Wellness Space</Text>
+          <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Wellness Space</Text>
           <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Mon Journal</Text>
         </View>
         <TouchableOpacity onPress={() => router.back()}>
@@ -49,11 +49,11 @@ export default function JournalList() {
           right: 24,
           width: 56,
           height: 56,
-          backgroundColor: '#006685',
+          backgroundColor: '#82d8ff',
           borderRadius: 28,
           alignItems: 'center',
           justifyContent: 'center',
-          shadowColor: '#006685',
+          shadowColor: '#82d8ff',
           shadowOffset: { width: 0, height: 12 },
           shadowOpacity: 0.3,
           shadowRadius: 30,

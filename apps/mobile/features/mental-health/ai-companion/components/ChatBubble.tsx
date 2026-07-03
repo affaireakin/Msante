@@ -14,7 +14,7 @@ export function ChatBubble({ message }: Props) {
       <View className="self-end max-w-[85%]">
         <View
           className="bg-surface-container-low/80 rounded-2xl rounded-tr-none p-5 border border-white/50"
-          style={{ shadowColor: '#006685', shadowOpacity: 0.05, shadowRadius: 8, elevation: 1 }}
+          style={{ shadowColor: '#82d8ff', shadowOpacity: 0.05, shadowRadius: 8, elevation: 1 }}
         >
           <Text className="text-sm text-on-surface font-manrope">{message.content}</Text>
         </View>
@@ -27,7 +27,7 @@ export function ChatBubble({ message }: Props) {
     <View className="self-start max-w-[90%] mt-4">
       <View
         className="bg-surface-container/60 rounded-2xl rounded-tl-none p-5 border border-white/50 border-l-4 border-l-primary-container"
-        style={{ shadowColor: '#006685', shadowOpacity: 0.05, shadowRadius: 8, elevation: 1 }}
+        style={{ shadowColor: '#82d8ff', shadowOpacity: 0.05, shadowRadius: 8, elevation: 1 }}
       >
         <View className="flex-row items-center gap-2 mb-2">
           <Text className="text-xs font-semibold text-primary font-manrope uppercase tracking-wider">M-Santé Assistant</Text>

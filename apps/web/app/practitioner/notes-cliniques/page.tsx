@@ -18,7 +18,7 @@ function initials(name: string): string {
 }
 
 const NOTE_TYPES = [
-  { value: 'observation',       label: 'Observation',         color: '#006685', bg: '#e5eeff' },
+  { value: 'observation',       label: 'Observation',         color: '#82d8ff', bg: '#e5eeff' },
   { value: 'compte_rendu',      label: 'Compte-rendu',        color: '#1d7a3a', bg: '#dcfce7' },
   { value: 'note_suivi',        label: 'Note de suivi',       color: '#705d00', bg: '#fef9c3' },
   { value: 'bilan',             label: 'Bilan',               color: '#475569', bg: '#f1f5f9' },
@@ -103,7 +103,7 @@ export default function AllNotesPage() {
         </div>
         <Link href="/practitioner/patients"
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors">
-          <Icon name="person_search" size={16} color="#006685" />
+          <Icon name="person_search" size={16} color="#82d8ff" />
           Par patient
         </Link>
       </div>
@@ -111,10 +111,10 @@ export default function AllNotesPage() {
       <div className="flex flex-col sm:flex-row gap-3">
         <input type="text" value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Rechercher patient, titre, contenu, tag…"
-          className="flex-1 px-4 py-2.5 rounded-xl text-sm border border-slate-200 text-[#0b1c30] bg-white/80 focus:outline-none focus:border-[#006685]" />
+          className="flex-1 px-4 py-2.5 rounded-xl text-sm border border-slate-200 text-[#0b1c30] bg-white/80 focus:outline-none focus:border-[#82d8ff]" />
         <div className="flex gap-1.5 flex-wrap">
           <button onClick={() => setTypeFilter('all')} className="px-3 py-2 rounded-xl text-xs font-semibold transition-colors"
-            style={{ backgroundColor: typeFilter === 'all' ? '#006685' : 'rgba(255,255,255,0.70)', color: typeFilter === 'all' ? '#fff' : '#475569', border: '1px solid', borderColor: typeFilter === 'all' ? '#006685' : 'rgba(190,200,206,0.40)' }}>
+            style={{ backgroundColor: typeFilter === 'all' ? '#82d8ff' : 'rgba(255,255,255,0.70)', color: typeFilter === 'all' ? '#fff' : '#475569', border: '1px solid', borderColor: typeFilter === 'all' ? '#82d8ff' : 'rgba(190,200,206,0.40)' }}>
             Tous
           </button>
           {NOTE_TYPES.map(t => (
@@ -128,7 +128,7 @@ export default function AllNotesPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 text-center">
-          <p className="text-xl font-black text-[#006685]">{notes.length}</p>
+          <p className="text-xl font-black text-[#82d8ff]">{notes.length}</p>
           <p className="text-xs text-slate-500 mt-0.5">Total notes</p>
         </div>
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 text-center">
@@ -159,7 +159,7 @@ export default function AllNotesPage() {
               <Link key={note.id} href={`/practitioner/patients/${note.patient_id}/notes`}
                 className="block bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[#e5eeff] flex items-center justify-center text-[#006685] text-xs font-bold flex-shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-[#e5eeff] flex items-center justify-center text-[#82d8ff] text-xs font-bold flex-shrink-0">
                     {initials(note.patient_name)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -169,8 +169,8 @@ export default function AllNotesPage() {
                         {meta.label}
                       </span>
                       {note.is_shared_with_patient && (
-                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-[#e5eeff] text-[#006685] flex items-center gap-0.5">
-                          <Icon name="share" size={10} color="#006685" />Partagé
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-[#e5eeff] text-[#82d8ff] flex items-center gap-0.5">
+                          <Icon name="share" size={10} color="#82d8ff" />Partagé
                         </span>
                       )}
                     </div>

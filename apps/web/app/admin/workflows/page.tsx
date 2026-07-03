@@ -28,7 +28,7 @@ const TEMPLATES: Template[] = [
     name: 'RDV Confirmé',
     description: 'Envoyé dès qu\'un rendez-vous est confirmé par le praticien.',
     icon: 'event_available',
-    color: '#006685',
+    color: '#82d8ff',
     bgColor: '#e5eeff',
     recipients: 'Patient + Praticien',
     triggerLabel: 'Événement DB',
@@ -169,7 +169,7 @@ function useToggleWorkflow() {
 function ChannelBadge({ channel, active }: { channel: 'whatsapp' | 'email'; active: boolean }) {
   const cfg = {
     whatsapp: { icon: 'chat', label: 'WhatsApp', color: '#1d7a3a', bg: '#dcfce7' },
-    email:    { icon: 'email', label: 'Email',    color: '#006685', bg: '#e5eeff' },
+    email:    { icon: 'email', label: 'Email',    color: '#82d8ff', bg: '#e5eeff' },
   }[channel]
   return (
     <span
@@ -199,7 +199,7 @@ function Toggle({ checked, onChange, disabled }: { checked: boolean; onChange: (
     >
       <span
         className="absolute inset-0 rounded-full transition-colors duration-200"
-        style={{ backgroundColor: checked ? '#006685' : '#cbd5e1' }}
+        style={{ backgroundColor: checked ? '#82d8ff' : '#cbd5e1' }}
       />
       <span
         className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200"
@@ -287,7 +287,7 @@ function TemplateCard({
         <button
           type="button"
           onClick={() => setShowMsg(v => !v)}
-          className="flex items-center gap-1 text-[10px] font-semibold text-[#006685] hover:underline"
+          className="flex items-center gap-1 text-[10px] font-semibold text-[#82d8ff] hover:underline"
         >
           <Icon name={showMsg ? 'expand_less' : 'expand_more'} style={{ fontSize: '14px' }} />
           Aperçu du message
@@ -428,7 +428,7 @@ export default function WorkflowsPage() {
         }}
       >
         <div className="flex items-center gap-2 mb-4">
-          <Icon name="info" style={{ fontSize: '18px', color: '#006685' }} />
+          <Icon name="info" style={{ fontSize: '18px', color: '#82d8ff' }} />
           <p className="text-sm font-bold text-[#0b1c30]">Comment ça fonctionne</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -440,7 +440,7 @@ export default function WorkflowsPage() {
             <div key={item.step} className="flex gap-3">
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black flex-shrink-0"
-                style={{ backgroundColor: '#e5eeff', color: '#006685' }}
+                style={{ backgroundColor: '#e5eeff', color: '#82d8ff' }}
               >
                 {item.step}
               </div>

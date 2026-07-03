@@ -28,7 +28,7 @@ export default function Image() {
               width: 88,
               height: 88,
               borderRadius: 22,
-              background: '#006685',
+              background: '#82d8ff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -41,7 +41,7 @@ export default function Image() {
             <span style={{ fontSize: 68, fontWeight: 900, color: '#0b1c30', letterSpacing: '-3px', lineHeight: 1 }}>
               M-Santé
             </span>
-            <span style={{ fontSize: 16, color: '#006685', fontWeight: 700, letterSpacing: '8px', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 16, color: '#82d8ff', fontWeight: 700, letterSpacing: '8px', textTransform: 'uppercase' }}>
               Health Sanctuary
             </span>
           </div>
@@ -80,7 +80,7 @@ export default function Image() {
           }}
         >
           <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#4ade80' }} />
-          <span style={{ fontSize: 18, fontWeight: 700, color: '#006685' }}>
+          <span style={{ fontSize: 18, fontWeight: 700, color: '#82d8ff' }}>
             Sénégal · Afrique francophone · Europe
           </span>
         </div>

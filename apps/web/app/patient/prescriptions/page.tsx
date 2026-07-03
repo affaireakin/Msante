@@ -23,7 +23,7 @@ interface Rx {
 }
 
 function statusInfo(s: string) {
-  if (s === 'signed')    return { label: 'Signée',    bg: '#e5eeff', color: '#006685' }
+  if (s === 'signed')    return { label: 'Signée',    bg: '#e5eeff', color: '#82d8ff' }
   if (s === 'dispensed') return { label: 'Délivrée',  bg: '#dcfce7', color: '#1d7a3a' }
   if (s === 'cancelled') return { label: 'Annulée',   bg: '#ffdad6', color: '#ba1a1a' }
   return { label: 'Brouillon', bg: '#f1f5f9', color: '#475569' }
@@ -91,7 +91,7 @@ export default function PatientPrescriptionsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <span className="text-xs font-bold px-2 py-0.5 rounded-full"
-                        style={{ background: isReco ? '#fef9c3' : '#e5eeff', color: isReco ? '#854d0e' : '#006685' }}>
+                        style={{ background: isReco ? '#fef9c3' : '#e5eeff', color: isReco ? '#854d0e' : '#82d8ff' }}>
                         {isReco ? 'Recommandation' : 'Ordonnance'}
                       </span>
                       <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: bg, color }}>{label}</span>
@@ -103,8 +103,8 @@ export default function PatientPrescriptionsPage() {
                     {rx.diagnosis && <p className="text-xs text-slate-500 mt-0.5 truncate">{rx.diagnosis}</p>}
                     {!isReco && <p className="text-xs text-slate-400 mt-0.5">{rx.medications_count} médicament{rx.medications_count > 1 ? 's' : ''}</p>}
                   </div>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#006685] bg-[#e5eeff] flex-shrink-0">
-                    <Icon name="visibility" size={14} color="#006685" />
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#82d8ff] bg-[#e5eeff] flex-shrink-0">
+                    <Icon name="visibility" size={14} color="#82d8ff" />
                     Voir
                   </div>
                 </div>

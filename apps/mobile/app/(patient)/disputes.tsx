@@ -22,7 +22,7 @@ const REASONS = [
 
 const STATUS_META: Record<string, { label: string; bg: string; text: string; icon: React.ComponentProps<typeof MaterialIcons>['name'] }> = {
   open:         { label: 'Ouvert',    bg: '#fff8e1', text: '#705d00', icon: 'pending' },
-  under_review: { label: 'En revue', bg: '#e5eeff', text: '#006685', icon: 'manage-search' },
+  under_review: { label: 'En revue', bg: '#e5eeff', text: '#82d8ff', icon: 'manage-search' },
   resolved:     { label: 'Résolu',   bg: '#e8f5e9', text: '#1d7a3a', icon: 'check-circle' },
   closed:       { label: 'Clôturé',  bg: '#f5f5f5', text: '#6f787e', icon: 'lock' },
 }
@@ -136,7 +136,7 @@ export default function DisputesScreen() {
   }
 
   const ROLE_COLOR: Record<string, string> = {
-    patient: '#006685',
+    patient: '#82d8ff',
     admin: '#705d00',
     practitioner: '#5c5f61',
     system: '#bec8ce',
@@ -156,7 +156,7 @@ export default function DisputesScreen() {
         </View>
         <TouchableOpacity
           onPress={() => setShowNew(true)}
-          style={{ backgroundColor: '#006685', borderRadius: scale(14), paddingHorizontal: scale(14), paddingVertical: scale(10), flexDirection: 'row', alignItems: 'center', gap: scale(6) }}
+          style={{ backgroundColor: '#82d8ff', borderRadius: scale(14), paddingHorizontal: scale(14), paddingVertical: scale(10), flexDirection: 'row', alignItems: 'center', gap: scale(6) }}
         >
           <MaterialIcons name="add" size={scale(18)} color="#fff" />
           <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.sm, fontFamily: 'Manrope' }}>Ouvrir</Text>
@@ -165,18 +165,18 @@ export default function DisputesScreen() {
 
       {isLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator color="#006685" size="large" />
+          <ActivityIndicator color="#82d8ff" size="large" />
         </View>
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: px, paddingBottom: 100, gap: scale(12) }}
-          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#006685" />}
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#82d8ff" />}
         >
           {disputes.length === 0 && (
             <View style={{ alignItems: 'center', paddingTop: scale(60), gap: scale(12) }}>
               <View style={{ width: scale(72), height: scale(72), borderRadius: scale(36), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name="gavel" size={scale(34)} color="#006685" />
+                <MaterialIcons name="gavel" size={scale(34)} color="#82d8ff" />
               </View>
               <Text style={{ fontSize: fs.xl, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>Aucun litige</Text>
               <Text style={{ fontSize: fs.sm, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center' }}>
@@ -191,11 +191,11 @@ export default function DisputesScreen() {
               <TouchableOpacity
                 key={d.id}
                 onPress={() => setSelected(d)}
-                style={{ backgroundColor: 'rgba(255,255,255,0.90)', borderRadius: scale(16), borderWidth: 1, borderColor: '#e5eeff', overflow: 'hidden', shadowColor: '#006685', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 }}
+                style={{ backgroundColor: 'rgba(255,255,255,0.90)', borderRadius: scale(16), borderWidth: 1, borderColor: '#e5eeff', overflow: 'hidden', shadowColor: '#82d8ff', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 }}
               >
                 <View style={{ padding: scale(16), gap: scale(10) }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#006685', fontFamily: 'Manrope', letterSpacing: 0.5 }}>
+                    <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#82d8ff', fontFamily: 'Manrope', letterSpacing: 0.5 }}>
                       {d.case_number}
                     </Text>
                     <View style={{ flexDirection: 'row', gap: scale(6) }}>
@@ -286,7 +286,7 @@ export default function DisputesScreen() {
                 <TouchableOpacity
                   onPress={() => commentMutation.mutate()}
                   disabled={!comment.trim() || commentMutation.isPending}
-                  style={{ backgroundColor: comment.trim() ? '#006685' : '#bec8ce', borderRadius: scale(12), paddingVertical: scale(13), alignItems: 'center' }}
+                  style={{ backgroundColor: comment.trim() ? '#82d8ff' : '#bec8ce', borderRadius: scale(12), paddingVertical: scale(13), alignItems: 'center' }}
                 >
                   <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
                     {commentMutation.isPending ? 'Envoi…' : 'Envoyer'}
@@ -321,10 +321,10 @@ export default function DisputesScreen() {
                 <TouchableOpacity
                   key={r}
                   onPress={() => setReason(r)}
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: scale(12), padding: scale(14), backgroundColor: reason === r ? '#e5eeff' : 'rgba(255,255,255,0.9)', borderRadius: scale(12), borderWidth: 1, borderColor: reason === r ? '#006685' : '#e5eeff' }}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: scale(12), padding: scale(14), backgroundColor: reason === r ? '#e5eeff' : 'rgba(255,255,255,0.9)', borderRadius: scale(12), borderWidth: 1, borderColor: reason === r ? '#82d8ff' : '#e5eeff' }}
                 >
-                  <View style={{ width: scale(18), height: scale(18), borderRadius: scale(9), borderWidth: 2, borderColor: reason === r ? '#006685' : '#bec8ce', alignItems: 'center', justifyContent: 'center' }}>
-                    {reason === r && <View style={{ width: scale(9), height: scale(9), borderRadius: scale(5), backgroundColor: '#006685' }} />}
+                  <View style={{ width: scale(18), height: scale(18), borderRadius: scale(9), borderWidth: 2, borderColor: reason === r ? '#82d8ff' : '#bec8ce', alignItems: 'center', justifyContent: 'center' }}>
+                    {reason === r && <View style={{ width: scale(9), height: scale(9), borderRadius: scale(5), backgroundColor: '#82d8ff' }} />}
                   </View>
                   <Text style={{ flex: 1, fontSize: fs.sm, fontFamily: 'Manrope', color: '#0b1c30', fontWeight: reason === r ? '600' : '400' }}>{r}</Text>
                 </TouchableOpacity>
@@ -352,7 +352,7 @@ export default function DisputesScreen() {
             <TouchableOpacity
               onPress={() => createMutation.mutate()}
               disabled={createMutation.isPending}
-              style={{ backgroundColor: '#006685', borderRadius: scale(14), paddingVertical: scale(15), alignItems: 'center' }}
+              style={{ backgroundColor: '#82d8ff', borderRadius: scale(14), paddingVertical: scale(15), alignItems: 'center' }}
             >
               <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
                 {createMutation.isPending ? 'Envoi…' : 'Soumettre le litige'}

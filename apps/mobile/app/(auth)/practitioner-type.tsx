@@ -59,8 +59,8 @@ export default function PractitionerTypeScreen() {
             onPress={() => router.back()}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 20, alignSelf: 'flex-start' }}
           >
-            <MaterialIcons name="arrow-back" size={20} color="#006685" />
-            <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>Retour</Text>
+            <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
+            <Text style={{ fontSize: 14, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }}>Retour</Text>
           </TouchableOpacity>
 
           <Text style={{ fontSize: 26, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5, marginBottom: 6 }}>
@@ -83,17 +83,17 @@ export default function PractitionerTypeScreen() {
             activeOpacity={0.85}
             style={{
               borderRadius: 16, borderWidth: 2,
-              borderColor: selectedType === 'healthcare' ? '#006685' : '#e5eeff',
+              borderColor: selectedType === 'healthcare' ? '#82d8ff' : '#e5eeff',
               backgroundColor: selectedType === 'healthcare' ? '#e5eeff' : '#fff',
               padding: 16, flexDirection: 'row', alignItems: 'center', gap: 14,
             }}
           >
             <View style={{
               width: 48, height: 48, borderRadius: 14,
-              backgroundColor: selectedType === 'healthcare' ? '#006685' : '#f0f7ff',
+              backgroundColor: selectedType === 'healthcare' ? '#82d8ff' : '#f0f7ff',
               alignItems: 'center', justifyContent: 'center',
             }}>
-              <MaterialIcons name="local-hospital" size={24} color={selectedType === 'healthcare' ? '#fff' : '#006685'} />
+              <MaterialIcons name="local-hospital" size={24} color={selectedType === 'healthcare' ? '#fff' : '#82d8ff'} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: 2 }}>
@@ -104,7 +104,7 @@ export default function PractitionerTypeScreen() {
               </Text>
             </View>
             {selectedType === 'healthcare' && (
-              <MaterialIcons name="check-circle" size={22} color="#006685" />
+              <MaterialIcons name="check-circle" size={22} color="#82d8ff" />
             )}
           </TouchableOpacity>
 
@@ -149,7 +149,7 @@ export default function PractitionerTypeScreen() {
             <View style={{ gap: 8, marginBottom: 32 }}>
               {specialties.map(spec => {
                 const isSelected = selectedSpecialty === spec
-                const accent = selectedType === 'healthcare' ? '#006685' : '#705d00'
+                const accent = selectedType === 'healthcare' ? '#82d8ff' : '#705d00'
                 const bgSelected = selectedType === 'healthcare' ? '#e5eeff' : '#fff8e1'
                 return (
                   <TouchableOpacity

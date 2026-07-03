@@ -126,11 +126,11 @@ export default function AdminMessagesPage() {
             </div>
           ) : filtered.map(t => (
             <button key={t.id} onClick={() => setSelected(t)}
-              className={`w-full text-left rounded-xl p-3.5 space-y-1.5 transition-all border-2 ${selected?.id === t.id ? 'border-[#006685] bg-sky-50' : 'border-transparent bg-white/60 hover:border-slate-200'}`}
+              className={`w-full text-left rounded-xl p-3.5 space-y-1.5 transition-all border-2 ${selected?.id === t.id ? 'border-[#82d8ff] bg-sky-50' : 'border-transparent bg-white/60 hover:border-slate-200'}`}
               style={{ backdropFilter: 'blur(8px)' }}>
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs font-semibold text-[#006685] truncate">
+                  <span className="text-xs font-semibold text-[#82d8ff] truncate">
                     {t.patient?.full_name ?? '—'}
                   </span>
                   <span className="text-slate-300">↔</span>
@@ -168,7 +168,7 @@ export default function AdminMessagesPage() {
               <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-[#006685]">{selected.patient?.full_name ?? '—'}</span>
+                    <span className="text-sm font-bold text-[#82d8ff]">{selected.patient?.full_name ?? '—'}</span>
                     <span className="text-slate-400 text-xs">↔</span>
                     <span className="text-sm font-bold text-purple-600">{selected.practitioner?.full_name ?? '—'}</span>
                   </div>

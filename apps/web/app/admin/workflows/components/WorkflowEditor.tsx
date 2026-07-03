@@ -58,16 +58,16 @@ function ActionNode({ data, selected }: NodeProps) {
   const d = data as unknown as NodeData
   return (
     <div
-      className={`px-4 py-3 rounded-xl border-2 min-w-[140px] text-center transition-all ${selected ? 'border-[#006685] shadow-lg' : 'border-slate-200'}`}
+      className={`px-4 py-3 rounded-xl border-2 min-w-[140px] text-center transition-all ${selected ? 'border-[#82d8ff] shadow-lg' : 'border-slate-200'}`}
       style={{ backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)' }}
     >
-      <p className="text-xs font-bold text-[#006685] uppercase tracking-widest mb-1">Action</p>
+      <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest mb-1">Action</p>
       <p className="text-sm font-semibold text-[#0b1c30]">{d.label}</p>
       {d.config?.template && (
-        <p className="text-xs text-[#006685] mt-0.5 font-medium">{d.config.template}</p>
+        <p className="text-xs text-[#82d8ff] mt-0.5 font-medium">{d.config.template}</p>
       )}
       {d.config?.hours && (
-        <p className="text-xs text-[#006685] mt-0.5 font-medium">{d.config.hours}h</p>
+        <p className="text-xs text-[#82d8ff] mt-0.5 font-medium">{d.config.hours}h</p>
       )}
       {!d.config?.template && !d.config?.hours && (
         <p className="text-xs text-[#6f787e] mt-0.5">{d.nodeType}</p>
@@ -144,7 +144,7 @@ function PaletteItem({ item }: { item: (typeof PALETTE_SECTIONS)[0]['items'][0] 
       className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border cursor-grab active:cursor-grabbing hover:shadow-sm transition-shadow select-none"
       style={{ backgroundColor: bg, borderColor: border, fontSize: 12, fontWeight: 600, color: '#0b1c30' }}
     >
-      <span className="material-symbols-outlined" style={{ fontSize: 13, color: item.color ?? '#006685' }}>{item.icon}</span>
+      <span className="material-symbols-outlined" style={{ fontSize: 13, color: item.color ?? '#82d8ff' }}>{item.icon}</span>
       {item.label}
     </div>
   )
@@ -179,7 +179,7 @@ const CONDITION_OPERATORS = [
   { value: 'gte', label: '≥ sup. ou égal' },
 ]
 
-const inputCls = "w-full px-3 py-2 rounded-lg border border-slate-200/60 bg-white/60 text-xs text-[#0b1c30] outline-none focus:border-[#006685] transition-colors"
+const inputCls = "w-full px-3 py-2 rounded-lg border border-slate-200/60 bg-white/60 text-xs text-[#0b1c30] outline-none focus:border-[#82d8ff] transition-colors"
 const selectCls = inputCls
 
 interface NodeConfigPanelProps {
@@ -205,7 +205,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
       style={{ backgroundColor: 'rgba(248,249,255,0.98)', borderColor: 'rgba(190,200,206,0.35)' }}
     >
       <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b" style={{ borderColor: 'rgba(190,200,206,0.35)' }}>
-        <p className="text-[9px] font-bold text-[#006685] uppercase tracking-widest">Config nœud</p>
+        <p className="text-[9px] font-bold text-[#82d8ff] uppercase tracking-widest">Config nœud</p>
         <button onClick={onClose} className="text-[#6f787e] hover:text-[#0b1c30] transition-colors text-xs leading-none">✕</button>
       </div>
 
@@ -219,7 +219,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
         {data.nodeType === 'send_push' && (
           <div className="space-y-3">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Template</label>
+              <label className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-widest">Template</label>
               <select
                 value={config.template ?? ''}
                 onChange={e => set({ template: e.target.value })}
@@ -232,7 +232,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Message personnalisé</label>
+              <label className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-widest">Message personnalisé</label>
               <textarea
                 value={config.message ?? ''}
                 onChange={e => set({ message: e.target.value })}
@@ -248,7 +248,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
         {data.nodeType === 'send_email' && (
           <div className="space-y-3">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Template</label>
+              <label className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-widest">Template</label>
               <select
                 value={config.template ?? ''}
                 onChange={e => set({ template: e.target.value })}
@@ -261,7 +261,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Sujet</label>
+              <label className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-widest">Sujet</label>
               <input
                 type="text"
                 value={config.subject ?? ''}
@@ -276,7 +276,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
         {/* delay config */}
         {data.nodeType === 'delay' && (
           <div className="space-y-1">
-            <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Délai (heures)</label>
+            <label className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-widest">Délai (heures)</label>
             <input
               type="number"
               min={1}
@@ -293,7 +293,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
         {data.nodeType === 'condition' && (
           <div className="space-y-3">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Champ</label>
+              <label className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-widest">Champ</label>
               <input
                 type="text"
                 value={config.field ?? ''}
@@ -303,7 +303,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Opérateur</label>
+              <label className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-widest">Opérateur</label>
               <select
                 value={config.operator ?? 'eq'}
                 onChange={e => set({ operator: e.target.value })}
@@ -315,7 +315,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Valeur</label>
+              <label className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-widest">Valeur</label>
               <input
                 type="text"
                 value={config.value ?? ''}
@@ -331,7 +331,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
         {data.nodeType === 'send_whatsapp' && (
           <div className="space-y-3">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Template</label>
+              <label className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-widest">Template</label>
               <select
                 value={config.template ?? ''}
                 onChange={e => set({ template: e.target.value })}
@@ -344,7 +344,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Message personnalisé</label>
+              <label className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-widest">Message personnalisé</label>
               <textarea
                 value={config.message ?? ''}
                 onChange={e => set({ message: e.target.value })}
@@ -382,7 +382,7 @@ function NodeConfigPanel({ node, onUpdate, onClose }: NodeConfigPanelProps) {
         <button
           onClick={handleSave}
           className="w-full py-2 text-xs font-bold text-white rounded-full transition-colors"
-          style={{ backgroundColor: '#006685' }}
+          style={{ backgroundColor: '#82d8ff' }}
         >
           Appliquer
         </button>
@@ -471,7 +471,7 @@ function EditorInner({ initialNodes, initialEdges, onSave, isSaving }: EditorInn
         >
           {PALETTE_SECTIONS.map(({ category, items }) => (
             <div key={category}>
-              <p className="text-[9px] font-bold text-[#006685] uppercase tracking-widest mb-1.5">{category}</p>
+              <p className="text-[9px] font-bold text-[#82d8ff] uppercase tracking-widest mb-1.5">{category}</p>
               <div className="space-y-1.5">
                 {items.map((item) => (
                   <PaletteItem key={item.nodeType} item={item} />
@@ -529,7 +529,7 @@ function EditorInner({ initialNodes, initialEdges, onSave, isSaving }: EditorInn
           onClick={handleSave}
           disabled={isSaving}
           className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white rounded-full transition-colors disabled:opacity-50"
-          style={{ backgroundColor: '#006685', boxShadow: isSaving ? 'none' : '0 4px 14px rgba(0,102,133,0.30)' }}
+          style={{ backgroundColor: '#82d8ff', boxShadow: isSaving ? 'none' : '0 4px 14px rgba(0,102,133,0.30)' }}
         >
           <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
             {isSaving ? 'progress_activity' : 'save'}

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { use, useState } from 'react'
 import Link from 'next/link'
 import { useWorkflow, useWorkflowRuns, useUpdateWorkflow, useRunWorkflow } from '../useWorkflows'
@@ -59,7 +59,7 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
     return (
       <div className="text-center py-20">
         <p className="text-[#6f787e]">Workflow introuvable.</p>
-        <Link href="/admin/workflows" className="text-[#006685] text-sm mt-2 inline-block">← Retour</Link>
+        <Link href="/admin/workflows" className="text-[#82d8ff] text-sm mt-2 inline-block">← Retour</Link>
       </div>
     )
   }
@@ -84,7 +84,7 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
               onClick={handleRunNow}
               disabled={runWorkflow.isPending}
               className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white transition-all disabled:opacity-50"
-              style={{ backgroundColor: '#006685', boxShadow: runWorkflow.isPending ? 'none' : '0 4px 12px rgba(0,102,133,0.25)' }}
+              style={{ backgroundColor: '#82d8ff', boxShadow: runWorkflow.isPending ? 'none' : '0 4px 12px rgba(0,102,133,0.25)' }}
             >
               <Icon name={runWorkflow.isPending ? 'progress_activity' : 'play_arrow'} style={{ color: '#fff', fontSize: '18px' }} />
               {runWorkflow.isPending ? 'En cours…' : 'Déclencher'}
@@ -107,13 +107,13 @@ export default function WorkflowDetailPage({ params }: { params: Promise<{ id: s
       {/* Canvas section */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-bold text-[#006685] uppercase tracking-widest">Flux d&apos;exécution</p>
+          <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Flux d&apos;exécution</p>
           <button
             onClick={() => setIsEditing((v) => !v)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors"
             style={isEditing
               ? { borderColor: '#cbd5e1', color: '#6f787e', backgroundColor: 'rgba(255,255,255,0.6)' }
-              : { borderColor: '#006685', color: '#006685', backgroundColor: 'rgba(0,102,133,0.04)' }
+              : { borderColor: '#82d8ff', color: '#82d8ff', backgroundColor: 'rgba(0,102,133,0.04)' }
             }
           >
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>

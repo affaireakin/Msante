@@ -67,7 +67,7 @@ function MedicationCard({ index, med, canRemove, onChange, onRemove, r }: Medica
         borderColor: 'rgba(255,255,255,0.80)',
         padding: r.cardPadding,
         marginBottom: 12,
-        shadowColor: '#006685',
+        shadowColor: '#82d8ff',
         shadowOpacity: 0.05,
         shadowOffset: { width: 0, height: 4 },
         shadowRadius: 12,
@@ -97,7 +97,7 @@ function MedicationCard({ index, med, canRemove, onChange, onRemove, r }: Medica
             <Text
               style={{
                 fontSize: r.fs.sm,
-                color: '#006685',
+                color: '#82d8ff',
                 fontFamily: 'Manrope',
                 fontWeight: '700',
               }}
@@ -172,7 +172,7 @@ function MedicationCard({ index, med, canRemove, onChange, onRemove, r }: Medica
                 gap: 8,
               }}
             >
-              <MaterialIcons name="medication" size={16} color="#006685" />
+              <MaterialIcons name="medication" size={16} color="#82d8ff" />
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
@@ -205,7 +205,7 @@ function MedicationCard({ index, med, canRemove, onChange, onRemove, r }: Medica
                 <Text
                   style={{
                     fontSize: 9,
-                    color: '#006685',
+                    color: '#82d8ff',
                     fontFamily: 'Manrope',
                     fontWeight: '700',
                   }}
@@ -428,7 +428,7 @@ export default function NewPrescriptionScreen() {
             marginRight: 12,
           }}
         >
-          <MaterialIcons name="arrow-back" size={20} color="#006685" />
+          <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
         </TouchableOpacity>
 
         <View style={{ flex: 1 }}>
@@ -448,7 +448,7 @@ export default function NewPrescriptionScreen() {
             <Text
               style={{
                 fontSize: r.fs.sm,
-                color: '#006685',
+                color: '#82d8ff',
                 fontFamily: 'Manrope',
                 fontWeight: '500',
                 marginTop: 1,
@@ -471,11 +471,11 @@ export default function NewPrescriptionScreen() {
             borderRadius: 20,
           }}
         >
-          <MaterialIcons name="medical-services" size={14} color="#006685" />
+          <MaterialIcons name="medical-services" size={14} color="#82d8ff" />
           <Text
             style={{
               fontSize: r.fs.xs,
-              color: '#006685',
+              color: '#82d8ff',
               fontFamily: 'Manrope',
               fontWeight: '700',
               letterSpacing: 0.5,
@@ -550,7 +550,7 @@ export default function NewPrescriptionScreen() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 4,
-                backgroundColor: '#006685',
+                backgroundColor: '#82d8ff',
                 paddingHorizontal: 12,
                 paddingVertical: 7,
                 borderRadius: 20,
@@ -633,7 +633,7 @@ export default function NewPrescriptionScreen() {
               height: 50,
               borderRadius: 12,
               borderWidth: 1.5,
-              borderColor: '#006685',
+              borderColor: '#82d8ff',
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: 'transparent',
@@ -643,7 +643,7 @@ export default function NewPrescriptionScreen() {
             <Text
               style={{
                 fontSize: r.fs.md,
-                color: '#006685',
+                color: '#82d8ff',
                 fontFamily: 'Manrope',
                 fontWeight: '700',
               }}
@@ -660,10 +660,10 @@ export default function NewPrescriptionScreen() {
               flex: 1,
               height: 50,
               borderRadius: 12,
-              backgroundColor: '#006685',
+              backgroundColor: '#82d8ff',
               alignItems: 'center',
               justifyContent: 'center',
-              shadowColor: '#006685',
+              shadowColor: '#82d8ff',
               shadowOpacity: 0.3,
               shadowOffset: { width: 0, height: 4 },
               shadowRadius: 12,

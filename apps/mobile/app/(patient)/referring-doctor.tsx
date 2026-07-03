@@ -79,8 +79,8 @@ export default function ReferringDoctorScreen() {
             onPress={() => router.back()}
             style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 4 }}
           >
-            <MaterialIcons name="arrow-back" size={20} color="#006685" />
-            <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: '500' }}>Retour</Text>
+            <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
+            <Text style={{ color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '500' }}>Retour</Text>
           </TouchableOpacity>
           <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>
             Mon médecin traitant
@@ -94,7 +94,7 @@ export default function ReferringDoctorScreen() {
           {/* Current doctor state */}
           {loadingCurrent ? (
             <View style={{ height: 100, alignItems: 'center', justifyContent: 'center' }}>
-              <ActivityIndicator color="#006685" />
+              <ActivityIndicator color="#82d8ff" />
             </View>
           ) : current?.referring_doctor_id && current.practitioner ? (
             <GlassCard style={{ gap: 12 }}>
@@ -104,7 +104,7 @@ export default function ReferringDoctorScreen() {
                     width: 52,
                     height: 52,
                     borderRadius: 26,
-                    backgroundColor: '#006685',
+                    backgroundColor: '#82d8ff',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
@@ -175,12 +175,12 @@ export default function ReferringDoctorScreen() {
                     paddingVertical: 10,
                     borderRadius: 999,
                     borderWidth: 1,
-                    borderColor: '#006685',
+                    borderColor: '#82d8ff',
                     alignItems: 'center',
                     backgroundColor: 'rgba(0,102,133,0.06)',
                   }}
                 >
-                  <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#006685' }}>
+                  <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#82d8ff' }}>
                     Changer
                   </Text>
                 </TouchableOpacity>
@@ -214,7 +214,7 @@ export default function ReferringDoctorScreen() {
                   justifyContent: 'center',
                 }}
               >
-                <MaterialIcons name="person-search" size={30} color="#006685" />
+                <MaterialIcons name="person-search" size={30} color="#82d8ff" />
               </View>
               <View style={{ alignItems: 'center', gap: 4 }}>
                 <Text style={{ fontFamily: 'Manrope', fontSize: 16, fontWeight: '700', color: '#0b1c30' }}>
@@ -230,7 +230,7 @@ export default function ReferringDoctorScreen() {
                   paddingHorizontal: 24,
                   paddingVertical: 12,
                   borderRadius: 999,
-                  backgroundColor: '#006685',
+                  backgroundColor: '#82d8ff',
                   marginTop: 4,
                 }}
               >
@@ -254,7 +254,7 @@ export default function ReferringDoctorScreen() {
               </View>
 
               {generalPractitioners.isLoading ? (
-                <ActivityIndicator color="#006685" />
+                <ActivityIndicator color="#82d8ff" />
               ) : (generalPractitioners.data ?? []).length === 0 ? (
                 <Text style={{ fontFamily: 'Manrope', fontSize: 14, color: '#6f787e', textAlign: 'center', paddingVertical: 24 }}>
                   Aucun médecin généraliste disponible pour le moment
@@ -272,7 +272,7 @@ export default function ReferringDoctorScreen() {
                           width: 48,
                           height: 48,
                           borderRadius: 24,
-                          backgroundColor: '#006685',
+                          backgroundColor: '#82d8ff',
                           alignItems: 'center',
                           justifyContent: 'center',
                           flexShrink: 0,

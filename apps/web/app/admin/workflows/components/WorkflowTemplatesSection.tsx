@@ -23,7 +23,7 @@ const PRESET_TEMPLATES: PresetTemplate[] = [
     name: 'Rappel RDV 24h avant',
     description: 'Envoie un push à chaque patient et praticien 24h avant leur consultation.',
     icon: 'event_available',
-    iconColor: '#006685',
+    iconColor: '#82d8ff',
     badgeColor: '#e5eeff',
     badgeText: 'Cron quotidien',
     trigger_type: 'schedule.cron',
@@ -113,7 +113,7 @@ export function WorkflowTemplatesSection({ installedWorkflows }: Props) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-4">
-        <span className="material-symbols-outlined text-[#006685]" style={{ fontSize: 20 }}>auto_awesome</span>
+        <span className="material-symbols-outlined text-[#82d8ff]" style={{ fontSize: 20 }}>auto_awesome</span>
         <h2 className="text-base font-bold text-[#0b1c30]">Templates prêts à l&apos;emploi</h2>
       </div>
 
@@ -172,7 +172,7 @@ export function WorkflowTemplatesSection({ installedWorkflows }: Props) {
                           node.type === 'triggerNode' ? '#e5eeff' :
                           node.type === 'endNode' ? '#f0fdf4' : '#f8f9ff',
                         color:
-                          node.type === 'triggerNode' ? '#006685' :
+                          node.type === 'triggerNode' ? '#82d8ff' :
                           node.type === 'endNode' ? '#166534' : '#0b1c30',
                         border: '1px solid',
                         borderColor:
@@ -203,7 +203,7 @@ export function WorkflowTemplatesSection({ installedWorkflows }: Props) {
                   </span>
                   <button
                     onClick={() => router.push(`/admin/workflows/${installed.id}`)}
-                    className="ml-auto text-xs font-bold text-[#006685] hover:underline"
+                    className="ml-auto text-xs font-bold text-[#82d8ff] hover:underline"
                   >
                     Configurer →
                   </button>
@@ -213,7 +213,7 @@ export function WorkflowTemplatesSection({ installedWorkflows }: Props) {
                   onClick={() => handleActivate(tpl)}
                   disabled={createWorkflow.isPending}
                   className="mt-auto w-full py-2 rounded-full text-xs font-bold text-white transition-all hover:shadow-md disabled:opacity-50"
-                  style={{ backgroundColor: '#006685' }}
+                  style={{ backgroundColor: '#82d8ff' }}
                 >
                   {createWorkflow.isPending ? 'Installation…' : '⚡ Installer et activer'}
                 </button>

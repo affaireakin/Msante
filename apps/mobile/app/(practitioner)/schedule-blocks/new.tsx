@@ -140,7 +140,7 @@ export default function NewScheduleBlockScreen() {
         borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.20)',
       }}>
         <TouchableOpacity onPress={() => router.back()} style={{ padding: 4 }}>
-          <MaterialIcons name="arrow-back" size={22} color="#006685" />
+          <MaterialIcons name="arrow-back" size={22} color="#82d8ff" />
         </TouchableOpacity>
         <Text style={{ fontFamily: 'Manrope', fontSize: fs.lg, fontWeight: '700', color: '#0b1c30' }}>
           Bloquer une période
@@ -159,11 +159,11 @@ export default function NewScheduleBlockScreen() {
           backgroundColor: 'rgba(255,255,255,0.60)', borderRadius: 16,
           borderWidth: 1, borderColor: 'rgba(255,255,255,0.80)',
           padding: cardPadding,
-          shadowColor: '#006685', shadowOpacity: 0.05, shadowOffset: { width: 0, height: 10 }, shadowRadius: 30,
+          shadowColor: '#82d8ff', shadowOpacity: 0.05, shadowOffset: { width: 0, height: 10 }, shadowRadius: 30,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 }}>
             <View style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-              <MaterialIcons name="date-range" size={18} color="#006685" />
+              <MaterialIcons name="date-range" size={18} color="#82d8ff" />
             </View>
             <Text style={{ fontFamily: 'Manrope', fontSize: fs.md, fontWeight: '700', color: '#0b1c30' }}>
               Période à bloquer
@@ -184,7 +184,7 @@ export default function NewScheduleBlockScreen() {
               maxLength={10}
               style={{
                 height: 48, borderRadius: 12, borderWidth: 1,
-                borderColor: startInput ? '#006685' : '#bec8ce',
+                borderColor: startInput ? '#82d8ff' : '#bec8ce',
                 paddingHorizontal: 16,
                 fontFamily: 'Manrope', fontSize: fs.md, color: '#0b1c30',
                 backgroundColor: 'rgba(255,255,255,0.80)',
@@ -206,7 +206,7 @@ export default function NewScheduleBlockScreen() {
               maxLength={10}
               style={{
                 height: 48, borderRadius: 12, borderWidth: 1,
-                borderColor: endInput ? '#006685' : '#bec8ce',
+                borderColor: endInput ? '#82d8ff' : '#bec8ce',
                 paddingHorizontal: 16,
                 fontFamily: 'Manrope', fontSize: fs.md, color: '#0b1c30',
                 backgroundColor: 'rgba(255,255,255,0.80)',
@@ -220,7 +220,7 @@ export default function NewScheduleBlockScreen() {
           backgroundColor: 'rgba(255,255,255,0.60)', borderRadius: 16,
           borderWidth: 1, borderColor: 'rgba(255,255,255,0.80)',
           padding: cardPadding,
-          shadowColor: '#006685', shadowOpacity: 0.05, shadowOffset: { width: 0, height: 10 }, shadowRadius: 30,
+          shadowColor: '#82d8ff', shadowOpacity: 0.05, shadowOffset: { width: 0, height: 10 }, shadowRadius: 30,
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 }}>
             <View style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: '#ffe170', alignItems: 'center', justifyContent: 'center' }}>
@@ -242,14 +242,14 @@ export default function NewScheduleBlockScreen() {
                     flexDirection: 'row', alignItems: 'center', gap: 6,
                     paddingHorizontal: 14, paddingVertical: 10, borderRadius: 999,
                     borderWidth: 2,
-                    borderColor: selected ? '#006685' : '#e5eeff',
+                    borderColor: selected ? '#82d8ff' : '#e5eeff',
                     backgroundColor: selected ? '#e5eeff' : 'rgba(255,255,255,0.60)',
                   }}
                 >
                   <Text style={{ fontSize: fs.sm }}>{opt.emoji}</Text>
                   <Text style={{
                     fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700',
-                    color: selected ? '#006685' : '#6f787e',
+                    color: selected ? '#82d8ff' : '#6f787e',
                   }}>
                     {opt.label}
                   </Text>
@@ -264,7 +264,7 @@ export default function NewScheduleBlockScreen() {
           backgroundColor: 'rgba(255,255,255,0.60)', borderRadius: 16,
           borderWidth: 1, borderColor: 'rgba(255,255,255,0.80)',
           padding: cardPadding,
-          shadowColor: '#006685', shadowOpacity: 0.05, shadowOffset: { width: 0, height: 10 }, shadowRadius: 30,
+          shadowColor: '#82d8ff', shadowOpacity: 0.05, shadowOffset: { width: 0, height: 10 }, shadowRadius: 30,
         }}>
           <View style={{ gap: 6 }}>
             <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#6f787e', letterSpacing: 0.5 }}>
@@ -280,7 +280,7 @@ export default function NewScheduleBlockScreen() {
               textAlignVertical="top"
               style={{
                 minHeight: 80, borderRadius: 12, borderWidth: 1,
-                borderColor: notes ? '#006685' : '#bec8ce',
+                borderColor: notes ? '#82d8ff' : '#bec8ce',
                 paddingHorizontal: 16, paddingVertical: 12,
                 fontFamily: 'Manrope', fontSize: fs.md, color: '#0b1c30',
                 backgroundColor: 'rgba(255,255,255,0.80)',
@@ -296,7 +296,7 @@ export default function NewScheduleBlockScreen() {
           style={{
             width: '100%', paddingVertical: 16, borderRadius: 999,
             alignItems: 'center', justifyContent: 'center',
-            backgroundColor: '#006685',
+            backgroundColor: '#82d8ff',
             opacity: (isLoading || !canSubmit) ? 0.5 : 1,
             marginTop: 4,
           }}

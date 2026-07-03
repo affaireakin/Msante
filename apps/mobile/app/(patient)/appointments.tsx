@@ -34,7 +34,7 @@ const STATUS_CONFIG: Record<AppointmentStatus, {
   pending:   { label: 'En attente', bg: '#fff8e1', text: '#705d00', icon: 'schedule' },
   confirmed: { label: 'Confirmé',   bg: '#e8f5e9', text: '#1d7a3a', icon: 'check-circle' },
   cancelled: { label: 'Annulé',     bg: '#fce4ec', text: '#ba1a1a', icon: 'cancel' },
-  completed: { label: 'Terminé',    bg: '#e5eeff', text: '#006685', icon: 'task-alt' },
+  completed: { label: 'Terminé',    bg: '#e5eeff', text: '#82d8ff', icon: 'task-alt' },
   no_show:   { label: 'Absent',     bg: '#f5f5f5', text: '#6f787e', icon: 'person-off' },
 }
 
@@ -85,7 +85,7 @@ function AppointmentCard({ appt, onJoin, onCancel }: { appt: AppointmentRow; onJ
       borderWidth: 1,
       borderColor: '#e5eeff',
       overflow: 'hidden',
-      shadowColor: '#006685',
+      shadowColor: '#82d8ff',
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.06,
       shadowRadius: 12,
@@ -106,7 +106,7 @@ function AppointmentCard({ appt, onJoin, onCancel }: { appt: AppointmentRow; onJ
       <View style={{ padding: scale(16), flexDirection: 'row', alignItems: 'center', gap: scale(14) }}>
         {/* Avatar initiales */}
         <View style={{ width: scale(52), height: scale(52), borderRadius: scale(26), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontSize: scale(18), fontWeight: '800', color: '#006685', fontFamily: 'Manrope' }}>
+          <Text style={{ fontSize: scale(18), fontWeight: '800', color: '#82d8ff', fontFamily: 'Manrope' }}>
             {initials(name)}
           </Text>
         </View>
@@ -116,7 +116,7 @@ function AppointmentCard({ appt, onJoin, onCancel }: { appt: AppointmentRow; onJ
           <Text style={{ fontSize: fs.md, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>
             {name}
           </Text>
-          <Text style={{ fontSize: fs.sm, color: '#006685', fontFamily: 'Manrope', fontWeight: '600', marginTop: 1 }}>
+          <Text style={{ fontSize: fs.sm, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600', marginTop: 1 }}>
             {speciality}
           </Text>
           {price != null && (
@@ -141,7 +141,7 @@ function AppointmentCard({ appt, onJoin, onCancel }: { appt: AppointmentRow; onJ
           {canJoin && (
             <TouchableOpacity
               onPress={onJoin}
-              style={{ flex: 1, backgroundColor: '#006685', borderRadius: scale(14), paddingVertical: scale(13), alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: scale(8) }}
+              style={{ flex: 1, backgroundColor: '#82d8ff', borderRadius: scale(14), paddingVertical: scale(13), alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: scale(8) }}
             >
               <MaterialIcons name="videocam" size={scale(18)} color="#fff" />
               <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>Rejoindre</Text>
@@ -241,7 +241,7 @@ export default function AppointmentsScreen() {
         </View>
         <TouchableOpacity
           onPress={() => router.push('/(patient)/find-practitioners')}
-          style={{ backgroundColor: '#006685', borderRadius: scale(14), paddingHorizontal: scale(14), paddingVertical: scale(10), flexDirection: 'row', alignItems: 'center', gap: scale(6) }}
+          style={{ backgroundColor: '#82d8ff', borderRadius: scale(14), paddingHorizontal: scale(14), paddingVertical: scale(10), flexDirection: 'row', alignItems: 'center', gap: scale(6) }}
         >
           <MaterialIcons name="add" size={scale(18)} color="#fff" />
           <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.sm, fontFamily: 'Manrope' }}>Nouveau</Text>
@@ -250,7 +250,7 @@ export default function AppointmentsScreen() {
 
       {isLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: scale(12) }}>
-          <ActivityIndicator size="large" color="#006685" />
+          <ActivityIndicator size="large" color="#82d8ff" />
           <Text style={{ color: '#6f787e', fontFamily: 'Manrope', fontSize: fs.sm }}>
             Chargement…
           </Text>
@@ -263,14 +263,14 @@ export default function AppointmentsScreen() {
             <RefreshControl
               refreshing={isRefetching}
               onRefresh={refetch}
-              tintColor="#006685"
+              tintColor="#82d8ff"
             />
           }
         >
           {/* Upcoming */}
           {upcoming.length > 0 && (
             <View style={{ marginBottom: scale(8) }}>
-              <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#006685', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(14) }}>
+              <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(14) }}>
                 À venir
               </Text>
               {upcoming.map(a => (
@@ -295,7 +295,7 @@ export default function AppointmentsScreen() {
           {(data ?? []).length === 0 && (
             <View style={{ alignItems: 'center', paddingTop: scale(60) }}>
               <View style={{ width: scale(80), height: scale(80), borderRadius: scale(40), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginBottom: scale(16) }}>
-                <MaterialIcons name="calendar-today" size={scale(38)} color="#006685" />
+                <MaterialIcons name="calendar-today" size={scale(38)} color="#82d8ff" />
               </View>
               <Text style={{ fontSize: fs.xl, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: scale(8) }}>
                 Aucun rendez-vous
@@ -305,7 +305,7 @@ export default function AppointmentsScreen() {
               </Text>
               <TouchableOpacity
                 onPress={() => router.push('/(patient)/find-practitioners')}
-                style={{ backgroundColor: '#006685', borderRadius: scale(16), paddingHorizontal: scale(24), paddingVertical: scale(14), flexDirection: 'row', alignItems: 'center', gap: scale(8) }}
+                style={{ backgroundColor: '#82d8ff', borderRadius: scale(16), paddingHorizontal: scale(24), paddingVertical: scale(14), flexDirection: 'row', alignItems: 'center', gap: scale(8) }}
               >
                 <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
                   Trouver un praticien

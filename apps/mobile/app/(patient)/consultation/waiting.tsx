@@ -121,7 +121,7 @@ export default function WaitingRoom() {
         borderBottomColor: 'rgba(255,255,255,0.20)',
         backgroundColor: 'rgba(255,255,255,0.70)',
       }}>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#006685', fontFamily: 'Manrope', letterSpacing: -0.3 }}>M-Santé</Text>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#82d8ff', fontFamily: 'Manrope', letterSpacing: -0.3 }}>M-Santé</Text>
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -133,7 +133,7 @@ export default function WaitingRoom() {
           borderWidth: 1,
           borderColor: '#d3e4fe',
         }}>
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#006685', shadowColor: '#006685', shadowOpacity: 0.5, shadowRadius: 8, elevation: 2 }} />
+          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#82d8ff', shadowColor: '#82d8ff', shadowOpacity: 0.5, shadowRadius: 8, elevation: 2 }} />
           <Text style={{ color: '#3f484d', fontSize: 10, fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>Connexion sécurisée</Text>
         </View>
       </View>
@@ -149,7 +149,7 @@ export default function WaitingRoom() {
             }]}
           />
           <View style={{
-            width: 128, height: 128, borderRadius: 64, backgroundColor: '#006685',
+            width: 128, height: 128, borderRadius: 64, backgroundColor: '#82d8ff',
             alignItems: 'center', justifyContent: 'center',
             shadowColor: '#82d8ff', shadowOpacity: 1, shadowRadius: 40, elevation: 8,
           }}>
@@ -167,7 +167,7 @@ export default function WaitingRoom() {
             </View>
           ) : (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#e5eeff', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 9999 }}>
-              <ActivityIndicator size="small" color="#006685" />
+              <ActivityIndicator size="small" color="#82d8ff" />
               <Text style={{ color: '#6f787e', fontSize: 14, fontFamily: 'Manrope' }}>En attente du praticien…</Text>
             </View>
           )}
@@ -193,7 +193,7 @@ export default function WaitingRoom() {
           <TouchableOpacity
             onPress={handleJoin}
             disabled={isCreating}
-            style={{ width: '100%', backgroundColor: '#006685', borderRadius: 9999, paddingVertical: 16, alignItems: 'center', opacity: isCreating ? 0.7 : 1 }}
+            style={{ width: '100%', backgroundColor: '#82d8ff', borderRadius: 9999, paddingVertical: 16, alignItems: 'center', opacity: isCreating ? 0.7 : 1 }}
           >
             {isCreating ? (
               <ActivityIndicator color="#ffffff" />

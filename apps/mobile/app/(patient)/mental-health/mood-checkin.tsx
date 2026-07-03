@@ -43,7 +43,7 @@ export default function MoodCheckin() {
       <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} contentContainerStyle={{ paddingBottom: 40 }}>
         <View style={{ paddingTop: 32, paddingBottom: 24, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <MaterialIcons name="arrow-back" size={24} color="#006685" />
+            <MaterialIcons name="arrow-back" size={24} color="#82d8ff" />
           </TouchableOpacity>
           <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope', flex: 1 }}>Comment vous sentez-vous ?</Text>
         </View>
@@ -54,7 +54,7 @@ export default function MoodCheckin() {
           gap: 32,
           borderWidth: 1,
           borderColor: 'rgba(255,255,255,0.5)',
-          shadowColor: '#006685',
+          shadowColor: '#82d8ff',
           shadowOffset: { width: 0, height: 10 },
           shadowOpacity: 0.05,
           shadowRadius: 30,

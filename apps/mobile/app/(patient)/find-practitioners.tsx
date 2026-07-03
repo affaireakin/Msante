@@ -50,8 +50,8 @@ export default function FindPractitionersScreen() {
             </Text>
           </View>
           <View style={{ backgroundColor: '#e5eeff', borderRadius: scale(12), paddingHorizontal: scale(12), paddingVertical: scale(6), flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <MaterialIcons name="verified" size={scale(14)} color="#006685" />
-            <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#006685', fontFamily: 'Manrope' }}>Vérifiés</Text>
+            <MaterialIcons name="verified" size={scale(14)} color="#82d8ff" />
+            <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#82d8ff', fontFamily: 'Manrope' }}>Vérifiés</Text>
           </View>
         </View>
 
@@ -65,7 +65,7 @@ export default function FindPractitionersScreen() {
           borderColor: '#e5eeff',
           paddingHorizontal: scale(14),
           gap: scale(8),
-          shadowColor: '#006685',
+          shadowColor: '#82d8ff',
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.04,
           shadowRadius: 8,
@@ -97,7 +97,7 @@ export default function FindPractitionersScreen() {
         >
           <View style={{
             width: scale(40), height: scale(22), borderRadius: scale(11),
-            backgroundColor: acceptingNewOnly ? '#006685' : '#bec8ce',
+            backgroundColor: acceptingNewOnly ? '#82d8ff' : '#bec8ce',
             justifyContent: 'center', paddingHorizontal: 2,
           }}>
             <View style={{
@@ -114,7 +114,7 @@ export default function FindPractitionersScreen() {
 
       {isLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: scale(12) }}>
-          <ActivityIndicator color="#006685" size="large" />
+          <ActivityIndicator color="#82d8ff" size="large" />
           <Text style={{ fontSize: fs.sm, color: '#6f787e', fontFamily: 'Manrope' }}>Chargement des praticiens…</Text>
         </View>
       ) : error ? (
@@ -147,7 +147,7 @@ export default function FindPractitionersScreen() {
           ListEmptyComponent={
             <View style={{ paddingVertical: scale(48), alignItems: 'center', gap: scale(12) }}>
               <View style={{ width: scale(72), height: scale(72), borderRadius: scale(36), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name="search-off" size={scale(34)} color="#006685" />
+                <MaterialIcons name="search-off" size={scale(34)} color="#82d8ff" />
               </View>
               <Text style={{ fontSize: fs.lg, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>
                 Aucun résultat

@@ -38,7 +38,7 @@ export function DocumentUploader({ label, documentType, value, onUpload }: Docum
       style={{
         borderWidth: 1.5,
         borderStyle: 'dashed',
-        borderColor: value ? '#006685' : '#bec8ce',
+        borderColor: value ? '#82d8ff' : '#bec8ce',
         borderRadius: 14,
         padding: 16,
         alignItems: 'center',
@@ -49,13 +49,13 @@ export function DocumentUploader({ label, documentType, value, onUpload }: Docum
       <MaterialIcons
         name={value ? 'check-circle' : 'upload-file'}
         size={24}
-        color={value ? '#006685' : '#6f787e'}
+        color={value ? '#82d8ff' : '#6f787e'}
       />
       <Text style={{ fontSize: 14, fontFamily: 'Manrope', fontWeight: '600', color: '#3f484d' }}>
         {label}
       </Text>
       {value ? (
-        <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }} numberOfLines={1}>
+        <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }} numberOfLines={1}>
           {value.name}
         </Text>
       ) : (

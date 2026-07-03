@@ -15,8 +15,8 @@ const MOOD_CONFIG: Record<number, { label: string; color: string; bg: string; ic
   3:  { label: 'Faible',    color: '#c05000', bg: '#ffe5d0', icon: 'sentiment_dissatisfied' },
   4:  { label: 'Moyen',     color: '#705d00', bg: '#fff8e1', icon: 'sentiment_neutral' },
   5:  { label: 'Correct',   color: '#705d00', bg: '#fff8e1', icon: 'sentiment_neutral' },
-  6:  { label: 'Bien',      color: '#006685', bg: '#e5eeff', icon: 'sentiment_satisfied' },
-  7:  { label: 'Bien',      color: '#006685', bg: '#e5eeff', icon: 'sentiment_satisfied_alt' },
+  6:  { label: 'Bien',      color: '#82d8ff', bg: '#e5eeff', icon: 'sentiment_satisfied' },
+  7:  { label: 'Bien',      color: '#82d8ff', bg: '#e5eeff', icon: 'sentiment_satisfied_alt' },
   8:  { label: 'Très bien', color: '#1d7a3a', bg: '#e8f5e9', icon: 'sentiment_very_satisfied' },
   9:  { label: 'Excellent', color: '#1d7a3a', bg: '#e8f5e9', icon: 'sentiment_very_satisfied' },
   10: { label: 'Parfait',   color: '#1d7a3a', bg: '#e8f5e9', icon: 'sentiment_very_satisfied' },
@@ -110,7 +110,7 @@ export default function MoodCheckinPage() {
             max={10}
             value={score}
             onChange={e => setScore(Number(e.target.value))}
-            className="w-full accent-[#006685] cursor-pointer"
+            className="w-full accent-[#82d8ff] cursor-pointer"
           />
           <div className="flex justify-between">
             {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
@@ -142,7 +142,7 @@ export default function MoodCheckinPage() {
                 onClick={() => toggle(e.id)}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold transition-all"
                 style={{
-                  backgroundColor: active ? '#006685' : '#f1f5f9',
+                  backgroundColor: active ? '#82d8ff' : '#f1f5f9',
                   color: active ? '#fff' : '#3f484d',
                   border: active ? 'none' : '1px solid #bec8ce',
                 }}
@@ -164,7 +164,7 @@ export default function MoodCheckinPage() {
           placeholder="Quelque chose à noter sur votre journée..."
           rows={3}
           maxLength={300}
-          className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all resize-none text-sm"
+          className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none text-sm"
         />
         <p className="text-xs text-[#6f787e] text-right">{note.length}/300</p>
       </div>
@@ -186,7 +186,7 @@ export default function MoodCheckinPage() {
         disabled={saveMutation.isPending || saved}
         className="w-full py-4 rounded-2xl font-bold text-white text-base transition-all flex items-center justify-center gap-2"
         style={{
-          backgroundColor: saved ? '#1d7a3a' : '#006685',
+          backgroundColor: saved ? '#1d7a3a' : '#82d8ff',
           opacity: saveMutation.isPending ? 0.7 : 1,
           boxShadow: '0 4px 16px rgba(0,102,133,0.20)',
         }}

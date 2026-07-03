@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+﻿import { useState, useMemo } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -109,7 +109,7 @@ export default function BookingScreen() {
         <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center', lineHeight: 22 }}>
           Ce praticien ne peut pas vous recevoir en consultation pour le moment.
         </Text>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 24, backgroundColor: '#006685', borderRadius: 14, paddingHorizontal: 24, paddingVertical: 12 }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 24, backgroundColor: '#82d8ff', borderRadius: 14, paddingHorizontal: 24, paddingVertical: 12 }}>
           <Text style={{ color: '#fff', fontWeight: '700', fontFamily: 'Manrope' }}>Retour</Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -128,7 +128,7 @@ export default function BookingScreen() {
         <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center', lineHeight: 22 }}>
           Ce praticien n'accepte pas de nouveaux patients actuellement. Consultez d'autres professionnels disponibles.
         </Text>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 24, backgroundColor: '#006685', borderRadius: 14, paddingHorizontal: 24, paddingVertical: 12 }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 24, backgroundColor: '#82d8ff', borderRadius: 14, paddingHorizontal: 24, paddingVertical: 12 }}>
           <Text style={{ color: '#fff', fontWeight: '700', fontFamily: 'Manrope' }}>Voir d'autres praticiens</Text>
         </TouchableOpacity>
       </SafeAreaView>
@@ -140,8 +140,8 @@ export default function BookingScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         <View style={{ paddingHorizontal: 24, paddingTop: 16, marginBottom: 24 }}>
           <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <MaterialIcons name="arrow-back" size={20} color="#006685" />
-            <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: '500' }}>Retour</Text>
+            <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
+            <Text style={{ color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '500' }}>Retour</Text>
           </TouchableOpacity>
           <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>
             Choisir un créneau
@@ -168,8 +168,8 @@ export default function BookingScreen() {
                   borderWidth: 1,
                   alignItems: 'center',
                   gap: 4,
-                  backgroundColor: sessionType === t.id ? '#006685' : 'rgba(255,255,255,0.6)',
-                  borderColor: sessionType === t.id ? '#006685' : 'rgba(255,255,255,0.8)',
+                  backgroundColor: sessionType === t.id ? '#82d8ff' : 'rgba(255,255,255,0.6)',
+                  borderColor: sessionType === t.id ? '#82d8ff' : 'rgba(255,255,255,0.8)',
                 }}
               >
                 <MaterialIcons name={t.iconName} size={20} color={sessionType === t.id ? '#ffffff' : '#0b1c30'} />
@@ -188,7 +188,7 @@ export default function BookingScreen() {
           </Text>
           {isLoading ? (
             <View style={{ height: 80, alignItems: 'center', justifyContent: 'center' }}>
-              <ActivityIndicator color="#006685" />
+              <ActivityIndicator color="#82d8ff" />
             </View>
           ) : (
             <WeekCalendar

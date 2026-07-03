@@ -105,8 +105,8 @@ export default function VoiceInsightsScreen() {
             onPress={() => router.push('/(patient)/mental-health')}
             style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 4 }}
           >
-            <MaterialIcons name="arrow-back" size={20} color="#006685" />
-            <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: '500' }}>
+            <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
+            <Text style={{ color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '500' }}>
               Accueil
             </Text>
           </TouchableOpacity>
@@ -190,7 +190,7 @@ export default function VoiceInsightsScreen() {
             backgroundColor: 'rgba(0,102,133,0.06)',
             flexDirection: 'row', alignItems: 'flex-start', gap: 8,
           }}>
-            <MaterialIcons name="info" size={16} color="#006685" style={{ marginTop: 1 }} />
+            <MaterialIcons name="info" size={16} color="#82d8ff" style={{ marginTop: 1 }} />
             <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#3f484d', flex: 1, lineHeight: 18 }}>
               Mounima n'est pas un médecin ou thérapeute. Pour un suivi clinique, consulte un praticien de santé.
             </Text>
@@ -201,7 +201,7 @@ export default function VoiceInsightsScreen() {
             onPress={handleSaveToJournal}
             style={{
               paddingVertical: 14, borderRadius: 999,
-              backgroundColor: '#006685',
+              backgroundColor: '#82d8ff',
               alignItems: 'center',
               flexDirection: 'row',
               justifyContent: 'center',
@@ -219,15 +219,15 @@ export default function VoiceInsightsScreen() {
             onPress={() => router.push('/(patient)/find-practitioners')}
             style={{
               paddingVertical: 14, borderRadius: 999,
-              borderWidth: 1, borderColor: '#006685',
+              borderWidth: 1, borderColor: '#82d8ff',
               alignItems: 'center',
               flexDirection: 'row',
               justifyContent: 'center',
               gap: 8,
             }}
           >
-            <MaterialIcons name="calendar-today" size={18} color="#006685" />
-            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#006685' }}>
+            <MaterialIcons name="calendar-today" size={18} color="#82d8ff" />
+            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#82d8ff' }}>
               Réserver une séance
             </Text>
           </TouchableOpacity>

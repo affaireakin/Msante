@@ -91,7 +91,7 @@ export default function PractitionerConsultationSummary() {
 
         {/* Session info */}
         <View style={{ gap: 12, borderRadius: 12, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.60)' }}>
-          <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold', marginBottom: 4 }}>
+          <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold', marginBottom: 4 }}>
             Résumé de la session
           </Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -118,8 +118,8 @@ export default function PractitionerConsultationSummary() {
         {aiSummary ? (
           <View style={{ gap: 12, borderRadius: 12, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.60)' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <MaterialIcons name="psychology" size={18} color="#006685" />
-              <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
+              <MaterialIcons name="psychology" size={18} color="#82d8ff" />
+              <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
                 Résumé IA
               </Text>
             </View>
@@ -129,7 +129,7 @@ export default function PractitionerConsultationSummary() {
           </View>
         ) : (
           <View style={{ alignItems: 'center', paddingVertical: 16, gap: 8, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.60)' }}>
-            <ActivityIndicator color="#006685" />
+            <ActivityIndicator color="#82d8ff" />
             <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>Génération du résumé…</Text>
           </View>
         )}
@@ -137,8 +137,8 @@ export default function PractitionerConsultationSummary() {
         {/* Practitioner notes — auto-save on blur */}
         <View style={{ gap: 12, borderRadius: 12, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.60)' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <MaterialIcons name="edit-note" size={18} color="#006685" />
-            <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
+            <MaterialIcons name="edit-note" size={18} color="#82d8ff" />
+            <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
               Notes cliniques (privées)
             </Text>
           </View>
@@ -182,9 +182,9 @@ export default function PractitionerConsultationSummary() {
             }}
           >
             {isSavingNotes ? (
-              <ActivityIndicator color="#006685" size="small" />
+              <ActivityIndicator color="#82d8ff" size="small" />
             ) : (
-              <Text style={{ fontSize: 13, fontFamily: 'Manrope', fontWeight: '600', color: notesSaved ? '#166534' : '#006685' }}>
+              <Text style={{ fontSize: 13, fontFamily: 'Manrope', fontWeight: '600', color: notesSaved ? '#166534' : '#82d8ff' }}>
                 {notesSaved ? '✓ Notes enregistrées' : 'Enregistrer les notes'}
               </Text>
             )}
@@ -195,14 +195,14 @@ export default function PractitionerConsultationSummary() {
         {prescriptionUrl ? (
           <View style={{ gap: 12, borderRadius: 12, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.60)' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <MaterialIcons name="description" size={18} color="#006685" />
-              <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
+              <MaterialIcons name="description" size={18} color="#82d8ff" />
+              <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
                 Ordonnance
               </Text>
             </View>
             <TouchableOpacity
               onPress={handleDownloadPrescription}
-              style={{ backgroundColor: '#006685', borderRadius: 8, paddingVertical: 10, alignItems: 'center' }}
+              style={{ backgroundColor: '#82d8ff', borderRadius: 8, paddingVertical: 10, alignItems: 'center' }}
             >
               <Text style={{ color: '#fff', fontSize: 14, fontWeight: '600', fontFamily: 'Manrope' }}>
                 Télécharger le PDF
@@ -214,7 +214,7 @@ export default function PractitionerConsultationSummary() {
         {/* CTA */}
         <TouchableOpacity
           onPress={handleAgenda}
-          style={{ width: '100%', backgroundColor: '#006685', borderRadius: 9999, paddingVertical: 14, alignItems: 'center', marginTop: 8 }}
+          style={{ width: '100%', backgroundColor: '#82d8ff', borderRadius: 9999, paddingVertical: 14, alignItems: 'center', marginTop: 8 }}
         >
           <Text style={{ color: '#fff', fontWeight: '600', fontFamily: 'Manrope', fontSize: 15 }}>
             Retour à l'agenda

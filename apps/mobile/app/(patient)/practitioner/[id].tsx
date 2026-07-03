@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -39,7 +39,7 @@ export default function PractitionerProfileScreen() {
   if (isLoading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff', alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator color="#006685" size="large" />
+        <ActivityIndicator color="#82d8ff" size="large" />
       </SafeAreaView>
     )
   }
@@ -59,13 +59,13 @@ export default function PractitionerProfileScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 24 }}>
           <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <MaterialIcons name="arrow-back" size={20} color="#006685" />
-            <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: '500' }}>Retour</Text>
+            <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
+            <Text style={{ color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '500' }}>Retour</Text>
           </TouchableOpacity>
 
           <View style={{ alignItems: 'center', gap: 16 }}>
             <View style={{ width: 96, height: 96, borderRadius: 16, backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: 'bold', fontSize: 28 }}>{getInitials(name)}</Text>
+              <Text style={{ color: '#82d8ff', fontFamily: 'Manrope', fontWeight: 'bold', fontSize: 28 }}>{getInitials(name)}</Text>
             </View>
             <View style={{ alignItems: 'center', gap: 4 }}>
               <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>{name}</Text>
@@ -95,7 +95,7 @@ export default function PractitionerProfileScreen() {
             </Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ fontSize: 14, color: '#3f484d', fontFamily: 'Manrope' }}>Tarif</Text>
-              <Text style={{ fontSize: 14, fontWeight: '600', color: '#006685', fontFamily: 'Manrope' }}>
+              <Text style={{ fontSize: 14, fontWeight: '600', color: '#82d8ff', fontFamily: 'Manrope' }}>
                 {practitioner.session_price?.toLocaleString()} {practitioner.session_currency}
               </Text>
             </View>
@@ -127,20 +127,20 @@ export default function PractitionerProfileScreen() {
             flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
             paddingVertical: 13, borderRadius: 12,
             borderWidth: 1.5,
-            borderColor: onWaitlist ? '#1d7a3a' : '#006685',
+            borderColor: onWaitlist ? '#1d7a3a' : '#82d8ff',
             backgroundColor: onWaitlist ? '#f0fdf4' : 'transparent',
             opacity: joiningWaitlist ? 0.6 : 1,
           }}
         >
           {joiningWaitlist
-            ? <ActivityIndicator size="small" color="#006685" />
+            ? <ActivityIndicator size="small" color="#82d8ff" />
             : <>
                 <MaterialIcons
                   name={onWaitlist ? 'check-circle' : 'notifications-none'}
                   size={18}
-                  color={onWaitlist ? '#1d7a3a' : '#006685'}
+                  color={onWaitlist ? '#1d7a3a' : '#82d8ff'}
                 />
-                <Text style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 14, color: onWaitlist ? '#1d7a3a' : '#006685' }}>
+                <Text style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 14, color: onWaitlist ? '#1d7a3a' : '#82d8ff' }}>
                   {onWaitlist ? 'Sur liste d\'attente' : 'Rejoindre la liste d\'attente'}
                 </Text>
               </>

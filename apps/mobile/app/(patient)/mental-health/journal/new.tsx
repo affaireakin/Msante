@@ -41,13 +41,13 @@ export default function JournalNew() {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <MaterialIcons name="arrow-back" size={24} color="#006685" />
+            <MaterialIcons name="arrow-back" size={24} color="#82d8ff" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleSave}
             disabled={!content.trim() || createEntry.isPending}
             style={{
-              backgroundColor: '#006685',
+              backgroundColor: '#82d8ff',
               paddingHorizontal: 20,
               paddingVertical: 8,
               borderRadius: 9999,
@@ -64,7 +64,7 @@ export default function JournalNew() {
             padding: 24,
             borderWidth: 1,
             borderColor: 'rgba(255,255,255,0.5)',
-            shadowColor: '#006685',
+            shadowColor: '#82d8ff',
             shadowOffset: { width: 0, height: 16 },
             shadowOpacity: 0.06,
             shadowRadius: 40,

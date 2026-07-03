@@ -69,7 +69,7 @@ export function WorkflowCard({ workflow, lastRun }: WorkflowCardProps) {
       {/* Action */}
       <Link
         href={`/admin/workflows/${workflow.id}`}
-        className="self-start px-5 py-2 bg-[#006685] text-white text-sm font-semibold rounded-full hover:bg-[#005070] transition-colors"
+        className="self-start px-5 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-semibold rounded-full hover:bg-[#005070] transition-colors"
       >
         Configurer →
       </Link>

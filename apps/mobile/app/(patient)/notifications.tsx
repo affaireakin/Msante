@@ -21,16 +21,16 @@ interface NotificationRow {
 
 const TYPE_ICONS: Record<string, { name: React.ComponentProps<typeof MaterialIcons>['name']; color: string; bg: string }> = {
   appointment_confirm:    { name: 'event-available', color: '#1d7a3a', bg: '#d1fae5' },
-  appointment_reminder:   { name: 'calendar-today',  color: '#006685', bg: '#e5eeff' },
+  appointment_reminder:   { name: 'calendar-today',  color: '#82d8ff', bg: '#e5eeff' },
   payment_success:        { name: 'check-circle',    color: '#1d7a3a', bg: '#d1fae5' },
   payment_failed:         { name: 'error',           color: '#ba1a1a', bg: '#ffdad6' },
-  consultation_starting:  { name: 'videocam',        color: '#006685', bg: '#bee9ff' },
+  consultation_starting:  { name: 'videocam',        color: '#82d8ff', bg: '#bee9ff' },
   practitioner_approved:  { name: 'verified',        color: '#705d00', bg: '#ffde5c' },
   mood_low_streak:        { name: 'favorite',        color: '#ba1a1a', bg: '#ffdad6' },
   mood_check_in:          { name: 'mood',            color: '#705d00', bg: '#fff8e1' },
 }
 
-const DEFAULT_ICON = { name: 'notifications' as const, color: '#006685', bg: '#e5eeff' }
+const DEFAULT_ICON = { name: 'notifications' as const, color: '#82d8ff', bg: '#e5eeff' }
 
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime()
@@ -108,12 +108,12 @@ export default function NotificationsScreen() {
 
       {isLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator color="#006685" size="large" />
+          <ActivityIndicator color="#82d8ff" size="large" />
         </View>
       ) : !notifications || notifications.length === 0 ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingHorizontal: 40 }}>
           <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-            <MaterialIcons name="notifications-none" size={36} color="#006685" />
+            <MaterialIcons name="notifications-none" size={36} color="#82d8ff" />
           </View>
           <Text style={{ fontSize: 17, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center' }}>
             Aucune notification
@@ -178,7 +178,7 @@ export default function NotificationsScreen() {
 
                 {/* Unread dot */}
                 {isUnread && (
-                  <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#006685', marginTop: 6, flexShrink: 0 }} />
+                  <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#82d8ff', marginTop: 6, flexShrink: 0 }} />
                 )}
               </TouchableOpacity>
             )

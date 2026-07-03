@@ -87,7 +87,7 @@ export default function ConsultationSummary() {
 
         {/* Session stats */}
         <View style={{ gap: 12, borderRadius: 12, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.80)' }}>
-          <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold', marginBottom: 4 }}>
+          <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold', marginBottom: 4 }}>
             Résumé de la session
           </Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -123,8 +123,8 @@ export default function ConsultationSummary() {
         {aiSummary ? (
           <View style={{ gap: 12, borderRadius: 12, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.80)' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <MaterialIcons name="psychology" size={18} color="#006685" />
-              <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
+              <MaterialIcons name="psychology" size={18} color="#82d8ff" />
+              <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
                 Résumé IA
               </Text>
             </View>
@@ -137,7 +137,7 @@ export default function ConsultationSummary() {
           </View>
         ) : (
           <View style={{ alignItems: 'center', paddingVertical: 16, gap: 8, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.80)' }}>
-            <ActivityIndicator color="#006685" />
+            <ActivityIndicator color="#82d8ff" />
             <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>Génération du résumé…</Text>
           </View>
         )}
@@ -145,8 +145,8 @@ export default function ConsultationSummary() {
         {/* Post-session mood check-in */}
         <View style={{ gap: 12, borderRadius: 12, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.80)' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <MaterialIcons name="mood" size={18} color="#006685" />
-            <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
+            <MaterialIcons name="mood" size={18} color="#82d8ff" />
+            <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
               Comment vous sentez-vous ?
             </Text>
           </View>
@@ -173,7 +173,7 @@ export default function ConsultationSummary() {
           </View>
 
           {isSavingMood ? (
-            <ActivityIndicator color="#006685" size="small" />
+            <ActivityIndicator color="#82d8ff" size="small" />
           ) : moodSaved ? (
             <Text style={{ textAlign: 'center', fontSize: 13, color: '#1d7a3a', fontFamily: 'Manrope', fontWeight: '600' }}>
               ✓ Humeur enregistrée
@@ -191,8 +191,8 @@ export default function ConsultationSummary() {
         {prescriptionUrl ? (
           <View style={{ gap: 12, borderRadius: 12, padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.5)', backgroundColor: 'rgba(255,255,255,0.80)' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <MaterialIcons name="description" size={18} color="#006685" />
-              <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
+              <MaterialIcons name="description" size={18} color="#82d8ff" />
+              <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: 'bold' }}>
                 Ordonnance
               </Text>
             </View>
@@ -201,7 +201,7 @@ export default function ConsultationSummary() {
             </Text>
             <TouchableOpacity
               onPress={handleDownloadPrescription}
-              style={{ backgroundColor: '#006685', borderRadius: 8, paddingVertical: 10, alignItems: 'center' }}
+              style={{ backgroundColor: '#82d8ff', borderRadius: 8, paddingVertical: 10, alignItems: 'center' }}
             >
               <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600', fontFamily: 'Manrope' }}>
                 Télécharger le PDF
@@ -214,15 +214,15 @@ export default function ConsultationSummary() {
         <View style={{ gap: 12, marginTop: 8 }}>
           <TouchableOpacity
             onPress={handleRebook}
-            style={{ width: '100%', borderWidth: 1, borderColor: '#006685', borderRadius: 9999, paddingVertical: 14, alignItems: 'center' }}
+            style={{ width: '100%', borderWidth: 1, borderColor: '#82d8ff', borderRadius: 9999, paddingVertical: 14, alignItems: 'center' }}
           >
-            <Text style={{ color: '#006685', fontWeight: '600', fontFamily: 'Manrope' }}>
+            <Text style={{ color: '#82d8ff', fontWeight: '600', fontFamily: 'Manrope' }}>
               Reprendre rendez-vous
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleHome}
-            style={{ width: '100%', backgroundColor: '#006685', borderRadius: 9999, paddingVertical: 14, alignItems: 'center' }}
+            style={{ width: '100%', backgroundColor: '#82d8ff', borderRadius: 9999, paddingVertical: 14, alignItems: 'center' }}
           >
             <Text style={{ color: '#ffffff', fontWeight: '600', fontFamily: 'Manrope' }}>
               Retour à l'accueil

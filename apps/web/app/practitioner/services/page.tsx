@@ -128,7 +128,7 @@ export default function ServicesPage() {
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-[#006685] text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#005470] transition flex-shrink-0"
+          className="flex items-center gap-2 bg-[#82d8ff] text-[#0b1c30] px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#005470] transition flex-shrink-0"
         >
           <span className="material-symbols-outlined text-[18px]">add</span>
           Nouvelle prestation
@@ -137,7 +137,7 @@ export default function ServicesPage() {
 
       {services.isLoading ? (
         <div className="flex justify-center py-16">
-          <div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -204,7 +204,7 @@ export default function ServicesPage() {
                   type="text"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-base text-[#0b1c30] placeholder-slate-400 focus:outline-none focus:border-[#006685] transition-colors"
+                  className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-base text-[#0b1c30] placeholder-slate-400 focus:outline-none focus:border-[#82d8ff] transition-colors"
                   placeholder="Ex : Consultation initiale, Suivi hebdomadaire…"
                 />
               </div>
@@ -217,7 +217,7 @@ export default function ServicesPage() {
                     onChange={e => setForm(f => ({ ...f, duration_min: parseInt(e.target.value) || 60 }))}
                     min={15}
                     step={15}
-                    className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-base text-[#0b1c30] font-semibold focus:outline-none focus:border-[#006685] transition-colors"
+                    className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-base text-[#0b1c30] font-semibold focus:outline-none focus:border-[#82d8ff] transition-colors"
                   />
                 </div>
                 <div>
@@ -227,7 +227,7 @@ export default function ServicesPage() {
                     value={form.price}
                     onChange={e => setForm(f => ({ ...f, price: e.target.value }))}
                     min={0}
-                    className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-base text-[#0b1c30] font-semibold placeholder-slate-400 focus:outline-none focus:border-[#006685] transition-colors"
+                    className="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-base text-[#0b1c30] font-semibold placeholder-slate-400 focus:outline-none focus:border-[#82d8ff] transition-colors"
                     placeholder="0"
                   />
                 </div>
@@ -244,8 +244,8 @@ export default function ServicesPage() {
                       onClick={() => toggleType(type)}
                       className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all border-2 ${
                         form.session_types.includes(type)
-                          ? 'bg-[#006685] text-white border-[#006685]'
-                          : 'bg-white text-[#0b1c30] border-slate-300 hover:border-[#006685]'
+                          ? 'bg-[#82d8ff] text-[#0b1c30] border-[#82d8ff]'
+                          : 'bg-white text-[#0b1c30] border-slate-300 hover:border-[#82d8ff]'
                       }`}
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>{SESSION_TYPE_ICONS[type]}</span>
@@ -271,7 +271,7 @@ export default function ServicesPage() {
                 <button
                   type="submit"
                   disabled={createService.isPending}
-                  className="flex-1 bg-[#006685] text-white rounded-xl py-3 text-sm font-bold hover:bg-[#005470] transition-colors disabled:opacity-50 shadow-[0_4px_12px_rgba(0,102,133,0.25)]"
+                  className="flex-1 bg-[#82d8ff] text-[#0b1c30] rounded-xl py-3 text-sm font-bold hover:bg-[#005470] transition-colors disabled:opacity-50 shadow-[0_4px_12px_rgba(0,102,133,0.25)]"
                 >
                   {createService.isPending ? 'Création…' : 'Créer la prestation'}
                 </button>

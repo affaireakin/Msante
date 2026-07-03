@@ -158,7 +158,7 @@ export default function PractitionerOnboardingScreen() {
                 fontSize: 11,
                 fontFamily: 'Manrope',
                 fontWeight: i === step ? '700' : '400',
-                color: i === step ? '#006685' : i < step ? '#1d7a3a' : '#6f787e',
+                color: i === step ? '#82d8ff' : i < step ? '#1d7a3a' : '#6f787e',
               }}>
                 {i < step ? '✓ ' : ''}{label}
               </Text>
@@ -170,11 +170,11 @@ export default function PractitionerOnboardingScreen() {
               <MaterialIcons
                 name={step === 0 ? 'medical-services' : step === 1 ? 'folder-open' : 'check-circle'}
                 size={22}
-                color="#006685"
+                color="#82d8ff"
               />
             </View>
             <View>
-              <Text style={{ fontSize: 11, fontWeight: '700', color: '#006685', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope' }}>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope' }}>
                 Étape {step + 1} sur 3
               </Text>
               <Text style={{ fontSize: 22, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5 }}>
@@ -227,8 +227,8 @@ export default function PractitionerOnboardingScreen() {
                           style={{
                             paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20,
                             borderWidth: 1.5,
-                            borderColor: isSelected ? '#006685' : '#bec8ce',
-                            backgroundColor: isSelected ? '#006685' : 'transparent',
+                            borderColor: isSelected ? '#82d8ff' : '#bec8ce',
+                            backgroundColor: isSelected ? '#82d8ff' : 'transparent',
                           }}
                         >
                           <Text style={{ fontSize: 13, fontFamily: 'Manrope', fontWeight: '600', color: isSelected ? '#fff' : '#0b1c30' }}>
@@ -271,8 +271,8 @@ export default function PractitionerOnboardingScreen() {
                           style={{
                             flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center',
                             borderWidth: 1.5,
-                            borderColor: active ? '#006685' : '#bec8ce',
-                            backgroundColor: active ? '#006685' : 'transparent',
+                            borderColor: active ? '#82d8ff' : '#bec8ce',
+                            backgroundColor: active ? '#82d8ff' : 'transparent',
                           }}
                         >
                           <Text style={{ fontSize: 13, fontFamily: 'Manrope', fontWeight: '700', color: active ? '#fff' : '#0b1c30' }}>
@@ -307,7 +307,7 @@ export default function PractitionerOnboardingScreen() {
               <View style={{
                 height: 4,
                 borderRadius: 2,
-                backgroundColor: '#006685',
+                backgroundColor: '#82d8ff',
                 width: `${Math.round(((uploadedCount + (profilePhoto ? 1 : 0)) / (requiredDocs.length + 1)) * 100)}%`,
               }} />
             </View>
@@ -315,8 +315,8 @@ export default function PractitionerOnboardingScreen() {
             {/* Profile photo */}
             <View style={{ gap: 8 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <MaterialIcons name="person" size={15} color="#006685" />
-                <Text style={{ fontSize: 13, fontWeight: '700', color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                <MaterialIcons name="person" size={15} color="#82d8ff" />
+                <Text style={{ fontSize: 13, fontWeight: '700', color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 0.8 }}>
                   Photo de profil
                 </Text>
                 <View style={{ paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999, backgroundColor: '#ba1a1a' }}>
@@ -331,7 +331,7 @@ export default function PractitionerOnboardingScreen() {
                 style={{
                   borderWidth: 1.5,
                   borderStyle: profilePhoto ? 'solid' : 'dashed',
-                  borderColor: profilePhoto ? '#006685' : '#bec8ce',
+                  borderColor: profilePhoto ? '#82d8ff' : '#bec8ce',
                   borderRadius: 14,
                   padding: 16,
                   alignItems: 'center',
@@ -348,8 +348,8 @@ export default function PractitionerOnboardingScreen() {
                 ) : (
                   <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
                     {pickingPhoto
-                      ? <ActivityIndicator size="small" color="#006685" />
-                      : <MaterialIcons name="add-a-photo" size={24} color="#006685" />
+                      ? <ActivityIndicator size="small" color="#82d8ff" />
+                      : <MaterialIcons name="add-a-photo" size={24} color="#82d8ff" />
                     }
                   </View>
                 )}
@@ -362,7 +362,7 @@ export default function PractitionerOnboardingScreen() {
                   </Text>
                 </View>
                 {profilePhoto && (
-                  <MaterialIcons name="check-circle" size={22} color="#006685" />
+                  <MaterialIcons name="check-circle" size={22} color="#82d8ff" />
                 )}
               </TouchableOpacity>
             </View>
@@ -373,8 +373,8 @@ export default function PractitionerOnboardingScreen() {
             {/* Required documents */}
             <View style={{ gap: 8 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <MaterialIcons name="folder-open" size={15} color="#006685" />
-                <Text style={{ fontSize: 13, fontWeight: '700', color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                <MaterialIcons name="folder-open" size={15} color="#82d8ff" />
+                <Text style={{ fontSize: 13, fontWeight: '700', color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 0.8 }}>
                   {practitionerType === 'healthcare' ? 'Pièces professionnelles' : 'Justificatifs requis'} ({uploadedCount}/{requiredDocs.length})
                 </Text>
               </View>
@@ -419,11 +419,11 @@ export default function PractitionerOnboardingScreen() {
             {profilePhoto ? (
               <Image
                 source={{ uri: profilePhoto.uri }}
-                style={{ width: 80, height: 80, borderRadius: 40, borderWidth: 3, borderColor: '#006685' }}
+                style={{ width: 80, height: 80, borderRadius: 40, borderWidth: 3, borderColor: '#82d8ff' }}
               />
             ) : (
               <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name="verified" size={36} color="#006685" />
+                <MaterialIcons name="verified" size={36} color="#82d8ff" />
               </View>
             )}
 
@@ -446,7 +446,7 @@ export default function PractitionerOnboardingScreen() {
                 { label: 'Documents', value: `${documents.length} / ${requiredDocs.length} fichiers` },
               ].map(row => (
                 <View key={row.label} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                  <MaterialIcons name="check-circle" size={16} color="#006685" />
+                  <MaterialIcons name="check-circle" size={16} color="#82d8ff" />
                   <Text style={{ fontSize: 13, fontFamily: 'Manrope', color: '#3f484d' }}>
                     <Text style={{ fontWeight: '700' }}>{row.label} : </Text>{row.value}
                   </Text>

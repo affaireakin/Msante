@@ -12,7 +12,7 @@ function initials(name: string) {
 }
 
 const SECTION_META: Record<string, { label: string; icon: string; color: string; bg: string }> = {
-  notes:          { label: 'Notes cliniques',   icon: 'description',  color: '#006685', bg: '#e5eeff' },
+  notes:          { label: 'Notes cliniques',   icon: 'description',  color: '#82d8ff', bg: '#e5eeff' },
   prescriptions:  { label: 'Ordonnances',       icon: 'pill',         color: '#1d7a3a', bg: '#dcfce7' },
   mood_journal:   { label: 'Journal mood',      icon: 'mood',         color: '#705d00', bg: '#fef9c3' },
   analyses:       { label: 'Analyses',          icon: 'biotech',      color: '#0f766e', bg: '#ccfbf1' },
@@ -143,7 +143,7 @@ export default function JournalAccesPage() {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 text-center shadow-sm">
-          <p className="text-2xl font-black text-[#006685]">{today.length}</p>
+          <p className="text-2xl font-black text-[#82d8ff]">{today.length}</p>
           <p className="text-xs text-slate-500 mt-0.5">Aujourd'hui</p>
         </div>
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 text-center shadow-sm">
@@ -162,7 +162,7 @@ export default function JournalAccesPage() {
           <div className="flex flex-col gap-1 flex-1 min-w-36">
             <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-1">Section</label>
             <select value={sectionFilter} onChange={e => setSectionFilter(e.target.value)}
-              className="px-3 py-2 rounded-xl text-xs border border-slate-200 bg-white/80 text-[#0b1c30] outline-none focus:border-[#006685]">
+              className="px-3 py-2 rounded-xl text-xs border border-slate-200 bg-white/80 text-[#0b1c30] outline-none focus:border-[#82d8ff]">
               <option value="all">Toutes les sections</option>
               {sections.map(s => <option key={s} value={s}>{sectionMeta(s).label}</option>)}
             </select>
@@ -170,7 +170,7 @@ export default function JournalAccesPage() {
           <div className="flex flex-col gap-1 flex-1 min-w-36">
             <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-1">Praticien</label>
             <select value={practFilter} onChange={e => setPractFilter(e.target.value)}
-              className="px-3 py-2 rounded-xl text-xs border border-slate-200 bg-white/80 text-[#0b1c30] outline-none focus:border-[#006685]">
+              className="px-3 py-2 rounded-xl text-xs border border-slate-200 bg-white/80 text-[#0b1c30] outline-none focus:border-[#82d8ff]">
               <option value="all">Tous les praticiens</option>
               {practitioners.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
             </select>
@@ -228,7 +228,7 @@ export default function JournalAccesPage() {
                                 </span>
                               </div>
                               <div className="flex items-center gap-2 mt-1.5">
-                                <div className="w-6 h-6 rounded-full bg-[#e5eeff] flex items-center justify-center text-[#006685] text-[10px] font-bold flex-shrink-0">
+                                <div className="w-6 h-6 rounded-full bg-[#e5eeff] flex items-center justify-center text-[#82d8ff] text-[10px] font-bold flex-shrink-0">
                                   {initials(log.pract_name)}
                                 </div>
                                 <div className="min-w-0">

@@ -210,7 +210,7 @@ export default function PatientProfilePage() {
           onClick={() => saveMutation.mutate()}
           disabled={saveMutation.isPending}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:shadow-lg disabled:opacity-50 flex-shrink-0"
-          style={{ backgroundColor: saved ? '#1d7a3a' : '#006685' }}
+          style={{ backgroundColor: saved ? '#1d7a3a' : '#82d8ff' }}
         >
           <Icon name={saved ? 'check' : 'save'} size={18} color="#fff" />
           {saveMutation.isPending ? 'Sauvegarde...' : saved ? 'Sauvegardé !' : 'Sauvegarder'}
@@ -229,7 +229,7 @@ export default function PatientProfilePage() {
           {avatarUrl ? (
             <img src={avatarUrl} alt="avatar" className="w-16 h-16 rounded-full object-cover" />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-[#006685] flex items-center justify-center text-white text-2xl font-bold">{initials}</div>
+            <div className="w-16 h-16 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-2xl font-bold">{initials}</div>
           )}
           <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             {avatarUploading
@@ -256,7 +256,7 @@ export default function PatientProfilePage() {
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all"
-            style={{ backgroundColor: tab === t.key ? '#006685' : 'transparent', color: tab === t.key ? '#fff' : '#6f787e' }}>
+            style={{ backgroundColor: tab === t.key ? '#82d8ff' : 'transparent', color: tab === t.key ? '#fff' : '#6f787e' }}>
             <Icon name={t.icon} size={15} color={tab === t.key ? '#fff' : '#6f787e'} />
             {t.label}
           </button>
@@ -271,32 +271,32 @@ export default function PatientProfilePage() {
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Nom complet</label>
               <input value={fullName} onChange={e => setFullName(e.target.value)}
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Téléphone</label>
               <div className="flex gap-2">
                 <select value={dialCode} onChange={e => setDialCode(e.target.value)}
-                  className="px-3 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all text-sm">
+                  className="px-3 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all text-sm">
                   {DIAL_CODES.map(d => (
                     <option key={d.code} value={d.code}>{d.flag} {d.code}</option>
                   ))}
                 </select>
                 <input type="tel" value={phoneLocal} onChange={e => setPhoneLocal(e.target.value)} placeholder="77 000 00 00"
-                  className="flex-1 px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                  className="flex-1 px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
               </div>
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Email pour les rappels</label>
               <input type="email" value={reminderEmail} onChange={e => setReminderEmail(e.target.value)} placeholder="rappels@example.com"
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
               <p className="text-xs text-[#6f787e]">Laissez vide pour utiliser votre email de connexion</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Pays</label>
                 <select value={country} onChange={e => setCountry(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all">
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all">
                   <option value="SN">🇸🇳 Sénégal</option>
                   <option value="CI">🇨🇮 Côte d&apos;Ivoire</option>
                   <option value="CM">🇨🇲 Cameroun</option>
@@ -308,7 +308,7 @@ export default function PatientProfilePage() {
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Langue</label>
                 <select value={language} onChange={e => setLanguage(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all">
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all">
                   <option value="fr">Français</option>
                   <option value="en">English</option>
                   <option value="ar">العربية</option>
@@ -328,7 +328,7 @@ export default function PatientProfilePage() {
                 {BLOOD_TYPES.map(bt => (
                   <button key={bt} type="button" onClick={() => setBloodType(bt === bloodType ? '' : bt)}
                     className="px-3 py-1.5 rounded-full text-xs font-bold transition-all"
-                    style={{ backgroundColor: bloodType === bt ? '#006685' : '#e5eeff', color: bloodType === bt ? '#fff' : '#006685' }}>
+                    style={{ backgroundColor: bloodType === bt ? '#82d8ff' : '#e5eeff', color: bloodType === bt ? '#fff' : '#82d8ff' }}>
                     {bt}
                   </button>
                 ))}
@@ -339,12 +339,12 @@ export default function PatientProfilePage() {
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Taille (cm)</label>
                 <input type="number" value={heightCm} onChange={e => setHeightCm(e.target.value)} placeholder="170"
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Poids (kg)</label>
                 <input type="number" value={weightKg} onChange={e => setWeightKg(e.target.value)} placeholder="70"
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
               </div>
             </div>
 
@@ -363,8 +363,8 @@ export default function PatientProfilePage() {
                 <input value={customAllergy} onChange={e => setCustomAllergy(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addCustomAllergy())}
                   placeholder="Autre allergie..."
-                  className="flex-1 px-3 py-2 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
-                <button type="button" onClick={addCustomAllergy} className="px-3 py-2 rounded-xl" style={{ backgroundColor: '#006685' }}>
+                  className="flex-1 px-3 py-2 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
+                <button type="button" onClick={addCustomAllergy} className="px-3 py-2 rounded-xl" style={{ backgroundColor: '#82d8ff' }}>
                   <Icon name="add" size={18} color="#fff" />
                 </button>
               </div>
@@ -395,19 +395,19 @@ export default function PatientProfilePage() {
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Mes priorités en ce moment</label>
               <textarea value={priorities} onChange={e => setPriorities(e.target.value)} rows={3}
                 placeholder="Ex: Gérer mon stress, améliorer mon sommeil, retrouver de l'énergie..."
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all resize-none" />
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none" />
             </div>
 
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Médicaments actuels</label>
               <textarea value={medications} onChange={e => setMedications(e.target.value)} rows={2} placeholder="Ex: Sertraline 50mg..."
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all resize-none" />
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none" />
             </div>
 
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Notes médicales</label>
               <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} placeholder="Antécédents, informations importantes pour votre praticien..."
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all resize-none" />
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none" />
             </div>
           </div>
         )}
@@ -418,7 +418,7 @@ export default function PatientProfilePage() {
             {/* Export */}
             <div className="rounded-xl border border-[#bec8ce] p-5 space-y-3">
               <div className="flex items-start gap-3">
-                <Icon name="download" color="#006685" size={22} />
+                <Icon name="download" color="#82d8ff" size={22} />
                 <div className="flex-1">
                   <p className="text-sm font-bold text-[#0b1c30]">Télécharger mes données</p>
                   <p className="text-xs text-[#6f787e] mt-0.5">Exportez l&apos;ensemble de vos données personnelles et médicales (RGPD art. 15). Fichier JSON incluant profil, humeurs, journal et rendez-vous.</p>
@@ -427,7 +427,7 @@ export default function PatientProfilePage() {
               <button
                 onClick={handleExportData}
                 disabled={exportLoading}
-                className="w-full flex items-center justify-center gap-2 bg-[#006685] text-white rounded-xl py-3 text-sm font-semibold disabled:opacity-50 hover:shadow-lg hover:shadow-[#006685]/20 transition"
+                className="w-full flex items-center justify-center gap-2 bg-[#82d8ff] text-[#0b1c30] rounded-xl py-3 text-sm font-semibold disabled:opacity-50 hover:shadow-lg hover:shadow-[#82d8ff]/20 transition"
               >
                 <Icon name="download" size={16} />
                 {exportLoading ? 'Préparation...' : 'Exporter mes données'}
@@ -436,7 +436,7 @@ export default function PatientProfilePage() {
 
             {/* Infos légales */}
             <div className="rounded-xl bg-[#e5eeff] p-4 space-y-2 text-xs text-[#3f484d]">
-              <p className="font-bold text-[#006685]">Vos droits RGPD</p>
+              <p className="font-bold text-[#82d8ff]">Vos droits RGPD</p>
               <p>• <strong>Art. 15</strong> — Droit d&apos;accès : télécharger vos données ci-dessus</p>
               <p>• <strong>Art. 16</strong> — Droit de rectification : modifiez vos informations dans l&apos;onglet &quot;Informations&quot;</p>
               <p>• <strong>Art. 17</strong> — Droit à l&apos;effacement : supprimez votre compte ci-dessous</p>
@@ -491,13 +491,13 @@ export default function PatientProfilePage() {
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Nom complet</label>
               <input value={emergencyName} onChange={e => setEmergencyName(e.target.value)} placeholder="Prénom Nom"
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
             </div>
 
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Numéro de téléphone</label>
               <input type="tel" value={emergencyPhone} onChange={e => setEmergencyPhone(e.target.value)} placeholder="+221 77 000 00 00"
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
             </div>
 
             <div className="bg-[#f8f9ff] border border-[#bec8ce] rounded-xl p-4 text-xs text-[#6f787e] space-y-1">

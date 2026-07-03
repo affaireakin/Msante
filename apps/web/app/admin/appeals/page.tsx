@@ -103,7 +103,7 @@ export default function AppealsPage() {
 
       {isLoading ? (
         <div className="flex justify-center py-16">
-          <div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : appeals.length === 0 ? (
         <div className="bg-white/60 backdrop-blur-md border border-white/80 rounded-xl p-12 text-center">
@@ -138,7 +138,7 @@ export default function AppealsPage() {
                     setResponse('')
                     setActionError(null)
                   }}
-                  className="text-sm font-semibold text-[#006685] hover:underline whitespace-nowrap"
+                  className="text-sm font-semibold text-[#82d8ff] hover:underline whitespace-nowrap"
                 >
                   Répondre
                 </button>

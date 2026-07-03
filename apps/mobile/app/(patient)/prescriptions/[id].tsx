@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import {
   View,
   Text,
@@ -53,7 +53,7 @@ function formatDate(iso: string): string {
 }
 
 function statusInfo(s: string): { label: string; bg: string; color: string } {
-  if (s === 'signed')    return { label: 'Signée',   bg: '#e5eeff', color: '#006685' }
+  if (s === 'signed')    return { label: 'Signée',   bg: '#e5eeff', color: '#82d8ff' }
   if (s === 'dispensed') return { label: 'Délivrée', bg: '#dcfce7', color: '#1d7a3a' }
   return { label: 'Autre', bg: '#f1f5f9', color: '#475569' }
 }
@@ -80,7 +80,7 @@ function SectionHeader({
         marginBottom: scale(10),
       }}
     >
-      <MaterialIcons name={icon} size={scale(14)} color="#006685" />
+      <MaterialIcons name={icon} size={scale(14)} color="#82d8ff" />
       <Text
         style={{
           fontSize: scale(10),
@@ -219,7 +219,7 @@ export default function PrescriptionDetailScreen() {
         edges={['top']}
         style={{ flex: 1, backgroundColor: '#f8f9ff', alignItems: 'center', justifyContent: 'center' }}
       >
-        <ActivityIndicator size="large" color="#006685" />
+        <ActivityIndicator size="large" color="#82d8ff" />
         <Text
           style={{
             marginTop: scale(12),
@@ -252,8 +252,8 @@ export default function PrescriptionDetailScreen() {
             gap: scale(6),
           }}
         >
-          <MaterialIcons name="arrow-back" size={scale(20)} color="#006685" />
-          <Text style={{ color: '#006685', fontFamily: 'Manrope', fontWeight: '600', fontSize: fs.md }}>
+          <MaterialIcons name="arrow-back" size={scale(20)} color="#82d8ff" />
+          <Text style={{ color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600', fontSize: fs.md }}>
             Retour
           </Text>
         </TouchableOpacity>
@@ -403,7 +403,7 @@ export default function PrescriptionDetailScreen() {
             borderWidth: 1,
             borderColor: '#e5eeff',
             marginBottom: scale(14),
-            shadowColor: '#006685',
+            shadowColor: '#82d8ff',
             shadowOffset: { width: 0, height: 3 },
             shadowOpacity: 0.06,
             shadowRadius: 12,
@@ -415,7 +415,7 @@ export default function PrescriptionDetailScreen() {
           <View
             style={{ flexDirection: 'row' }}
           >
-            <View style={{ width: scale(4), backgroundColor: '#006685' }} />
+            <View style={{ width: scale(4), backgroundColor: '#82d8ff' }} />
             <View style={{ flex: 1, padding: scale(16) }}>
 
               {/* Document type centered */}
@@ -429,7 +429,7 @@ export default function PrescriptionDetailScreen() {
                     letterSpacing: 2,
                     textTransform: 'uppercase',
                     borderBottomWidth: 2,
-                    borderBottomColor: '#006685',
+                    borderBottomColor: '#82d8ff',
                     paddingBottom: scale(4),
                   }}
                 >
@@ -463,7 +463,7 @@ export default function PrescriptionDetailScreen() {
                     style={{
                       fontSize: fs.sm,
                       fontWeight: '600',
-                      color: '#006685',
+                      color: '#82d8ff',
                       fontFamily: 'Manrope',
                       marginBottom: scale(6),
                     }}
@@ -595,7 +595,7 @@ export default function PrescriptionDetailScreen() {
                                   style={{
                                     fontSize: scale(11),
                                     fontWeight: '800',
-                                    color: '#006685',
+                                    color: '#82d8ff',
                                     fontFamily: 'Manrope',
                                   }}
                                 >
@@ -682,7 +682,7 @@ export default function PrescriptionDetailScreen() {
                           padding: scale(14),
                           marginBottom: scale(14),
                           borderWidth: 1,
-                          borderColor: '#006685' + '20',
+                          borderColor: '#82d8ff' + '20',
                         }}
                       >
                         <Text

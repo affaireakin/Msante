@@ -52,14 +52,14 @@ const PAGE_SIZE = 10
 // ─── Role colors ────────────────────────────────────────────────────────────
 const roleColors: Record<string, { bg: string; text: string }> = {
   admin:        { bg: '#ede9fe', text: '#7c3aed' },
-  practitioner: { bg: '#e5eeff', text: '#006685' },
+  practitioner: { bg: '#e5eeff', text: '#82d8ff' },
   patient:      { bg: '#e8f5e9', text: '#1d7a3a' },
 }
 
 // ─── Verification status style ───────────────────────────────────────────────
 const verificationColors: Record<VerificationStatus, { bg: string; text: string }> = {
   pending:      { bg: '#fff8e1', text: '#705d00' },
-  under_review: { bg: '#e5eeff', text: '#006685' },
+  under_review: { bg: '#e5eeff', text: '#82d8ff' },
   approved:     { bg: '#e8f5e9', text: '#1d7a3a' },
   rejected:     { bg: '#ffdad6', text: '#ba1a1a' },
 }
@@ -284,7 +284,7 @@ function InviteAdminModal({ onClose }: { onClose: () => void }) {
             </div>
             <button
               onClick={onClose}
-              className="px-6 py-2.5 bg-[#006685] text-white font-bold rounded-xl text-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all"
+              className="px-6 py-2.5 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl text-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all"
             >
               Fermer
             </button>
@@ -298,7 +298,7 @@ function InviteAdminModal({ onClose }: { onClose: () => void }) {
                 value={fullName}
                 onChange={e => setFullName(e.target.value)}
                 placeholder="Prénom Nom"
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all text-sm"
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all text-sm"
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -309,7 +309,7 @@ function InviteAdminModal({ onClose }: { onClose: () => void }) {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="admin@example.com"
                 required
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] focus:ring-2 focus:ring-[#006685]/10 transition-all text-sm"
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all text-sm"
               />
             </div>
 
@@ -334,7 +334,7 @@ function InviteAdminModal({ onClose }: { onClose: () => void }) {
               <button
                 type="submit"
                 disabled={inviteMutation.isPending}
-                className="flex-1 py-3 bg-[#006685] text-white font-bold rounded-xl text-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50"
+                className="flex-1 py-3 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl text-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50"
               >
                 {inviteMutation.isPending ? 'Envoi...' : 'Envoyer l\'invitation'}
               </button>
@@ -427,7 +427,7 @@ function PractitionerSection({ userId }: { userId: string }) {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <span className="material-symbols-outlined text-[#006685] text-base">medical_services</span>
+        <span className="material-symbols-outlined text-[#82d8ff] text-base">medical_services</span>
         <span className="text-sm font-bold text-[#0b1c30] uppercase tracking-wide">Vérification praticien</span>
       </div>
 
@@ -502,7 +502,7 @@ function PractitionerSection({ userId }: { userId: string }) {
                 style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="material-symbols-outlined text-[#006685] text-sm flex-shrink-0">description</span>
+                  <span className="material-symbols-outlined text-[#82d8ff] text-sm flex-shrink-0">description</span>
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-[#0b1c30] truncate">
                       {docTypeLabels[doc.document_type] ?? doc.document_type}
@@ -518,7 +518,7 @@ function PractitionerSection({ userId }: { userId: string }) {
                     href={doc.file_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#006685] hover:text-[#004d65] transition-colors"
+                    className="text-[#82d8ff] hover:text-[#004d65] transition-colors"
                     title="Ouvrir le document"
                   >
                     <span className="material-symbols-outlined text-sm">open_in_new</span>
@@ -583,7 +583,7 @@ function PrefixSection({ user }: { user: UserRow }) {
         <select
           value={selected}
           onChange={e => setSelected(e.target.value)}
-          className="flex-1 px-3 py-2.5 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-colors"
+          className="flex-1 px-3 py-2.5 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-colors"
         >
           <option value="">— Aucun préfixe —</option>
           {prefixes.map(p => (
@@ -594,13 +594,13 @@ function PrefixSection({ user }: { user: UserRow }) {
           onClick={handleSave}
           disabled={!isDirty || saveMutation.isPending}
           className="px-4 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-40"
-          style={{ backgroundColor: '#006685', color: '#fff' }}
+          style={{ backgroundColor: '#82d8ff', color: '#fff' }}
         >
           {saveMutation.isPending ? '…' : 'OK'}
         </button>
       </div>
       {currentPrefix && (
-        <p className="text-[10px] text-[#006685] mt-1.5 px-1 font-medium">
+        <p className="text-[10px] text-[#82d8ff] mt-1.5 px-1 font-medium">
           Affiché : <strong>{currentPrefix.prefix} {user.full_name}</strong>
         </p>
       )}
@@ -654,7 +654,7 @@ function UserProfilePanel({
   })
 
   const avatarBg = roleColors[user.role]?.bg ?? '#e5eeff'
-  const avatarText = roleColors[user.role]?.text ?? '#006685'
+  const avatarText = roleColors[user.role]?.text ?? '#82d8ff'
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -702,7 +702,7 @@ function UserProfilePanel({
           {/* Contact info (admin only) */}
           <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #e5eeff' }}>
             <div className="px-4 py-2 bg-[#e5eeff]">
-              <p className="text-[10px] font-bold text-[#006685] uppercase tracking-widest">Informations de contact</p>
+              <p className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-widest">Informations de contact</p>
             </div>
             {[
               { label: 'E-mail', value: user.email ?? '—', icon: 'mail', copyable: true },
@@ -722,7 +722,7 @@ function UserProfilePanel({
                   <span className="text-xs font-medium text-[#0b1c30] max-w-[140px] truncate text-right">{value}</span>
                   {copyable && value !== '—' && (
                     <button onClick={() => navigator.clipboard.writeText(value)}
-                      className="text-[#6f787e] hover:text-[#006685] transition-colors" title="Copier">
+                      className="text-[#6f787e] hover:text-[#82d8ff] transition-colors" title="Copier">
                       <span className="material-symbols-outlined" style={{ fontSize: '13px' }}>content_copy</span>
                     </button>
                   )}
@@ -833,7 +833,7 @@ export default function UsersPage() {
         </div>
         <button
           onClick={() => setShowInvite(true)}
-          className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all"
+          className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all"
         >
           <span className="material-symbols-outlined text-base">person_add</span>
           <span className="hidden sm:inline">Inviter un admin</span>
@@ -853,7 +853,7 @@ export default function UsersPage() {
               className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all"
               style={
                 role === f.value
-                  ? { backgroundColor: '#006685', color: '#ffffff' }
+                  ? { backgroundColor: '#82d8ff', color: '#ffffff' }
                   : { backgroundColor: 'rgba(255,255,255,0.60)', color: '#3f484d', border: '1px solid rgba(203,216,254,0.50)' }
               }
             >
@@ -888,12 +888,12 @@ export default function UsersPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-slate-100/60">
-              <th className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">Utilisateur</th>
-              <th className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">Rôle</th>
-              <th className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">Pays</th>
-              <th className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">Onboarding</th>
-              <th className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">Statut</th>
-              <th className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">Inscrit le</th>
+              <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Utilisateur</th>
+              <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Rôle</th>
+              <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Pays</th>
+              <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Onboarding</th>
+              <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Statut</th>
+              <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Inscrit le</th>
             </tr>
           </thead>
           <tbody>
@@ -920,7 +920,7 @@ export default function UsersPage() {
                       className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
                       style={{
                         backgroundColor: roleColors[user.role]?.bg ?? '#e5eeff',
-                        color: roleColors[user.role]?.text ?? '#006685',
+                        color: roleColors[user.role]?.text ?? '#82d8ff',
                       }}
                     >
                       {initials(user.full_name)}

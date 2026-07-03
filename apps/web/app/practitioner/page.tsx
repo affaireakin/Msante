@@ -106,7 +106,7 @@ export default function PractitionerDashboard() {
       {/* KPI row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
-          { label: "Aujourd'hui", value: todayApts.length, icon: 'today', color: '#006685', bg: '#e5eeff' },
+          { label: "Aujourd'hui", value: todayApts.length, icon: 'today', color: '#82d8ff', bg: '#e5eeff' },
           { label: 'Cette semaine', value: appointments.length, icon: 'calendar_month', color: '#705d00', bg: '#fff8e1' },
           { label: 'Total confirmés', value: totalConfirmed, icon: 'check_circle', color: '#1d7a3a', bg: '#e8f5e9' },
         ].map(({ label, value, icon, color, bg }) => (
@@ -137,10 +137,10 @@ export default function PractitionerDashboard() {
               return (
                 <div
                   key={apt.id}
-                  className="rounded-2xl p-4 flex items-center gap-4 border-l-4 border-[#006685]"
+                  className="rounded-2xl p-4 flex items-center gap-4 border-l-4 border-[#82d8ff]"
                   style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}
                 >
-                  <div className="w-12 h-12 rounded-xl bg-[#e5eeff] flex flex-col items-center justify-center text-[#006685] flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-[#e5eeff] flex flex-col items-center justify-center text-[#82d8ff] flex-shrink-0">
                     <span className="text-sm font-black leading-none">{time}</span>
                   </div>
                   <div className="flex-1 min-w-0">
@@ -176,8 +176,8 @@ export default function PractitionerDashboard() {
                   style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}
                 >
                   <div className="w-14 h-14 rounded-xl bg-[#e5eeff] flex flex-col items-center justify-center flex-shrink-0">
-                    <span className="text-base font-black text-[#006685] leading-none">{dt.getDate()}</span>
-                    <span className="text-xs text-[#006685] font-semibold uppercase">
+                    <span className="text-base font-black text-[#82d8ff] leading-none">{dt.getDate()}</span>
+                    <span className="text-xs text-[#82d8ff] font-semibold uppercase">
                       {dt.toLocaleDateString('fr-FR', { month: 'short' })}
                     </span>
                   </div>
@@ -205,7 +205,7 @@ export default function PractitionerDashboard() {
           <p className="text-sm text-[#6f787e] mt-1">Assurez-vous que vos disponibilités sont bien configurées.</p>
           <Link
             href="/practitioner/availability"
-            className="mt-4 inline-block px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all"
+            className="mt-4 inline-block px-5 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all"
           >
             Gérer mes disponibilités
           </Link>
@@ -222,7 +222,7 @@ export default function PractitionerDashboard() {
         </Link>
         <Link
           href="/practitioner/availability"
-          className="flex-1 py-3 rounded-xl bg-[#006685] text-white text-sm font-semibold hover:shadow-lg hover:shadow-sky-500/20 transition-all text-center"
+          className="flex-1 py-3 rounded-xl bg-[#82d8ff] text-[#0b1c30] text-sm font-semibold hover:shadow-lg hover:shadow-sky-500/20 transition-all text-center"
         >
           Gérer mes disponibilités
         </Link>

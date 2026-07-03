@@ -11,7 +11,7 @@ function getInitials(name: string) {
   return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
 }
 
-const AVATAR_COLORS = ['#006685', '#705d00', '#1d7a3a', '#5c5f61', '#c2185b']
+const AVATAR_COLORS = ['#82d8ff', '#705d00', '#1d7a3a', '#5c5f61', '#c2185b']
 
 export function PractitionerCard({ practitioner, onPress }: PractitionerCardProps) {
   const name = practitioner.users?.full_name ?? 'Praticien'
@@ -32,7 +32,7 @@ export function PractitionerCard({ practitioner, onPress }: PractitionerCardProp
         borderRadius: 18,
         padding: 16,
         marginBottom: 12,
-        shadowColor: '#006685',
+        shadowColor: '#82d8ff',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.06,
         shadowRadius: 12,
@@ -63,7 +63,7 @@ export function PractitionerCard({ practitioner, onPress }: PractitionerCardProp
           </View>
 
           {/* Speciality */}
-          <Text style={{ fontSize: 13, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>{practitioner.speciality}</Text>
+          <Text style={{ fontSize: 13, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }}>{practitioner.speciality}</Text>
 
           {/* Rating + languages */}
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
@@ -100,7 +100,7 @@ export function PractitionerCard({ practitioner, onPress }: PractitionerCardProp
           )}
           <Text style={{ fontSize: 10, color: '#6f787e', fontFamily: 'Manrope', marginTop: 1 }}>{duration} min · séance</Text>
         </View>
-        <TouchableOpacity onPress={onPress} style={{ backgroundColor: '#006685', paddingHorizontal: 16, paddingVertical: 9, borderRadius: 12, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+        <TouchableOpacity onPress={onPress} style={{ backgroundColor: '#82d8ff', paddingHorizontal: 16, paddingVertical: 9, borderRadius: 12, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Text style={{ color: '#fff', fontSize: 13, fontWeight: '700', fontFamily: 'Manrope' }}>Réserver</Text>
           <MaterialIcons name="arrow-forward" size={14} color="#fff" />
         </TouchableOpacity>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+﻿import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   View, Text, FlatList, TextInput, TouchableOpacity,
   KeyboardAvoidingView, Platform, ActivityIndicator, Alert, Modal, Linking, Image,
@@ -18,7 +18,7 @@ type DocTypeId = 'analyse' | 'ordonnance' | 'compte_rendu' | 'imagerie' | 'autre
 const DOC_TYPES: { id: DocTypeId; label: string; icon: IconName; color: string; bg: string }[] = [
   { id: 'analyse',      label: 'Résultat d\'analyse',  icon: 'science',      color: '#1d7a3a', bg: '#e8f5e9' },
   { id: 'ordonnance',   label: 'Ordonnance',            icon: 'medication',   color: '#705d00', bg: '#fff8e1' },
-  { id: 'compte_rendu', label: 'Compte-rendu médical',  icon: 'description',  color: '#006685', bg: '#e5eeff' },
+  { id: 'compte_rendu', label: 'Compte-rendu médical',  icon: 'description',  color: '#82d8ff', bg: '#e5eeff' },
   { id: 'imagerie',     label: 'Imagerie médicale',     icon: 'image',        color: '#5c5f61', bg: '#e0e3e5' },
   { id: 'autre',        label: 'Autre document',        icon: 'attach-file',  color: '#6f787e', bg: '#f1f5f9' },
 ]
@@ -88,8 +88,8 @@ function DocCard({ msg, isMe, onOpen }: { msg: Message; isMe: boolean; onOpen: (
           onPress={() => msg.attachment_url && onOpen(msg.attachment_url)}
           style={{ flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999, backgroundColor: isMe ? 'rgba(255,255,255,0.15)' : '#e5eeff' }}
         >
-          <MaterialIcons name="download" size={14} color={isMe ? '#bee9ff' : '#006685'} />
-          <Text style={{ fontSize: 12, fontWeight: '700', fontFamily: 'Manrope', color: isMe ? '#bee9ff' : '#006685' }}>Ouvrir</Text>
+          <MaterialIcons name="download" size={14} color={isMe ? '#bee9ff' : '#82d8ff'} />
+          <Text style={{ fontSize: 12, fontWeight: '700', fontFamily: 'Manrope', color: isMe ? '#bee9ff' : '#82d8ff' }}>Ouvrir</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -236,7 +236,7 @@ export default function PractitionerMessageThreadScreen() {
           <MaterialIcons name="arrow-back" size={24} color="#0b1c30" />
         </TouchableOpacity>
         <View style={{ width: 38, height: 38, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontFamily: 'Manrope', fontWeight: '800', fontSize: 13, color: '#006685' }}>
+          <Text style={{ fontFamily: 'Manrope', fontWeight: '800', fontSize: 13, color: '#82d8ff' }}>
             {(partnerName ?? 'P').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
           </Text>
         </View>
@@ -255,7 +255,7 @@ export default function PractitionerMessageThreadScreen() {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         {isLoading ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <ActivityIndicator color="#006685" size="large" />
+            <ActivityIndicator color="#82d8ff" size="large" />
           </View>
         ) : (
           <FlatList
@@ -293,7 +293,7 @@ export default function PractitionerMessageThreadScreen() {
                             borderRadius: 16,
                             borderBottomRightRadius: isMe ? 4 : 16,
                             borderBottomLeftRadius: isMe ? 16 : 4,
-                            backgroundColor: isMe ? '#006685' : '#ffffff',
+                            backgroundColor: isMe ? '#82d8ff' : '#ffffff',
                             borderWidth: isMe ? 0 : 1,
                             borderColor: 'rgba(226,232,240,0.7)',
                           }}>
@@ -328,11 +328,11 @@ export default function PractitionerMessageThreadScreen() {
             <TouchableOpacity
               onPress={() => void handleSend()}
               disabled={!text.trim() || sending}
-              style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: text.trim() && !sending ? '#006685' : '#e5eeff', alignItems: 'center', justifyContent: 'center' }}
+              style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: text.trim() && !sending ? '#82d8ff' : '#e5eeff', alignItems: 'center', justifyContent: 'center' }}
             >
               {sending
-                ? <ActivityIndicator size="small" color="#006685" />
-                : <MaterialIcons name="send" size={18} color={text.trim() ? '#fff' : '#006685'} />
+                ? <ActivityIndicator size="small" color="#82d8ff" />
+                : <MaterialIcons name="send" size={18} color={text.trim() ? '#fff' : '#82d8ff'} />
               }
             </TouchableOpacity>
           </View>
@@ -341,8 +341,8 @@ export default function PractitionerMessageThreadScreen() {
             disabled={sending}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', marginTop: 8, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, borderWidth: 1, borderColor: 'rgba(0,102,133,0.25)', backgroundColor: 'rgba(0,102,133,0.04)' }}
           >
-            <MaterialIcons name="attach-file" size={16} color="#006685" />
-            <Text style={{ fontSize: 12, fontWeight: '600', color: '#006685', fontFamily: 'Manrope' }}>Joindre un document médical</Text>
+            <MaterialIcons name="attach-file" size={16} color="#82d8ff" />
+            <Text style={{ fontSize: 12, fontWeight: '600', color: '#82d8ff', fontFamily: 'Manrope' }}>Joindre un document médical</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

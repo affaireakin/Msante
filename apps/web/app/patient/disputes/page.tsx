@@ -153,7 +153,7 @@ export default function PatientDisputesPage() {
           <p className="text-sm text-[#6f787e] mt-1">Suivi de vos réclamations et dossiers en cours</p>
         </div>
         <button onClick={() => setShowNew(true)}
-          className="flex items-center gap-2 bg-[#006685] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#006685]/20 transition flex-shrink-0">
+          className="flex items-center gap-2 bg-[#82d8ff] text-[#0b1c30] px-4 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-[#82d8ff]/20 transition flex-shrink-0">
           <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>add</span>
           Ouvrir un litige
         </button>
@@ -173,7 +173,7 @@ export default function PatientDisputesPage() {
             const meta = STATUS_META[d.status] ?? STATUS_META.open
             return (
               <button key={d.id} onClick={() => setSelected(d)}
-                className={`w-full text-left rounded-2xl p-4 space-y-3 transition-all border-2 ${selected?.id === d.id ? 'border-[#006685]' : 'border-transparent hover:border-slate-200'}`}
+                className={`w-full text-left rounded-2xl p-4 space-y-3 transition-all border-2 ${selected?.id === d.id ? 'border-[#82d8ff]' : 'border-transparent hover:border-slate-200'}`}
                 style={{ backgroundColor: 'rgba(255,255,255,0.6)' }}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -232,11 +232,11 @@ export default function PatientDisputesPage() {
               <div className="px-4 py-3 border-t border-slate-100 flex gap-2">
                 <input value={comment} onChange={e => setComment(e.target.value)}
                   placeholder="Ajouter un commentaire..."
-                  className="flex-1 text-sm px-3 py-2 rounded-xl border border-slate-200 bg-white text-[#0b1c30] focus:outline-none focus:border-[#006685]"
+                  className="flex-1 text-sm px-3 py-2 rounded-xl border border-slate-200 bg-white text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]"
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commentMutation.mutate() } }}
                 />
                 <button onClick={() => commentMutation.mutate()} disabled={!comment.trim() || commentMutation.isPending}
-                  className="p-2 rounded-xl bg-[#006685] text-white disabled:opacity-50">
+                  className="p-2 rounded-xl bg-[#82d8ff] text-[#0b1c30] disabled:opacity-50">
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>send</span>
                 </button>
               </div>
@@ -262,7 +262,7 @@ export default function PatientDisputesPage() {
               <div>
                 <label className="text-sm font-semibold text-[#0b1c30]">Motif</label>
                 <select value={reason} onChange={e => setReason(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685]">
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]">
                   {REASONS.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
@@ -270,7 +270,7 @@ export default function PatientDisputesPage() {
                 <label className="text-sm font-semibold text-[#0b1c30]">Description <span className="text-[#6f787e] font-normal">(facultatif)</span></label>
                 <textarea value={description} onChange={e => setDescription(e.target.value)} rows={4}
                   placeholder="Décrivez la situation en détail..."
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-[#0b1c30] resize-none focus:outline-none focus:border-[#006685]" />
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-[#0b1c30] resize-none focus:outline-none focus:border-[#82d8ff]" />
               </div>
             </div>
             {error && <p className="text-xs text-red-500">{error}</p>}
@@ -280,7 +280,7 @@ export default function PatientDisputesPage() {
                 Annuler
               </button>
               <button onClick={() => openMutation.mutate()} disabled={openMutation.isPending}
-                className="flex-1 bg-[#006685] text-white rounded-xl py-2.5 text-sm font-semibold disabled:opacity-50">
+                className="flex-1 bg-[#82d8ff] text-[#0b1c30] rounded-xl py-2.5 text-sm font-semibold disabled:opacity-50">
                 {openMutation.isPending ? 'Envoi...' : 'Soumettre le litige'}
               </button>
             </div>

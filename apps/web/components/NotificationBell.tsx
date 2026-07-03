@@ -23,7 +23,7 @@ const TYPE_ICON: Record<string, string> = {
 }
 
 const TYPE_COLOR: Record<string, string> = {
-  new_message:           'text-[#006685] bg-sky-50',
+  new_message:           'text-[#82d8ff] bg-sky-50',
   conversation_closed:   'text-[#6f787e] bg-slate-100',
   appointment_confirmed: 'text-emerald-700 bg-emerald-50',
   appointment_reminder:  'text-amber-700 bg-amber-50',
@@ -118,7 +118,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
             <span className="text-sm font-bold text-[#0b1c30]">Notifications</span>
             {unread > 0 && (
-              <button onClick={markAllRead} className="text-xs text-[#006685] font-semibold hover:underline">
+              <button onClick={markAllRead} className="text-xs text-[#82d8ff] font-semibold hover:underline">
                 Tout marquer lu
               </button>
             )}
@@ -132,7 +132,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
               </div>
             ) : notifs.map(n => {
               const icon = TYPE_ICON[n.type] ?? 'notifications'
-              const color = TYPE_COLOR[n.type] ?? 'text-[#006685] bg-sky-50'
+              const color = TYPE_COLOR[n.type] ?? 'text-[#82d8ff] bg-sky-50'
               const isUnread = n.status !== 'read'
               return (
                 <button
@@ -146,7 +146,7 @@ export default function NotificationBell({ userId }: { userId: string }) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <p className={`text-xs font-semibold truncate ${isUnread ? 'text-[#0b1c30]' : 'text-[#6f787e]'}`}>{n.title}</p>
-                      {isUnread && <span className="w-2 h-2 rounded-full bg-[#006685] flex-shrink-0 mt-1" />}
+                      {isUnread && <span className="w-2 h-2 rounded-full bg-[#82d8ff] flex-shrink-0 mt-1" />}
                     </div>
                     <p className="text-xs text-[#6f787e] mt-0.5 line-clamp-2">{n.body}</p>
                     <p className="text-[10px] text-slate-400 mt-1">{timeAgo(n.created_at)}</p>

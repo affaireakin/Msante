@@ -20,7 +20,7 @@ function initials(name: string): string {
 function statusColors(status: string) {
   switch (status) {
     case 'draft':     return { bg: '#f1f5f9', text: '#475569' }
-    case 'signed':    return { bg: '#e5eeff', text: '#006685' }
+    case 'signed':    return { bg: '#e5eeff', text: '#82d8ff' }
     case 'dispensed': return { bg: '#dcfce7', text: '#1d7a3a' }
     case 'cancelled': return { bg: '#ffdad6', text: '#ba1a1a' }
     default:          return { bg: '#f1f5f9', text: '#475569' }
@@ -120,7 +120,7 @@ export default function AllPrescriptionsPage() {
         </div>
         <Link href="/practitioner/patients"
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors">
-          <Icon name="person_search" size={16} color="#006685" />
+          <Icon name="person_search" size={16} color="#82d8ff" />
           Par patient
         </Link>
       </div>
@@ -129,16 +129,16 @@ export default function AllPrescriptionsPage() {
       <div className="flex flex-col sm:flex-row gap-3">
         <input type="text" value={search} onChange={e => setSearch(e.target.value)}
           placeholder={`Rechercher un patient ou ${isWellness ? 'objectif' : 'diagnostic'}…`}
-          className="flex-1 px-4 py-2.5 rounded-xl text-sm border border-slate-200 text-[#0b1c30] bg-white/80 focus:outline-none focus:border-[#006685]" />
+          className="flex-1 px-4 py-2.5 rounded-xl text-sm border border-slate-200 text-[#0b1c30] bg-white/80 focus:outline-none focus:border-[#82d8ff]" />
         <div className="flex gap-1.5 flex-wrap">
           {ALL_STATUSES.map(s => (
             <button key={s} onClick={() => setStatusFilter(s)}
               className="px-3 py-2 rounded-xl text-xs font-semibold transition-colors"
               style={{
-                backgroundColor: statusFilter === s ? '#006685' : 'rgba(255,255,255,0.70)',
+                backgroundColor: statusFilter === s ? '#82d8ff' : 'rgba(255,255,255,0.70)',
                 color: statusFilter === s ? '#fff' : '#475569',
                 border: '1px solid',
-                borderColor: statusFilter === s ? '#006685' : 'rgba(190,200,206,0.40)',
+                borderColor: statusFilter === s ? '#82d8ff' : 'rgba(190,200,206,0.40)',
               }}>
               {s === 'all' ? 'Tous' : statusLabel(s)}
             </button>
@@ -149,8 +149,8 @@ export default function AllPrescriptionsPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: 'Total', value: prescriptions.length, color: '#006685', bg: '#e5eeff' },
-          { label: 'Signées', value: prescriptions.filter(r => r.status === 'signed').length, color: '#006685', bg: '#e5eeff' },
+          { label: 'Total', value: prescriptions.length, color: '#82d8ff', bg: '#e5eeff' },
+          { label: 'Signées', value: prescriptions.filter(r => r.status === 'signed').length, color: '#82d8ff', bg: '#e5eeff' },
           { label: 'Délivrées', value: prescriptions.filter(r => r.status === 'dispensed').length, color: '#1d7a3a', bg: '#dcfce7' },
           { label: 'Brouillons', value: prescriptions.filter(r => r.status === 'draft').length, color: '#475569', bg: '#f1f5f9' },
         ].map(stat => (
@@ -181,7 +181,7 @@ export default function AllPrescriptionsPage() {
               <Link key={rx.id} href={`/practitioner/patients/${rx.patient_id}/prescriptions`}
                 className="block bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-[#e5eeff] flex items-center justify-center text-[#006685] text-sm font-bold flex-shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-[#e5eeff] flex items-center justify-center text-[#82d8ff] text-sm font-bold flex-shrink-0">
                     {initials(rx.patient_name)}
                   </div>
                   <div className="flex-1 min-w-0">

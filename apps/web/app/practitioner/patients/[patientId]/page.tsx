@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -50,7 +50,7 @@ function statusLabel(status: string): string {
 function statusColors(status: string): { bg: string; text: string } {
   switch (status) {
     case 'completed': return { bg: '#dcfce7', text: '#1d7a3a' }
-    case 'confirmed': return { bg: '#e5eeff', text: '#006685' }
+    case 'confirmed': return { bg: '#e5eeff', text: '#82d8ff' }
     case 'pending':   return { bg: '#fff8e1', text: '#705d00' }
     case 'cancelled': return { bg: '#ffdad6', text: '#ba1a1a' }
     case 'no_show':   return { bg: '#f3e8ff', text: '#7e22ce' }
@@ -150,7 +150,7 @@ function TabNav({ patientId, active }: TabNavProps) {
           href={tab.href}
           className={`px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
             active === tab.key
-              ? 'border-b-2 border-[#006685] text-[#006685]'
+              ? 'border-b-2 border-[#82d8ff] text-[#82d8ff]'
               : 'text-slate-500 hover:text-slate-700'
           }`}
         >
@@ -174,7 +174,7 @@ function PatientHeader({ patient, backHref }: { patient: PatientInfo; backHref: 
       </Link>
       <div
         className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-bold text-base select-none"
-        style={{ background: '#e5eeff', color: '#006685' }}
+        style={{ background: '#e5eeff', color: '#82d8ff' }}
       >
         {initials(patient.full_name)}
       </div>
@@ -192,7 +192,7 @@ function StatCard({ icon, label, value, color }: { icon: string; label: string; 
   return (
     <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm p-5 flex items-start gap-3">
       <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: '#e5eeff' }}>
-        <Icon name={icon} size={18} color="#006685" />
+        <Icon name={icon} size={18} color="#82d8ff" />
       </div>
       <div className="min-w-0">
         <p className="text-xs text-slate-500 font-medium mb-1">{label}</p>
@@ -226,24 +226,24 @@ function QuickNoteModal({ patientId, practitionerId, onClose }: { patientId: str
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-bold text-[#0b1c30] flex items-center gap-2">
-            <Icon name="note_add" size={18} color="#006685" />Nouvelle note
+            <Icon name="note_add" size={18} color="#82d8ff" />Nouvelle note
           </h2>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400"><Icon name="close" size={18} /></button>
         </div>
         <select value={noteType} onChange={e => setNoteType(e.target.value)}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685]">
+          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]">
           {[['observation','Observation'],['compte_rendu','Compte-rendu'],['note_suivi','Note de suivi'],['bilan','Bilan'],['alerte','Alerte']].map(([v,l]) =>
             <option key={v} value={v}>{l}</option>
           )}
         </select>
         <textarea value={content} onChange={e => setContent(e.target.value)} rows={5}
           placeholder="Rédigez votre note ici…"
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685] resize-none" />
+          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] resize-none" />
         {save.error && <p className="text-xs text-red-600">{(save.error as Error).message}</p>}
         <div className="flex justify-end gap-3">
           <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm border border-slate-200 text-slate-600 hover:bg-slate-50">Annuler</button>
           <button onClick={() => save.mutate()} disabled={save.isPending}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-60" style={{ background: '#006685' }}>
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-60" style={{ background: '#82d8ff' }}>
             {save.isPending ? '...' : 'Enregistrer'}
           </button>
         </div>
@@ -275,12 +275,12 @@ function QuickPrescriptionModal({ patientId, practitionerId, onClose }: { patien
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between">
           <h2 className="font-bold text-[#0b1c30] flex items-center gap-2">
-            <Icon name="receipt_long" size={18} color="#006685" />Nouvelle ordonnance
+            <Icon name="receipt_long" size={18} color="#82d8ff" />Nouvelle ordonnance
           </h2>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400"><Icon name="close" size={18} /></button>
         </div>
         <input value={diagnosis} onChange={e => setDiagnosis(e.target.value)} placeholder="Diagnostic / Motif (optionnel)"
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685]" />
+          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]" />
         <div className="space-y-3">
           <p className="text-xs font-semibold text-slate-600">Médicaments <span className="text-red-500">*</span></p>
           {meds.map((med, i) => (
@@ -289,22 +289,22 @@ function QuickPrescriptionModal({ patientId, practitionerId, onClose }: { patien
                 {(['name','dosage','frequency','duration'] as (keyof Medication)[]).map(k => (
                   <input key={k} value={med[k]} onChange={e => updateMed(i, k, e.target.value)}
                     placeholder={{ name:'Médicament *', dosage:'Dosage', frequency:'Fréquence', duration:'Durée' }[k]}
-                    className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]" />
+                    className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff]" />
                 ))}
               </div>
               {i > 0 && <button onClick={() => setMeds(prev => prev.filter((_,idx) => idx !== i))} className="text-xs text-red-500 hover:underline">Supprimer</button>}
             </div>
           ))}
           <button onClick={() => setMeds(prev => [...prev, { name:'', dosage:'', frequency:'', duration:'' }])}
-            className="text-xs text-[#006685] font-semibold hover:underline flex items-center gap-1">
-            <Icon name="add" size={14} color="#006685" />Ajouter un médicament
+            className="text-xs text-[#82d8ff] font-semibold hover:underline flex items-center gap-1">
+            <Icon name="add" size={14} color="#82d8ff" />Ajouter un médicament
           </button>
         </div>
         {save.error && <p className="text-xs text-red-600">{(save.error as Error).message}</p>}
         <div className="flex justify-end gap-3">
           <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm border border-slate-200 text-slate-600 hover:bg-slate-50">Annuler</button>
           <button onClick={() => save.mutate()} disabled={save.isPending}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-60" style={{ background: '#006685' }}>
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-60" style={{ background: '#82d8ff' }}>
             {save.isPending ? '...' : 'Créer l\'ordonnance'}
           </button>
         </div>
@@ -394,7 +394,7 @@ export default function PatientDossierPage() {
             icon="event_upcoming"
             label="Prochaine consultation"
             value={upcoming ? fmtShort(upcoming.scheduled_at) : '—'}
-            color="#006685"
+            color="#82d8ff"
           />
           <StatCard
             icon="history"
@@ -406,7 +406,7 @@ export default function PatientDossierPage() {
         {/* Recent appointments */}
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm p-5">
           <h2 className="text-sm font-semibold text-[#0b1c30] mb-4 flex items-center gap-2">
-            <Icon name="schedule" size={16} color="#006685" />
+            <Icon name="schedule" size={16} color="#82d8ff" />
             Dernières consultations
           </h2>
           {recent.length === 0 ? (
@@ -443,14 +443,14 @@ export default function PatientDossierPage() {
         {/* Quick actions */}
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm p-5">
           <h2 className="text-sm font-semibold text-[#0b1c30] mb-4 flex items-center gap-2">
-            <Icon name="bolt" size={16} color="#006685" />
+            <Icon name="bolt" size={16} color="#82d8ff" />
             Actions rapides
           </h2>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setShowNote(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-              style={{ background: '#006685', color: '#ffffff' }}
+              style={{ background: '#82d8ff', color: '#ffffff' }}
             >
               <Icon name="note_add" size={16} color="#ffffff" />
               Nouvelle note
@@ -459,7 +459,7 @@ export default function PatientDossierPage() {
               onClick={() => setShowPrescription(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
             >
-              <Icon name="description" size={16} color="#006685" />
+              <Icon name="description" size={16} color="#82d8ff" />
               Nouvelle ordonnance
             </button>
             <Link

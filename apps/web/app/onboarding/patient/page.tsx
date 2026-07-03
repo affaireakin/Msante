@@ -125,12 +125,12 @@ export default function PatientOnboardingPage() {
             <div key={i} className="flex items-center flex-1 last:flex-none">
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
-                  style={{ backgroundColor: i <= step ? '#006685' : '#e5eeff', color: i <= step ? '#fff' : '#6f787e' }}>
+                  style={{ backgroundColor: i <= step ? '#82d8ff' : '#e5eeff', color: i <= step ? '#fff' : '#6f787e' }}>
                   {i < step ? <Icon name="check" size={14} color="#fff" /> : i + 1}
                 </div>
-                <span className="text-xs font-semibold hidden sm:block" style={{ color: i === step ? '#006685' : '#6f787e' }}>{s}</span>
+                <span className="text-xs font-semibold hidden sm:block" style={{ color: i === step ? '#82d8ff' : '#6f787e' }}>{s}</span>
               </div>
-              {i < STEPS.length - 1 && <div className="flex-1 h-0.5 mx-2" style={{ backgroundColor: i < step ? '#006685' : '#e5eeff' }} />}
+              {i < STEPS.length - 1 && <div className="flex-1 h-0.5 mx-2" style={{ backgroundColor: i < step ? '#82d8ff' : '#e5eeff' }} />}
             </div>
           ))}
         </div>
@@ -142,7 +142,7 @@ export default function PatientOnboardingPage() {
             <div className="space-y-5">
               <div className="text-center pb-2">
                 <div className="w-16 h-16 rounded-full bg-[#e5eeff] flex items-center justify-center mx-auto mb-4">
-                  <Icon name="waving_hand" size={28} color="#006685" />
+                  <Icon name="waving_hand" size={28} color="#82d8ff" />
                 </div>
                 <h2 className="text-2xl font-black text-[#0b1c30]">Bienvenue, {firstName} !</h2>
                 <p className="text-sm text-[#6f787e] mt-2">M-Santé vous connecte aux meilleurs professionnels de santé mentale</p>
@@ -151,13 +151,13 @@ export default function PatientOnboardingPage() {
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Téléphone (optionnel)</label>
                 <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+221 77 000 00 00"
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
               </div>
 
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Pays</label>
                 <select value={country} onChange={e => setCountry(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all">
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all">
                   <option value="SN">🇸🇳 Sénégal</option>
                   <option value="CI">🇨🇮 Côte d&apos;Ivoire</option>
                   <option value="CM">🇨🇲 Cameroun</option>
@@ -173,7 +173,7 @@ export default function PatientOnboardingPage() {
                   {[{ value: 'yes', label: 'Oui' }, { value: 'no', label: 'Première fois' }].map(opt => (
                     <button key={opt.value} type="button" onClick={() => setFirstTime(opt.value)}
                       className="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all"
-                      style={{ backgroundColor: firstTime === opt.value ? '#e5eeff' : '#f8f9ff', borderColor: firstTime === opt.value ? '#006685' : '#bec8ce', color: firstTime === opt.value ? '#006685' : '#6f787e' }}>
+                      style={{ backgroundColor: firstTime === opt.value ? '#e5eeff' : '#f8f9ff', borderColor: firstTime === opt.value ? '#82d8ff' : '#bec8ce', color: firstTime === opt.value ? '#82d8ff' : '#6f787e' }}>
                       {opt.label}
                     </button>
                   ))}
@@ -197,7 +197,7 @@ export default function PatientOnboardingPage() {
                   {BLOOD_TYPES.map(bt => (
                     <button key={bt} type="button" onClick={() => setBloodType(bt === bloodType ? '' : bt)}
                       className="px-3 py-1.5 rounded-full text-xs font-bold transition-all"
-                      style={{ backgroundColor: bloodType === bt ? '#006685' : '#e5eeff', color: bloodType === bt ? '#fff' : '#006685' }}>
+                      style={{ backgroundColor: bloodType === bt ? '#82d8ff' : '#e5eeff', color: bloodType === bt ? '#fff' : '#82d8ff' }}>
                       {bt}
                     </button>
                   ))}
@@ -209,12 +209,12 @@ export default function PatientOnboardingPage() {
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Taille (cm)</label>
                   <input type="number" value={heightCm} onChange={e => setHeightCm(e.target.value)} placeholder="170" min="100" max="250"
-                    className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
+                    className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Poids (kg)</label>
                   <input type="number" value={weightKg} onChange={e => setWeightKg(e.target.value)} placeholder="70" min="20" max="300"
-                    className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
+                    className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
                 </div>
               </div>
 
@@ -233,8 +233,8 @@ export default function PatientOnboardingPage() {
                 <div className="flex gap-2">
                   <input value={customAllergy} onChange={e => setCustomAllergy(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addCustomAllergy())}
-                    placeholder="Autre allergie..." className="flex-1 px-3 py-2 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
-                  <button type="button" onClick={addCustomAllergy} className="px-3 py-2 rounded-xl text-sm font-bold text-white" style={{ backgroundColor: '#006685' }}>
+                    placeholder="Autre allergie..." className="flex-1 px-3 py-2 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
+                  <button type="button" onClick={addCustomAllergy} className="px-3 py-2 rounded-xl text-sm font-bold text-white" style={{ backgroundColor: '#82d8ff' }}>
                     <Icon name="add" size={18} color="#fff" />
                   </button>
                 </div>
@@ -265,11 +265,11 @@ export default function PatientOnboardingPage() {
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Médicaments en cours (optionnel)</label>
                 <textarea value={medications} onChange={e => setMedications(e.target.value)} rows={2}
                   placeholder="Ex: Sertraline 50mg, Doliprane 1g si besoin..."
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all resize-none text-sm" />
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none text-sm" />
               </div>
 
               <div className="bg-[#e5eeff] border border-[#bee9ff] rounded-xl px-4 py-3 text-xs text-[#005e7a] flex items-start gap-2">
-                <Icon name="lock" size={14} color="#006685" />
+                <Icon name="lock" size={14} color="#82d8ff" />
                 <span>Ces données sont chiffrées et accessibles uniquement par vous et votre praticien.</span>
               </div>
             </div>
@@ -287,12 +287,12 @@ export default function PatientOnboardingPage() {
                 {GOALS.map(goal => (
                   <button key={goal.value} type="button" onClick={() => setGoals(toggle(goals, goal.value))}
                     className="flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left"
-                    style={{ backgroundColor: goals.includes(goal.value) ? '#e5eeff' : '#f8f9ff', borderColor: goals.includes(goal.value) ? '#006685' : '#bec8ce' }}>
+                    style={{ backgroundColor: goals.includes(goal.value) ? '#e5eeff' : '#f8f9ff', borderColor: goals.includes(goal.value) ? '#82d8ff' : '#bec8ce' }}>
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: goals.includes(goal.value) ? '#006685' : '#e5eeff' }}>
-                      <Icon name={goal.icon} size={18} color={goals.includes(goal.value) ? '#fff' : '#006685'} />
+                      style={{ backgroundColor: goals.includes(goal.value) ? '#82d8ff' : '#e5eeff' }}>
+                      <Icon name={goal.icon} size={18} color={goals.includes(goal.value) ? '#fff' : '#82d8ff'} />
                     </div>
-                    <span className="text-xs font-semibold" style={{ color: goals.includes(goal.value) ? '#006685' : '#3f484d' }}>{goal.label}</span>
+                    <span className="text-xs font-semibold" style={{ color: goals.includes(goal.value) ? '#82d8ff' : '#3f484d' }}>{goal.label}</span>
                   </button>
                 ))}
               </div>
@@ -303,12 +303,12 @@ export default function PatientOnboardingPage() {
                   <div className="flex flex-col gap-1">
                     <label className="text-xs text-[#6f787e]">Nom</label>
                     <input value={emergencyName} onChange={e => setEmergencyName(e.target.value)} placeholder="Prénom Nom"
-                      className="w-full px-3 py-2.5 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
+                      className="w-full px-3 py-2.5 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
                   </div>
                   <div className="flex flex-col gap-1">
                     <label className="text-xs text-[#6f787e]">Téléphone</label>
                     <input type="tel" value={emergencyPhone} onChange={e => setEmergencyPhone(e.target.value)} placeholder="+221 77 000 00 00"
-                      className="w-full px-3 py-2.5 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
+                      className="w-full px-3 py-2.5 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
                   </div>
                 </div>
               </div>
@@ -340,7 +340,7 @@ export default function PatientOnboardingPage() {
                   { icon: 'videocam', title: 'Consulter', desc: 'Séance sécurisée en ligne' },
                 ].map(item => (
                   <div key={item.title} className="rounded-xl p-3 bg-[#e5eeff] flex flex-col items-center text-center gap-1">
-                    <Icon name={item.icon} color="#006685" />
+                    <Icon name={item.icon} color="#82d8ff" />
                     <p className="text-xs font-bold text-[#0b1c30]">{item.title}</p>
                     <p className="text-xs text-[#6f787e]">{item.desc}</p>
                   </div>
@@ -373,7 +373,7 @@ export default function PatientOnboardingPage() {
 
             <button type="button" onClick={handleNext} disabled={saving}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:shadow-lg disabled:opacity-50"
-              style={{ backgroundColor: '#006685' }}>
+              style={{ backgroundColor: '#82d8ff' }}>
               {saving ? 'Enregistrement...' : step === STEPS.length - 1 ? 'Découvrir M-Santé' : 'Suivant'}
               {!saving && <Icon name={step === STEPS.length - 1 ? 'rocket_launch' : 'arrow_forward'} color="#fff" />}
             </button>

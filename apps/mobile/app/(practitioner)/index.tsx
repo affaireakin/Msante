@@ -25,7 +25,7 @@ function InitialsAvatar({ initials, size = 44 }: { initials: string; size?: numb
         width: size,
         height: size,
         borderRadius: size / 2,
-        backgroundColor: '#006685',
+        backgroundColor: '#82d8ff',
         alignItems: 'center',
         justifyContent: 'center',
       }}
@@ -127,10 +127,10 @@ export default function DashboardScreen() {
           <GlassCard style={{ backgroundColor: 'rgba(0,102,133,0.06)', borderColor: 'rgba(0,102,133,0.12)' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
                   <MaterialIcons name="account-balance-wallet" size={18} color="#fff" />
                 </View>
-                <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#006685', letterSpacing: 1, textTransform: 'uppercase' }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase' }}>
                   Revenus ce mois
                 </Text>
               </View>
@@ -146,7 +146,7 @@ export default function DashboardScreen() {
                     fontFamily: 'Manrope',
                     fontSize: 32,
                     fontWeight: '700',
-                    color: '#006685',
+                    color: '#82d8ff',
                     letterSpacing: -1,
                   }}
                 >
@@ -182,7 +182,7 @@ export default function DashboardScreen() {
           <View style={{ flexDirection: 'row', gap: 12 }}>
             <GlassCard style={{ flex: 1 }}>
               <View style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-                <MaterialIcons name="video-camera-front" size={17} color="#006685" />
+                <MaterialIcons name="video-camera-front" size={17} color="#82d8ff" />
               </View>
               <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#6f787e', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>
                 Consultations
@@ -235,7 +235,7 @@ export default function DashboardScreen() {
                   fontFamily: 'Manrope',
                   fontSize: 11,
                   fontWeight: '700',
-                  color: '#006685',
+                  color: '#82d8ff',
                   letterSpacing: 0.5,
                   textTransform: 'uppercase',
                 }}
@@ -333,7 +333,7 @@ export default function DashboardScreen() {
                         justifyContent: 'center',
                         flexDirection: 'row',
                         gap: 8,
-                        backgroundColor: '#006685',
+                        backgroundColor: '#82d8ff',
                       }}
                     >
                       <MaterialIcons name="videocam" size={20} color="#fff" />
@@ -384,7 +384,7 @@ export default function DashboardScreen() {
               }}
             >
               <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name="bar-chart" size={22} color="#006685" />
+                <MaterialIcons name="bar-chart" size={22} color="#82d8ff" />
               </View>
               <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#0b1c30', textAlign: 'center' }}>
                 Analytics
@@ -404,7 +404,7 @@ export default function DashboardScreen() {
               }}
             >
               <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name="description" size={22} color="#006685" />
+                <MaterialIcons name="description" size={22} color="#82d8ff" />
               </View>
               <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#0b1c30', textAlign: 'center' }}>
                 Notes cliniques
@@ -469,7 +469,7 @@ export default function DashboardScreen() {
                       <MaterialIcons
                         name={item.type?.includes('payment') ? 'credit-card' : 'mail'}
                         size={18}
-                        color={item.type?.includes('payment') ? '#705d00' : '#006685'}
+                        color={item.type?.includes('payment') ? '#705d00' : '#82d8ff'}
                       />
                     </View>
                     <View style={{ flex: 1, gap: 2 }}>

@@ -64,7 +64,7 @@ export function usePushNotifications(isAuthenticated: boolean) {
         name: 'M-Santé',
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#006685',
+        lightColor: '#82d8ff',
       })
     }
 

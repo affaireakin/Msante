@@ -47,7 +47,7 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 const PROVIDER_BAR_COLORS: Record<string, string> = {
-  wave: '#006685',
+  wave: '#82d8ff',
   orange_money: '#e65c00',
   card: '#5c35d4',
   stripe: '#635bff',
@@ -219,7 +219,7 @@ export default function PaymentsPage() {
         </div>
         <button
           onClick={handleExportCSV}
-          className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-[#006685] text-white text-sm font-semibold rounded-full hover:bg-[#005070] transition-colors"
+          className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-semibold rounded-full hover:bg-[#005070] transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -241,7 +241,7 @@ export default function PaymentsPage() {
             className="rounded-2xl p-5"
             style={{ backgroundColor: 'rgba(255,255,255,0.60)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.80)' }}
           >
-            <p className="text-xs font-bold text-[#006685] uppercase tracking-widest mb-2">{label}</p>
+            <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest mb-2">{label}</p>
             <p className={`text-xl font-bold ${color}`}>{value}</p>
           </div>
         ))}
@@ -258,7 +258,7 @@ export default function PaymentsPage() {
           boxShadow: '0 10px 30px -10px rgba(0,102,133,0.05)',
         }}
       >
-        <p className="text-xs font-bold text-[#006685] uppercase tracking-widest mb-4">
+        <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest mb-4">
           Revenus par provider (30 derniers jours)
         </p>
         {providerStats && providerStats.length > 0 ? (
@@ -344,7 +344,7 @@ export default function PaymentsPage() {
                 key={s}
                 onClick={() => { setStatus(s); setPage(0) }}
                 className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  status === s ? 'bg-[#006685] text-white' : 'bg-white/60 text-[#3f484d] border border-slate-200/50 hover:bg-white'
+                  status === s ? 'bg-[#82d8ff] text-[#0b1c30]' : 'bg-white/60 text-[#3f484d] border border-slate-200/50 hover:bg-white'
                 }`}
               >
                 {s === 'all' ? 'Tous' : s}
@@ -354,7 +354,7 @@ export default function PaymentsPage() {
           <select
             value={provider}
             onChange={(e) => { setProvider(e.target.value as Provider); setPage(0) }}
-            className="w-full sm:w-auto px-4 py-2 rounded-full text-sm bg-white/60 border border-slate-200/50 text-[#0b1c30] outline-none focus:border-[#006685]"
+            className="w-full sm:w-auto px-4 py-2 rounded-full text-sm bg-white/60 border border-slate-200/50 text-[#0b1c30] outline-none focus:border-[#82d8ff]"
           >
             {PROVIDERS.map(({ key, label }) => (
               <option key={key} value={key}>{label}</option>
@@ -428,7 +428,7 @@ export default function PaymentsPage() {
           <thead>
             <tr className="border-b border-slate-100/60">
               {['Date', 'Patient', 'Praticien', 'Montant', 'Provider', 'Statut', 'Action'].map((h) => (
-                <th key={h} className="text-left px-6 py-4 text-xs font-bold text-[#006685] uppercase tracking-widest">{h}</th>
+                <th key={h} className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">{h}</th>
               ))}
             </tr>
           </thead>
@@ -476,7 +476,7 @@ export default function PaymentsPage() {
           {!isLoading && (data?.payments ?? []).length > 0 && (
             <tfoot>
               <tr className="border-t border-slate-200/60 bg-[#f8f9ff]/60">
-                <td colSpan={3} className="px-6 py-3 text-xs font-bold text-[#006685] uppercase tracking-widest">
+                <td colSpan={3} className="px-6 py-3 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">
                   Total affiché
                 </td>
                 <td className="px-6 py-3 text-sm font-bold text-[#0b1c30]">

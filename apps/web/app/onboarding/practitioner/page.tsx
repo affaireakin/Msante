@@ -179,11 +179,11 @@ export default function PractitionerOnboardingPage() {
       </label>
       <div
         onClick={() => inputRef.current?.click()}
-        className="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all hover:border-[#006685] hover:bg-[#e5eeff]/30"
-        style={{ borderColor: docState.uploaded ? '#1d7a3a' : docState.file ? '#006685' : '#bec8ce', backgroundColor: docState.uploaded ? '#e8f5e9' : 'transparent' }}
+        className="flex items-center gap-4 p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all hover:border-[#82d8ff] hover:bg-[#e5eeff]/30"
+        style={{ borderColor: docState.uploaded ? '#1d7a3a' : docState.file ? '#82d8ff' : '#bec8ce', backgroundColor: docState.uploaded ? '#e8f5e9' : 'transparent' }}
       >
         <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: docState.uploaded ? '#e8f5e9' : '#e5eeff' }}>
-          <Icon name={docState.uploaded ? 'check_circle' : icon} color={docState.uploaded ? '#1d7a3a' : '#006685'} />
+          <Icon name={docState.uploaded ? 'check_circle' : icon} color={docState.uploaded ? '#1d7a3a' : '#82d8ff'} />
         </div>
         <div className="flex-1 min-w-0">
           {docState.file ? (
@@ -227,13 +227,13 @@ export default function PractitionerOnboardingPage() {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all"
-                  style={{ backgroundColor: i <= step ? '#006685' : '#e5eeff', color: i <= step ? '#fff' : '#6f787e' }}
+                  style={{ backgroundColor: i <= step ? '#82d8ff' : '#e5eeff', color: i <= step ? '#fff' : '#6f787e' }}
                 >
                   {i < step ? <Icon name="check" size={14} color="#fff" /> : i + 1}
                 </div>
-                <span className="text-xs font-semibold hidden sm:block" style={{ color: i === step ? '#006685' : '#6f787e' }}>{s}</span>
+                <span className="text-xs font-semibold hidden sm:block" style={{ color: i === step ? '#82d8ff' : '#6f787e' }}>{s}</span>
               </div>
-              {i < STEPS.length - 1 && <div className="flex-1 h-0.5 mx-2" style={{ backgroundColor: i < step ? '#006685' : '#e5eeff' }} />}
+              {i < STEPS.length - 1 && <div className="flex-1 h-0.5 mx-2" style={{ backgroundColor: i < step ? '#82d8ff' : '#e5eeff' }} />}
             </div>
           ))}
         </div>
@@ -251,7 +251,7 @@ export default function PractitionerOnboardingPage() {
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Spécialité *</label>
                 <select value={speciality} onChange={e => setSpeciality(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all">
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all">
                   <option value="">Sélectionnez</option>
                   {specialities.map(s => <option key={s}>{s}</option>)}
                 </select>
@@ -261,23 +261,23 @@ export default function PractitionerOnboardingPage() {
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Biographie *</label>
                 <textarea value={bio} onChange={e => setBio(e.target.value)} rows={4} maxLength={500}
                   placeholder="Expérience, approche thérapeutique, domaines d'expertise..."
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all resize-none" />
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none" />
                 <span className="text-xs text-[#6f787e] text-right">{bio.length}/500</span>
               </div>
 
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Téléphone <span className="text-[#ba1a1a]">*</span></label>
                 <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+221 77 000 00 00" required
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
                 <p className="text-xs text-[#6f787e]">Nécessaire pour la vérification de votre compte et les notifications patients</p>
               </div>
 
               <div className="flex items-start gap-3 p-4 rounded-xl bg-[#e5eeff] border border-[#bee9ff]">
                 <input type="checkbox" id="cgu" checked={cguAccepted} onChange={e => setCguAccepted(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 rounded border-[#006685] text-[#006685] accent-[#006685] cursor-pointer flex-shrink-0" />
+                  className="mt-0.5 w-4 h-4 rounded border-[#82d8ff] text-[#82d8ff] accent-[#82d8ff] cursor-pointer flex-shrink-0" />
                 <label htmlFor="cgu" className="text-sm text-[#0b1c30] cursor-pointer">
                   J&apos;ai lu et j&apos;accepte les{' '}
-                  <a href="/cgu" target="_blank" rel="noopener noreferrer" className="font-bold text-[#006685] underline hover:text-[#004d65]">
+                  <a href="/cgu" target="_blank" rel="noopener noreferrer" className="font-bold text-[#82d8ff] underline hover:text-[#004d65]">
                     Conditions Générales d&apos;Utilisation
                   </a>{' '}
                   de M-Santé <span className="text-[#ba1a1a]">*</span>
@@ -290,7 +290,7 @@ export default function PractitionerOnboardingPage() {
                   {LANGUAGES.map(lang => (
                     <button key={lang} type="button" onClick={() => setLanguages(toggle(languages, lang))}
                       className="px-3 py-1.5 rounded-full text-xs font-bold transition-all"
-                      style={{ backgroundColor: languages.includes(lang) ? '#006685' : '#e5eeff', color: languages.includes(lang) ? '#fff' : '#006685' }}>
+                      style={{ backgroundColor: languages.includes(lang) ? '#82d8ff' : '#e5eeff', color: languages.includes(lang) ? '#fff' : '#82d8ff' }}>
                       {lang}
                     </button>
                   ))}
@@ -311,9 +311,9 @@ export default function PractitionerOnboardingPage() {
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Tarif par séance *</label>
                 <div className="flex gap-2">
                   <input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="15000" min="0"
-                    className="flex-1 px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
+                    className="flex-1 px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
                   <select value={currency} onChange={e => setCurrency(e.target.value)}
-                    className="px-3 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all">
+                    className="px-3 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all">
                     <option>XOF</option><option>EUR</option><option>USD</option>
                   </select>
                 </div>
@@ -325,7 +325,7 @@ export default function PractitionerOnboardingPage() {
                   {DURATIONS.map(d => (
                     <button key={d.value} type="button" onClick={() => setDuration(d.value)}
                       className="py-2.5 rounded-xl text-sm font-bold transition-all"
-                      style={{ backgroundColor: duration === d.value ? '#006685' : '#e5eeff', color: duration === d.value ? '#fff' : '#006685' }}>
+                      style={{ backgroundColor: duration === d.value ? '#82d8ff' : '#e5eeff', color: duration === d.value ? '#fff' : '#82d8ff' }}>
                       {d.label}
                     </button>
                   ))}
@@ -338,9 +338,9 @@ export default function PractitionerOnboardingPage() {
                   {SESSION_TYPES.map(t => (
                     <button key={t.value} type="button" onClick={() => setSessionTypes(toggle(sessionTypes, t.value))}
                       className="flex flex-col items-center gap-2 p-4 rounded-xl transition-all border-2"
-                      style={{ backgroundColor: sessionTypes.includes(t.value) ? '#e5eeff' : '#f8f9ff', borderColor: sessionTypes.includes(t.value) ? '#006685' : '#bec8ce' }}>
-                      <Icon name={t.icon} color={sessionTypes.includes(t.value) ? '#006685' : '#6f787e'} />
-                      <span className="text-xs font-bold" style={{ color: sessionTypes.includes(t.value) ? '#006685' : '#6f787e' }}>{t.label}</span>
+                      style={{ backgroundColor: sessionTypes.includes(t.value) ? '#e5eeff' : '#f8f9ff', borderColor: sessionTypes.includes(t.value) ? '#82d8ff' : '#bec8ce' }}>
+                      <Icon name={t.icon} color={sessionTypes.includes(t.value) ? '#82d8ff' : '#6f787e'} />
+                      <span className="text-xs font-bold" style={{ color: sessionTypes.includes(t.value) ? '#82d8ff' : '#6f787e' }}>{t.label}</span>
                     </button>
                   ))}
                 </div>
@@ -349,7 +349,7 @@ export default function PractitionerOnboardingPage() {
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Fuseau horaire</label>
                 <select value={timezone} onChange={e => setTimezone(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all">
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all">
                   <option value="Africa/Dakar">Dakar (GMT+0)</option>
                   <option value="Africa/Abidjan">Abidjan (GMT+0)</option>
                   <option value="Africa/Douala">Douala (GMT+1)</option>
@@ -405,7 +405,7 @@ export default function PractitionerOnboardingPage() {
                   { icon: 'description', label: 'Documents', value: `${[diploma.file, idCard.file, license.file].filter(Boolean).length} fichier(s) à envoyer` },
                 ].map(row => (
                   <div key={row.label} className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#f8f9ff]">
-                    <Icon name={row.icon} color="#006685" />
+                    <Icon name={row.icon} color="#82d8ff" />
                     <div>
                       <p className="text-xs text-[#6f787e]">{row.label}</p>
                       <p className="text-sm font-semibold text-[#0b1c30]">{row.value}</p>
@@ -431,7 +431,7 @@ export default function PractitionerOnboardingPage() {
             <button type="button" onClick={handleNext}
               disabled={saving || (step === 0 && (!bio.trim() || !speciality || !phone.trim() || !cguAccepted)) || (step === 1 && (!price || sessionTypes.length === 0))}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-sky-500/20 disabled:opacity-50"
-              style={{ backgroundColor: '#006685' }}>
+              style={{ backgroundColor: '#82d8ff' }}>
               {saving ? 'Envoi en cours...' : step === STEPS.length - 1 ? 'Accéder à mon espace' : 'Suivant'}
               {!saving && <Icon name={step === STEPS.length - 1 ? 'rocket_launch' : 'arrow_forward'} color="#fff" />}
             </button>

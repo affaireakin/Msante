@@ -98,7 +98,7 @@ function InviteForm() {
 
   if (loading) return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -139,13 +139,13 @@ function InviteForm() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   required
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 pr-11 text-sm text-[#0b1c30] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#006685] focus:border-[#006685]"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 pr-11 text-sm text-[#0b1c30] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#82d8ff] focus:border-[#82d8ff]"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#006685] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#82d8ff] transition-colors"
                   tabIndex={-1}
                 >
                   <EyeIcon open={showPassword} />
@@ -160,13 +160,13 @@ function InviteForm() {
                   value={confirm}
                   onChange={e => setConfirm(e.target.value)}
                   required
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 pr-11 text-sm text-[#0b1c30] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#006685] focus:border-[#006685]"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 pr-11 text-sm text-[#0b1c30] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#82d8ff] focus:border-[#82d8ff]"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirm(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#006685] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#82d8ff] transition-colors"
                   tabIndex={-1}
                 >
                   <EyeIcon open={showConfirm} />
@@ -178,7 +178,7 @@ function InviteForm() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-[#006685] text-white rounded-lg py-3 font-semibold text-sm hover:bg-[#005470] transition disabled:opacity-50"
+              className="w-full bg-[#82d8ff] text-[#0b1c30] rounded-lg py-3 font-semibold text-sm hover:bg-[#005470] transition disabled:opacity-50"
             >
               {submitting ? 'Création...' : 'Créer mon compte'}
             </button>
@@ -191,7 +191,7 @@ function InviteForm() {
 
 export default function InvitePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" /></div>}>
       <InviteForm />
     </Suspense>
   )

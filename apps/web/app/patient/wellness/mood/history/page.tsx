@@ -13,8 +13,8 @@ const MOOD_CONFIG: Record<number, { label: string; color: string; bg: string }> 
   3:  { label: 'Faible',    color: '#c05000', bg: '#ffe5d0' },
   4:  { label: 'Moyen',     color: '#705d00', bg: '#fff8e1' },
   5:  { label: 'Correct',   color: '#705d00', bg: '#fff8e1' },
-  6:  { label: 'Bien',      color: '#006685', bg: '#e5eeff' },
-  7:  { label: 'Bien',      color: '#006685', bg: '#e5eeff' },
+  6:  { label: 'Bien',      color: '#82d8ff', bg: '#e5eeff' },
+  7:  { label: 'Bien',      color: '#82d8ff', bg: '#e5eeff' },
   8:  { label: 'Très bien', color: '#1d7a3a', bg: '#e8f5e9' },
   9:  { label: 'Excellent', color: '#1d7a3a', bg: '#e8f5e9' },
   10: { label: 'Parfait',   color: '#1d7a3a', bg: '#e8f5e9' },
@@ -74,7 +74,7 @@ export default function MoodHistoryPage() {
           <h1 className="text-2xl font-black text-[#0b1c30]">Historique humeur</h1>
           <p className="text-sm text-[#6f787e]">30 derniers jours</p>
         </div>
-        <Link href="/patient/wellness/mood" className="ml-auto flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white bg-[#006685] hover:shadow-lg transition-all">
+        <Link href="/patient/wellness/mood" className="ml-auto flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-[#0b1c30] bg-[#82d8ff] hover:shadow-lg transition-all">
           <Icon name="add" style={{ color: '#fff', fontSize: '18px' }} />
           Check-in
         </Link>
@@ -93,7 +93,7 @@ export default function MoodHistoryPage() {
           {
             label: 'Entrées ce mois',
             value: entries.length,
-            color: '#006685',
+            color: '#82d8ff',
             bg: '#e5eeff',
             icon: 'calendar_month',
           },
@@ -166,7 +166,7 @@ export default function MoodHistoryPage() {
           <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
             <Icon name="mood" style={{ fontSize: '48px', color: '#bec8ce' }} />
             <p className="font-semibold text-[#0b1c30] mt-3">Aucune entrée</p>
-            <Link href="/patient/wellness/mood" className="mt-4 inline-block px-5 py-2 bg-[#006685] text-white text-sm font-bold rounded-xl">
+            <Link href="/patient/wellness/mood" className="mt-4 inline-block px-5 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl">
               Premier check-in
             </Link>
           </div>
@@ -189,7 +189,7 @@ export default function MoodHistoryPage() {
                   </p>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {(entry.emotions ?? []).slice(0, 3).map((em: string) => (
-                      <span key={em} className="text-[10px] px-2 py-0.5 rounded-full bg-[#e5eeff] text-[#006685] font-semibold">{em}</span>
+                      <span key={em} className="text-[10px] px-2 py-0.5 rounded-full bg-[#e5eeff] text-[#82d8ff] font-semibold">{em}</span>
                     ))}
                   </div>
                   {entry.note && (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+﻿import React, { useState, useEffect, useCallback } from 'react'
 import {
   View,
   Text,
@@ -126,7 +126,7 @@ export default function PermissionsScreen() {
           style={styles.backButton}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <MaterialIcons name="arrow-back" size={scale(24)} color="#006685" />
+          <MaterialIcons name="arrow-back" size={scale(24)} color="#82d8ff" />
         </TouchableOpacity>
         <View style={styles.headerTextBlock}>
           <Text
@@ -159,8 +159,8 @@ export default function PermissionsScreen() {
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={refetch}
-            tintColor="#006685"
-            colors={['#006685']}
+            tintColor="#82d8ff"
+            colors={['#82d8ff']}
           />
         }
       >
@@ -181,7 +181,7 @@ export default function PermissionsScreen() {
             <MaterialIcons
               name="info-outline"
               size={scale(18)}
-              color="#006685"
+              color="#82d8ff"
               style={{ marginTop: 1 }}
             />
             <Text
@@ -201,7 +201,7 @@ export default function PermissionsScreen() {
         {isLoading ? (
           <ActivityIndicator
             size="large"
-            color="#006685"
+            color="#82d8ff"
             style={{ marginTop: scale(40) }}
           />
         ) : (
@@ -215,7 +215,7 @@ export default function PermissionsScreen() {
                     styles.groupHeader,
                     {
                       fontSize: fs.sm,
-                      color: '#006685',
+                      color: '#82d8ff',
                       marginBottom: scale(10),
                       letterSpacing: 0.8,
                     },
@@ -261,7 +261,7 @@ export default function PermissionsScreen() {
                               >['name']
                             }
                             size={scale(22)}
-                            color="#006685"
+                            color="#82d8ff"
                           />
                         </View>
 
@@ -301,7 +301,7 @@ export default function PermissionsScreen() {
                             true: 'rgba(0,102,133,0.35)',
                           }}
                           thumbColor={
-                            toggles[item.key] ? '#006685' : '#ffffff'
+                            toggles[item.key] ? '#82d8ff' : '#ffffff'
                           }
                           ios_backgroundColor="#bec8ce"
                         />
@@ -342,7 +342,7 @@ export default function PermissionsScreen() {
             {
               height: scale(52),
               borderRadius: scale(26),
-              backgroundColor: isPending ? '#82d8ff' : '#006685',
+              backgroundColor: isPending ? '#82d8ff' : '#82d8ff',
             },
           ]}
           onPress={handleSave}
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.80)',
     // Shadow iOS
-    shadowColor: '#006685',
+    shadowColor: '#82d8ff',
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 10 },
     shadowRadius: 30,
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.60)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.80)',
-    shadowColor: '#006685',
+    shadowColor: '#82d8ff',
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 10 },
     shadowRadius: 30,
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
   saveButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#006685',
+    shadowColor: '#82d8ff',
     shadowOpacity: 0.25,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 12,

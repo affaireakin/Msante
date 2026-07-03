@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import {
   View, Text, TouchableOpacity, Alert, ActivityIndicator, StatusBar,
 } from 'react-native'
@@ -30,7 +30,7 @@ function InitialsAvatar({ name, size = 56 }: { name: string; size?: number }) {
   return (
     <View style={{
       width: size, height: size, borderRadius: size / 2,
-      backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center',
+      backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center',
     }}>
       <Text style={{ color: '#fff', fontSize: size * 0.36, fontFamily: 'Manrope', fontWeight: '700' }}>
         {initials}
@@ -179,7 +179,7 @@ export default function PractitionerConsultationScreen() {
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#1d7a3a' }} />
-          <Text style={{ fontSize: 13, fontFamily: 'Manrope', fontWeight: '700', color: '#006685', letterSpacing: 0.5, textTransform: 'uppercase' }}>
+          <Text style={{ fontSize: 13, fontFamily: 'Manrope', fontWeight: '700', color: '#82d8ff', letterSpacing: 0.5, textTransform: 'uppercase' }}>
             Consultation
           </Text>
         </View>
@@ -190,7 +190,7 @@ export default function PractitionerConsultationScreen() {
 
         {isLoading ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <ActivityIndicator color="#006685" size="large" />
+            <ActivityIndicator color="#82d8ff" size="large" />
           </View>
         ) : (
           <>
@@ -223,7 +223,7 @@ export default function PractitionerConsultationScreen() {
               ].map(row => (
                 <View key={row.label} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                   <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                    <MaterialIcons name={row.icon} size={18} color="#006685" />
+                    <MaterialIcons name={row.icon} size={18} color="#82d8ff" />
                   </View>
                   <View>
                     <Text style={{ fontSize: 11, fontFamily: 'Manrope', fontWeight: '700', color: '#6f787e', textTransform: 'uppercase', letterSpacing: 0.5 }}>{row.label}</Text>
@@ -257,7 +257,7 @@ export default function PractitionerConsultationScreen() {
               onPress={handleJoin}
               disabled={!consultation || isJoining}
               style={{
-                backgroundColor: consultation ? '#006685' : '#bec8ce',
+                backgroundColor: consultation ? '#82d8ff' : '#bec8ce',
                 paddingVertical: 18,
                 borderRadius: 16,
                 flexDirection: 'row',
@@ -265,7 +265,7 @@ export default function PractitionerConsultationScreen() {
                 justifyContent: 'center',
                 gap: 10,
                 opacity: isJoining ? 0.7 : 1,
-                shadowColor: '#006685',
+                shadowColor: '#82d8ff',
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: consultation ? 0.20 : 0,
                 shadowRadius: 16,

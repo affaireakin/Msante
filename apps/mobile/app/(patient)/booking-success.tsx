@@ -14,7 +14,7 @@ function DetailRow({ label, value, icon }: { label: string; value?: string; icon
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: scale(8) }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
         <View style={{ width: scale(28), height: scale(28), borderRadius: scale(8), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-          <MaterialIcons name={icon} size={scale(14)} color="#006685" />
+          <MaterialIcons name={icon} size={scale(14)} color="#82d8ff" />
         </View>
         <Text style={{ fontSize: fs.sm, color: '#6f787e', fontFamily: 'Manrope' }}>{label}</Text>
       </View>
@@ -78,14 +78,14 @@ export default function BookingSuccessScreen() {
           padding: scale(18),
           borderWidth: 1,
           borderColor: '#e5eeff',
-          shadowColor: '#006685',
+          shadowColor: '#82d8ff',
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.06,
           shadowRadius: 16,
           elevation: 3,
           gap: 0,
         }}>
-          <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#006685', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(8) }}>
+          <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(8) }}>
             Détails du rendez-vous
           </Text>
 
@@ -104,7 +104,7 @@ export default function BookingSuccessScreen() {
             onPress={handleAddToCalendar}
             style={{
               borderWidth: 1.5,
-              borderColor: '#006685',
+              borderColor: '#82d8ff',
               borderRadius: scale(14),
               paddingVertical: scale(14),
               alignItems: 'center',
@@ -114,8 +114,8 @@ export default function BookingSuccessScreen() {
               backgroundColor: 'rgba(0,102,133,0.04)',
             }}
           >
-            <MaterialIcons name="event-available" size={scale(18)} color="#006685" />
-            <Text style={{ color: '#006685', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
+            <MaterialIcons name="event-available" size={scale(18)} color="#82d8ff" />
+            <Text style={{ color: '#82d8ff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
               Ajouter au calendrier
             </Text>
           </TouchableOpacity>
@@ -155,7 +155,7 @@ export default function BookingSuccessScreen() {
           {/* Back to home */}
           <TouchableOpacity
             onPress={handleHome}
-            style={{ backgroundColor: '#006685', borderRadius: scale(14), paddingVertical: scale(15), alignItems: 'center' }}
+            style={{ backgroundColor: '#82d8ff', borderRadius: scale(14), paddingVertical: scale(15), alignItems: 'center' }}
           >
             <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
               Retour à l'accueil

@@ -145,13 +145,13 @@ function AddProfessionModal({ onClose }: { onClose: () => void }) {
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Nom de la profession <span className="text-red-500">*</span></label>
               <input type="text" value={label} onChange={e => setLabel(e.target.value)}
                 placeholder="Ex: Diététicien"
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685]" />
+                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]" />
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Clé technique <span className="text-slate-400 font-normal">(auto-générée)</span></label>
               <input type="text" value={key} onChange={e => setKey(e.target.value)}
                 placeholder="Ex: dieteticien"
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685]" />
+                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]" />
             </div>
           </div>
 
@@ -159,7 +159,7 @@ function AddProfessionModal({ onClose }: { onClose: () => void }) {
             <label className="block text-xs font-semibold text-slate-600 mb-1.5">Description <span className="text-slate-400 font-normal">(optionnel)</span></label>
             <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2}
               placeholder="Contexte clinique, responsabilités…"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685] resize-none" />
+              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] resize-none" />
           </div>
 
           <div>
@@ -167,8 +167,8 @@ function AddProfessionModal({ onClose }: { onClose: () => void }) {
             <div className="grid grid-cols-2 gap-2">
               {PERM_LABELS.map(p => (
                 <label key={p.key} className="flex items-center gap-2.5 px-3 py-2 rounded-xl border cursor-pointer hover:bg-slate-50 transition-colors"
-                  style={{ borderColor: perms[p.key] ? '#006685' : '#e2e8f0', backgroundColor: perms[p.key] ? '#f0f9ff' : 'transparent' }}>
-                  <input type="checkbox" checked={perms[p.key]} onChange={() => toggle(p.key)} className="w-4 h-4 accent-[#006685]" />
+                  style={{ borderColor: perms[p.key] ? '#82d8ff' : '#e2e8f0', backgroundColor: perms[p.key] ? '#f0f9ff' : 'transparent' }}>
+                  <input type="checkbox" checked={perms[p.key]} onChange={() => toggle(p.key)} className="w-4 h-4 accent-[#82d8ff]" />
                   <span className="text-xs font-medium text-[#0b1c30]">{p.label}</span>
                 </label>
               ))}
@@ -195,7 +195,7 @@ function AddProfessionModal({ onClose }: { onClose: () => void }) {
           </button>
           <button onClick={() => mutation.mutate()} disabled={mutation.isPending}
             className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-60"
-            style={{ backgroundColor: '#006685' }}>
+            style={{ backgroundColor: '#82d8ff' }}>
             {mutation.isPending ? 'Création…' : 'Créer la profession'}
           </button>
         </div>
@@ -222,7 +222,7 @@ export default function RolesPage() {
           </div>
           <button onClick={() => setShowModal(true)}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90 flex-shrink-0"
-            style={{ backgroundColor: '#006685' }}>
+            style={{ backgroundColor: '#82d8ff' }}>
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
@@ -232,8 +232,8 @@ export default function RolesPage() {
 
         {/* Explainer */}
         <div className="flex items-start gap-3 bg-[#e5eeff] rounded-xl px-4 py-3">
-          <span className="material-symbols-outlined text-[#006685] mt-0.5" style={{ fontSize: '18px' }}>info</span>
-          <div className="text-xs text-[#006685] leading-relaxed">
+          <span className="material-symbols-outlined text-[#82d8ff] mt-0.5" style={{ fontSize: '18px' }}>info</span>
+          <div className="text-xs text-[#82d8ff] leading-relaxed">
             <strong>Deux niveaux de contrôle :</strong> Ici vous définissez ce que chaque profession peut faire par défaut.
             Le patient contrôle ensuite précisément l'accès de chaque praticien individuel depuis son espace (Mes permissions).
           </div>
@@ -267,7 +267,7 @@ export default function RolesPage() {
                 {!isLoading && !error && professions?.length === 0 && (
                   <tr><td colSpan={9} className="px-6 py-14 text-center">
                     <p className="text-sm font-medium text-[#3f484d]">Aucune profession configurée</p>
-                    <button onClick={() => setShowModal(true)} className="mt-3 px-4 py-2 rounded-xl text-sm font-semibold text-white" style={{ backgroundColor: '#006685' }}>
+                    <button onClick={() => setShowModal(true)} className="mt-3 px-4 py-2 rounded-xl text-sm font-semibold text-white" style={{ backgroundColor: '#82d8ff' }}>
                       Ajouter la première profession
                     </button>
                   </td></tr>
@@ -301,7 +301,7 @@ export default function RolesPage() {
                     <td className="px-4 py-4 text-center"><BooleanCell value={prof.can_view_mood_journal ?? false} /></td>
                     <td className="px-4 py-4 text-center">
                       <Link href={`/admin/roles/${prof.profession_key}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#006685] bg-sky-50 border border-sky-200/60 hover:bg-sky-100 transition-colors">
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#82d8ff] bg-sky-50 border border-sky-200/60 hover:bg-sky-100 transition-colors">
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                         </svg>

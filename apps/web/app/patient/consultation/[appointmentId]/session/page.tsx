@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
@@ -234,7 +234,7 @@ export default function PatientSessionPage() {
         <div className="w-72 flex flex-col">
           <div className="flex-1 bg-white/5 backdrop-blur-xl rounded-xl border border-white/15 flex flex-col overflow-hidden">
             <div className="px-4 py-3 border-b border-white/10 flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#006685] text-base select-none">lock</span>
+              <span className="material-symbols-outlined text-[#82d8ff] text-base select-none">lock</span>
               <h3 className="text-white font-semibold text-sm">Chat sécurisé</h3>
             </div>
             <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2 min-h-0">
@@ -243,7 +243,7 @@ export default function PatientSessionPage() {
               )}
               {chatMessages.map(msg => (
                 <div key={msg.id} className={`flex ${msg.role === 'patient' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] py-2 px-3 rounded-xl text-sm ${msg.role === 'patient' ? 'bg-[#006685] text-white rounded-tr-sm' : 'bg-white/10 text-white/90 border border-white/10 rounded-tl-sm'}`}>
+                  <div className={`max-w-[80%] py-2 px-3 rounded-xl text-sm ${msg.role === 'patient' ? 'bg-[#82d8ff] text-[#0b1c30] rounded-tr-sm' : 'bg-white/10 text-white/90 border border-white/10 rounded-tl-sm'}`}>
                     <p>{msg.content}</p>
                     <span className="text-[10px] mt-0.5 block opacity-50 text-right">
                       {new Date(msg.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
@@ -259,12 +259,12 @@ export default function PatientSessionPage() {
                 onChange={e => setChatInput(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void handleSendMessage() } }}
                 placeholder="Message…"
-                className="flex-1 bg-white/5 border border-white/15 rounded-full px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-[#006685]/50"
+                className="flex-1 bg-white/5 border border-white/15 rounded-full px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-[#82d8ff]/50"
               />
               <button
                 onClick={() => void handleSendMessage()}
                 disabled={!chatInput.trim()}
-                className="w-8 h-8 rounded-full bg-[#006685] text-white flex items-center justify-center hover:bg-[#006685]/80 transition-colors disabled:opacity-30"
+                className="w-8 h-8 rounded-full bg-[#82d8ff] text-[#0b1c30] flex items-center justify-center hover:bg-[#82d8ff]/80 transition-colors disabled:opacity-30"
               >
                 <span className="material-symbols-outlined text-sm select-none">send</span>
               </button>

@@ -13,7 +13,7 @@ export function ActionCards({ showCrisis = false }: Props) {
       <View className="flex-row gap-4 py-2">
         <View
           className="bg-white/60 rounded-xl p-5 w-64 border border-white/50 gap-4"
-          style={{ shadowColor: '#006685', shadowOpacity: 0.05, shadowRadius: 16, elevation: 2 }}
+          style={{ shadowColor: '#82d8ff', shadowOpacity: 0.05, shadowRadius: 16, elevation: 2 }}
         >
           <View className="w-10 h-10 rounded-full bg-primary-container/30 items-center justify-center">
             <Text className="text-xl">🌬️</Text>
@@ -37,7 +37,7 @@ export function ActionCards({ showCrisis = false }: Props) {
 
         <View
           className="bg-white/60 rounded-xl p-5 w-64 border border-white/50 gap-4"
-          style={{ shadowColor: '#006685', shadowOpacity: 0.05, shadowRadius: 16, elevation: 2 }}
+          style={{ shadowColor: '#82d8ff', shadowOpacity: 0.05, shadowRadius: 16, elevation: 2 }}
         >
           <View className="w-10 h-10 rounded-full bg-surface-variant items-center justify-center">
             <Text className="text-xl">👨‍⚕️</Text>

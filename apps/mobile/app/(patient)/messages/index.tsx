@@ -82,12 +82,12 @@ export default function PatientMessagesScreen() {
 
       {isLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator color="#006685" size="large" />
+          <ActivityIndicator color="#82d8ff" size="large" />
         </View>
       ) : conversations.length === 0 ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingHorizontal: 40 }}>
           <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-            <MaterialIcons name="chat-bubble-outline" size={36} color="#006685" />
+            <MaterialIcons name="chat-bubble-outline" size={36} color="#82d8ff" />
           </View>
           <Text style={{ fontSize: 17, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center' }}>
             Aucun message
@@ -108,7 +108,7 @@ export default function PatientMessagesScreen() {
               style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 20, paddingVertical: 14, backgroundColor: item.unread > 0 ? 'rgba(0,102,133,0.03)' : 'transparent' }}
             >
               <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Text style={{ fontFamily: 'Manrope', fontWeight: '800', fontSize: 16, color: '#006685' }}>
+                <Text style={{ fontFamily: 'Manrope', fontWeight: '800', fontSize: 16, color: '#82d8ff' }}>
                   {getInitials(item.partnerName)}
                 </Text>
               </View>
@@ -126,7 +126,7 @@ export default function PatientMessagesScreen() {
                 </Text>
               </View>
               {item.unread > 0 && (
-                <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
                   <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff', fontFamily: 'Manrope' }}>
                     {item.unread > 9 ? '9+' : item.unread}
                   </Text>

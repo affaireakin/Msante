@@ -86,7 +86,7 @@ export default function JournalNewPage() {
           disabled={!canSave || saveMutation.isPending}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all"
           style={{
-            backgroundColor: canSave ? '#006685' : '#bec8ce',
+            backgroundColor: canSave ? '#82d8ff' : '#bec8ce',
             cursor: canSave ? 'pointer' : 'not-allowed',
             boxShadow: canSave ? '0 4px 12px rgba(0,102,133,0.20)' : 'none',
           }}
@@ -117,7 +117,7 @@ export default function JournalNewPage() {
                 onClick={() => setMoodScore(moodScore === n ? null : n)}
                 className="flex-1 h-8 rounded-lg text-xs font-bold transition-all"
                 style={{
-                  backgroundColor: moodScore === n ? '#006685' : '#f1f5f9',
+                  backgroundColor: moodScore === n ? '#82d8ff' : '#f1f5f9',
                   color: moodScore === n ? '#fff' : '#6f787e',
                 }}
               >
@@ -139,7 +139,7 @@ export default function JournalNewPage() {
                   onClick={() => toggle(e.id)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
                   style={{
-                    backgroundColor: active ? '#006685' : '#f1f5f9',
+                    backgroundColor: active ? '#82d8ff' : '#f1f5f9',
                     color: active ? '#fff' : '#3f484d',
                     border: active ? 'none' : '1px solid #bec8ce',
                   }}
@@ -165,8 +165,8 @@ export default function JournalNewPage() {
 
       {/* Réflexions guidées */}
       <div className="rounded-2xl p-5 space-y-3" style={{ backgroundColor: 'rgba(190,233,255,0.20)', border: '1px solid rgba(130,216,255,0.30)' }}>
-        <p className="text-xs font-bold text-[#006685] uppercase tracking-widest flex items-center gap-1.5">
-          <Icon name="lightbulb" style={{ fontSize: '14px', color: '#006685' }} />
+        <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest flex items-center gap-1.5">
+          <Icon name="lightbulb" style={{ fontSize: '14px', color: '#82d8ff' }} />
           Réflexions guidées
         </p>
         <div className="space-y-2">

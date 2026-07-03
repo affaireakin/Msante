@@ -7,7 +7,7 @@ export default function CGUPage() {
     <div className="min-h-screen bg-[#f8f9ff]">
       <header className="bg-white/70 backdrop-blur-xl border-b border-slate-200/50 px-6 py-4 flex items-center gap-4 sticky top-0 z-10">
         <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-[#006685] flex items-center justify-center shadow">
+          <div className="w-8 h-8 rounded-xl bg-[#82d8ff] flex items-center justify-center shadow">
             <span className="material-symbols-outlined text-white" style={{ fontSize: '16px' }}>medical_services</span>
           </div>
           <span className="text-base font-black tracking-tighter text-[#0b1c30]">M-Santé</span>
@@ -109,11 +109,11 @@ export default function CGUPage() {
         <div className="pt-6 border-t border-slate-200/50 flex items-center gap-4">
           <Link
             href="/auth/signup"
-            className="px-6 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#006685]/20 transition-all"
+            className="px-6 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#82d8ff]/20 transition-all"
           >
             Créer mon compte
           </Link>
-          <Link href="/auth/login" className="text-sm text-[#006685] font-semibold hover:underline">
+          <Link href="/auth/login" className="text-sm text-[#82d8ff] font-semibold hover:underline">
             Se connecter
           </Link>
         </div>

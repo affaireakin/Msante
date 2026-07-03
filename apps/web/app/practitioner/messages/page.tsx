@@ -12,7 +12,7 @@ type DocTypeId = 'analyse' | 'ordonnance' | 'compte_rendu' | 'imagerie' | 'autre
 const DOC_TYPES: { id: DocTypeId; label: string; icon: string; color: string; bg: string }[] = [
   { id: 'analyse',      label: 'Résultat d\'analyse',  icon: 'science',       color: '#1d7a3a', bg: '#e8f5e9' },
   { id: 'ordonnance',   label: 'Ordonnance',            icon: 'medication',    color: '#705d00', bg: '#fff8e1' },
-  { id: 'compte_rendu', label: 'Compte-rendu médical',  icon: 'description',   color: '#006685', bg: '#e5eeff' },
+  { id: 'compte_rendu', label: 'Compte-rendu médical',  icon: 'description',   color: '#82d8ff', bg: '#e5eeff' },
   { id: 'imagerie',     label: 'Imagerie médicale',     icon: 'radiology',     color: '#5c5f61', bg: '#e0e3e5' },
   { id: 'autre',        label: 'Autre document',        icon: 'attach_file',   color: '#6f787e', bg: '#f1f5f9' },
 ]
@@ -353,7 +353,7 @@ export default function PractitionerMessagesPage() {
           <button
             onClick={() => { setShowNewConv(true); setPatientSearch('') }}
             className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: '#006685' }}
+            style={{ backgroundColor: '#82d8ff' }}
           >
             <Icon name="add" style={{ fontSize: '16px' }} />
             Nouveau
@@ -374,7 +374,7 @@ export default function PractitionerMessagesPage() {
               <button
                 onClick={() => setShowNewConv(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white"
-                style={{ backgroundColor: '#006685' }}
+                style={{ backgroundColor: '#82d8ff' }}
               >
                 <Icon name="add" style={{ fontSize: '18px' }} />
                 Nouveau message
@@ -388,7 +388,7 @@ export default function PractitionerMessagesPage() {
                 className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[#eff4ff]/50"
                 style={{ backgroundColor: activeConv?.partnerId === conv.partnerId ? 'rgba(229,238,255,0.6)' : 'transparent' }}
               >
-                <div className="w-10 h-10 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-sm font-bold flex-shrink-0">
                   {getInitials(conv.partnerName)}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -399,7 +399,7 @@ export default function PractitionerMessagesPage() {
                   <p className="text-xs text-[#6f787e] truncate mt-0.5">{conv.lastMessage}</p>
                 </div>
                 {conv.unread > 0 && (
-                  <span className="w-5 h-5 rounded-full bg-[#006685] text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                  <span className="w-5 h-5 rounded-full bg-[#82d8ff] text-[#0b1c30] text-[10px] font-bold flex items-center justify-center flex-shrink-0">
                     {conv.unread}
                   </span>
                 )}
@@ -413,7 +413,7 @@ export default function PractitionerMessagesPage() {
           <div className="absolute inset-0 z-20 flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)' }}>
             <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-100">
               <button onClick={() => setShowNewConv(false)} className="p-1 rounded-lg hover:bg-slate-100 transition-colors">
-                <Icon name="arrow_back" style={{ fontSize: '20px', color: '#006685' }} />
+                <Icon name="arrow_back" style={{ fontSize: '20px', color: '#82d8ff' }} />
               </button>
               <div>
                 <p className="text-sm font-bold text-[#0b1c30]">Nouveau message</p>
@@ -434,7 +434,7 @@ export default function PractitionerMessagesPage() {
             <div className="flex-1 overflow-y-auto">
               {loadingPatients ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="w-5 h-5 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
                 </div>
               ) : filteredPatients.length === 0 ? (
                 <div className="px-6 py-8 text-center">
@@ -449,7 +449,7 @@ export default function PractitionerMessagesPage() {
                     onClick={() => startConversation(p)}
                     className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#eff4ff]/60 transition-colors border-b border-slate-50"
                   >
-                    <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-sm font-bold flex-shrink-0">
                       {getInitials(p.full_name)}
                     </div>
                     <span className="text-sm font-semibold text-[#0b1c30]">{p.full_name}</span>
@@ -466,7 +466,7 @@ export default function PractitionerMessagesPage() {
       {!activeConv ? (
         <div className="hidden md:flex flex-1 items-center justify-center flex-col gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.40)' }}>
           <div className="w-16 h-16 rounded-2xl bg-[#e5eeff] flex items-center justify-center">
-            <Icon name="forum" style={{ fontSize: '32px', color: '#006685' }} />
+            <Icon name="forum" style={{ fontSize: '32px', color: '#82d8ff' }} />
           </div>
           <div className="text-center">
             <p className="text-sm font-bold text-[#0b1c30]">Sélectionnez une conversation</p>
@@ -480,7 +480,7 @@ export default function PractitionerMessagesPage() {
             <button onClick={() => setActiveConv(null)} className="p-1 rounded-lg hover:bg-slate-100 transition-colors mr-1">
               <Icon name="arrow_back" style={{ fontSize: '18px', color: '#6f787e' }} />
             </button>
-            <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold">
+            <div className="w-9 h-9 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-sm font-bold">
               {getInitials(activeConv.partnerName)}
             </div>
             <div className="flex-1">
@@ -514,7 +514,7 @@ export default function PractitionerMessagesPage() {
               <Icon name="do_not_disturb" style={{ fontSize: '14px', color: '#6f787e' }} />
               <p className="text-xs text-[#6f787e] flex-1">Cette conversation est clôturée. Le patient ne peut plus envoyer de nouveaux messages.</p>
               <button onClick={() => closeConvMutation.mutate({ partnerId: activeConv.partnerId, close: false })}
-                className="text-xs font-bold text-[#006685] hover:underline flex-shrink-0">
+                className="text-xs font-bold text-[#82d8ff] hover:underline flex-shrink-0">
                 Rouvrir
               </button>
             </div>
@@ -524,7 +524,7 @@ export default function PractitionerMessagesPage() {
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
             {loadingThread ? (
               <div className="flex items-center justify-center h-full">
-                <div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
               </div>
             ) : groups.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
@@ -550,7 +550,7 @@ export default function PractitionerMessagesPage() {
                     const displayName = msg.sender_prefix ? `${msg.sender_prefix} ${msg.sender_name}` : msg.sender_name
                     const roleLabel = msg.sender_role === 'practitioner' ? 'Médecin' : msg.sender_role === 'admin' ? 'Admin' : 'Patient'
                     const roleBg = msg.sender_role === 'practitioner' ? '#e5eeff' : msg.sender_role === 'admin' ? '#ede9fe' : '#e8f5e9'
-                    const roleColor = msg.sender_role === 'practitioner' ? '#006685' : msg.sender_role === 'admin' ? '#7c3aed' : '#1d7a3a'
+                    const roleColor = msg.sender_role === 'practitioner' ? '#82d8ff' : msg.sender_role === 'admin' ? '#7c3aed' : '#1d7a3a'
                     return (
                       <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'} items-end gap-2`}>
                         {!isMe && (
@@ -569,20 +569,20 @@ export default function PractitionerMessagesPage() {
                             </div>
                           )}
                           {hasDoc && dt ? (
-                            <div className="rounded-xl overflow-hidden border" style={{ borderColor: isMe ? 'rgba(255,255,255,0.15)' : 'rgba(226,232,240,0.8)', backgroundColor: isMe ? '#006685' : '#fff', minWidth: '200px' }}>
+                            <div className="rounded-xl overflow-hidden border" style={{ borderColor: isMe ? 'rgba(255,255,255,0.15)' : 'rgba(226,232,240,0.8)', backgroundColor: isMe ? '#82d8ff' : '#fff', minWidth: '200px' }}>
                               <div className="flex items-center gap-2 px-3 py-2" style={{ backgroundColor: isMe ? 'rgba(255,255,255,0.1)' : dt.bg }}>
                                 <Icon name={dt.icon} style={{ fontSize: '13px', color: isMe ? '#bee9ff' : dt.color }} />
                                 <span className="text-xs font-bold uppercase tracking-wide" style={{ color: isMe ? '#bee9ff' : dt.color }}>{dt.label}</span>
                               </div>
                               <div className="px-3 py-2.5 space-y-2">
                                 <p className="text-sm font-medium" style={{ color: isMe ? '#fff' : '#0b1c30' }}>{msg.attachment_name}</p>
-                                <button onClick={() => void handleOpenDoc(msg.attachment_url!)} className="flex items-center gap-1.5 text-xs font-bold rounded-full px-2.5 py-1" style={{ backgroundColor: isMe ? 'rgba(255,255,255,0.15)' : '#e5eeff', color: isMe ? '#bee9ff' : '#006685' }}>
+                                <button onClick={() => void handleOpenDoc(msg.attachment_url!)} className="flex items-center gap-1.5 text-xs font-bold rounded-full px-2.5 py-1" style={{ backgroundColor: isMe ? 'rgba(255,255,255,0.15)' : '#e5eeff', color: isMe ? '#bee9ff' : '#82d8ff' }}>
                                   <Icon name="download" style={{ fontSize: '13px' }} />Télécharger
                                 </button>
                               </div>
                             </div>
                           ) : (
-                            <div className="px-4 py-2.5 text-sm" style={{ backgroundColor: isMe ? '#006685' : 'rgba(255,255,255,0.80)', color: isMe ? '#fff' : '#0b1c30', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px' }}>
+                            <div className="px-4 py-2.5 text-sm" style={{ backgroundColor: isMe ? '#82d8ff' : 'rgba(255,255,255,0.80)', color: isMe ? '#fff' : '#0b1c30', borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px' }}>
                               {msg.body}
                             </div>
                           )}
@@ -613,7 +613,7 @@ export default function PractitionerMessagesPage() {
               </div>
             )}
             <div className="flex items-end gap-2">
-              <button onClick={() => setDocPickerOpen(v => !v)} className="flex-shrink-0 p-2.5 rounded-xl transition-colors" style={{ backgroundColor: docPickerOpen ? '#e5eeff' : 'transparent', color: '#006685' }}>
+              <button onClick={() => setDocPickerOpen(v => !v)} className="flex-shrink-0 p-2.5 rounded-xl transition-colors" style={{ backgroundColor: docPickerOpen ? '#e5eeff' : 'transparent', color: '#82d8ff' }}>
                 <Icon name="attach_file" style={{ fontSize: '20px' }} />
               </button>
               <textarea
@@ -623,14 +623,14 @@ export default function PractitionerMessagesPage() {
                 onKeyDown={handleKeyDown}
                 rows={1}
                 placeholder="Écrire un message..."
-                className="flex-1 px-4 py-2.5 rounded-xl text-sm resize-none outline-none text-[#0b1c30] placeholder-[#6f787e] border border-[#bec8ce] focus:border-[#006685] transition-colors"
+                className="flex-1 px-4 py-2.5 rounded-xl text-sm resize-none outline-none text-[#0b1c30] placeholder-[#6f787e] border border-[#bec8ce] focus:border-[#82d8ff] transition-colors"
                 style={{ backgroundColor: 'rgba(255,255,255,0.80)', maxHeight: '120px' }}
               />
               <button
                 onClick={() => void handleSend()}
                 disabled={!text.trim() || sending}
                 className="flex-shrink-0 p-2.5 rounded-xl text-white transition-all disabled:opacity-40"
-                style={{ backgroundColor: '#006685' }}
+                style={{ backgroundColor: '#82d8ff' }}
               >
                 <Icon name="send" style={{ fontSize: '20px' }} />
               </button>

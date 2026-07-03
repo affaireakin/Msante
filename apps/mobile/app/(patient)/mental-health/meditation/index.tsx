@@ -119,7 +119,7 @@ function SessionCard({ item, onPress }: { item: Session; onPress: () => void }) 
         borderWidth: 1,
         borderColor: 'rgba(190,200,206,0.35)',
         overflow: 'hidden',
-        shadowColor: '#006685',
+        shadowColor: '#82d8ff',
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.06,
         shadowRadius: 20,
@@ -146,7 +146,7 @@ function SessionCard({ item, onPress }: { item: Session; onPress: () => void }) 
               {item.title}
             </Text>
             {item.recommended && (
-              <View style={{ backgroundColor: '#006685', borderRadius: 6, paddingHorizontal: 7, paddingVertical: 2 }}>
+              <View style={{ backgroundColor: '#82d8ff', borderRadius: 6, paddingHorizontal: 7, paddingVertical: 2 }}>
                 <Text style={{ fontFamily: 'Manrope', fontSize: 9, fontWeight: '800', color: '#fff', letterSpacing: 0.5 }}>
                   RECOMMANDÉ
                 </Text>
@@ -192,7 +192,7 @@ export default function MeditationCatalogue() {
 
       {/* Header */}
       <View style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 8 }}>
-        <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#006685', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 4 }}>
+        <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#82d8ff', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 4 }}>
           Wellness Space
         </Text>
         <Text style={{ fontFamily: 'Manrope', fontSize: 24, fontWeight: '800', color: '#0b1c30' }}>
@@ -215,9 +215,9 @@ export default function MeditationCatalogue() {
             onPress={() => setActiveTag(tag)}
             style={{
               paddingHorizontal: 16, paddingVertical: 7, borderRadius: 999,
-              backgroundColor: activeTag === tag ? '#006685' : 'rgba(255,255,255,0.80)',
+              backgroundColor: activeTag === tag ? '#82d8ff' : 'rgba(255,255,255,0.80)',
               borderWidth: 1,
-              borderColor: activeTag === tag ? '#006685' : 'rgba(190,200,206,0.50)',
+              borderColor: activeTag === tag ? '#82d8ff' : 'rgba(190,200,206,0.50)',
             }}
           >
             <Text style={{

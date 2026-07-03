@@ -51,7 +51,7 @@ export default function ResetPasswordScreen() {
       <View style={{ marginTop: 40, marginBottom: 28 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 6 }}>
           <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-            <MaterialIcons name="lock" size={22} color="#006685" />
+            <MaterialIcons name="lock" size={22} color="#82d8ff" />
           </View>
           <View>
             <Text style={{ fontSize: 24, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5 }}>
@@ -66,7 +66,7 @@ export default function ResetPasswordScreen() {
 
       {done ? (
         <GlassCard style={{ alignItems: 'center', gap: 20 }}>
-          <MaterialIcons name="check-circle" size={64} color="#006685" />
+          <MaterialIcons name="check-circle" size={64} color="#82d8ff" />
           <Text style={{ fontSize: 20, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope' }}>
             Mot de passe mis à jour !
           </Text>

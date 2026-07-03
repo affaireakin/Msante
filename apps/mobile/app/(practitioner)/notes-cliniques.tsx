@@ -18,7 +18,7 @@ import { useResponsive } from '@/hooks/useResponsive'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 const NOTE_TYPES = [
-  { key: 'observation',       label: 'Observation',          color: '#006685', bg: '#e5eeff' },
+  { key: 'observation',       label: 'Observation',          color: '#82d8ff', bg: '#e5eeff' },
   { key: 'compte_rendu',      label: 'Compte-rendu',         color: '#1d7a3a', bg: '#dcfce7' },
   { key: 'note_suivi',        label: 'Note de suivi',        color: '#705d00', bg: '#fef9c3' },
   { key: 'bilan',             label: 'Bilan',                color: '#475569', bg: '#f1f5f9' },
@@ -62,7 +62,7 @@ function fmtDate(iso: string): string {
 }
 
 const AVATAR_COLORS = [
-  '#006685',
+  '#82d8ff',
   '#1d7a3a',
   '#705d00',
   '#ba1a1a',
@@ -196,8 +196,8 @@ function NoteCard({ note, onPress, px }: NoteCardProps) {
                   backgroundColor: '#e5eeff',
                 }}
               >
-                <MaterialIcons name="share" size={10} color="#006685" />
-                <Text style={{ fontFamily: 'Manrope', fontSize: 9, fontWeight: '600', color: '#006685' }}>
+                <MaterialIcons name="share" size={10} color="#82d8ff" />
+                <Text style={{ fontFamily: 'Manrope', fontSize: 9, fontWeight: '600', color: '#82d8ff' }}>
                   Partagé
                 </Text>
               </View>
@@ -289,7 +289,7 @@ export default function NotesCliniquesScreen() {
         }}
       >
         <View style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-          <MaterialIcons name="description" size={20} color="#006685" />
+          <MaterialIcons name="description" size={20} color="#82d8ff" />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={{ fontFamily: 'Manrope', fontSize: 18, fontWeight: '800', color: '#0b1c30', letterSpacing: -0.3 }}>
@@ -314,10 +314,10 @@ export default function NotesCliniquesScreen() {
         }}
       >
         <View style={{ flex: 1, alignItems: 'center', padding: 8, backgroundColor: '#e5eeff', borderRadius: 12 }}>
-          <Text style={{ fontFamily: 'Manrope', fontSize: 18, fontWeight: '800', color: '#006685' }}>
+          <Text style={{ fontFamily: 'Manrope', fontSize: 18, fontWeight: '800', color: '#82d8ff' }}>
             {notes.length}
           </Text>
-          <Text style={{ fontFamily: 'Manrope', fontSize: 10, color: '#006685' }}>Total</Text>
+          <Text style={{ fontFamily: 'Manrope', fontSize: 10, color: '#82d8ff' }}>Total</Text>
         </View>
         <View style={{ flex: 1, alignItems: 'center', padding: 8, backgroundColor: '#dcfce7', borderRadius: 12 }}>
           <Text style={{ fontFamily: 'Manrope', fontSize: 18, fontWeight: '800', color: '#1d7a3a' }}>
@@ -347,9 +347,9 @@ export default function NotesCliniquesScreen() {
               paddingHorizontal: 14,
               paddingVertical: 6,
               borderRadius: 999,
-              backgroundColor: activeFilter === 'all' ? '#006685' : 'rgba(255,255,255,0.80)',
+              backgroundColor: activeFilter === 'all' ? '#82d8ff' : 'rgba(255,255,255,0.80)',
               borderWidth: 1,
-              borderColor: activeFilter === 'all' ? '#006685' : 'rgba(190,200,206,0.50)',
+              borderColor: activeFilter === 'all' ? '#82d8ff' : 'rgba(190,200,206,0.50)',
             }}
           >
             <Text
@@ -423,7 +423,7 @@ export default function NotesCliniquesScreen() {
               marginTop: 16,
               paddingHorizontal: 20,
               paddingVertical: 10,
-              backgroundColor: '#006685',
+              backgroundColor: '#82d8ff',
               borderRadius: 12,
             }}
           >
@@ -458,7 +458,7 @@ export default function NotesCliniquesScreen() {
             <RefreshControl
               refreshing={isFetching && !isLoading}
               onRefresh={refetch}
-              tintColor="#006685"
+              tintColor="#82d8ff"
             />
           }
         />

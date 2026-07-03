@@ -76,7 +76,7 @@ export default function PractitionersPage() {
               onClick={() => setSpeciality(s)}
               className="px-4 py-2 rounded-full text-xs font-bold transition-all"
               style={{
-                backgroundColor: speciality === s ? '#006685' : 'rgba(255,255,255,0.70)',
+                backgroundColor: speciality === s ? '#82d8ff' : 'rgba(255,255,255,0.70)',
                 color: speciality === s ? '#fff' : '#6f787e',
                 border: speciality === s ? 'none' : '1px solid rgba(190,200,206,0.50)',
               }}
@@ -103,7 +103,7 @@ export default function PractitionersPage() {
           {data.map(p => (
             <div key={p.id} className="rounded-2xl p-6 hover:shadow-xl hover:-translate-y-1 transition-all" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
               <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-full bg-[#006685] flex items-center justify-center text-white font-black text-lg flex-shrink-0">
+                <div className="w-14 h-14 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] font-black text-lg flex-shrink-0">
                   {initials(p.users?.full_name ?? 'P')}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -122,7 +122,7 @@ export default function PractitionersPage() {
                     const min = active.length > 0 ? Math.min(...active) : p.session_duration_min
                     const max = active.length > 0 ? Math.max(...active) : p.session_duration_min
                     return (
-                      <p className="text-xs font-semibold text-[#006685] bg-[#e5eeff] px-2 py-1 rounded-full">
+                      <p className="text-xs font-semibold text-[#82d8ff] bg-[#e5eeff] px-2 py-1 rounded-full">
                         {min === max ? `${min} min` : `${min}–${max} min`}
                       </p>
                     )
@@ -133,10 +133,10 @@ export default function PractitionersPage() {
                 <p className="text-sm text-[#6f787e] mt-3 line-clamp-2">{p.bio}</p>
               )}
               <div className="flex items-center gap-3 mt-4">
-                <Link href={`/patient/book/${p.id}`} className="flex-1 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl text-center hover:shadow-lg hover:shadow-[#006685]/20 transition-all">
+                <Link href={`/patient/book/${p.id}`} className="flex-1 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl text-center hover:shadow-lg hover:shadow-[#82d8ff]/20 transition-all">
                   Réserver
                 </Link>
-                <button className="px-4 py-2.5 rounded-xl text-sm font-semibold text-[#006685] transition-colors" style={{ backgroundColor: '#e5eeff' }}>
+                <button className="px-4 py-2.5 rounded-xl text-sm font-semibold text-[#82d8ff] transition-colors" style={{ backgroundColor: '#e5eeff' }}>
                   Profil
                 </button>
               </div>

@@ -18,7 +18,7 @@ const SESSION_TYPES = [
 
 const STATUS_CFG: Record<string, { bg: string; color: string; label: string; icon: string }> = {
   pending:      { bg: '#fff8e1', color: '#705d00', label: 'En attente',    icon: 'hourglass_top' },
-  under_review: { bg: '#e5eeff', color: '#006685', label: 'En examen',     icon: 'visibility' },
+  under_review: { bg: '#e5eeff', color: '#82d8ff', label: 'En examen',     icon: 'visibility' },
   approved:     { bg: '#e8f5e9', color: '#1d7a3a', label: 'Approuvé',      icon: 'verified' },
   rejected:     { bg: '#ffdad6', color: '#ba1a1a', label: 'Refusé',        icon: 'cancel' },
 }
@@ -229,7 +229,7 @@ export default function PractitionerProfilePage() {
         {tab !== 'documents' && (
           <button onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:shadow-lg disabled:opacity-50 flex-shrink-0"
-            style={{ backgroundColor: saved ? '#1d7a3a' : '#006685' }}>
+            style={{ backgroundColor: saved ? '#1d7a3a' : '#82d8ff' }}>
             <Icon name={saved ? 'check' : 'save'} size={18} color="#fff" />
             {saveMutation.isPending ? 'Sauvegarde...' : saved ? 'Sauvegardé !' : 'Sauvegarder'}
           </button>
@@ -249,7 +249,7 @@ export default function PractitionerProfilePage() {
             {avatarUrl ? (
               <img src={avatarUrl} alt="avatar" className="w-16 h-16 rounded-full object-cover" />
             ) : (
-              <div className="w-16 h-16 rounded-full bg-[#006685] flex items-center justify-center text-white text-2xl font-bold">{initials}</div>
+              <div className="w-16 h-16 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-2xl font-bold">{initials}</div>
             )}
             <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               {avatarUploading
@@ -287,7 +287,7 @@ export default function PractitionerProfilePage() {
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all"
-            style={{ backgroundColor: tab === t.key ? '#006685' : 'transparent', color: tab === t.key ? '#fff' : '#6f787e' }}>
+            style={{ backgroundColor: tab === t.key ? '#82d8ff' : 'transparent', color: tab === t.key ? '#fff' : '#6f787e' }}>
             <Icon name={t.icon} size={15} color={tab === t.key ? '#fff' : '#6f787e'} />
             {t.label}
           </button>
@@ -303,19 +303,19 @@ export default function PractitionerProfilePage() {
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Nom complet</label>
                 <input value={fullName} onChange={e => setFullName(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Téléphone</label>
                 <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+221 77 000 00 00"
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
               </div>
             </div>
 
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Spécialité</label>
               <select value={speciality} onChange={e => setSpeciality(e.target.value)}
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all">
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all">
                 <option value="">Sélectionnez</option>
                 {SPECIALITIES.map(s => <option key={s}>{s}</option>)}
               </select>
@@ -325,7 +325,7 @@ export default function PractitionerProfilePage() {
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Biographie</label>
               <textarea value={bio} onChange={e => setBio(e.target.value)} rows={4} maxLength={500}
                 placeholder="Expérience, approche thérapeutique, domaines d'expertise..."
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all resize-none" />
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none" />
               <span className="text-xs text-[#6f787e] text-right">{bio.length}/500</span>
             </div>
 
@@ -335,7 +335,7 @@ export default function PractitionerProfilePage() {
                 {LANGUAGES.map(lang => (
                   <button key={lang} type="button" onClick={() => setLanguages(toggle(languages, lang))}
                     className="px-3 py-1.5 rounded-full text-xs font-bold transition-all"
-                    style={{ backgroundColor: languages.includes(lang) ? '#006685' : '#e5eeff', color: languages.includes(lang) ? '#fff' : '#006685' }}>
+                    style={{ backgroundColor: languages.includes(lang) ? '#82d8ff' : '#e5eeff', color: languages.includes(lang) ? '#fff' : '#82d8ff' }}>
                     {lang}
                   </button>
                 ))}
@@ -351,9 +351,9 @@ export default function PractitionerProfilePage() {
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Tarif par séance</label>
               <div className="flex gap-2">
                 <input type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="15000" min="0"
-                  className="flex-1 px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all" />
+                  className="flex-1 px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all" />
                 <select value={currency} onChange={e => setCurrency(e.target.value)}
-                  className="px-3 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all">
+                  className="px-3 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all">
                   <option>XOF</option><option>EUR</option><option>USD</option>
                 </select>
               </div>
@@ -365,7 +365,7 @@ export default function PractitionerProfilePage() {
                 {DURATIONS.map(d => (
                   <button key={d.value} type="button" onClick={() => setDuration(d.value)}
                     className="py-2.5 rounded-xl text-sm font-bold transition-all"
-                    style={{ backgroundColor: duration === d.value ? '#006685' : '#e5eeff', color: duration === d.value ? '#fff' : '#006685' }}>
+                    style={{ backgroundColor: duration === d.value ? '#82d8ff' : '#e5eeff', color: duration === d.value ? '#fff' : '#82d8ff' }}>
                     {d.label}
                   </button>
                 ))}
@@ -378,9 +378,9 @@ export default function PractitionerProfilePage() {
                 {SESSION_TYPES.map(t => (
                   <button key={t.value} type="button" onClick={() => setSessionTypes(toggle(sessionTypes, t.value))}
                     className="flex flex-col items-center gap-2 p-4 rounded-xl transition-all border-2"
-                    style={{ backgroundColor: sessionTypes.includes(t.value) ? '#e5eeff' : '#f8f9ff', borderColor: sessionTypes.includes(t.value) ? '#006685' : '#bec8ce' }}>
-                    <Icon name={t.icon} color={sessionTypes.includes(t.value) ? '#006685' : '#6f787e'} />
-                    <span className="text-xs font-bold" style={{ color: sessionTypes.includes(t.value) ? '#006685' : '#6f787e' }}>{t.label}</span>
+                    style={{ backgroundColor: sessionTypes.includes(t.value) ? '#e5eeff' : '#f8f9ff', borderColor: sessionTypes.includes(t.value) ? '#82d8ff' : '#bec8ce' }}>
+                    <Icon name={t.icon} color={sessionTypes.includes(t.value) ? '#82d8ff' : '#6f787e'} />
+                    <span className="text-xs font-bold" style={{ color: sessionTypes.includes(t.value) ? '#82d8ff' : '#6f787e' }}>{t.label}</span>
                   </button>
                 ))}
               </div>
@@ -389,7 +389,7 @@ export default function PractitionerProfilePage() {
             <div className="flex flex-col gap-1">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Fuseau horaire</label>
               <select value={timezone} onChange={e => setTimezone(e.target.value)}
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#006685] transition-all">
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all">
                 <option value="Africa/Dakar">Dakar (GMT+0)</option>
                 <option value="Africa/Abidjan">Abidjan (GMT+0)</option>
                 <option value="Africa/Douala">Douala (GMT+1)</option>
@@ -398,7 +398,7 @@ export default function PractitionerProfilePage() {
             </div>
 
             {/* Acceptation nouveaux patients */}
-            <div className={`flex items-center justify-between gap-4 px-4 py-4 rounded-xl border-2 transition-colors ${acceptingNewPatients ? 'border-[#006685] bg-[#e5eeff]/50' : 'border-[#ba1a1a] bg-[#ffdad6]/30'}`}>
+            <div className={`flex items-center justify-between gap-4 px-4 py-4 rounded-xl border-2 transition-colors ${acceptingNewPatients ? 'border-[#82d8ff] bg-[#e5eeff]/50' : 'border-[#ba1a1a] bg-[#ffdad6]/30'}`}>
               <div>
                 <p className="text-sm font-bold text-[#0b1c30]">Accepter de nouveaux patients</p>
                 <p className="text-xs text-[#6f787e] mt-0.5">
@@ -410,7 +410,7 @@ export default function PractitionerProfilePage() {
               <button
                 type="button"
                 onClick={() => setAcceptingNewPatients(v => !v)}
-                className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${acceptingNewPatients ? 'bg-[#006685]' : 'bg-[#ba1a1a]'}`}
+                className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ${acceptingNewPatients ? 'bg-[#82d8ff]' : 'bg-[#ba1a1a]'}`}
               >
                 <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${acceptingNewPatients ? 'translate-x-6' : 'translate-x-0.5'}`} />
               </button>
@@ -433,7 +433,7 @@ export default function PractitionerProfilePage() {
                   const docStatus = STATUS_CFG[doc.status] ?? STATUS_CFG.pending
                   return (
                     <div key={doc.id} className="flex items-center gap-3 p-3 rounded-xl bg-[#f8f9ff] border border-[#bec8ce]">
-                      <Icon name="description" color="#006685" />
+                      <Icon name="description" color="#82d8ff" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-[#0b1c30]">{DOC_LABELS[doc.document_type] ?? doc.document_type}</p>
                         <p className="text-xs text-[#6f787e]">{new Date(doc.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
@@ -442,7 +442,7 @@ export default function PractitionerProfilePage() {
                         <Icon name={docStatus.icon} size={12} color={docStatus.color} />
                         {docStatus.label}
                       </span>
-                      <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="text-[#6f787e] hover:text-[#006685] transition-colors">
+                      <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="text-[#6f787e] hover:text-[#82d8ff] transition-colors">
                         <Icon name="open_in_new" size={16} />
                       </a>
                     </div>
@@ -462,12 +462,12 @@ export default function PractitionerProfilePage() {
               ].map(({ type, label, icon, ref }) => (
                 <div key={type}>
                   <div onClick={() => ref.current?.click()}
-                    className="flex items-center gap-3 p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all hover:border-[#006685] hover:bg-[#e5eeff]/20"
-                    style={{ borderColor: uploading === type ? '#006685' : '#bec8ce' }}>
+                    className="flex items-center gap-3 p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all hover:border-[#82d8ff] hover:bg-[#e5eeff]/20"
+                    style={{ borderColor: uploading === type ? '#82d8ff' : '#bec8ce' }}>
                     <div className="w-10 h-10 rounded-xl bg-[#e5eeff] flex items-center justify-center flex-shrink-0">
                       {uploading === type
-                        ? <div className="w-5 h-5 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
-                        : <Icon name={icon} color="#006685" />}
+                        ? <div className="w-5 h-5 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
+                        : <Icon name={icon} color="#82d8ff" />}
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-[#0b1c30]">{label}</p>
@@ -508,13 +508,13 @@ export default function PractitionerProfilePage() {
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Titre professionnel</label>
                 <input value={professionalTitle} onChange={e => setProfessionalTitle(e.target.value)}
                   placeholder="Psychologue Clinicien, Dr., Coach..."
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">N° Ordre / Référence</label>
                 <input value={registrationNumber} onChange={e => setRegistrationNumber(e.target.value)}
                   placeholder="No. 12345"
-                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                  className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
               </div>
             </div>
 
@@ -522,7 +522,7 @@ export default function PractitionerProfilePage() {
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Adresse du cabinet</label>
               <input value={clinicAddress} onChange={e => setClinicAddress(e.target.value)}
                 placeholder="12 Rue de la Santé, Dakar, Sénégal"
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
             </div>
 
             <div className="border-t border-[#bec8ce]/40 pt-5">
@@ -535,14 +535,14 @@ export default function PractitionerProfilePage() {
                   <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Signature</label>
                   <div
                     onClick={() => signatureRef.current?.click()}
-                    className="h-32 rounded-xl border-2 border-dashed border-[#bec8ce] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#006685] hover:bg-[#e5eeff]/20 transition-all relative overflow-hidden"
+                    className="h-32 rounded-xl border-2 border-dashed border-[#bec8ce] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#82d8ff] hover:bg-[#e5eeff]/20 transition-all relative overflow-hidden"
                   >
                     {sigUploading === 'signature' ? (
-                      <div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
                     ) : signatureUrl ? (
                       <>
                         <img src={signatureUrl} alt="signature" className="max-h-24 max-w-full object-contain" />
-                        <span className="text-[10px] text-[#006685] font-semibold">Cliquer pour remplacer</span>
+                        <span className="text-[10px] text-[#82d8ff] font-semibold">Cliquer pour remplacer</span>
                       </>
                     ) : (
                       <>
@@ -560,14 +560,14 @@ export default function PractitionerProfilePage() {
                   <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Cachet / Tampon</label>
                   <div
                     onClick={() => stampRef.current?.click()}
-                    className="h-32 rounded-xl border-2 border-dashed border-[#bec8ce] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#006685] hover:bg-[#e5eeff]/20 transition-all relative overflow-hidden"
+                    className="h-32 rounded-xl border-2 border-dashed border-[#bec8ce] flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[#82d8ff] hover:bg-[#e5eeff]/20 transition-all relative overflow-hidden"
                   >
                     {sigUploading === 'stamp' ? (
-                      <div className="w-6 h-6 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+                      <div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
                     ) : stampUrl ? (
                       <>
                         <img src={stampUrl} alt="cachet" className="max-h-24 max-w-full object-contain" />
-                        <span className="text-[10px] text-[#006685] font-semibold">Cliquer pour remplacer</span>
+                        <span className="text-[10px] text-[#82d8ff] font-semibold">Cliquer pour remplacer</span>
                       </>
                     ) : (
                       <>
@@ -582,8 +582,8 @@ export default function PractitionerProfilePage() {
               </div>
             </div>
 
-            <div className="bg-[#e5eeff]/60 border border-[#d3e4fe] rounded-xl px-4 py-3 text-xs text-[#006685] flex items-start gap-2">
-              <Icon name="info" size={14} color="#006685" />
+            <div className="bg-[#e5eeff]/60 border border-[#d3e4fe] rounded-xl px-4 py-3 text-xs text-[#82d8ff] flex items-start gap-2">
+              <Icon name="info" size={14} color="#82d8ff" />
               <span>Ces images apparaîtront sur les ordonnances et comptes-rendus que vous générez après chaque consultation. Cliquez <strong>Sauvegarder</strong> pour enregistrer les informations professionnelles.</span>
             </div>
           </div>

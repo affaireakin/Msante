@@ -19,8 +19,8 @@ export function KpiCard({ title, value, icon, subtitle, trend, trendUp }: KpiCar
       }}
     >
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-[#006685] uppercase tracking-widest">{title}</span>
-        <span className="text-[#006685]">{icon}</span>
+        <span className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest">{title}</span>
+        <span className="text-[#82d8ff]">{icon}</span>
       </div>
       <div>
         <p className="text-3xl font-bold text-[#0b1c30]">{value}</p>

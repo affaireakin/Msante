@@ -23,20 +23,20 @@ export function PrimaryButton({
         paddingVertical: 16,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: isPrimary ? '#006685' : 'transparent',
+        backgroundColor: isPrimary ? '#82d8ff' : 'transparent',
         borderWidth: isPrimary ? 0 : 1.5,
-        borderColor: '#006685',
+        borderColor: '#82d8ff',
         opacity: isDisabled ? 0.6 : 1,
       }}
     >
       {loading ? (
-        <ActivityIndicator color={isPrimary ? '#ffffff' : '#006685'} />
+        <ActivityIndicator color={isPrimary ? '#ffffff' : '#82d8ff'} />
       ) : (
         <Text style={{
           fontFamily: 'Manrope',
           fontWeight: '700',
           fontSize: 15,
-          color: isPrimary ? '#ffffff' : '#006685',
+          color: isPrimary ? '#ffffff' : '#82d8ff',
         }}>
           {label}
         </Text>

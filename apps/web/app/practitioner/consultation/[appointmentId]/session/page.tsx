@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
@@ -263,7 +263,7 @@ export default function PractitionerSessionPage() {
             M-Santé
           </span>
           <div className="hidden md:flex items-center gap-2 bg-white/5 border border-white/15 px-3 py-1.5 rounded-full">
-            <span className="w-2 h-2 rounded-full bg-[#006685]" style={{ boxShadow: '0 0 8px rgba(0,102,133,0.5)' }} />
+            <span className="w-2 h-2 rounded-full bg-[#82d8ff]" style={{ boxShadow: '0 0 8px rgba(0,102,133,0.5)' }} />
             <span className="text-[11px] font-bold uppercase tracking-[0.05em] text-white/70">Secure Connection</span>
           </div>
         </div>
@@ -309,13 +309,13 @@ export default function PractitionerSessionPage() {
           <div className="flex items-center gap-2 bg-white/10 rounded-full p-1 border border-white/15">
             <button
               onClick={() => setActiveTab('notes')}
-              className={`flex-1 py-2 rounded-full text-sm font-semibold transition-all ${activeTab === 'notes' ? 'bg-[#006685] text-white' : 'text-white/60 hover:text-white/80'}`}
+              className={`flex-1 py-2 rounded-full text-sm font-semibold transition-all ${activeTab === 'notes' ? 'bg-[#82d8ff] text-[#0b1c30]' : 'text-white/60 hover:text-white/80'}`}
             >
               Notes
             </button>
             <button
               onClick={() => setActiveTab('chat')}
-              className={`flex-1 py-2 rounded-full text-sm font-semibold transition-all ${activeTab === 'chat' ? 'bg-[#006685] text-white' : 'text-white/60 hover:text-white/80'}`}
+              className={`flex-1 py-2 rounded-full text-sm font-semibold transition-all ${activeTab === 'chat' ? 'bg-[#82d8ff] text-[#0b1c30]' : 'text-white/60 hover:text-white/80'}`}
             >
               Chat
             </button>
@@ -332,7 +332,7 @@ export default function PractitionerSessionPage() {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Jot down key points from the consultation here..."
-                className="flex-1 bg-white/5 border border-white/15 rounded-lg p-3 text-white/80 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-[#006685]/50 placeholder:text-white/30 min-h-[200px]"
+                className="flex-1 bg-white/5 border border-white/15 rounded-lg p-3 text-white/80 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-[#82d8ff]/50 placeholder:text-white/30 min-h-[200px]"
               />
             </div>
           )}
@@ -341,7 +341,7 @@ export default function PractitionerSessionPage() {
           {activeTab === 'chat' && (
             <div className="flex-1 bg-white/5 backdrop-blur-xl rounded-xl border border-white/15 flex flex-col overflow-hidden min-h-0">
               <div className="px-4 py-3 border-b border-white/10 flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#006685] text-base select-none">lock</span>
+                <span className="material-symbols-outlined text-[#82d8ff] text-base select-none">lock</span>
                 <h3 className="text-white font-semibold text-sm">Secure Chat</h3>
               </div>
               <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 min-h-0">
@@ -355,7 +355,7 @@ export default function PractitionerSessionPage() {
                         {getInitials(patientName)}
                       </div>
                     )}
-                    <div className={`max-w-[80%] py-2 px-3 rounded-lg text-sm ${msg.role === 'practitioner' ? 'bg-[#006685] text-white rounded-tr-none' : 'bg-white/10 text-white/90 border border-white/10 rounded-tl-none'}`}>
+                    <div className={`max-w-[80%] py-2 px-3 rounded-lg text-sm ${msg.role === 'practitioner' ? 'bg-[#82d8ff] text-[#0b1c30] rounded-tr-none' : 'bg-white/10 text-white/90 border border-white/10 rounded-tl-none'}`}>
                       <p>{msg.content}</p>
                       <span className="text-[10px] mt-1 block opacity-60 text-right">
                         {new Date(msg.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
@@ -371,12 +371,12 @@ export default function PractitionerSessionPage() {
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void handleSendMessage() } }}
                   placeholder="Type a message..."
-                  className="flex-1 bg-white/5 border border-white/15 rounded-full px-4 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-[#006685]/50"
+                  className="flex-1 bg-white/5 border border-white/15 rounded-full px-4 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-[#82d8ff]/50"
                 />
                 <button
                   onClick={() => void handleSendMessage()}
                   disabled={!chatInput.trim()}
-                  className="w-8 h-8 rounded-full bg-[#006685] text-white flex items-center justify-center hover:bg-[#006685]/80 transition-colors disabled:opacity-30"
+                  className="w-8 h-8 rounded-full bg-[#82d8ff] text-[#0b1c30] flex items-center justify-center hover:bg-[#82d8ff]/80 transition-colors disabled:opacity-30"
                 >
                   <span className="material-symbols-outlined text-sm select-none">send</span>
                 </button>

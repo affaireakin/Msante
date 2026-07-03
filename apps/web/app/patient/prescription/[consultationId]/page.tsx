@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -119,7 +119,7 @@ export default function PatientPrescriptionPage() {
     return (
       <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center font-[Manrope]">
         <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-        <div className="w-8 h-8 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -156,7 +156,7 @@ export default function PatientPrescriptionPage() {
         </div>
         <button
           onClick={() => window.print()}
-          className="flex items-center gap-2 px-5 py-2 bg-[#006685] text-white text-sm font-bold rounded-xl hover:bg-[#005575] transition-colors shadow-[0_2px_8px_rgba(0,102,133,0.25)]"
+          className="flex items-center gap-2 px-5 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:bg-[#5ab8e0] transition-colors shadow-[0_2px_8px_rgba(0,102,133,0.25)]"
         >
           <span style={{ fontFamily: 'Material Symbols Outlined', fontSize: '18px' }}>print</span>
           Imprimer / Télécharger PDF
@@ -171,7 +171,7 @@ export default function PatientPrescriptionPage() {
         >
           {/* Left accent bar */}
           <div className="flex">
-            <div className="w-2 bg-[#006685] flex-shrink-0" />
+            <div className="w-2 bg-[#82d8ff] flex-shrink-0" />
             <div className="flex-1 p-10">
 
               {/* Header */}
@@ -180,7 +180,7 @@ export default function PatientPrescriptionPage() {
                   <p className="text-lg font-black text-[#0b1c30] leading-tight">
                     {data.practitionerTitle ? `${data.practitionerTitle} ` : ''}{data.practitionerName}
                   </p>
-                  <p className="text-sm font-semibold text-[#006685] mt-0.5">{data.speciality}</p>
+                  <p className="text-sm font-semibold text-[#82d8ff] mt-0.5">{data.speciality}</p>
                   {data.registrationNumber && (
                     <p className="text-xs text-[#6f787e] mt-1">N° Ordre : {data.registrationNumber}</p>
                   )}
@@ -193,7 +193,7 @@ export default function PatientPrescriptionPage() {
                 </div>
                 <div className="text-right">
                   <div className="inline-flex items-center gap-1.5 bg-[#e5eeff] px-3 py-1 rounded-full mb-2">
-                    <span className="text-[10px] font-bold text-[#006685] uppercase tracking-wide">M-Santé</span>
+                    <span className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-wide">M-Santé</span>
                   </div>
                   <p className="text-sm text-[#6f787e]">Dakar, le {formattedDate}</p>
                 </div>
@@ -201,7 +201,7 @@ export default function PatientPrescriptionPage() {
 
               {/* Document title */}
               <div className="text-center mb-8">
-                <h1 className="text-2xl font-black tracking-widest text-[#0b1c30] uppercase border-b-2 border-[#006685] pb-2 inline-block">
+                <h1 className="text-2xl font-black tracking-widest text-[#0b1c30] uppercase border-b-2 border-[#82d8ff] pb-2 inline-block">
                   {docTitle}
                 </h1>
               </div>

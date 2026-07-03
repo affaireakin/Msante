@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#006685] text-white rounded-lg py-3 font-semibold text-sm hover:bg-[#005470] transition disabled:opacity-50"
+          className="w-full bg-[#82d8ff] text-[#0b1c30] rounded-lg py-3 font-semibold text-sm hover:bg-[#005470] transition disabled:opacity-50"
         >
           {loading ? 'Envoi...' : 'Recevoir le code'}
         </button>

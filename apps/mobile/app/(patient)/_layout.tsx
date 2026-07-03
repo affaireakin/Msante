@@ -25,13 +25,13 @@ function TabIcon({ name, label, focused }: TabIconProps) {
       <MaterialIcons
         name={name}
         size={focused ? 24 : 22}
-        color={focused ? '#006685' : '#6f787e'}
+        color={focused ? '#82d8ff' : '#6f787e'}
       />
       <Text
         style={{
           fontSize: 10,
           fontFamily: 'Manrope',
-          color: focused ? '#006685' : '#6f787e',
+          color: focused ? '#82d8ff' : '#6f787e',
           fontWeight: focused ? '700' : '400',
           marginTop: 2,
           letterSpacing: 0.3,

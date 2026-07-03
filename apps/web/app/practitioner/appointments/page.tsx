@@ -30,7 +30,7 @@ const STATUS_COLORS: Record<AptStatus, { bg: string; text: string }> = {
   no_show:   { bg: '#fee2e2', text: '#991b1b' },
 }
 const TYPE_META: Record<string, { icon: string; bg: string; border: string; text: string; label: string }> = {
-  video: { icon: 'videocam',     bg: '#e5eeff', border: '#006685', text: '#006685', label: 'Vidéo' },
+  video: { icon: 'videocam',     bg: '#e5eeff', border: '#82d8ff', text: '#82d8ff', label: 'Vidéo' },
   audio: { icon: 'mic',          bg: '#f3e8ff', border: '#7c3aed', text: '#7c3aed', label: 'Audio' },
   chat:  { icon: 'chat_bubble',  bg: '#dcfce7', border: '#1d7a3a', text: '#1d7a3a', label: 'Chat'  },
 }
@@ -211,14 +211,14 @@ function DetailPanel({ apt, onClose }: { apt: Appointment; onClose: () => void }
           {/* Infos */}
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-              <Icon name="calendar_today" size={16} color="#006685" />
+              <Icon name="calendar_today" size={16} color="#82d8ff" />
               <div>
                 <p className="text-xs text-slate-400 font-medium">Date</p>
                 <p className="text-sm font-semibold text-[#0b1c30] capitalize">{fmtDate(dt)}</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
-              <Icon name="schedule" size={16} color="#006685" />
+              <Icon name="schedule" size={16} color="#82d8ff" />
               <div>
                 <p className="text-xs text-slate-400 font-medium">Heure</p>
                 <p className="text-sm font-semibold text-[#0b1c30]">{fmtTime(dt)} · {apt.duration_min} min</p>
@@ -238,7 +238,7 @@ function DetailPanel({ apt, onClose }: { apt: Appointment; onClose: () => void }
             {apt.status === 'confirmed' && (
               <Link href={`/practitioner/consultation/${apt.id}/waiting`}
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-bold text-white"
-                style={{ background: '#006685' }}>
+                style={{ background: '#82d8ff' }}>
                 <Icon name="videocam" size={16} color="#fff" />
                 Rejoindre la session
               </Link>
@@ -311,8 +311,8 @@ function WeekCalendar({
           return (
             <div key={i} className="flex-1 py-3 text-center border-r border-slate-200/60 last:border-r-0">
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{DAYS_FR[i]}</p>
-              <div className={`w-8 h-8 mx-auto mt-1 rounded-full flex items-center justify-center ${isToday ? 'bg-[#006685]' : ''}`}>
-                <p className={`text-sm font-bold ${isToday ? 'text-white' : 'text-[#0b1c30]'}`}>
+              <div className={`w-8 h-8 mx-auto mt-1 rounded-full flex items-center justify-center ${isToday ? 'bg-[#82d8ff]' : ''}`}>
+                <p className={`text-sm font-bold ${isToday ? 'text-[#0b1c30]' : 'text-[#0b1c30]'}`}>
                   {day.getDate()}
                 </p>
               </div>
@@ -519,12 +519,12 @@ export default function AppointmentsPage() {
         <div className="flex items-center gap-3">
           <div className="flex gap-1 p-1 bg-[#e5eeff] rounded-xl">
             <button onClick={() => setView('week')}
-              className={`hidden md:flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${view === 'week' ? 'bg-white text-[#006685] shadow-sm' : 'text-slate-500 hover:text-[#006685]'}`}>
+              className={`hidden md:flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${view === 'week' ? 'bg-white text-[#82d8ff] shadow-sm' : 'text-slate-500 hover:text-[#82d8ff]'}`}>
               <Icon name="calendar_view_week" size={16} />
               Semaine
             </button>
             <button onClick={() => setView('list')}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${view === 'list' ? 'bg-white text-[#006685] shadow-sm' : 'text-slate-500 hover:text-[#006685]'}`}>
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${view === 'list' ? 'bg-white text-[#82d8ff] shadow-sm' : 'text-slate-500 hover:text-[#82d8ff]'}`}>
               <Icon name="view_list" size={16} />
               Liste
             </button>
@@ -548,7 +548,7 @@ export default function AppointmentsPage() {
             </div>
             <div className="flex items-center gap-2">
               {!isCurrentWeek && (
-                <button onClick={goToday} className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 text-[#006685] hover:bg-sky-50 transition-colors">
+                <button onClick={goToday} className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-200 text-[#82d8ff] hover:bg-sky-50 transition-colors">
                   Aujourd'hui
                 </button>
               )}
@@ -582,7 +582,7 @@ export default function AppointmentsPage() {
           <div className="flex gap-2 p-1 bg-[#e5eeff] rounded-xl w-fit">
             {(['upcoming', 'past'] as const).map(f => (
               <button key={f} onClick={() => setListFilter(f)}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${listFilter === f ? 'bg-white text-[#006685] shadow-sm' : 'text-slate-500 hover:text-[#006685]'}`}>
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${listFilter === f ? 'bg-white text-[#82d8ff] shadow-sm' : 'text-slate-500 hover:text-[#82d8ff]'}`}>
                 {f === 'upcoming' ? 'À venir' : 'Passés'}
               </button>
             ))}
@@ -640,7 +640,7 @@ export default function AppointmentsPage() {
                         <Link href={`/practitioner/consultation/${apt.id}/waiting`}
                           onClick={e => e.stopPropagation()}
                           className="inline-flex items-center gap-1 mt-1.5 px-3 py-1 rounded-full text-xs font-bold text-white"
-                          style={{ background: '#006685' }}>
+                          style={{ background: '#82d8ff' }}>
                           <Icon name="videocam" size={12} color="#fff" />
                           Rejoindre
                         </Link>

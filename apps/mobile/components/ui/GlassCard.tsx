@@ -14,7 +14,7 @@ export function GlassCard({ children, style, ...props }: GlassCardProps) {
         padding: 20,
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.85)',
-        shadowColor: '#006685',
+        shadowColor: '#82d8ff',
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.06,
         shadowRadius: 30,

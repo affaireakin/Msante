@@ -199,7 +199,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (!authChecked) return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -212,7 +212,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <h2 className="text-xl font-black text-[#0b1c30]">Compte suspendu</h2>
         <p className="text-sm text-[#6f787e]">Votre accès à la console d&apos;administration a été suspendu. Contactez un super-administrateur pour plus d&apos;informations.</p>
         <button onClick={handleLogout}
-          className="w-full bg-[#006685] text-white rounded-xl py-3 text-sm font-semibold hover:shadow-lg transition">
+          className="w-full bg-[#82d8ff] text-[#0b1c30] rounded-xl py-3 text-sm font-semibold hover:shadow-lg transition">
           Se déconnecter
         </button>
       </div>
@@ -239,14 +239,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-100/60">
-          <div className="w-10 h-10 rounded-xl bg-[#006685] flex items-center justify-center shadow-sm">
+          <div className="w-10 h-10 rounded-xl bg-[#82d8ff] flex items-center justify-center shadow-sm">
             <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
             </svg>
           </div>
           <div className="flex-1">
             <h1 className="text-lg font-black tracking-tighter text-[#0b1c30]">M-Santé</h1>
-            <p className="text-xs text-[#006685] font-semibold tracking-wide uppercase">Admin Console</p>
+            <p className="text-xs text-[#82d8ff] font-semibold tracking-wide uppercase">Admin Console</p>
           </div>
           <button className="md:hidden p-1.5 rounded-lg text-slate-400 hover:bg-slate-100" onClick={() => setSidebarOpen(false)}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -264,11 +264,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? 'bg-sky-50 text-[#006685] font-semibold border-r-4 border-[#006685] -mr-3 pr-4'
+                    ? 'bg-sky-50 text-[#82d8ff] font-semibold border-r-4 border-[#82d8ff] -mr-3 pr-4'
                     : 'text-[#3f484d] hover:translate-x-1 hover:bg-slate-50/50'
                 }`}
               >
-                <span className={isActive ? 'text-[#006685]' : 'text-[#6f787e]'}>
+                <span className={isActive ? 'text-[#82d8ff]' : 'text-[#6f787e]'}>
                   {item.icon}
                 </span>
                 {item.label}
@@ -304,7 +304,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           }}
         >
           <div className="flex items-center gap-3">
-            <button className="md:hidden p-2 rounded-lg text-[#006685] hover:bg-white/50 transition-colors" onClick={() => setSidebarOpen(true)}>
+            <button className="md:hidden p-2 rounded-lg text-[#82d8ff] hover:bg-white/50 transition-colors" onClick={() => setSidebarOpen(true)}>
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
               </svg>
@@ -327,7 +327,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
               </svg>
             </button>
-            <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold shadow-sm">
+            <div className="w-9 h-9 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-sm font-bold shadow-sm">
               A
             </div>
           </div>

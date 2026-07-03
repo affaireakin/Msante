@@ -34,7 +34,7 @@ const PROVIDER_CONFIG: Record<PaymentProvider, {
   },
   card: {
     label: 'Carte bancaire',
-    color: '#006685',
+    color: '#82d8ff',
     bg: '#e5eeff',
     emoji: '💳',
     digits: '•••• •••• •••• 4242',
@@ -157,7 +157,7 @@ export default function MockCheckoutScreen() {
       {/* PayDunya-style logo zone */}
       <View style={{
         width: 36, height: 36, borderRadius: 8,
-        backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center',
+        backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center',
       }}>
         <MaterialIcons name="medical-services" size={18} color="#fff" />
       </View>

@@ -42,7 +42,7 @@ function SessionControls({
         borderWidth: 1,
         borderColor: 'rgba(255,255,255,0.6)',
         backgroundColor: 'rgba(255,255,255,0.15)',
-        shadowColor: '#006685',
+        shadowColor: '#82d8ff',
         shadowOpacity: 0.15,
         shadowRadius: 40,
         elevation: 8,
@@ -121,7 +121,7 @@ function ChatPanel({
           <Text style={{ fontFamily: 'Manrope', fontWeight: '600', color: '#0b1c30', fontSize: 16 }}>Chat chiffré</Text>
         </View>
         <TouchableOpacity onPress={onClose} style={{ padding: 8 }}>
-          <Text style={{ fontFamily: 'Manrope', color: '#006685', fontWeight: '600' }}>Fermer</Text>
+          <Text style={{ fontFamily: 'Manrope', color: '#82d8ff', fontWeight: '600' }}>Fermer</Text>
         </TouchableOpacity>
       </View>
 
@@ -135,7 +135,7 @@ function ChatPanel({
             <View style={{ alignItems: isPatient ? 'flex-end' : 'flex-start' }}>
               <View
                 style={{
-                  backgroundColor: isPatient ? '#006685' : 'rgba(229,238,255,1)',
+                  backgroundColor: isPatient ? '#82d8ff' : 'rgba(229,238,255,1)',
                   borderRadius: 12,
                   borderTopRightRadius: isPatient ? 2 : 12,
                   borderTopLeftRadius: isPatient ? 12 : 2,
@@ -168,7 +168,7 @@ function ChatPanel({
         />
         <TouchableOpacity
           onPress={() => { if (text.trim()) { onSend(text.trim()); setText('') } }}
-          style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center', opacity: text.trim() ? 1 : 0.4 }}
+          style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center', opacity: text.trim() ? 1 : 0.4 }}
         >
           <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>→</Text>
         </TouchableOpacity>
@@ -278,7 +278,7 @@ function ConsultationInner({
 
       {/* Local video PiP — top right */}
       {localVideoTrackRef && (
-        <View style={{ position: 'absolute', top: 120, right: 16, width: 100, height: 130, borderRadius: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.3)', shadowColor: '#006685', shadowOpacity: 0.2, shadowRadius: 20, elevation: 6 }}>
+        <View style={{ position: 'absolute', top: 120, right: 16, width: 100, height: 130, borderRadius: 12, overflow: 'hidden', borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.3)', shadowColor: '#82d8ff', shadowOpacity: 0.2, shadowRadius: 20, elevation: 6 }}>
           <VideoTrack
             trackRef={localVideoTrackRef}
             style={{ width: '100%', height: '100%' }}
@@ -308,7 +308,7 @@ function ConsultationInner({
       >
         <Text style={{ fontSize: 20 }}>💬</Text>
         {chatMessages.length > 0 && (
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#006685' }} />
+          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#82d8ff' }} />
         )}
       </TouchableOpacity>
 

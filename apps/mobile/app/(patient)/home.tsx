@@ -16,15 +16,15 @@ const FEATURES: {
   accent: string
   route: string
 }[] = [
-  { icon: 'psychology', title: 'Compagnon Bien-être IA', desc: 'Mounima vous écoute, analyse vos humeurs et propose des exercices 24/7.', bg: '#e5eeff', accent: '#006685', route: '/(patient)/assistant' },
+  { icon: 'psychology', title: 'Compagnon Bien-être IA', desc: 'Mounima vous écoute, analyse vos humeurs et propose des exercices 24/7.', bg: '#e5eeff', accent: '#82d8ff', route: '/(patient)/assistant' },
   { icon: 'medical-services', title: "Réseau d'Experts", desc: '500+ psychologues, psychiatres et coachs certifiés au Sénégal.', bg: '#fff8e1', accent: '#705d00', route: '/(patient)/find-practitioners' },
   { icon: 'videocam', title: 'Téléconsultation', desc: 'Sessions vidéo chiffrées depuis chez vous, partout en Afrique.', bg: '#e8f5e9', accent: '#1d7a3a', route: '/(patient)/find-practitioners' },
   { icon: 'favorite', title: 'Bien-être quotidien', desc: 'Suivi humeur, méditation, journal émotionnel — construisez votre routine.', bg: '#fce4ec', accent: '#c2185b', route: '/(patient)/mental-health' },
 ]
 
 const QUICK_ACTIONS = [
-  { icon: 'search' as const, label: 'Praticiens', route: '/(patient)/find-practitioners', bg: '#006685', text: '#fff' },
-  { icon: 'psychology' as const, label: 'Mounima', route: '/(patient)/assistant', bg: '#e5eeff', text: '#006685' },
+  { icon: 'search' as const, label: 'Praticiens', route: '/(patient)/find-practitioners', bg: '#82d8ff', text: '#fff' },
+  { icon: 'psychology' as const, label: 'Mounima', route: '/(patient)/assistant', bg: '#e5eeff', text: '#82d8ff' },
   { icon: 'mood' as const, label: 'Humeur', route: '/(patient)/mental-health', bg: '#fff8e1', text: '#705d00' },
   { icon: 'calendar-today' as const, label: 'RDV', route: '/(patient)/appointments', bg: '#f0fdf4', text: '#1d7a3a' },
   { icon: 'folder-shared' as const, label: 'Mon dossier', route: '/(patient)/dossier', bg: '#f3e8ff', text: '#6b21a8' },
@@ -73,7 +73,7 @@ export default function PatientHome() {
               {unreadCount > 0 && <View style={{ position: 'absolute', top: 7, right: 7, width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#ba1a1a', borderWidth: 1.5, borderColor: '#f8f9ff' }} />}
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push('/(patient)/profile' as never)}
-              style={{ width: avatarBtn, height: avatarBtn, borderRadius: avatarBtn / 2, backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center' }}>
+              style={{ width: avatarBtn, height: avatarBtn, borderRadius: avatarBtn / 2, backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
               <Text style={{ fontFamily: 'Manrope', fontWeight: '800', fontSize: fs.sm, color: '#fff' }}>{firstName.slice(0, 1).toUpperCase()}</Text>
             </TouchableOpacity>
           </View>
@@ -94,7 +94,7 @@ export default function PatientHome() {
                 {firstName} 👋
               </Text>
               <TouchableOpacity onPress={() => router.push('/(patient)/find-practitioners')}
-                style={{ backgroundColor: '#006685', paddingHorizontal: scale(18), paddingVertical: scale(11), borderRadius: scale(13), alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                style={{ backgroundColor: '#82d8ff', paddingHorizontal: scale(18), paddingVertical: scale(11), borderRadius: scale(13), alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.sm, fontFamily: 'Manrope' }}>Trouver un praticien</Text>
                 <MaterialIcons name="arrow-forward" size={scale(15)} color="#fff" />
               </TouchableOpacity>
@@ -166,7 +166,7 @@ export default function PatientHome() {
         {/* Stats */}
         <View style={{ marginHorizontal: px, marginTop: scale(20), flexDirection: 'row', gap: scale(10) }}>
           {[
-            { value: '500+', label: 'Praticiens', icon: 'medical-services' as const, color: '#006685', bg: '#e5eeff' },
+            { value: '500+', label: 'Praticiens', icon: 'medical-services' as const, color: '#82d8ff', bg: '#e5eeff' },
             { value: '24/7', label: 'Support IA', icon: 'smart-toy' as const, color: '#705d00', bg: '#fff8e1' },
             { value: '98%', label: 'Satisfaction', icon: 'star' as const, color: '#1d7a3a', bg: '#e8f5e9' },
           ].map(s => (
@@ -179,13 +179,13 @@ export default function PatientHome() {
         </View>
 
         {/* CTA Final */}
-        <View style={{ marginHorizontal: px, marginTop: scale(20), backgroundColor: '#006685', borderRadius: scale(22), padding: scale(22), overflow: 'hidden' }}>
+        <View style={{ marginHorizontal: px, marginTop: scale(20), backgroundColor: '#82d8ff', borderRadius: scale(22), padding: scale(22), overflow: 'hidden' }}>
           <View style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, borderRadius: 50, backgroundColor: 'rgba(255,255,255,0.08)' }} />
           <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: fs.sm, fontFamily: 'Manrope', marginBottom: 4 }}>Prêt à commencer ?</Text>
           <Text style={{ color: '#fff', fontSize: fs.xl, fontWeight: '800', fontFamily: 'Manrope', letterSpacing: -0.5, marginBottom: 4 }}>Transformez votre rapport à la santé mentale.</Text>
           <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: fs.sm, fontFamily: 'Manrope', marginBottom: scale(18) }}>Essai IA gratuit · Sans engagement</Text>
           <TouchableOpacity onPress={() => router.push('/(patient)/find-practitioners')} style={{ backgroundColor: '#fff', borderRadius: scale(13), paddingVertical: scale(13), alignItems: 'center' }}>
-            <Text style={{ color: '#006685', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>Commencer maintenant →</Text>
+            <Text style={{ color: '#82d8ff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>Commencer maintenant →</Text>
           </TouchableOpacity>
         </View>
 

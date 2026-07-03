@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
@@ -77,7 +77,7 @@ export default function PrescriptionPrintPage() {
 
   if (loading) return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
     </div>
   )
   if (error || !data) return (
@@ -108,7 +108,7 @@ export default function PrescriptionPrintPage() {
       <div className="no-print fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200 px-6 py-3 flex items-center justify-between font-[Manrope]">
         <div className="flex items-center gap-3">
           <button onClick={() => window.history.back()}
-            className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-[#006685] transition-colors">
+            className="flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-[#82d8ff] transition-colors">
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
             Retour
           </button>
@@ -122,7 +122,7 @@ export default function PrescriptionPrintPage() {
             </span>
           )}
           <button onClick={() => window.print()}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:bg-[#005575] transition-colors shadow-[0_2px_8px_rgba(0,102,133,0.25)]">
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:bg-[#5ab8e0] transition-colors shadow-[0_2px_8px_rgba(0,102,133,0.25)]">
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>print</span>
             Imprimer / PDF
           </button>
@@ -134,21 +134,21 @@ export default function PrescriptionPrintPage() {
         <div className="rx-page bg-white max-w-[700px] mx-auto rounded-lg shadow-2xl overflow-hidden" style={{ minHeight: '990px' }}>
           <div className="flex">
             {/* Barre latérale bleue */}
-            <div className="w-2 bg-[#006685] flex-shrink-0" />
+            <div className="w-2 bg-[#82d8ff] flex-shrink-0" />
             <div className="flex-1 p-10">
 
               {/* En-tête praticien */}
               <div className="flex justify-between items-start mb-8 pb-6 border-b-2 border-[#e5eeff]">
                 <div>
                   <p className="text-xl font-black text-[#0b1c30] leading-tight">{fullTitle}</p>
-                  <p className="text-sm font-semibold text-[#006685] mt-1">{data.practitioner_speciality}</p>
+                  <p className="text-sm font-semibold text-[#82d8ff] mt-1">{data.practitioner_speciality}</p>
                   {data.registration_number && <p className="text-xs text-[#6f787e] mt-1">N° Ordre : {data.registration_number}</p>}
                   {data.clinic_address && <p className="text-xs text-[#6f787e]">{data.clinic_address}</p>}
                   {data.practitioner_phone && <p className="text-xs text-[#6f787e]">Tél : {data.practitioner_phone}</p>}
                 </div>
                 <div className="text-right">
                   <div className="inline-flex items-center gap-1.5 bg-[#e5eeff] px-3 py-1 rounded-full mb-2">
-                    <span className="text-[10px] font-bold text-[#006685] uppercase tracking-wide">M-Santé</span>
+                    <span className="text-[10px] font-bold text-[#82d8ff] uppercase tracking-wide">M-Santé</span>
                   </div>
                   <p className="text-sm text-[#6f787e] whitespace-nowrap">Dakar, le {dateConsult}</p>
                 </div>
@@ -156,7 +156,7 @@ export default function PrescriptionPrintPage() {
 
               {/* Titre */}
               <div className="text-center mb-8">
-                <h1 className="text-2xl font-black tracking-widest text-[#0b1c30] uppercase border-b-2 border-[#006685] pb-2 inline-block">
+                <h1 className="text-2xl font-black tracking-widest text-[#0b1c30] uppercase border-b-2 border-[#82d8ff] pb-2 inline-block">
                   ORDONNANCE
                 </h1>
               </div>
@@ -179,7 +179,7 @@ export default function PrescriptionPrintPage() {
               <div className="mb-6 space-y-4">
                 {data.medications.map((med, i) => (
                   <div key={i} className="flex gap-3">
-                    <span className="text-[#006685] font-black text-base leading-tight mt-0.5">{i + 1}.</span>
+                    <span className="text-[#82d8ff] font-black text-base leading-tight mt-0.5">{i + 1}.</span>
                     <div>
                       <p className="text-sm font-bold text-[#0b1c30]">{med.name}{med.dosage ? ` ${med.dosage}` : ''}</p>
                       {med.frequency && <p className="text-sm text-[#3f484d]">{med.frequency}</p>}

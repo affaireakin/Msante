@@ -48,7 +48,7 @@ function InfoRow({ icon, label, value, onEdit }: { icon: IconName; label: string
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(190,200,206,0.25)' }}>
       <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-        <MaterialIcons name={icon} size={18} color="#006685" />
+        <MaterialIcons name={icon} size={18} color="#82d8ff" />
       </View>
       <View style={{ flex: 1 }}>
         <Text style={{ fontFamily: 'Manrope', fontSize: 11, color: '#6f787e', fontWeight: '600', marginBottom: 1 }}>{label}</Text>
@@ -56,7 +56,7 @@ function InfoRow({ icon, label, value, onEdit }: { icon: IconName; label: string
       </View>
       {onEdit && (
         <TouchableOpacity onPress={onEdit} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <MaterialIcons name="edit" size={18} color="#006685" />
+          <MaterialIcons name="edit" size={18} color="#82d8ff" />
         </TouchableOpacity>
       )}
     </View>
@@ -67,10 +67,10 @@ function SwitchRow({ icon, label, value, onChange }: { icon: IconName; label: st
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: 'rgba(190,200,206,0.25)' }}>
       <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-        <MaterialIcons name={icon} size={18} color="#006685" />
+        <MaterialIcons name={icon} size={18} color="#82d8ff" />
       </View>
       <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', fontWeight: '500' }}>{label}</Text>
-      <Switch value={value} onValueChange={onChange} trackColor={{ false: '#e2e8f0', true: '#82d8ff' }} thumbColor={value ? '#006685' : '#fff'} />
+      <Switch value={value} onValueChange={onChange} trackColor={{ false: '#e2e8f0', true: '#82d8ff' }} thumbColor={value ? '#82d8ff' : '#fff'} />
     </View>
   )
 }
@@ -231,8 +231,8 @@ export default function ProfileScreen() {
               >
                 <Text style={{ fontSize: 22 }}>{p.flag}</Text>
                 <Text style={{ fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', flex: 1 }}>{p.label}</Text>
-                <Text style={{ fontFamily: 'Manrope', fontSize: 14, color: '#006685', fontWeight: '700' }}>{p.code}</Text>
-                {phonePrefix === p.code && <MaterialIcons name="check" size={18} color="#006685" />}
+                <Text style={{ fontFamily: 'Manrope', fontSize: 14, color: '#82d8ff', fontWeight: '700' }}>{p.code}</Text>
+                {phonePrefix === p.code && <MaterialIcons name="check" size={18} color="#82d8ff" />}
               </TouchableOpacity>
             ))}
           </View>
@@ -243,7 +243,7 @@ export default function ProfileScreen() {
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingTop: 16, paddingBottom: 8 }}>
           <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 12 }}>
-            <MaterialIcons name="arrow-back" size={22} color="#006685" />
+            <MaterialIcons name="arrow-back" size={22} color="#82d8ff" />
           </TouchableOpacity>
           <Text style={{ fontFamily: 'Manrope', fontSize: 20, fontWeight: '700', color: '#0b1c30' }}>Mon profil</Text>
         </View>
@@ -253,8 +253,8 @@ export default function ProfileScreen() {
           <TouchableOpacity onPress={uploadAvatar} style={{ marginBottom: 14 }} activeOpacity={0.8}>
             <View style={{
               width: 88, height: 88, borderRadius: 44,
-              backgroundColor: '#006685', alignItems: 'center', justifyContent: 'center',
-              shadowColor: '#006685', shadowOpacity: 0.25, shadowOffset: { width: 0, height: 8 }, shadowRadius: 20,
+              backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center',
+              shadowColor: '#82d8ff', shadowOpacity: 0.25, shadowOffset: { width: 0, height: 8 }, shadowRadius: 20,
             }}>
               {avatarUrl
                 ? <Image source={{ uri: avatarUrl }} style={{ width: 88, height: 88, borderRadius: 44 }} />
@@ -264,7 +264,7 @@ export default function ProfileScreen() {
             <View style={{
               position: 'absolute', bottom: 0, right: 0,
               width: 28, height: 28, borderRadius: 14,
-              backgroundColor: '#006685', borderWidth: 2, borderColor: '#f8f9ff',
+              backgroundColor: '#82d8ff', borderWidth: 2, borderColor: '#f8f9ff',
               alignItems: 'center', justifyContent: 'center',
             }}>
               <MaterialIcons name="photo-camera" size={13} color="#fff" />
@@ -273,8 +273,8 @@ export default function ProfileScreen() {
           <Text style={{ fontFamily: 'Manrope', fontSize: 20, fontWeight: '700', color: '#0b1c30', textAlign: 'center' }}>{name}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
             <View style={{ backgroundColor: '#e5eeff', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 100, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <MaterialIcons name="person" size={12} color="#006685" />
-              <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#006685' }}>Patient</Text>
+              <MaterialIcons name="person" size={12} color="#82d8ff" />
+              <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#82d8ff' }}>Patient</Text>
             </View>
             {profile.created_at && (
               <Text style={{ fontFamily: 'Manrope', fontSize: 11, color: '#6f787e' }}>
@@ -302,14 +302,14 @@ export default function ProfileScreen() {
                 value={editValue}
                 onChangeText={setEditValue}
                 autoFocus
-                style={{ fontFamily: 'Manrope', fontSize: 15, color: '#0b1c30', borderBottomWidth: 1.5, borderBottomColor: '#006685', paddingVertical: 6, marginBottom: 16 }}
+                style={{ fontFamily: 'Manrope', fontSize: 15, color: '#0b1c30', borderBottomWidth: 1.5, borderBottomColor: '#82d8ff', paddingVertical: 6, marginBottom: 16 }}
                 placeholderTextColor="#bec8ce"
               />
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 <TouchableOpacity onPress={() => setEditField(null)} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, borderWidth: 1, borderColor: '#bec8ce', alignItems: 'center' }}>
                   <Text style={{ fontFamily: 'Manrope', fontWeight: '600', color: '#6f787e', fontSize: 13 }}>Annuler</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => updateProfile.mutate({ full_name: editValue.trim() })} disabled={updateProfile.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#006685', alignItems: 'center' }}>
+                <TouchableOpacity onPress={() => updateProfile.mutate({ full_name: editValue.trim() })} disabled={updateProfile.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#82d8ff', alignItems: 'center' }}>
                   {updateProfile.isPending ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '700', color: '#fff', fontSize: 13 }}>Enregistrer</Text>}
                 </TouchableOpacity>
               </View>
@@ -332,7 +332,7 @@ export default function ProfileScreen() {
           />
           {editField === 'phone' && (
             <View style={{ backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: 16, marginTop: 8, borderWidth: 1, borderColor: 'rgba(0,102,133,0.15)' }}>
-              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#006685', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.8 }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#82d8ff', marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.8 }}>
                 Téléphone
               </Text>
               <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
@@ -343,8 +343,8 @@ export default function ProfileScreen() {
                   <Text style={{ fontSize: 16 }}>
                     {COUNTRY_PREFIXES.find(p => p.code === phonePrefix)?.flag}
                   </Text>
-                  <Text style={{ fontFamily: 'Manrope', fontWeight: '700', color: '#006685', fontSize: 13 }}>{phonePrefix}</Text>
-                  <MaterialIcons name="arrow-drop-down" size={18} color="#006685" />
+                  <Text style={{ fontFamily: 'Manrope', fontWeight: '700', color: '#82d8ff', fontSize: 13 }}>{phonePrefix}</Text>
+                  <MaterialIcons name="arrow-drop-down" size={18} color="#82d8ff" />
                 </TouchableOpacity>
                 <TextInput
                   value={editValue}
@@ -352,7 +352,7 @@ export default function ProfileScreen() {
                   keyboardType="phone-pad"
                   autoFocus
                   placeholder="77 000 00 00"
-                  style={{ flex: 1, fontFamily: 'Manrope', fontSize: 15, color: '#0b1c30', borderBottomWidth: 1.5, borderBottomColor: '#006685', paddingVertical: 6 }}
+                  style={{ flex: 1, fontFamily: 'Manrope', fontSize: 15, color: '#0b1c30', borderBottomWidth: 1.5, borderBottomColor: '#82d8ff', paddingVertical: 6 }}
                   placeholderTextColor="#bec8ce"
                 />
               </View>
@@ -360,7 +360,7 @@ export default function ProfileScreen() {
                 <TouchableOpacity onPress={() => setEditField(null)} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, borderWidth: 1, borderColor: '#bec8ce', alignItems: 'center' }}>
                   <Text style={{ fontFamily: 'Manrope', fontWeight: '600', color: '#6f787e', fontSize: 13 }}>Annuler</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSavePhone} disabled={updateProfile.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#006685', alignItems: 'center' }}>
+                <TouchableOpacity onPress={handleSavePhone} disabled={updateProfile.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#82d8ff', alignItems: 'center' }}>
                   {updateProfile.isPending ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '700', color: '#fff', fontSize: 13 }}>Enregistrer</Text>}
                 </TouchableOpacity>
               </View>
@@ -397,14 +397,14 @@ export default function ProfileScreen() {
                 autoFocus
                 multiline
                 placeholder="Diabète, hypertension..."
-                style={{ fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', borderBottomWidth: 1.5, borderBottomColor: '#006685', paddingVertical: 6, marginBottom: 16, minHeight: 50 }}
+                style={{ fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', borderBottomWidth: 1.5, borderBottomColor: '#82d8ff', paddingVertical: 6, marginBottom: 16, minHeight: 50 }}
                 placeholderTextColor="#bec8ce"
               />
               <View style={{ flexDirection: 'row', gap: 10 }}>
                 <TouchableOpacity onPress={() => setEditField(null)} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, borderWidth: 1, borderColor: '#bec8ce', alignItems: 'center' }}>
                   <Text style={{ fontFamily: 'Manrope', fontWeight: '600', color: '#6f787e', fontSize: 13 }}>Annuler</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSaveConditions} disabled={updateMedical.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#006685', alignItems: 'center' }}>
+                <TouchableOpacity onPress={handleSaveConditions} disabled={updateMedical.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#82d8ff', alignItems: 'center' }}>
                   {updateMedical.isPending ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '700', color: '#fff', fontSize: 13 }}>Enregistrer</Text>}
                 </TouchableOpacity>
               </View>
@@ -442,11 +442,11 @@ export default function ProfileScreen() {
                       }}
                       style={{
                         paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20,
-                        backgroundColor: selected ? '#006685' : '#e5eeff',
-                        borderWidth: 1, borderColor: selected ? '#006685' : '#82d8ff',
+                        backgroundColor: selected ? '#82d8ff' : '#e5eeff',
+                        borderWidth: 1, borderColor: selected ? '#82d8ff' : '#82d8ff',
                       }}
                     >
-                      <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '600', color: selected ? '#fff' : '#006685' }}>
+                      <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '600', color: selected ? '#fff' : '#82d8ff' }}>
                         {s}
                       </Text>
                     </TouchableOpacity>
@@ -465,7 +465,7 @@ export default function ProfileScreen() {
                 <TouchableOpacity onPress={() => setEditField(null)} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, borderWidth: 1, borderColor: '#bec8ce', alignItems: 'center' }}>
                   <Text style={{ fontFamily: 'Manrope', fontWeight: '600', color: '#6f787e', fontSize: 13 }}>Annuler</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSavePriorities} disabled={updateMedical.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#006685', alignItems: 'center' }}>
+                <TouchableOpacity onPress={handleSavePriorities} disabled={updateMedical.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#82d8ff', alignItems: 'center' }}>
                   {updateMedical.isPending ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '700', color: '#fff', fontSize: 13 }}>Enregistrer</Text>}
                 </TouchableOpacity>
               </View>
@@ -493,7 +493,7 @@ export default function ProfileScreen() {
             style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14 }}
           >
             <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-              <MaterialIcons name="lock" size={18} color="#006685" />
+              <MaterialIcons name="lock" size={18} color="#82d8ff" />
             </View>
             <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', fontWeight: '500' }}>Changer le mot de passe</Text>
             <MaterialIcons name="chevron-right" size={20} color="#bec8ce" />
@@ -503,7 +503,7 @@ export default function ProfileScreen() {
             style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, borderTopWidth: 1, borderTopColor: 'rgba(190,200,206,0.25)' }}
           >
             <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
-              <MaterialIcons name="help" size={18} color="#006685" />
+              <MaterialIcons name="help" size={18} color="#82d8ff" />
             </View>
             <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', fontWeight: '500' }}>Aide & Support</Text>
             <MaterialIcons name="chevron-right" size={20} color="#bec8ce" />

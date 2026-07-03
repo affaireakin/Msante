@@ -67,24 +67,24 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 bg-[#f8f9ff]/80 backdrop-blur-xl border-b border-white/10 shadow-sm">
         <div className="flex justify-between items-center h-20 px-6 max-w-7xl mx-auto w-full">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#006685] flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-[#82d8ff] flex items-center justify-center shadow-md">
               <Icon name="medical_services" className="text-white" style={{ fontSize: '20px' }} />
             </div>
             <div>
               <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
-              <p className="text-[10px] text-[#006685] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
+              <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
             </div>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
-            <a className="text-[#006685] font-bold border-b-2 border-[#006685] py-1 text-sm" href="#">Accueil</a>
-            <a className="text-[#6f787e] hover:text-[#006685] transition-colors text-sm font-medium" href="#">Bien-être</a>
-            <a className="text-[#6f787e] hover:text-[#006685] transition-colors text-sm font-medium" href="#">Praticiens</a>
+            <a className="text-[#82d8ff] font-bold border-b-2 border-[#82d8ff] py-1 text-sm" href="#">Accueil</a>
+            <a className="text-[#6f787e] hover:text-[#82d8ff] transition-colors text-sm font-medium" href="#">Bien-être</a>
+            <a className="text-[#6f787e] hover:text-[#82d8ff] transition-colors text-sm font-medium" href="#">Praticiens</a>
           </nav>
           <div className="flex items-center gap-3">
-            <Link href="/auth/login" className="px-5 py-2 text-[#006685] text-sm font-semibold hover:bg-[#006685]/5 transition-all rounded-lg">
+            <Link href="/auth/login" className="px-5 py-2 text-[#82d8ff] text-sm font-semibold hover:bg-[#82d8ff]/5 transition-all rounded-lg">
               Connexion
             </Link>
-            <Link href="/auth/signup" className="px-5 py-2 bg-[#006685] text-white text-sm font-bold rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">
+            <Link href="/auth/signup" className="px-5 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all">
               Inscription
             </Link>
           </div>
@@ -101,18 +101,18 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left */}
             <div className="z-10 space-y-8">
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#82d8ff]/30 border border-[#006685]/20 text-[#006685] text-xs font-bold uppercase tracking-widest">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#82d8ff]/30 border border-[#82d8ff]/20 text-[#82d8ff] text-xs font-bold uppercase tracking-widest">
                 <span className="mr-2">NOUVEAU</span> INNOVATION BIEN-ÊTRE
               </div>
               <h1 className="text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight text-[#0b1c30]">
                 Votre sanctuaire de santé mentale,{' '}
-                <span className="text-[#006685]">réinventé.</span>
+                <span className="text-[#82d8ff]">réinventé.</span>
               </h1>
               <p className="text-lg text-[#6f787e] max-w-lg leading-relaxed">
                 Une approche holistique propulsée par l&apos;intelligence artificielle pour des soins personnalisés et accessibles. Redécouvrez l&apos;équilibre intérieur avec M-Santé.
               </p>
               <div className="flex flex-wrap gap-4 pt-2">
-                <Link href="/auth/signup" className="px-8 py-4 bg-[#006685] text-white font-bold rounded-xl shadow-xl shadow-[#006685]/20 hover:scale-105 active:scale-95 transition-all">
+                <Link href="/auth/signup" className="px-8 py-4 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl shadow-xl shadow-[#82d8ff]/20 hover:scale-105 active:scale-95 transition-all">
                   Commencer mon parcours
                 </Link>
                 <Link href="#praticiens" className="px-8 py-4 font-semibold rounded-xl hover:bg-white/80 transition-all text-[#0b1c30]" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
@@ -123,17 +123,17 @@ export default function LandingPage() {
 
             {/* Right — image + floating card */}
             <div className="relative group hidden lg:block">
-              <div className="absolute -inset-4 bg-[#006685]/10 blur-3xl rounded-full opacity-50 group-hover:opacity-70 transition-opacity" />
+              <div className="absolute -inset-4 bg-[#82d8ff]/10 blur-3xl rounded-full opacity-50 group-hover:opacity-70 transition-opacity" />
               <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-square p-2" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
                 {/* Gradient placeholder instead of external image */}
                 <div className="w-full h-full rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #e5eeff 0%, #82d8ff 40%, #bee9ff 70%, #f8f9ff 100%)' }}>
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="text-center space-y-4">
-                      <div className="w-24 h-24 rounded-full bg-[#006685] flex items-center justify-center mx-auto shadow-2xl">
+                      <div className="w-24 h-24 rounded-full bg-[#82d8ff] flex items-center justify-center mx-auto shadow-2xl">
                         <Icon name="medical_services" className="text-white" style={{ fontSize: '48px' }} />
                       </div>
                       <div>
-                        <p className="text-xl font-black text-[#006685]">Dr. Aminata Diallo</p>
+                        <p className="text-xl font-black text-[#82d8ff]">Dr. Aminata Diallo</p>
                         <p className="text-sm text-[#6f787e] font-medium">Psychologue Clinicienne</p>
                         <div className="flex items-center justify-center gap-1 mt-2">
                           {[1,2,3,4,5].map(i => (
@@ -141,7 +141,7 @@ export default function LandingPage() {
                           ))}
                           <span className="text-xs text-[#6f787e] ml-1">5.0</span>
                         </div>
-                        <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#006685] text-white rounded-full text-xs font-bold">
+                        <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#82d8ff] text-[#0b1c30] rounded-full text-xs font-bold">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
                           Disponible maintenant
                         </div>
@@ -157,7 +157,7 @@ export default function LandingPage() {
                   <div className="w-10 h-10 rounded-full bg-[#ffde5c] flex items-center justify-center text-[#705d00]">
                     <Icon name="auto_awesome" style={{ fontSize: '20px' }} />
                   </div>
-                  <span className="font-bold text-2xl leading-none text-[#006685]">98%</span>
+                  <span className="font-bold text-2xl leading-none text-[#82d8ff]">98%</span>
                 </div>
                 <p className="text-sm text-[#6f787e]">de confiance renouvelée.</p>
               </div>
@@ -177,7 +177,7 @@ export default function LandingPage() {
                 { icon: 'shield', label: 'Santevie' },
               ].map(p => (
                 <div key={p.label} className="flex items-center gap-2">
-                  <Icon name={p.icon} className="text-[#006685]" />
+                  <Icon name={p.icon} className="text-[#82d8ff]" />
                   <span className="font-bold text-[#0b1c30]/50">{p.label}</span>
                 </div>
               ))}
@@ -198,7 +198,7 @@ export default function LandingPage() {
               {
                 icon: 'psychology',
                 iconBg: '#82d8ff',
-                iconColor: '#006685',
+                iconColor: '#82d8ff',
                 title: 'Compagnon Bien-être IA',
                 desc: "Un assistant émotionnel intelligent disponible 24/7 pour vous écouter, analyser vos humeurs et proposer des exercices adaptés.",
                 gradient: 'from-[#e5eeff] to-[#bee9ff]',
@@ -214,7 +214,7 @@ export default function LandingPage() {
               {
                 icon: 'video_chat',
                 iconBg: '#82d8ff',
-                iconColor: '#006685',
+                iconColor: '#82d8ff',
                 title: 'Téléconsultation Sécurisée',
                 desc: "Des sessions vidéo chiffrées de bout en bout pour garantir une confidentialité totale. Consultez depuis chez vous.",
                 gradient: 'from-[#e5eeff] to-[#82d8ff]/20',
@@ -256,10 +256,10 @@ export default function LandingPage() {
 
               {/* Left — glass card */}
               <div className="relative order-2 lg:order-1">
-                <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#006685]/20 rounded-full blur-3xl" />
+                <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#82d8ff]/20 rounded-full blur-3xl" />
                 <div className="relative rounded-[2.5rem] p-12 overflow-hidden" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
                   <div className="absolute top-0 right-0 p-8 opacity-10">
-                    <Icon name="vital_signs" style={{ fontSize: '72px', color: '#006685' }} />
+                    <Icon name="vital_signs" style={{ fontSize: '72px', color: '#82d8ff' }} />
                   </div>
                   <h2 className="text-2xl font-bold text-[#0b1c30] mb-10">Le Futurisme Médical : L&apos;IA au service de l&apos;empathie.</h2>
                   <div className="space-y-8">
@@ -269,7 +269,7 @@ export default function LandingPage() {
                       { icon: 'hub', title: 'Écosystème Connecté', desc: "Synchronisation transparente entre vos appareils, vos praticiens et votre historique de santé." },
                     ].map(item => (
                       <div key={item.title} className="flex gap-6">
-                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#006685] text-white flex items-center justify-center shadow-lg shadow-[#006685]/20">
+                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#82d8ff] text-[#0b1c30] flex items-center justify-center shadow-lg shadow-[#82d8ff]/20">
                           <Icon name={item.icon} />
                         </div>
                         <div>
@@ -284,14 +284,14 @@ export default function LandingPage() {
 
               {/* Right — video placeholder + stats */}
               <div className="order-1 lg:order-2 space-y-6">
-                <div className="aspect-video rounded-[2rem] overflow-hidden shadow-2xl relative" style={{ background: 'linear-gradient(135deg, #0b1c30 0%, #006685 100%)' }}>
+                <div className="aspect-video rounded-[2rem] overflow-hidden shadow-2xl relative" style={{ background: 'linear-gradient(135deg, #0b1c30 0%, #82d8ff 100%)' }}>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-20 h-20 rounded-full flex items-center justify-center border border-white/30 hover:scale-110 transition-transform cursor-pointer" style={{ background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(8px)' }}>
                       <Icon name="play_arrow" className="text-white" style={{ fontSize: '40px' }} />
                     </div>
                   </div>
                   <div className="absolute bottom-4 left-4 right-4 p-4 rounded-xl flex items-center gap-4" style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.2)' }}>
-                    <div className="w-10 h-10 rounded-full bg-[#006685] flex items-center justify-center text-white">
+                    <div className="w-10 h-10 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30]">
                       <Icon name="play_circle" style={{ fontSize: '20px' }} />
                     </div>
                     <span className="font-bold text-sm text-white">Découvrez notre vision (2:45)</span>
@@ -299,11 +299,11 @@ export default function LandingPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-6 rounded-2xl bg-white shadow-sm border border-[#bec8ce]/20">
-                    <span className="block text-2xl font-black text-[#006685] mb-1">500+</span>
+                    <span className="block text-2xl font-black text-[#82d8ff] mb-1">500+</span>
                     <span className="text-sm text-[#6f787e]">Praticiens Certifiés</span>
                   </div>
                   <div className="p-6 rounded-2xl bg-white shadow-sm border border-[#bec8ce]/20">
-                    <span className="block text-2xl font-black text-[#006685] mb-1">24/7</span>
+                    <span className="block text-2xl font-black text-[#82d8ff] mb-1">24/7</span>
                     <span className="text-sm text-[#6f787e]">Support IA Illimité</span>
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { name: 'Dr. Aminata Diallo', spec: 'Psychologue Clinicienne', rating: 4.9, sessions: 142, initials: 'AD', color: '#006685' },
+              { name: 'Dr. Aminata Diallo', spec: 'Psychologue Clinicienne', rating: 4.9, sessions: 142, initials: 'AD', color: '#82d8ff' },
               { name: 'Dr. Moussa Sow', spec: 'Psychiatre', rating: 4.8, sessions: 98, initials: 'MS', color: '#705d00' },
               { name: 'Dr. Fatou Ndiaye', spec: 'Coach de vie certifiée', rating: 5.0, sessions: 203, initials: 'FN', color: '#1d7a3a' },
             ].map(p => (
@@ -341,7 +341,7 @@ export default function LandingPage() {
                   <span className="text-xs text-[#6f787e] ml-1">{p.rating} · {p.sessions} sessions</span>
                 </div>
                 <div className="flex items-center justify-end mt-4">
-                  <Link href="/auth/signup" className="px-4 py-2 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#006685]/20 transition-all">
+                  <Link href="/auth/signup" className="px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#82d8ff]/20 transition-all">
                     Réserver
                   </Link>
                 </div>
@@ -362,7 +362,7 @@ export default function LandingPage() {
                 Rejoignez des milliers de personnes qui ont choisi une approche moderne et bienveillante pour leur bien-être.
               </p>
               <div className="flex flex-wrap justify-center gap-4 pt-2">
-                <Link href="/auth/signup" className="px-10 py-4 bg-[#006685] text-white font-bold rounded-2xl shadow-xl shadow-[#006685]/30 hover:scale-105 active:scale-95 transition-all">
+                <Link href="/auth/signup" className="px-10 py-4 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-2xl shadow-xl shadow-[#82d8ff]/30 hover:scale-105 active:scale-95 transition-all">
                   Commencer maintenant
                 </Link>
                 <Link href="/auth/login" className="px-10 py-4 font-bold rounded-2xl hover:bg-white/20 transition-all text-white border border-white/20" style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
@@ -381,12 +381,12 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 px-6 py-12 max-w-7xl mx-auto w-full">
           <div className="space-y-5">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#006685] flex items-center justify-center shadow-sm">
+              <div className="w-9 h-9 rounded-xl bg-[#82d8ff] flex items-center justify-center shadow-sm">
                 <Icon name="medical_services" className="text-white" style={{ fontSize: '18px' }} />
               </div>
               <div>
                 <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
-                <p className="text-[10px] text-[#006685] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
+                <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
               </div>
             </div>
             <p className="text-sm text-[#6f787e] max-w-xs leading-relaxed">
@@ -394,7 +394,7 @@ export default function LandingPage() {
             </p>
             <div className="flex space-x-3">
               {['share', 'mail'].map(icon => (
-                <a key={icon} href="#" className="w-10 h-10 rounded-full flex items-center justify-center text-[#006685] hover:bg-[#006685] hover:text-white transition-all" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
+                <a key={icon} href="#" className="w-10 h-10 rounded-full flex items-center justify-center text-[#82d8ff] hover:bg-[#82d8ff] hover:text-[#0b1c30] transition-all" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
                   <Icon name={icon} style={{ fontSize: '20px' }} />
                 </a>
               ))}
@@ -409,7 +409,7 @@ export default function LandingPage() {
               <h5 className="font-bold mb-5 text-[#0b1c30]">{col.title}</h5>
               <ul className="space-y-3">
                 {col.links.map(l => (
-                  <li key={l}><a href="#" className="text-sm text-[#6f787e] hover:text-[#006685] transition-colors">{l}</a></li>
+                  <li key={l}><a href="#" className="text-sm text-[#6f787e] hover:text-[#82d8ff] transition-colors">{l}</a></li>
                 ))}
               </ul>
             </div>

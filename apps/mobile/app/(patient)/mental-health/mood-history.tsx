@@ -27,7 +27,7 @@ export default function MoodHistory() {
       <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} contentContainerStyle={{ paddingBottom: 40 }}>
         <View style={{ paddingTop: 32, paddingBottom: 24, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <TouchableOpacity onPress={() => router.back()}>
-            <MaterialIcons name="arrow-back" size={24} color="#006685" />
+            <MaterialIcons name="arrow-back" size={24} color="#82d8ff" />
           </TouchableOpacity>
           <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Historique humeur</Text>
         </View>
@@ -37,7 +37,7 @@ export default function MoodHistory() {
           padding: 24,
           borderWidth: 1,
           borderColor: 'rgba(255,255,255,0.5)',
-          shadowColor: '#006685',
+          shadowColor: '#82d8ff',
           shadowOffset: { width: 0, height: 10 },
           shadowOpacity: 0.05,
           shadowRadius: 30,
@@ -54,13 +54,13 @@ export default function MoodHistory() {
                       borderTopLeftRadius: 8,
                       borderTopRightRadius: 8,
                       height: barH,
-                      backgroundColor: day.isToday ? '#006685' : 'rgba(130,216,255,0.4)',
+                      backgroundColor: day.isToday ? '#82d8ff' : 'rgba(130,216,255,0.4)',
                     }}
                   />
                   <Text style={{
                     fontSize: 12,
                     fontFamily: 'Manrope',
-                    color: day.isToday ? '#006685' : '#6f787e',
+                    color: day.isToday ? '#82d8ff' : '#6f787e',
                     fontWeight: day.isToday ? '700' : '400',
                   }}>
                     {day.label}
@@ -79,7 +79,7 @@ export default function MoodHistory() {
               alignItems: 'center',
               gap: 12,
             }}>
-              <MaterialIcons name="lightbulb" size={22} color="#006685" />
+              <MaterialIcons name="lightbulb" size={22} color="#82d8ff" />
               <Text style={{ flex: 1, fontSize: 14, color: '#0b1c30', fontFamily: 'Manrope' }}>
                 Score moyen 7j :{' '}
                 {(entries.slice(0, 7).reduce((a, e) => a + e.score, 0) / Math.min(entries.length, 7)).toFixed(1)}/10

@@ -10,7 +10,7 @@ function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
 const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {
   confirmed: { bg: '#e8f5e9', text: '#1d7a3a', label: 'Confirmé' },
   pending:   { bg: '#fff8e1', text: '#705d00', label: 'En attente' },
-  completed: { bg: '#e5eeff', text: '#006685', label: 'Terminé' },
+  completed: { bg: '#e5eeff', text: '#82d8ff', label: 'Terminé' },
   cancelled: { bg: '#ffdad6', text: '#ba1a1a', label: 'Annulé' },
 }
 
@@ -81,7 +81,7 @@ export default function PatientDashboard() {
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
-          { label: 'Prochains RDV', value: appointments.length, icon: 'calendar_today', color: '#006685', bg: '#e5eeff' },
+          { label: 'Prochains RDV', value: appointments.length, icon: 'calendar_today', color: '#82d8ff', bg: '#e5eeff' },
           { label: 'Total consultations', value: totalAppts, icon: 'medical_services', color: '#705d00', bg: '#fff8e1' },
           { label: 'Sessions terminées', value: completedAppts, icon: 'check_circle', color: '#1d7a3a', bg: '#e8f5e9' },
         ].map(kpi => (
@@ -101,7 +101,7 @@ export default function PatientDashboard() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-[#0b1c30]">Prochains rendez-vous</h2>
-          <Link href="/patient/appointments" className="text-xs font-bold text-[#006685] hover:underline uppercase tracking-wide">
+          <Link href="/patient/appointments" className="text-xs font-bold text-[#82d8ff] hover:underline uppercase tracking-wide">
             Voir tout
           </Link>
         </div>
@@ -111,7 +111,7 @@ export default function PatientDashboard() {
             <Icon name="calendar_today" style={{ fontSize: '48px', color: '#bec8ce' }} />
             <p className="font-semibold text-[#0b1c30] mt-3">Aucun rendez-vous à venir</p>
             <p className="text-sm text-[#6f787e] mt-1">Trouvez un praticien et réservez votre première session</p>
-            <Link href="/patient/practitioners" className="mt-4 inline-block px-6 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#006685]/20 transition-all">
+            <Link href="/patient/practitioners" className="mt-4 inline-block px-6 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#82d8ff]/20 transition-all">
               Trouver un praticien
             </Link>
           </div>
@@ -127,8 +127,8 @@ export default function PatientDashboard() {
               return (
                 <div key={apt.id} className="rounded-2xl p-4 flex items-center gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
                   <div className="w-14 h-14 rounded-xl bg-[#e5eeff] flex flex-col items-center justify-center flex-shrink-0">
-                    <span className="text-base font-black text-[#006685] leading-none">{dt.getDate()}</span>
-                    <span className="text-xs text-[#006685] font-semibold uppercase">
+                    <span className="text-base font-black text-[#82d8ff] leading-none">{dt.getDate()}</span>
+                    <span className="text-xs text-[#82d8ff] font-semibold uppercase">
                       {dt.toLocaleDateString('fr-FR', { month: 'short' })}
                     </span>
                   </div>
@@ -154,10 +154,10 @@ export default function PatientDashboard() {
         <h2 className="text-lg font-bold text-[#0b1c30] mb-4">Actions rapides</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { href: '/patient/practitioners', icon: 'search', label: 'Trouver un praticien', color: '#006685', bg: '#e5eeff' },
+            { href: '/patient/practitioners', icon: 'search', label: 'Trouver un praticien', color: '#82d8ff', bg: '#e5eeff' },
             { href: '/patient/appointments', icon: 'calendar_today', label: 'Mes rendez-vous', color: '#705d00', bg: '#fff8e1' },
             { href: '/patient/wellness', icon: 'self_improvement', label: 'Bien-être', color: '#1d7a3a', bg: '#e8f5e9' },
-            { href: '/patient/book', icon: 'add_circle', label: 'Nouveau RDV', color: '#006685', bg: '#e5eeff' },
+            { href: '/patient/book', icon: 'add_circle', label: 'Nouveau RDV', color: '#82d8ff', bg: '#e5eeff' },
           ].map(action => (
             <Link key={action.href} href={action.href} className="rounded-2xl p-5 flex flex-col items-center gap-3 text-center hover:-translate-y-1 hover:shadow-lg transition-all" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
               <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: action.bg }}>

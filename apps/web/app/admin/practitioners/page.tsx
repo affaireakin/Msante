@@ -89,7 +89,7 @@ const STATUS_FILTERS = [
 
 export default function PractitionersPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-[#006685] border-t-transparent rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-[#82d8ff] border-t-transparent rounded-full animate-spin" /></div>}>
       <PractitionersContent />
     </Suspense>
   )
@@ -234,13 +234,13 @@ function PractitionersContent() {
             <button key={f.value} onClick={() => setStatusFilter(f.value)}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all border"
               style={{
-                backgroundColor: statusFilter === f.value ? '#006685' : 'rgba(255,255,255,0.70)',
+                backgroundColor: statusFilter === f.value ? '#82d8ff' : 'rgba(255,255,255,0.70)',
                 color: statusFilter === f.value ? '#fff' : '#475569',
-                borderColor: statusFilter === f.value ? '#006685' : 'rgba(190,200,206,0.40)',
+                borderColor: statusFilter === f.value ? '#82d8ff' : 'rgba(190,200,206,0.40)',
               }}>
               {f.label}
               <span className="text-xs px-1.5 py-0.5 rounded-full font-bold"
-                style={{ backgroundColor: statusFilter === f.value ? 'rgba(255,255,255,0.25)' : '#e5eeff', color: statusFilter === f.value ? '#fff' : '#006685' }}>
+                style={{ backgroundColor: statusFilter === f.value ? 'rgba(255,255,255,0.25)' : '#e5eeff', color: statusFilter === f.value ? '#fff' : '#82d8ff' }}>
                 {count}
               </span>
             </button>
@@ -276,7 +276,7 @@ function PractitionersContent() {
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 {/* Identité */}
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#006685] flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] font-bold text-lg flex-shrink-0">
                     {(pract.users?.full_name ?? 'P').split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                   </div>
                   <div>
@@ -358,7 +358,7 @@ function PractitionersContent() {
                   <select
                     value={pract.practitioner_type ?? 'healthcare'}
                     onChange={(e) => handleTypeChange(pract, e.target.value as PractType)}
-                    className="text-sm border border-slate-200/50 rounded-lg px-3 py-1.5 bg-white/60 text-[#0b1c30] outline-none focus:border-[#006685]"
+                    className="text-sm border border-slate-200/50 rounded-lg px-3 py-1.5 bg-white/60 text-[#0b1c30] outline-none focus:border-[#82d8ff]"
                   >
                     {(Object.entries(TYPE_LABELS) as [PractType, string][]).map(([v, l]) => (
                       <option key={v} value={v}>{l}</option>
@@ -375,7 +375,7 @@ function PractitionersContent() {
                       onClick={() => handlePermissionToggle(pract, key)}
                       className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all border ${
                         enabled
-                          ? 'bg-[#006685] text-white border-[#006685]'
+                          ? 'bg-[#82d8ff] text-[#0b1c30] border-[#82d8ff]'
                           : 'bg-white/60 text-[#6f787e] border-slate-200/50'
                       }`}
                     >
@@ -411,7 +411,7 @@ function PractitionersContent() {
               value={statusReason}
               onChange={(e) => setStatusReason(e.target.value)}
               placeholder="Motif obligatoire..."
-              className="w-full h-28 px-4 py-3 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#006685] resize-none"
+              className="w-full h-28 px-4 py-3 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff] resize-none"
             />
             <div className="flex gap-3 mt-6">
               <button
@@ -447,7 +447,7 @@ function PractitionersContent() {
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               placeholder="Ex: Documents insuffisants, diplôme non reconnu..."
-              className="w-full h-28 px-4 py-3 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#006685] resize-none"
+              className="w-full h-28 px-4 py-3 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff] resize-none"
             />
             <div className="flex gap-3 mt-6">
               <button

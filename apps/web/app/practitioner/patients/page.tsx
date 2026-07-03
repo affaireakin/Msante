@@ -274,7 +274,7 @@ function useUpcomingConfirmed(practId: string | null) {
 
 const TYPE_ICONS: Record<string, string> = { video: 'videocam', audio: 'mic', chat: 'chat_bubble' }
 const TYPE_COLOR: Record<string, { bg: string; text: string }> = {
-  video: { bg: '#e5eeff', text: '#006685' },
+  video: { bg: '#e5eeff', text: '#82d8ff' },
   audio: { bg: '#f3e8ff', text: '#7c3aed' },
   chat:  { bg: '#dcfce7', text: '#1d7a3a' },
 }
@@ -360,7 +360,7 @@ function PendingTab({ practId }: { practId: string }) {
               <button onClick={() => updateStatus.mutate({ id: apt.id, status: 'confirmed' })}
                 disabled={updateStatus.isPending}
                 className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold text-white transition-colors disabled:opacity-50"
-                style={{ background: '#006685' }}>
+                style={{ background: '#82d8ff' }}>
                 <Icon name="check" size={14} color="#fff" />
                 Confirmer
               </button>
@@ -430,7 +430,7 @@ function UpcomingTab({ practId }: { practId: string }) {
                   <div className="flex gap-2 items-center shrink-0">
                     <Link href={`/practitioner/consultation/${apt.id}/waiting`}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-white"
-                      style={{ background: '#006685' }}>
+                      style={{ background: '#82d8ff' }}>
                       <Icon name="videocam" size={13} color="#fff" />
                       Rejoindre
                     </Link>
@@ -613,13 +613,13 @@ export default function PatientsPage() {
         {MAIN_TABS.map(tab => (
           <button key={tab.id} onClick={() => setMainTab(tab.id)}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
-            style={{ background: mainTab === tab.id ? '#006685' : 'transparent', color: mainTab === tab.id ? '#fff' : '#6f787e' }}>
+            style={{ background: mainTab === tab.id ? '#82d8ff' : 'transparent', color: mainTab === tab.id ? '#fff' : '#6f787e' }}>
             <Icon name={tab.icon} size={16} color={mainTab === tab.id ? '#fff' : '#6f787e'} />
             {tab.label}
             {tab.count > 0 && (
               <span className="text-xs px-1.5 py-0.5 rounded-full font-bold" style={{
                 background: mainTab === tab.id ? 'rgba(255,255,255,0.25)' : (tab.id === 'pending' ? '#fef3c7' : '#e5eeff'),
-                color:      mainTab === tab.id ? '#fff'                    : (tab.id === 'pending' ? '#92400e' : '#006685'),
+                color:      mainTab === tab.id ? '#fff'                    : (tab.id === 'pending' ? '#92400e' : '#82d8ff'),
               }}>
                 {tab.count}
               </span>
@@ -671,7 +671,7 @@ export default function PatientsPage() {
                     <button
                       onClick={() => respondDesignation.mutate({ patientId: d.patient_id, accept: true })}
                       disabled={respondDesignation.isPending}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-[#006685] text-white hover:bg-[#005070] transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-[#82d8ff] text-[#0b1c30] hover:bg-[#005070] transition-colors disabled:opacity-50"
                     >
                       <Icon name="check" size={13} color="#fff" />
                       Accepter
@@ -708,9 +708,9 @@ export default function PatientsPage() {
             onClick={() => setStatusFilter(tab.id)}
             className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all"
             style={{
-              backgroundColor: statusFilter === tab.id ? '#006685' : 'rgba(255,255,255,0.70)',
+              backgroundColor: statusFilter === tab.id ? '#82d8ff' : 'rgba(255,255,255,0.70)',
               color: statusFilter === tab.id ? '#fff' : '#6f787e',
-              border: `1px solid ${statusFilter === tab.id ? '#006685' : 'rgba(255,255,255,0.80)'}`,
+              border: `1px solid ${statusFilter === tab.id ? '#82d8ff' : 'rgba(255,255,255,0.80)'}`,
               boxShadow: statusFilter === tab.id ? '0 4px 12px rgba(0,102,133,0.25)' : 'none',
             }}
           >
@@ -720,7 +720,7 @@ export default function PatientsPage() {
               className="ml-1 px-1.5 py-0.5 rounded-full text-xs"
               style={{
                 backgroundColor: statusFilter === tab.id ? 'rgba(255,255,255,0.25)' : '#e5eeff',
-                color: statusFilter === tab.id ? '#fff' : '#006685',
+                color: statusFilter === tab.id ? '#fff' : '#82d8ff',
               }}
             >
               {tab.count}
@@ -778,7 +778,7 @@ export default function PatientsPage() {
                         {/* Patient */}
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                            <div className="w-9 h-9 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-xs font-bold flex-shrink-0">
                               {initials}
                             </div>
                             <div>
@@ -816,8 +816,8 @@ export default function PatientsPage() {
                         {/* Prochain RDV */}
                         <td className="px-4 py-3 whitespace-nowrap">
                           {p.nextApptDate ? (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-[#e5eeff] text-[#006685]">
-                              <Icon name="calendar_clock" size={12} color="#006685" />
+                            <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-[#e5eeff] text-[#82d8ff]">
+                              <Icon name="calendar_clock" size={12} color="#82d8ff" />
                               {fmtDayTime(p.nextApptDate)}
                             </span>
                           ) : (
@@ -827,8 +827,8 @@ export default function PatientsPage() {
 
                         {/* Consultations */}
                         <td className="px-4 py-3">
-                          <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-[#e5eeff] text-[#006685]">
-                            <Icon name="event" size={12} color="#006685" />
+                          <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-[#e5eeff] text-[#82d8ff]">
+                            <Icon name="event" size={12} color="#82d8ff" />
                             {p.totalAppts}
                           </span>
                         </td>
@@ -858,9 +858,9 @@ export default function PatientsPage() {
                         <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
                           <Link
                             href={`/practitioner/patients/${p.id}/journey`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold border border-[#006685] text-[#006685] hover:bg-[#e5eeff] transition-colors whitespace-nowrap"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold border border-[#82d8ff] text-[#82d8ff] hover:bg-[#e5eeff] transition-colors whitespace-nowrap"
                           >
-                            <Icon name="route" size={13} color="#006685" />
+                            <Icon name="route" size={13} color="#82d8ff" />
                             Parcours
                           </Link>
                         </td>
@@ -888,11 +888,11 @@ export default function PatientsPage() {
 
               {/* Avatar */}
               <div className="flex flex-col items-center gap-2 py-2">
-                <div className="w-16 h-16 rounded-full bg-[#006685] flex items-center justify-center text-white text-xl font-bold">
+                <div className="w-16 h-16 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-xl font-bold">
                   {selected.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                 </div>
                 <p className="font-bold text-[#0b1c30]">{selected.full_name}</p>
-                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#e5eeff] text-[#006685]">
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#e5eeff] text-[#82d8ff]">
                   {selected.totalAppts} consultation{selected.totalAppts !== 1 ? 's' : ''}
                 </span>
               </div>
@@ -978,14 +978,14 @@ export default function PatientsPage() {
               <div className="border-t border-slate-100 pt-3 space-y-2">
                 <Link
                   href={`/practitioner/patients/${selected.id}/journey`}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border-2 border-[#006685] text-[#006685] hover:bg-[#e5eeff] transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border-2 border-[#82d8ff] text-[#82d8ff] hover:bg-[#e5eeff] transition-colors"
                 >
-                  <Icon name="route" size={16} color="#006685" />
+                  <Icon name="route" size={16} color="#82d8ff" />
                   Parcours bien-être
                 </Link>
                 <Link
                   href={`/practitioner/patients/${selected.id}`}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-[#006685] text-white hover:bg-[#005070] transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-[#82d8ff] text-[#0b1c30] hover:bg-[#005070] transition-colors"
                 >
                   <Icon name="folder_open" size={16} color="#fff" />
                   Ouvrir le dossier
@@ -1048,13 +1048,13 @@ export default function PatientsPage() {
               <div>
                 <label className="text-sm font-semibold text-[#0b1c30]">Motif du blocage</label>
                 <select value={blockReason} onChange={e => setBlockReason(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685]">
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]">
                   {BLOCK_REASONS.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
                 {blockReason === 'Autre' && (
                   <input value={blockCustom} onChange={e => setBlockCustom(e.target.value)}
                     placeholder="Précisez le motif..."
-                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:border-[#006685]" />
+                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]" />
                 )}
               </div>
               <div>

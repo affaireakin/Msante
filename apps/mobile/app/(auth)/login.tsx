@@ -45,8 +45,8 @@ export default function LoginScreen() {
             onPress={() => router.back()}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 20, alignSelf: 'flex-start' }}
           >
-            <MaterialIcons name="arrow-back" size={20} color="#006685" />
-            <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>
+            <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
+            <Text style={{ fontSize: 14, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }}>
               Retour
             </Text>
           </TouchableOpacity>
@@ -85,7 +85,7 @@ export default function LoginScreen() {
             onPress={() => router.push('/(auth)/forgot-password')}
             style={{ alignSelf: 'flex-end' }}
           >
-            <Text style={{ fontSize: 13, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>
+            <Text style={{ fontSize: 13, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }}>
               Mot de passe oublié ?
             </Text>
           </TouchableOpacity>
@@ -115,7 +115,7 @@ export default function LoginScreen() {
         >
           <Text style={{ textAlign: 'center', fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>
             Pas encore de compte ?{' '}
-            <Text style={{ color: '#006685', fontWeight: '700' }}>S'inscrire</Text>
+            <Text style={{ color: '#82d8ff', fontWeight: '700' }}>S'inscrire</Text>
           </Text>
         </TouchableOpacity>
       </ScrollView>

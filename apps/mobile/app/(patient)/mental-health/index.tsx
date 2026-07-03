@@ -31,7 +31,7 @@ function MoodChart({ entries }: { entries: MoodEntry[] }) {
               style={{
                 height: barH,
                 borderRadius: 6,
-                backgroundColor: item.isToday ? '#006685' : 'rgba(130,216,255,0.4)',
+                backgroundColor: item.isToday ? '#82d8ff' : 'rgba(130,216,255,0.4)',
                 width: '68%',
               }}
             />
@@ -39,7 +39,7 @@ function MoodChart({ entries }: { entries: MoodEntry[] }) {
               style={{
                 fontSize: 10,
                 fontFamily: 'Manrope',
-                color: item.isToday ? '#006685' : '#6f787e',
+                color: item.isToday ? '#82d8ff' : '#6f787e',
                 fontWeight: item.isToday ? '700' : '400',
               }}
             >
@@ -64,7 +64,7 @@ export default function WellnessHub() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
         {/* Header */}
         <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 16 }}>
-          <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Mindfulness Sanctuary</Text>
+          <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Mindfulness Sanctuary</Text>
           <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope', marginTop: 4 }}>Espace bien-être</Text>
           <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', marginTop: 4 }}>
             Respirez. Écoutez-vous. Avancez doucement.
@@ -80,7 +80,7 @@ export default function WellnessHub() {
             borderWidth: 1,
             borderColor: 'rgba(255,255,255,0.5)',
             backgroundColor: 'rgba(255,255,255,0.60)',
-            shadowColor: '#006685',
+            shadowColor: '#82d8ff',
             shadowOpacity: 0.06,
             shadowRadius: 24,
             elevation: 3,
@@ -101,7 +101,7 @@ export default function WellnessHub() {
                       params: { technique: 'coherence', duration: '300', title: 'Cohérence cardiaque' },
                     })
                   }
-                  style={{ flex: 1, backgroundColor: '#006685', borderRadius: 9999, paddingVertical: 12, alignItems: 'center' }}
+                  style={{ flex: 1, backgroundColor: '#82d8ff', borderRadius: 9999, paddingVertical: 12, alignItems: 'center' }}
                 >
                   <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600', fontFamily: 'Manrope' }}>Commencer</Text>
                 </TouchableOpacity>
@@ -129,14 +129,14 @@ export default function WellnessHub() {
               borderWidth: 1,
               borderColor: 'rgba(255,255,255,0.5)',
               backgroundColor: 'rgba(255,255,255,0.60)',
-              shadowColor: '#006685',
+              shadowColor: '#82d8ff',
               shadowOpacity: 0.05,
               shadowRadius: 16,
               elevation: 2,
             }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <Text style={{ fontSize: 16, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>Humeur 7j</Text>
-                <MaterialIcons name="bar-chart" size={20} color="#006685" />
+                <MaterialIcons name="bar-chart" size={20} color="#82d8ff" />
               </View>
               <MoodChart entries={moodEntries} />
             </View>
@@ -152,8 +152,8 @@ export default function WellnessHub() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 8,
-                backgroundColor: todayScore != null ? '#006685' : 'rgba(255,255,255,0.60)',
-                shadowColor: '#006685',
+                backgroundColor: todayScore != null ? '#82d8ff' : 'rgba(255,255,255,0.60)',
+                shadowColor: '#82d8ff',
                 shadowOpacity: 0.08,
                 shadowRadius: 16,
                 elevation: 2,
@@ -194,13 +194,13 @@ export default function WellnessHub() {
               borderColor: 'rgba(0,102,133,0.20)',
             }}
           >
-            <MaterialIcons name="bar-chart" size={18} color="#006685" />
+            <MaterialIcons name="bar-chart" size={18} color="#82d8ff" />
             <Text
               style={{
                 fontFamily: 'Manrope',
                 fontSize: 14,
                 fontWeight: '600',
-                color: '#006685',
+                color: '#82d8ff',
               }}
             >
               Voir mes statistiques — 30 jours
@@ -216,7 +216,7 @@ export default function WellnessHub() {
               borderWidth: 1,
               borderColor: 'rgba(255,255,255,0.5)',
               backgroundColor: 'rgba(255,255,255,0.60)',
-              shadowColor: '#006685',
+              shadowColor: '#82d8ff',
               shadowOpacity: 0.05,
               shadowRadius: 16,
               elevation: 2,
@@ -224,7 +224,7 @@ export default function WellnessHub() {
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 }}>
               <View style={{ width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: '#e0f2fe' }}>
-                <MaterialIcons name="edit" size={20} color="#006685" />
+                <MaterialIcons name="edit" size={20} color="#82d8ff" />
               </View>
               <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Journal rapide</Text>
             </View>
@@ -256,13 +256,13 @@ export default function WellnessHub() {
                 alignItems: 'center',
                 gap: 8,
                 backgroundColor: 'rgba(255,255,255,0.60)',
-                shadowColor: '#006685',
+                shadowColor: '#82d8ff',
                 shadowOpacity: 0.05,
                 shadowRadius: 12,
                 elevation: 2,
               }}
             >
-              <MaterialIcons name="self-improvement" size={24} color="#006685" />
+              <MaterialIcons name="self-improvement" size={24} color="#82d8ff" />
               <Text style={{ fontSize: 12, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center' }}>Méditation</Text>
             </TouchableOpacity>
 
@@ -277,13 +277,13 @@ export default function WellnessHub() {
                 alignItems: 'center',
                 gap: 8,
                 backgroundColor: 'rgba(255,255,255,0.60)',
-                shadowColor: '#006685',
+                shadowColor: '#82d8ff',
                 shadowOpacity: 0.05,
                 shadowRadius: 12,
                 elevation: 2,
               }}
             >
-              <MaterialIcons name="book" size={24} color="#006685" />
+              <MaterialIcons name="book" size={24} color="#82d8ff" />
               <Text style={{ fontSize: 12, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center' }}>Journal</Text>
             </TouchableOpacity>
 
@@ -298,13 +298,13 @@ export default function WellnessHub() {
                 alignItems: 'center',
                 gap: 8,
                 backgroundColor: 'rgba(255,255,255,0.60)',
-                shadowColor: '#006685',
+                shadowColor: '#82d8ff',
                 shadowOpacity: 0.05,
                 shadowRadius: 12,
                 elevation: 2,
               }}
             >
-              <MaterialIcons name="bar-chart" size={24} color="#006685" />
+              <MaterialIcons name="bar-chart" size={24} color="#82d8ff" />
               <Text style={{ fontSize: 12, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', textAlign: 'center' }}>Historique</Text>
             </TouchableOpacity>
           </View>
@@ -321,14 +321,14 @@ export default function WellnessHub() {
               alignItems: 'center',
               gap: 16,
               backgroundColor: 'rgba(0,102,133,0.07)',
-              shadowColor: '#006685',
+              shadowColor: '#82d8ff',
               shadowOpacity: 0.08,
               shadowRadius: 16,
               elevation: 2,
             }}
           >
             <View style={{
-              width: 56, height: 56, borderRadius: 28, backgroundColor: '#006685',
+              width: 56, height: 56, borderRadius: 28, backgroundColor: '#82d8ff',
               alignItems: 'center', justifyContent: 'center',
               shadowColor: '#82d8ff', shadowOpacity: 1, shadowRadius: 20, elevation: 4,
             }}>
@@ -337,13 +337,13 @@ export default function WellnessHub() {
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Parler à Mounima</Text>
-                <MaterialIcons name="favorite" size={14} color="#006685" />
+                <MaterialIcons name="favorite" size={14} color="#82d8ff" />
               </View>
               <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', marginTop: 2 }}>
                 Votre espace d'écoute bienveillant
               </Text>
             </View>
-            <MaterialIcons name="arrow-forward" size={20} color="#006685" />
+            <MaterialIcons name="arrow-forward" size={20} color="#82d8ff" />
           </TouchableOpacity>
 
           <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center', marginTop: 8 }}>

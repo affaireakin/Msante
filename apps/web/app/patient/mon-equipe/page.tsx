@@ -13,7 +13,7 @@ function initials(name: string) {
 
 // ─── Constantes ────────────────────────────────────────────────────────────
 const ROLES = [
-  { value: 'medecin_traitant',  label: 'Médecin traitant',    icon: 'stethoscope',       color: '#006685', bg: '#e5eeff' },
+  { value: 'medecin_traitant',  label: 'Médecin traitant',    icon: 'stethoscope',       color: '#82d8ff', bg: '#e5eeff' },
   { value: 'psychiatre',        label: 'Psychiatre',           icon: 'psychology',        color: '#1d7a3a', bg: '#dcfce7' },
   { value: 'psychologue',       label: 'Psychologue',          icon: 'self_improvement',  color: '#7c3aed', bg: '#f3e8ff' },
   { value: 'therapeute',        label: 'Thérapeute',           icon: 'favorite',          color: '#be185d', bg: '#fce7f3' },
@@ -26,7 +26,7 @@ const ROLES = [
 const ROLE_MAP = Object.fromEntries(ROLES.map(r => [r.value, r]))
 
 const ACCESS_LEVELS = [
-  { value: 'full',           label: 'Complet',    desc: 'Toutes vos données',       color: '#006685' },
+  { value: 'full',           label: 'Complet',    desc: 'Toutes vos données',       color: '#82d8ff' },
   { value: 'limited',        label: 'Limité',     desc: 'Informations essentielles', color: '#705d00' },
   { value: 'document_only',  label: 'Documents',  desc: 'Fichiers uniquement',       color: '#475569' },
   { value: 'emergency_only', label: 'Urgence',    desc: 'Urgences seulement',        color: '#ba1a1a' },
@@ -233,10 +233,10 @@ function AddModal({
                 <button key={key} onClick={() => toggle(key as 'allow_notes' | 'allow_appreciations' | 'allow_mood_journal')}
                   className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
                   <div className="flex items-center gap-2">
-                    <Icon name={icon} size={16} color="#006685" />
+                    <Icon name={icon} size={16} color="#82d8ff" />
                     <span className="text-sm text-[#0b1c30]">{label}</span>
                   </div>
-                  <div className={`w-10 h-5 rounded-full transition-colors relative ${form[key] ? 'bg-[#006685]' : 'bg-slate-200'}`}>
+                  <div className={`w-10 h-5 rounded-full transition-colors relative ${form[key] ? 'bg-[#82d8ff]' : 'bg-slate-200'}`}>
                     <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${form[key] ? 'left-5' : 'left-0.5'}`} />
                   </div>
                 </button>
@@ -251,7 +251,7 @@ function AddModal({
           <button onClick={onClose} className="px-4 py-2 rounded-lg text-sm border border-slate-200 text-slate-600 hover:bg-slate-50">Annuler</button>
           <button onClick={() => save.mutate()} disabled={save.isPending}
             className="px-4 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-60"
-            style={{ background: '#006685' }}>
+            style={{ background: '#82d8ff' }}>
             {save.isPending ? '...' : existingId ? 'Enregistrer' : 'Ajouter'}
           </button>
         </div>
@@ -356,7 +356,7 @@ export default function MonEquipePage() {
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <button onClick={() => { setModalPract(member); setEditingId(member.id) }}
-                      className="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-400 hover:text-[#006685]">
+                      className="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-400 hover:text-[#82d8ff]">
                       <Icon name="edit" size={16} />
                     </button>
                     <button onClick={() => { if (confirm('Retirer ce praticien de votre équipe ?')) remove.mutate(member.id) }}
@@ -383,10 +383,10 @@ export default function MonEquipePage() {
             <button key={s} onClick={() => setSpecialityFilter(s)}
               className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all capitalize"
               style={{
-                background: specialityFilter === s ? '#006685' : 'rgba(255,255,255,0.80)',
+                background: specialityFilter === s ? '#82d8ff' : 'rgba(255,255,255,0.80)',
                 color: specialityFilter === s ? '#fff' : '#475569',
                 border: '1px solid',
-                borderColor: specialityFilter === s ? '#006685' : '#e2e8f0',
+                borderColor: specialityFilter === s ? '#82d8ff' : '#e2e8f0',
               }}>
               {s === 'tous' ? 'Tous' : s}
             </button>
@@ -415,7 +415,7 @@ export default function MonEquipePage() {
               return (
                 <div key={p.id} className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 flex items-start gap-3">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0"
-                    style={{ background: '#e5eeff', color: '#006685' }}>
+                    style={{ background: '#e5eeff', color: '#82d8ff' }}>
                     {initials(p.full_name)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -435,8 +435,8 @@ export default function MonEquipePage() {
                     ) : (
                       <button onClick={() => { setModalPract(p); setEditingId(undefined) }}
                         className="mt-1.5 flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full transition-colors"
-                        style={{ background: '#e5eeff', color: '#006685' }}>
-                        <Icon name="person_add" size={10} color="#006685" />
+                        style={{ background: '#e5eeff', color: '#82d8ff' }}>
+                        <Icon name="person_add" size={10} color="#82d8ff" />
                         Ajouter
                       </button>
                     )}
@@ -450,8 +450,8 @@ export default function MonEquipePage() {
 
       {/* Note info */}
       <div className="bg-[#e5eeff] rounded-xl p-4 flex gap-3">
-        <Icon name="info" size={18} color="#006685" />
-        <p className="text-xs text-[#006685] leading-relaxed">
+        <Icon name="info" size={18} color="#82d8ff" />
+        <p className="text-xs text-[#82d8ff] leading-relaxed">
           Les praticiens de votre équipe peuvent accéder aux données que vous autorisez.
           Vous pouvez modifier ou révoquer ces accès à tout moment. Chaque accès est consigné dans votre{' '}
           <Link href="/patient/journal-acces" className="font-bold underline">journal d'accès</Link>.

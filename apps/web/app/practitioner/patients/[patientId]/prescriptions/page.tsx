@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
@@ -25,7 +25,7 @@ function initials(name: string): string {
 function statusColors(status: string): { bg: string; text: string } {
   switch (status) {
     case 'draft':     return { bg: '#f1f5f9', text: '#475569' }
-    case 'signed':    return { bg: '#e5eeff', text: '#006685' }
+    case 'signed':    return { bg: '#e5eeff', text: '#82d8ff' }
     case 'dispensed': return { bg: '#dcfce7', text: '#1d7a3a' }
     case 'cancelled': return { bg: '#ffdad6', text: '#ba1a1a' }
     default:          return { bg: '#f1f5f9', text: '#475569' }
@@ -92,7 +92,7 @@ function TabNav({ patientId, practitionerType }: { patientId: string; practition
       {tabs.map(tab => (
         <Link key={tab.key} href={tab.href}
           className={`px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
-            tab.key === 'ordonnances' ? 'border-b-2 border-[#006685] text-[#006685]' : 'text-slate-500 hover:text-slate-700'
+            tab.key === 'ordonnances' ? 'border-b-2 border-[#82d8ff] text-[#82d8ff]' : 'text-slate-500 hover:text-slate-700'
           }`}
         >{tab.label}</Link>
       ))}
@@ -106,7 +106,7 @@ function PatientHeader({ patient, patientId }: { patient: PatientInfo; patientId
       <Link href={`/practitioner/patients/${patientId}`} className="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-500">
         <Icon name="arrow_back" size={20} />
       </Link>
-      <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-bold text-base select-none" style={{ background: '#e5eeff', color: '#006685' }}>
+      <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-bold text-base select-none" style={{ background: '#e5eeff', color: '#82d8ff' }}>
         {initials(patient.full_name)}
       </div>
       <div>
@@ -171,7 +171,7 @@ function PrescriptionCard({ rx, patientId, practitionerType }: { rx: Prescriptio
 
         {rx.diagnosis && (
           <div className="flex items-start gap-2 mb-3">
-            <Icon name="medical_information" size={15} color="#006685" />
+            <Icon name="medical_information" size={15} color="#82d8ff" />
             <p className="text-sm text-[#0b1c30] font-semibold">{rx.diagnosis}</p>
           </div>
         )}
@@ -180,7 +180,7 @@ function PrescriptionCard({ rx, patientId, practitionerType }: { rx: Prescriptio
           <div className="space-y-1 mb-3">
             {meds.slice(0, expanded ? meds.length : 2).map((med, i) => (
               <div key={i} className="flex items-start gap-2 bg-[#f8f9ff] rounded-lg px-3 py-2">
-                <Icon name="medication" size={14} color="#006685" />
+                <Icon name="medication" size={14} color="#82d8ff" />
                 <div className="text-xs text-[#0b1c30]">
                   <span className="font-semibold">{med.name}</span>
                   {med.dosage && <span className="text-slate-500"> — {med.dosage}</span>}
@@ -190,7 +190,7 @@ function PrescriptionCard({ rx, patientId, practitionerType }: { rx: Prescriptio
               </div>
             ))}
             {meds.length > 2 && (
-              <button onClick={() => setExpanded(v => !v)} className="text-xs text-[#006685] font-semibold pl-2 hover:underline">
+              <button onClick={() => setExpanded(v => !v)} className="text-xs text-[#82d8ff] font-semibold pl-2 hover:underline">
                 {expanded ? 'Réduire' : `Voir ${meds.length - 2} médicament(s) de plus`}
               </button>
             )}
@@ -208,9 +208,9 @@ function PrescriptionCard({ rx, patientId, practitionerType }: { rx: Prescriptio
         <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
           <button
             onClick={() => router.push(`/practitioner/patients/${patientId}/prescriptions/${rx.id}/print`)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#006685] bg-[#e5eeff] hover:bg-[#d3e4fe] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#82d8ff] bg-[#e5eeff] hover:bg-[#d3e4fe] transition-colors"
           >
-            <Icon name="print" size={14} color="#006685" />Imprimer / PDF
+            <Icon name="print" size={14} color="#82d8ff" />Imprimer / PDF
           </button>
 
           {rx.status === 'draft' && (
@@ -229,7 +229,7 @@ function PrescriptionCard({ rx, patientId, practitionerType }: { rx: Prescriptio
               onClick={() => sendMutation.mutate()}
               disabled={sendMutation.isPending}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-colors disabled:opacity-50"
-              style={{ background: '#006685' }}
+              style={{ background: '#82d8ff' }}
             >
               <Icon name="send" size={14} color="#fff" />
               {sendMutation.isPending ? 'Envoi…' : 'Envoyer au patient'}
@@ -388,7 +388,7 @@ function DrugSearch({ value, onChange }: { value: string; onChange: (name: strin
             placeholder="Médicament (DCI ou nom) *"
             onChange={e => { setQ(e.target.value); onChange(e.target.value); setOpen(true) }}
             onFocus={() => { if (matches.length > 0) setOpen(true) }}
-            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]"
+            className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff]"
           />
           {q.trim().length >= 2 && matches.length === 0 && (
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">Aucun résultat</span>
@@ -398,8 +398,8 @@ function DrugSearch({ value, onChange }: { value: string; onChange: (name: strin
           <a href={vidalUrl} target="_blank" rel="noopener noreferrer"
             title="Consulter la fiche Vidal"
             className="flex items-center gap-0.5 px-2 py-1 rounded-lg text-[10px] font-bold border transition-colors whitespace-nowrap"
-            style={{ borderColor: '#006685', color: '#006685', background: '#e5eeff' }}>
-            <Icon name="open_in_new" size={11} color="#006685" />
+            style={{ borderColor: '#82d8ff', color: '#82d8ff', background: '#e5eeff' }}>
+            <Icon name="open_in_new" size={11} color="#82d8ff" />
             Vidal
           </a>
         )}
@@ -439,7 +439,7 @@ function MedRow({ med, onChange, onRemove }: { med: Medication; onChange: (m: Me
       value={med[key] ?? ''}
       onChange={e => onChange({ ...med, [key]: e.target.value })}
       placeholder={{ dosage: 'Dosage', frequency: 'Fréquence', duration: 'Durée', instructions: 'Remarques' }[key]}
-      className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]"
+      className="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff]"
     />
   )
   return (
@@ -526,7 +526,7 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <h2 className="text-base font-semibold text-[#0b1c30] flex items-center gap-2">
-            <Icon name={isWellness ? 'tips_and_updates' : 'receipt_long'} size={18} color="#006685" />
+            <Icon name={isWellness ? 'tips_and_updates' : 'receipt_long'} size={18} color="#82d8ff" />
             {isWellness ? 'Nouvelle recommandation' : 'Nouvelle ordonnance'}
           </h2>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 transition-colors">
@@ -545,7 +545,7 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
             </label>
             <input type="text" value={diagnosis} onChange={e => setDiagnosis(e.target.value)}
               placeholder={isWellness ? 'Ex: Perte de poids, Gestion du stress, Amélioration du sommeil…' : 'Ex: Anxiété généralisée, Trouble du sommeil…'}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]" />
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff]" />
           </div>
 
           {/* Type + Status */}
@@ -553,7 +553,7 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Type de consultation</label>
               <select value={consultationType} onChange={e => setConsultationType(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]">
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff]">
                 <option value="presentiel">Présentiel</option>
                 <option value="video">Vidéo</option>
                 <option value="audio">Audio</option>
@@ -563,7 +563,7 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
             <div>
               <label className="block text-xs font-semibold text-slate-600 mb-1.5">Statut</label>
               <select value={status} onChange={e => setStatus(e.target.value as 'draft' | 'signed')}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]">
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff]">
                 <option value="signed">Signé(e)</option>
                 <option value="draft">Brouillon</option>
               </select>
@@ -578,7 +578,7 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
               </label>
               <textarea value={instructions} onChange={e => setInstructions(e.target.value)} rows={6}
                 placeholder={'Ex:\n• Adopter une alimentation équilibrée riche en légumes\n• 30 min de marche par jour\n• Limiter les écrans après 21h\n• Techniques de respiration 4-7-8 au coucher'}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685] resize-none" />
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff] resize-none" />
               <p className="text-xs text-slate-400 mt-1">Rédigez vos conseils sous forme de liste ou de paragraphes.</p>
             </div>
           ) : (
@@ -587,8 +587,8 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-semibold text-slate-600">Médicaments <span className="text-[#ba1a1a]">*</span></label>
-                  <button onClick={addMed} className="flex items-center gap-1 text-xs font-semibold text-[#006685] hover:underline">
-                    <Icon name="add" size={14} color="#006685" />Ajouter
+                  <button onClick={addMed} className="flex items-center gap-1 text-xs font-semibold text-[#82d8ff] hover:underline">
+                    <Icon name="add" size={14} color="#82d8ff" />Ajouter
                   </button>
                 </div>
                 <div className="space-y-2">
@@ -603,7 +603,7 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
                 <label className="block text-xs font-semibold text-slate-600 mb-1.5">Instructions générales <span className="font-normal text-slate-400">(optionnel)</span></label>
                 <textarea value={instructions} onChange={e => setInstructions(e.target.value)} rows={2}
                   placeholder="Ex: À prendre avec les repas, éviter l'alcool…"
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685] resize-none" />
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff] resize-none" />
               </div>
             </>
           )}
@@ -612,7 +612,7 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
           <div>
             <label className="block text-xs font-semibold text-slate-600 mb-1.5">Valide jusqu&apos;au <span className="font-normal text-slate-400">(optionnel)</span></label>
             <input type="date" value={validUntil} onChange={e => setValidUntil(e.target.value)}
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#006685]" />
+              className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff]" />
           </div>
         </div>
 
@@ -623,7 +623,7 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
           </button>
           <button onClick={() => mutation.mutate()} disabled={mutation.isPending}
             className="px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors disabled:opacity-60 flex items-center gap-2"
-            style={{ background: '#006685' }}>
+            style={{ background: '#82d8ff' }}>
             {mutation.isPending ? 'Enregistrement…' : (
               <><Icon name={isWellness ? 'tips_and_updates' : 'receipt_long'} size={15} color="#fff" />{isWellness ? 'Créer la recommandation' : 'Créer l\'ordonnance'}</>
             )}
@@ -687,7 +687,7 @@ export default function PatientPrescriptionsPage() {
             <p className="text-sm text-slate-500">{prescriptions.length} {prescriptions.length !== 1 ? docLabelPlural : docLabel}</p>
             <button onClick={() => setShowModal(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors"
-              style={{ background: '#006685' }}>
+              style={{ background: '#82d8ff' }}>
               <Icon name="add_circle" size={16} color="#ffffff" />
               {`Nouvelle ${docLabel}`}
             </button>
@@ -697,7 +697,7 @@ export default function PatientPrescriptionsPage() {
             <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm p-10 text-center">
               <Icon name="receipt_long" size={36} color="#cbd5e1" />
               <p className="mt-3 text-slate-400 text-sm">{`Aucune ${docLabel} pour ce patient`}</p>
-              <button onClick={() => setShowModal(true)} className="mt-4 px-4 py-2 rounded-lg text-sm font-medium text-white" style={{ background: '#006685' }}>
+              <button onClick={() => setShowModal(true)} className="mt-4 px-4 py-2 rounded-lg text-sm font-medium text-white" style={{ background: '#82d8ff' }}>
                 {`Créer une ${docLabel}`}
               </button>
             </div>

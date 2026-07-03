@@ -40,7 +40,7 @@ const STATUS_CONFIG: Record<string, { bg: string; text: string; label: string; i
   open:         { bg: '#ffdad6', text: '#ba1a1a', label: 'Ouvert',     icon: 'error' },
   under_review: { bg: '#fff8e1', text: '#705d00', label: 'En examen',  icon: 'hourglass_top' },
   resolved:     { bg: '#e8f5e9', text: '#1d7a3a', label: 'Résolu',     icon: 'check_circle' },
-  closed:       { bg: '#e5eeff', text: '#006685', label: 'Fermé',      icon: 'lock' },
+  closed:       { bg: '#e5eeff', text: '#82d8ff', label: 'Fermé',      icon: 'lock' },
 }
 
 const EVENT_ICON: Record<string, string> = {
@@ -205,7 +205,7 @@ export default function DisputesPage() {
         {[
           { label: 'Litiges actifs',  value: activeCount,   icon: 'error',         color: '#ba1a1a', bg: '#ffdad6' },
           { label: 'Urgents',         value: urgentCount,   icon: 'priority_high',  color: '#705d00', bg: '#fff8e1' },
-          { label: 'En examen',       value: reviewCount,   icon: 'hourglass_top',  color: '#006685', bg: '#e5eeff' },
+          { label: 'En examen',       value: reviewCount,   icon: 'hourglass_top',  color: '#82d8ff', bg: '#e5eeff' },
           { label: 'Résolus',         value: resolvedCount, icon: 'check_circle',   color: '#1d7a3a', bg: '#e8f5e9' },
         ].map(kpi => (
           <div key={kpi.label} className="rounded-2xl p-4 flex items-center gap-3"
@@ -250,7 +250,7 @@ export default function DisputesPage() {
           <button key={f.key} onClick={() => setStatusFilter(f.key)}
             className="px-4 py-2 rounded-full text-xs font-bold transition-all"
             style={{
-              backgroundColor: statusFilter === f.key ? '#006685' : 'rgba(255,255,255,0.70)',
+              backgroundColor: statusFilter === f.key ? '#82d8ff' : 'rgba(255,255,255,0.70)',
               color: statusFilter === f.key ? '#fff' : '#6f787e',
               border: statusFilter === f.key ? 'none' : '1px solid rgba(190,200,206,0.50)',
             }}>
@@ -294,7 +294,7 @@ export default function DisputesPage() {
                         className="border-b border-slate-50 cursor-pointer transition-colors"
                         style={{ backgroundColor: isSelected ? 'rgba(0,102,133,0.04)' : undefined }}>
                         <td className="px-4 py-3">
-                          <span className="text-xs font-mono font-bold text-[#006685]">{d.case_number}</span>
+                          <span className="text-xs font-mono font-bold text-[#82d8ff]">{d.case_number}</span>
                         </td>
                         <td className="px-4 py-3 text-sm font-medium text-[#0b1c30] whitespace-nowrap">
                           {d.patient?.full_name ?? '—'}
@@ -348,7 +348,7 @@ export default function DisputesPage() {
               {/* Panel header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
                 <div>
-                  <p className="text-xs font-bold text-[#006685] font-mono">{selected.case_number}</p>
+                  <p className="text-xs font-bold text-[#82d8ff] font-mono">{selected.case_number}</p>
                   <h3 className="font-bold text-[#0b1c30] text-sm mt-0.5">{selected.reason}</h3>
                 </div>
                 <button onClick={() => setSelected(null)} className="text-[#6f787e] hover:text-[#0b1c30] transition-colors">
@@ -395,7 +395,7 @@ export default function DisputesPage() {
                               style={{ backgroundColor: ev.type === 'action_taken' ? '#ffdad6' : '#e5eeff' }}>
                               <Icon name={EVENT_ICON[ev.type] ?? 'info'} style={{
                                 fontSize: '13px',
-                                color: ev.type === 'action_taken' ? '#ba1a1a' : '#006685',
+                                color: ev.type === 'action_taken' ? '#ba1a1a' : '#82d8ff',
                               }} />
                             </div>
                             <div className="flex-1 min-w-0 pt-0.5">
@@ -417,14 +417,14 @@ export default function DisputesPage() {
                       onChange={e => setComment(e.target.value)}
                       placeholder="Ajouter une note admin…"
                       rows={2}
-                      className="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 resize-none outline-none focus:border-[#006685] text-[#0b1c30] placeholder-[#bec8ce]"
+                      className="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 resize-none outline-none focus:border-[#82d8ff] text-[#0b1c30] placeholder-[#bec8ce]"
                       style={{ backgroundColor: '#f8f9ff' }}
                     />
                     <button
                       disabled={!comment.trim() || addComment.isPending}
                       onClick={() => addComment.mutate({ disputeId: selected.id, text: comment.trim() })}
                       className="mt-1.5 w-full py-2 rounded-xl text-xs font-bold text-white transition-all disabled:opacity-40"
-                      style={{ backgroundColor: '#006685' }}>
+                      style={{ backgroundColor: '#82d8ff' }}>
                       Enregistrer la note
                     </button>
                   </div>

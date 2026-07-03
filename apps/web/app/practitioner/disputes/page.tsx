@@ -140,7 +140,7 @@ export default function PractitionerDisputesPage() {
             const meta = STATUS_META[d.status] ?? STATUS_META.open
             return (
               <button key={d.id} onClick={() => setSelected(d)}
-                className={`w-full text-left rounded-2xl p-4 space-y-3 transition-all border-2 ${selected?.id === d.id ? 'border-[#006685]' : 'border-transparent hover:border-slate-200'}`}
+                className={`w-full text-left rounded-2xl p-4 space-y-3 transition-all border-2 ${selected?.id === d.id ? 'border-[#82d8ff]' : 'border-transparent hover:border-slate-200'}`}
                 style={{ backgroundColor: 'rgba(255,255,255,0.6)' }}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -205,11 +205,11 @@ export default function PractitionerDisputesPage() {
               <div className="px-4 py-3 border-t border-slate-100 flex gap-2">
                 <input value={comment} onChange={e => setComment(e.target.value)}
                   placeholder="Votre réponse..."
-                  className="flex-1 text-sm px-3 py-2 rounded-xl border border-slate-200 bg-white text-[#0b1c30] focus:outline-none focus:border-[#006685]"
+                  className="flex-1 text-sm px-3 py-2 rounded-xl border border-slate-200 bg-white text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]"
                   onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); commentMutation.mutate() } }}
                 />
                 <button onClick={() => commentMutation.mutate()} disabled={!comment.trim() || commentMutation.isPending}
-                  className="p-2 rounded-xl bg-[#006685] text-white disabled:opacity-50">
+                  className="p-2 rounded-xl bg-[#82d8ff] text-[#0b1c30] disabled:opacity-50">
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>send</span>
                 </button>
               </div>

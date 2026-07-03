@@ -117,12 +117,12 @@ function VerifyResetContent() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 justify-center">
-            <div className="w-10 h-10 rounded-xl bg-[#006685] flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-[#82d8ff] flex items-center justify-center shadow-md">
               <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>medical_services</span>
             </div>
             <div className="text-left">
               <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
-              <p className="text-[10px] text-[#006685] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
+              <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
             </div>
           </Link>
         </div>
@@ -141,20 +141,20 @@ function VerifyResetContent() {
                 <p className="text-lg font-black text-[#0b1c30]">Code vérifié !</p>
                 <p className="text-sm text-slate-400 mt-1">Choisissez votre nouveau mot de passe…</p>
               </div>
-              <div className="w-5 h-5 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : (
             <>
               {/* Header */}
               <div className="text-center mb-7">
                 <div className="w-14 h-14 rounded-2xl bg-[#e5eeff] flex items-center justify-center mx-auto mb-4">
-                  <span className="material-symbols-outlined text-[#006685]" style={{ fontSize: '28px' }}>lock_reset</span>
+                  <span className="material-symbols-outlined text-[#82d8ff]" style={{ fontSize: '28px' }}>lock_reset</span>
                 </div>
                 <h1 className="text-xl font-black text-[#0b1c30]">Réinitialisation</h1>
                 <p className="text-sm text-slate-400 mt-2 leading-relaxed">
                   Code de vérification envoyé à
                 </p>
-                <p className="text-sm font-bold text-[#006685] mt-0.5">{email}</p>
+                <p className="text-sm font-bold text-[#82d8ff] mt-0.5">{email}</p>
               </div>
 
               {/* OTP boxes */}
@@ -174,16 +174,16 @@ function VerifyResetContent() {
                     className="w-9 h-12 text-center text-xl font-black rounded-xl border-2 outline-none transition-all"
                     style={{
                       backgroundColor: '#f8f9ff',
-                      borderColor: error ? '#ba1a1a' : d ? '#006685' : '#bec8ce',
+                      borderColor: error ? '#ba1a1a' : d ? '#82d8ff' : '#bec8ce',
                       color: '#0b1c30',
-                      caretColor: '#006685',
+                      caretColor: '#82d8ff',
                     }}
                     onFocus={e => {
-                      e.target.style.borderColor = '#006685'
+                      e.target.style.borderColor = '#82d8ff'
                       e.target.style.boxShadow = '0 0 0 3px rgba(0,102,133,0.1)'
                     }}
                     onBlur={e => {
-                      e.target.style.borderColor = error ? '#ba1a1a' : d ? '#006685' : '#bec8ce'
+                      e.target.style.borderColor = error ? '#ba1a1a' : d ? '#82d8ff' : '#bec8ce'
                       e.target.style.boxShadow = 'none'
                     }}
                   />
@@ -201,7 +201,7 @@ function VerifyResetContent() {
               {codeComplete && !loading && !success && (
                 <button
                   onClick={() => void verify(digits.join(''))}
-                  className="w-full py-3.5 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all mb-4"
+                  className="w-full py-3.5 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all mb-4"
                 >
                   Vérifier le code
                 </button>
@@ -209,8 +209,8 @@ function VerifyResetContent() {
 
               {loading && (
                 <div className="flex items-center justify-center gap-2 py-3 mb-4">
-                  <div className="w-5 h-5 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
-                  <span className="text-sm text-[#006685] font-medium">Vérification…</span>
+                  <div className="w-5 h-5 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm text-[#82d8ff] font-medium">Vérification…</span>
                 </div>
               )}
 
@@ -221,7 +221,7 @@ function VerifyResetContent() {
                   onClick={() => void handleResend()}
                   disabled={!canResend}
                   className="text-sm font-bold transition-all"
-                  style={{ color: canResend ? '#006685' : '#bec8ce' }}
+                  style={{ color: canResend ? '#82d8ff' : '#bec8ce' }}
                 >
                   {canResend ? 'Renvoyer le code' : `Renvoyer dans ${cooldown}s`}
                 </button>
@@ -229,7 +229,7 @@ function VerifyResetContent() {
 
               {/* Back */}
               <div className="mt-6 pt-5 border-t border-slate-100 text-center">
-                <Link href="/auth/forgot-password" className="text-xs text-slate-400 hover:text-[#006685] transition-colors">
+                <Link href="/auth/forgot-password" className="text-xs text-slate-400 hover:text-[#82d8ff] transition-colors">
                   ← Modifier l&apos;adresse email
                 </Link>
               </div>
@@ -249,7 +249,7 @@ export default function VerifyResetPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <VerifyResetContent />

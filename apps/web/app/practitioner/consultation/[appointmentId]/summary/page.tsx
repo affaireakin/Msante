@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
@@ -22,7 +22,7 @@ const DOC_ICONS: Record<DocType, string> = {
 }
 
 const DOC_COLORS: Record<DocType, { bg: string; text: string }> = {
-  prescription: { bg: '#e5eeff', text: '#006685' },
+  prescription: { bg: '#e5eeff', text: '#82d8ff' },
   report:       { bg: '#e8f5e9', text: '#1d7a3a' },
   appreciation: { bg: '#fff8e1', text: '#705d00' },
   certificate:  { bg: '#fce4ec', text: '#880e4f' },
@@ -146,14 +146,14 @@ export default function ConsultationSummaryPage() {
 
       <header className="fixed top-0 w-full z-50 flex items-center justify-between px-6 py-4 bg-white/70 backdrop-blur-xl border-b border-sky-100/20 shadow-[0_8px_32px_0_rgba(130,216,255,0.08)]">
         <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-[#006685] text-3xl select-none">medical_services</span>
+          <span className="material-symbols-outlined text-[#82d8ff] text-3xl select-none">medical_services</span>
           <div>
             <h1 className="text-2xl font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</h1>
             <p className="text-xs text-slate-500 font-medium">Clinical Portal</p>
           </div>
           <div className="ml-3 flex items-center gap-1.5 bg-[#e5eeff]/50 border border-[#d3e4fe] px-3 py-1.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#006685] inline-block" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.05em] text-[#006685]">Portail Praticien</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#82d8ff] inline-block" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.05em] text-[#82d8ff]">Portail Praticien</span>
           </div>
         </div>
       </header>
@@ -170,11 +170,11 @@ export default function ConsultationSummaryPage() {
             <p className="text-sm text-[#6f787e] mt-0.5">Session enregistrée avec succès</p>
           </div>
           <div className="flex-shrink-0 flex flex-col gap-2 items-end">
-            <span className="inline-flex items-center gap-1.5 bg-[#eff4ff] text-[#006685] border border-[#d3e4fe] text-xs font-semibold px-3 py-1.5 rounded-full">
+            <span className="inline-flex items-center gap-1.5 bg-[#eff4ff] text-[#82d8ff] border border-[#d3e4fe] text-xs font-semibold px-3 py-1.5 rounded-full">
               <span className="material-symbols-outlined text-sm select-none">timer</span>
               {durationMin} min
             </span>
-            <span className="inline-flex items-center gap-1.5 bg-[#eff4ff] text-[#006685] border border-[#d3e4fe] text-xs font-semibold px-3 py-1.5 rounded-full">
+            <span className="inline-flex items-center gap-1.5 bg-[#eff4ff] text-[#82d8ff] border border-[#d3e4fe] text-xs font-semibold px-3 py-1.5 rounded-full">
               <span className="material-symbols-outlined text-sm select-none">calendar_today</span>
               {todayLabel}
             </span>
@@ -184,7 +184,7 @@ export default function ConsultationSummaryPage() {
         {/* AI Summary */}
         <div className="bg-white/60 backdrop-blur-2xl rounded-2xl border border-white/80 shadow-xl shadow-sky-900/5 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <span className="material-symbols-outlined text-[#006685] text-2xl select-none">psychology</span>
+            <span className="material-symbols-outlined text-[#82d8ff] text-2xl select-none">psychology</span>
             <h3 className="text-base font-semibold text-[#0b1c30] flex-1">Résumé IA</h3>
             <span className="text-[11px] font-bold uppercase tracking-[0.05em] bg-sky-50 text-sky-600 border border-sky-100 px-2.5 py-1 rounded-full">claude-haiku-4-5</span>
           </div>
@@ -202,14 +202,14 @@ export default function ConsultationSummaryPage() {
         {chatHistory.length > 0 && (
           <div className="bg-white/60 backdrop-blur-2xl rounded-2xl border border-white/80 shadow-xl shadow-sky-900/5 p-6">
             <div className="flex items-center gap-3 mb-4">
-              <span className="material-symbols-outlined text-[#006685] text-2xl select-none">chat</span>
+              <span className="material-symbols-outlined text-[#82d8ff] text-2xl select-none">chat</span>
               <h3 className="text-base font-semibold text-[#0b1c30] flex-1">Transcript de session</h3>
               <span className="material-symbols-outlined text-[#6f787e] text-xl select-none">lock</span>
             </div>
             <div className="max-h-64 overflow-y-auto space-y-3 pr-1">
               {chatHistory.map((msg) => (
                 <div key={msg.id} className={`flex ${msg.role === 'practitioner' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${msg.role === 'patient' ? 'bg-[#e5eeff]/50 text-[#0b1c30] rounded-tl-none' : 'bg-[#006685] text-white rounded-tr-none'}`}>
+                  <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${msg.role === 'patient' ? 'bg-[#e5eeff]/50 text-[#0b1c30] rounded-tl-none' : 'bg-[#82d8ff] text-[#0b1c30] rounded-tr-none'}`}>
                     <p className="leading-relaxed">{msg.content}</p>
                     <p className={`text-[10px] mt-1 ${msg.role === 'patient' ? 'text-[#6f787e]' : 'text-white/70'}`}>
                       {new Date(msg.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Dakar' })}
@@ -224,7 +224,7 @@ export default function ConsultationSummaryPage() {
         {/* Notes de suivi (privées) */}
         <div className="bg-white/60 backdrop-blur-2xl rounded-2xl border border-white/80 shadow-xl shadow-sky-900/5 p-6">
           <div className="flex items-center gap-3 mb-4">
-            <span className="material-symbols-outlined text-[#006685] text-2xl select-none">edit_note</span>
+            <span className="material-symbols-outlined text-[#82d8ff] text-2xl select-none">edit_note</span>
             <h3 className="text-base font-semibold text-[#0b1c30] flex-1">Notes de suivi</h3>
             <span className="text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-100 px-2.5 py-1 rounded-full">
               Privé — non visible par le patient
@@ -235,14 +235,14 @@ export default function ConsultationSummaryPage() {
             onChange={e => setPractNotes(e.target.value)}
             rows={4}
             placeholder="Observations cliniques, points de suivi, objectifs pour la prochaine séance..."
-            className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] text-sm focus:outline-none focus:border-[#006685] transition-all resize-none"
+            className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] text-sm focus:outline-none focus:border-[#82d8ff] transition-all resize-none"
           />
           <div className="flex justify-end mt-3">
             <button
               onClick={() => void saveNotes()}
               disabled={notesSaving}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-50"
-              style={{ backgroundColor: notesSaved ? '#1d7a3a' : '#006685' }}
+              style={{ backgroundColor: notesSaved ? '#1d7a3a' : '#82d8ff' }}
             >
               <span className="material-symbols-outlined text-base select-none">{notesSaved ? 'check' : 'save'}</span>
               {notesSaving ? 'Sauvegarde...' : notesSaved ? 'Sauvegardé !' : 'Sauvegarder les notes'}
@@ -253,9 +253,9 @@ export default function ConsultationSummaryPage() {
         {/* Documents patient — multi */}
         <div className="bg-white/60 backdrop-blur-2xl rounded-2xl border border-white/80 shadow-xl shadow-sky-900/5 p-6">
           <div className="flex items-center gap-3 mb-5">
-            <span className="material-symbols-outlined text-[#006685] text-2xl select-none">description</span>
+            <span className="material-symbols-outlined text-[#82d8ff] text-2xl select-none">description</span>
             <h3 className="text-base font-semibold text-[#0b1c30] flex-1">Documents patient</h3>
-            <span className="text-xs font-bold bg-[#e5eeff] text-[#006685] px-2.5 py-1 rounded-full">
+            <span className="text-xs font-bold bg-[#e5eeff] text-[#82d8ff] px-2.5 py-1 rounded-full">
               {documents.length} émis
             </span>
           </div>
@@ -294,7 +294,7 @@ export default function ConsultationSummaryPage() {
           {!showNewForm && (
             <button
               onClick={() => setShowNewForm(true)}
-              className="w-full py-3 border-2 border-dashed border-[#bec8ce] rounded-xl text-sm font-semibold text-[#006685] hover:border-[#006685] hover:bg-[#eff4ff] transition-all flex items-center justify-center gap-2"
+              className="w-full py-3 border-2 border-dashed border-[#bec8ce] rounded-xl text-sm font-semibold text-[#82d8ff] hover:border-[#82d8ff] hover:bg-[#eff4ff] transition-all flex items-center justify-center gap-2"
             >
               <span className="material-symbols-outlined text-base select-none">add</span>
               Nouveau document
@@ -340,7 +340,7 @@ export default function ConsultationSummaryPage() {
                     ? 'Compte-rendu de la séance du jour...'
                     : 'Contenu du certificat médical...'
                 }
-                className="w-full px-4 py-3 bg-white border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] text-sm focus:outline-none focus:border-[#006685] transition-all resize-none"
+                className="w-full px-4 py-3 bg-white border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] text-sm focus:outline-none focus:border-[#82d8ff] transition-all resize-none"
               />
 
               <div className="flex gap-2 mt-3">
@@ -348,7 +348,7 @@ export default function ConsultationSummaryPage() {
                   onClick={() => void saveDocument()}
                   disabled={docSaving || !newDocContent.trim()}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-40"
-                  style={{ backgroundColor: docSaved ? '#1d7a3a' : '#006685' }}
+                  style={{ backgroundColor: docSaved ? '#1d7a3a' : '#82d8ff' }}
                 >
                   <span className="material-symbols-outlined text-base select-none">{docSaved ? 'check' : 'send'}</span>
                   {docSaving ? 'Émission...' : 'Émettre le document'}
@@ -368,14 +368,14 @@ export default function ConsultationSummaryPage() {
         <div className="flex gap-3 pb-8">
           <button
             onClick={() => router.push('/practitioner/appointments')}
-            className="flex-1 py-3 rounded-xl bg-[#006685] text-white font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#005575] transition-colors shadow-[0_4px_16px_rgba(0,102,133,0.2)]"
+            className="flex-1 py-3 rounded-xl bg-[#82d8ff] text-[#0b1c30] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#5ab8e0] transition-colors shadow-[0_4px_16px_rgba(0,102,133,0.2)]"
           >
             <span className="material-symbols-outlined text-xl select-none">calendar_today</span>
             Retour aux rendez-vous
           </button>
           <button
             onClick={() => router.push('/practitioner')}
-            className="flex-1 py-3 rounded-xl border-2 border-[#006685] text-[#006685] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#eff4ff] transition-colors"
+            className="flex-1 py-3 rounded-xl border-2 border-[#82d8ff] text-[#82d8ff] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[#eff4ff] transition-colors"
           >
             <span className="material-symbols-outlined text-xl select-none">dashboard</span>
             Tableau de bord

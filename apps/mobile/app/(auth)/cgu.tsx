@@ -54,8 +54,8 @@ export default function CguScreen() {
             onPress={() => router.back()}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 20, alignSelf: 'flex-start' }}
           >
-            <MaterialIcons name="arrow-back" size={20} color="#006685" />
-            <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>Retour</Text>
+            <MaterialIcons name="arrow-back" size={20} color="#82d8ff" />
+            <Text style={{ fontSize: 14, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }}>Retour</Text>
           </TouchableOpacity>
 
           <Text style={{ fontSize: 24, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.5, marginBottom: 4 }}>
@@ -68,7 +68,7 @@ export default function CguScreen() {
 
         {SECTIONS.map(section => (
           <View key={section.title} style={{ marginBottom: 24 }}>
-            <Text style={{ fontSize: 14, fontWeight: '700', color: '#006685', fontFamily: 'Manrope', marginBottom: 6 }}>
+            <Text style={{ fontSize: 14, fontWeight: '700', color: '#82d8ff', fontFamily: 'Manrope', marginBottom: 6 }}>
               {section.title}
             </Text>
             <Text style={{ fontSize: 13, color: '#3f484d', fontFamily: 'Manrope', lineHeight: 22 }}>

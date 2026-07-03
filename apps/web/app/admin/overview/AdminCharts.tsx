@@ -6,7 +6,7 @@ import {
 } from 'recharts'
 import { useAdminCharts } from './useAdminCharts'
 
-const COLORS = ['#006685', '#ffde5c', '#82d8ff', '#ba1a1a', '#1d7a3a']
+const COLORS = ['#82d8ff', '#ffde5c', '#82d8ff', '#ba1a1a', '#1d7a3a']
 const STATUS_LABELS: Record<string, string> = {
   pending: 'En attente', confirmed: 'Confirmé', completed: 'Terminé',
   cancelled: 'Annulé', no_show: 'No-show',
@@ -23,7 +23,7 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
         boxShadow: '0 10px 30px -10px rgba(0,102,133,0.05)',
       }}
     >
-      <h3 className="text-xs font-bold text-[#006685] uppercase tracking-widest mb-6">{title}</h3>
+      <h3 className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest mb-6">{title}</h3>
       {children}
     </div>
   )
@@ -50,15 +50,15 @@ export function AdminCharts() {
           <AreaChart data={data?.revenue7d ?? []}>
             <defs>
               <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#006685" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#006685" stopOpacity={0} />
+                <stop offset="5%" stopColor="#82d8ff" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#82d8ff" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(190,200,206,0.3)" />
             <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#6f787e' }} tickFormatter={(v: string) => v.slice(5)} />
             <YAxis tick={{ fontSize: 11, fill: '#6f787e' }} />
             <Tooltip formatter={(v) => [`${Number(v ?? 0).toLocaleString()} XOF`, 'Revenus'] as [string, string]} />
-            <Area type="monotone" dataKey="revenue" stroke="#006685" strokeWidth={2} fill="url(#revenueGrad)" />
+            <Area type="monotone" dataKey="revenue" stroke="#82d8ff" strokeWidth={2} fill="url(#revenueGrad)" />
           </AreaChart>
         </ResponsiveContainer>
       </ChartCard>
@@ -84,7 +84,7 @@ export function AdminCharts() {
             <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#6f787e' }} />
             <YAxis tick={{ fontSize: 11, fill: '#6f787e' }} allowDecimals={false} />
             <Tooltip />
-            <Bar dataKey="count" name="RDV" fill="#006685" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="count" name="RDV" fill="#82d8ff" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </ChartCard>

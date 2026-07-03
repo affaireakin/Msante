@@ -113,7 +113,7 @@ function useAnalytics() {
         providerMap[p.provider].count += 1
       })
 
-      const providerColors: Record<string, string> = { wave: '#006685', orange_money: '#ff6600', stripe: '#635bff', card: '#1d7a3a' }
+      const providerColors: Record<string, string> = { wave: '#82d8ff', orange_money: '#ff6600', stripe: '#635bff', card: '#1d7a3a' }
       const byProvider = Object.entries(providerMap).map(([name, v]) => ({
         name, amount: v.amount, count: v.count, color: providerColors[name] ?? '#6f787e',
       })).sort((a, b) => b.amount - a.amount)
@@ -144,7 +144,7 @@ function useAnalytics() {
 const STATUS_CFG: Record<string, { bg: string; text: string; label: string }> = {
   completed:  { bg: '#e8f5e9', text: '#1d7a3a', label: 'Succès' },
   pending:    { bg: '#fff8e1', text: '#705d00', label: 'En attente' },
-  processing: { bg: '#e5eeff', text: '#006685', label: 'En cours' },
+  processing: { bg: '#e5eeff', text: '#82d8ff', label: 'En cours' },
   failed:     { bg: '#ffdad6', text: '#ba1a1a', label: 'Échoué' },
   refunded:   { bg: '#e0e3e5', text: '#5c5f61', label: 'Remboursé' },
 }
@@ -177,7 +177,7 @@ export default function AnalyticsPage() {
       {/* Platform KPIs */}
       <div>
         <div className="flex items-center gap-2 mb-4">
-          <Icon name="monitor_heart" style={{ fontSize: '18px', color: '#006685' }} />
+          <Icon name="monitor_heart" style={{ fontSize: '18px', color: '#82d8ff' }} />
           <h2 className="text-base font-bold text-[#0b1c30]">Santé plateforme</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -187,7 +187,7 @@ export default function AnalyticsPage() {
               value: p.totalPatients.toLocaleString('fr-FR'),
               sub: `${p.totalPractitioners} praticiens`,
               icon: 'group',
-              color: '#006685',
+              color: '#82d8ff',
               bg: '#e5eeff',
             },
             {
@@ -248,13 +248,13 @@ export default function AnalyticsPage() {
       {/* Financial KPIs */}
       <div>
         <div className="flex items-center gap-2 mb-4">
-          <Icon name="payments" style={{ fontSize: '18px', color: '#006685' }} />
+          <Icon name="payments" style={{ fontSize: '18px', color: '#82d8ff' }} />
           <h2 className="text-base font-bold text-[#0b1c30]">Performance financière</h2>
         </div>
         {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Revenus totaux', value: `${d.totalRevenue.toLocaleString('fr-FR')} XOF`, icon: 'payments', color: '#006685', bg: '#e5eeff' },
+          { label: 'Revenus totaux', value: `${d.totalRevenue.toLocaleString('fr-FR')} XOF`, icon: 'payments', color: '#82d8ff', bg: '#e5eeff' },
           {
             label: 'Ce mois',
             value: `${d.thisMonthRevenue.toLocaleString('fr-FR')} XOF`,
@@ -341,7 +341,7 @@ export default function AnalyticsPage() {
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <p className="text-sm font-black text-[#006685]">{d.totalPayments}</p>
+                  <p className="text-sm font-black text-[#82d8ff]">{d.totalPayments}</p>
                   <p className="text-xs text-[#6f787e]">tx</p>
                 </div>
               </div>
@@ -390,7 +390,7 @@ export default function AnalyticsPage() {
                     <td className="px-4 py-3 text-xs font-mono text-[#6f787e]">#{p.id.slice(0, 8)}</td>
                     <td className="px-4 py-3 text-sm font-medium text-[#0b1c30]">{p.patient}</td>
                     <td className="px-4 py-3">
-                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#e5eeff] text-[#006685]">
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#e5eeff] text-[#82d8ff]">
                         {PROVIDER_LABELS[p.provider] ?? p.provider}
                       </span>
                     </td>

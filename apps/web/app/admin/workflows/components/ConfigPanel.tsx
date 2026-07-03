@@ -38,14 +38,14 @@ function FieldRow({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-xs font-bold text-[#006685] uppercase tracking-widest">{label}</label>
+      <label className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest">{label}</label>
       {children}
       {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   )
 }
 
-const inputCls = "w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white/60 text-sm text-[#0b1c30] outline-none focus:border-[#006685] transition-colors"
+const inputCls = "w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white/60 text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff] transition-colors"
 
 // ── Sub-forms ─────────────────────────────────────────────────────────────────
 
@@ -75,7 +75,7 @@ function CronConfigForm({
           className={inputCls}
         />
       </FieldRow>
-      <button type="submit" disabled={isPending} className="w-full py-2.5 bg-[#006685] text-white text-sm font-semibold rounded-full hover:bg-[#005070] disabled:opacity-50 transition-colors">
+      <button type="submit" disabled={isPending} className="w-full py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-semibold rounded-full hover:bg-[#005070] disabled:opacity-50 transition-colors">
         {isPending ? 'Enregistrement…' : 'Enregistrer'}
       </button>
     </form>
@@ -105,7 +105,7 @@ function MoodConfigForm({
       <FieldRow label="Streak (jours consécutifs)" error={errors.streak_days?.message}>
         <input type="number" min={1} max={14} {...register('streak_days', { valueAsNumber: true })} className={inputCls} />
       </FieldRow>
-      <button type="submit" disabled={isPending} className="w-full py-2.5 bg-[#006685] text-white text-sm font-semibold rounded-full hover:bg-[#005070] disabled:opacity-50 transition-colors">
+      <button type="submit" disabled={isPending} className="w-full py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-semibold rounded-full hover:bg-[#005070] disabled:opacity-50 transition-colors">
         {isPending ? 'Enregistrement…' : 'Enregistrer'}
       </button>
     </form>
@@ -135,7 +135,7 @@ function PaymentConfigForm({
       <FieldRow label="Max retries" error={errors.max_retries?.message}>
         <input type="number" min={1} max={10} {...register('max_retries', { valueAsNumber: true })} className={inputCls} />
       </FieldRow>
-      <button type="submit" disabled={isPending} className="w-full py-2.5 bg-[#006685] text-white text-sm font-semibold rounded-full hover:bg-[#005070] disabled:opacity-50 transition-colors">
+      <button type="submit" disabled={isPending} className="w-full py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-semibold rounded-full hover:bg-[#005070] disabled:opacity-50 transition-colors">
         {isPending ? 'Enregistrement…' : 'Enregistrer'}
       </button>
     </form>
@@ -169,7 +169,7 @@ export function ConfigPanel({ workflow, onSaveConfig, onToggleActive, isPending 
       }}
     >
       <div>
-        <h2 className="text-xs font-bold text-[#006685] uppercase tracking-widest mb-1">Configuration</h2>
+        <h2 className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest mb-1">Configuration</h2>
         <p className="text-sm text-[#6f787e]">{workflow.name}</p>
       </div>
 

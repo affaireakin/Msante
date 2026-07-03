@@ -68,7 +68,7 @@ export function RunsHistory({ runs }: RunsHistoryProps) {
       }}
     >
       <div className="px-6 py-4 border-b border-slate-100/60">
-        <h3 className="text-xs font-bold text-[#006685] uppercase tracking-widest">Historique des exécutions</h3>
+        <h3 className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Historique des exécutions</h3>
       </div>
 
       {runs.length === 0 ? (

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
@@ -62,7 +62,7 @@ function TabNav({ patientId }: { patientId: string }) {
       {tabs.map(tab => (
         <Link key={tab.key} href={tab.href}
           className={`px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
-            tab.key === 'appréciations' ? 'border-b-2 border-[#006685] text-[#006685]' : 'text-slate-500 hover:text-slate-700'
+            tab.key === 'appréciations' ? 'border-b-2 border-[#82d8ff] text-[#82d8ff]' : 'text-slate-500 hover:text-slate-700'
           }`}>{tab.label}</Link>
       ))}
     </div>
@@ -75,7 +75,7 @@ function PatientHeader({ patient, patientId }: { patient: PatientInfo; patientId
       <Link href={`/practitioner/patients/${patientId}`} className="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-500">
         <Icon name="arrow_back" size={20} />
       </Link>
-      <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-bold text-base select-none" style={{ background: '#e5eeff', color: '#006685' }}>
+      <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-bold text-base select-none" style={{ background: '#e5eeff', color: '#82d8ff' }}>
         {initials(patient.full_name)}
       </div>
       <div>

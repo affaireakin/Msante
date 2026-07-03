@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
@@ -193,7 +193,7 @@ function formatDateLong(d: string) {
 const PROVIDERS = [
   { id: 'wave',         label: 'Wave',           color: '#1B6CA8', bg: '#e8f4fd', icon: '🌊' },
   { id: 'orange_money', label: 'Orange Money',   color: '#FF6900', bg: '#fff3e0', icon: '🟠' },
-  { id: 'card',         label: 'Carte bancaire', color: '#006685', bg: '#e5eeff', icon: '💳' },
+  { id: 'card',         label: 'Carte bancaire', color: '#82d8ff', bg: '#e5eeff', icon: '💳' },
 ]
 
 type Step = 'type' | 'slot' | 'confirm' | 'payment' | 'success'
@@ -230,7 +230,7 @@ export default function BookingPage() {
               Jusqu&apos;au {new Date(data.blockUntil).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
           )}
-          <button onClick={() => router.back()} className="w-full py-3 rounded-xl bg-[#006685] text-white font-semibold text-sm">
+          <button onClick={() => router.back()} className="w-full py-3 rounded-xl bg-[#82d8ff] text-[#0b1c30] font-semibold text-sm">
             Retour
           </button>
         </div>
@@ -313,7 +313,7 @@ export default function BookingPage() {
   // ── Loading ────────────────────────────────────────────────────────────────
   if (isLoading) return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center">
-      <div className="w-8 h-8 rounded-full border-2 border-[#006685] border-t-transparent animate-spin" />
+      <div className="w-8 h-8 rounded-full border-2 border-[#82d8ff] border-t-transparent animate-spin" />
     </div>
   )
 
@@ -323,7 +323,7 @@ export default function BookingPage() {
         <span className="material-symbols-outlined text-[#ba1a1a] text-5xl">error</span>
         <p className="font-bold text-[#0b1c30]">Erreur de chargement</p>
         <p className="text-sm text-[#6f787e]">{(error as Error).message}</p>
-        <button onClick={() => router.back()} className="w-full py-3 rounded-xl bg-[#006685] text-white font-semibold text-sm">Retour</button>
+        <button onClick={() => router.back()} className="w-full py-3 rounded-xl bg-[#82d8ff] text-[#0b1c30] font-semibold text-sm">Retour</button>
       </div>
     </div>
   )
@@ -364,7 +364,7 @@ export default function BookingPage() {
             </div>
           ))}
         </div>
-        <button onClick={() => router.push('/patient')} className="w-full py-3 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg transition-all text-sm">
+        <button onClick={() => router.push('/patient')} className="w-full py-3 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg transition-all text-sm">
           Retour à l&apos;accueil
         </button>
       </div>
@@ -388,17 +388,17 @@ export default function BookingPage() {
           else if (step === 'confirm') setStep('slot')
           else if (step === 'payment') setStep('confirm')
           else router.push('/patient/practitioners')
-        }} className="text-[#006685] font-semibold text-sm hover:underline flex items-center gap-1">
+        }} className="text-[#82d8ff] font-semibold text-sm hover:underline flex items-center gap-1">
           ← Retour
         </button>
         <div className="flex-1">
           <span className="text-lg font-black text-[#0b1c30]">M-Santé</span>
-          <span className="text-xs text-[#006685] font-semibold ml-2">Réservation</span>
+          <span className="text-xs text-[#82d8ff] font-semibold ml-2">Réservation</span>
         </div>
         <div className="hidden sm:flex items-center gap-1 text-xs">
           {STEPS.map((s, i) => (
             <span key={s.key} className="flex items-center gap-1">
-              <span className={`font-semibold ${step === s.key ? 'text-[#006685]' : 'text-[#bec8ce]'}`}>{s.label}</span>
+              <span className={`font-semibold ${step === s.key ? 'text-[#82d8ff]' : 'text-[#bec8ce]'}`}>{s.label}</span>
               {i < STEPS.length - 1 && <span className="text-[#bec8ce]">›</span>}
             </span>
           ))}
@@ -408,7 +408,7 @@ export default function BookingPage() {
       <main className="max-w-2xl mx-auto py-4 space-y-6">
         {/* Practitioner card */}
         <div className="rounded-2xl p-5 flex items-center gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
-          <div className="w-14 h-14 rounded-full bg-[#006685] flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+          <div className="w-14 h-14 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] font-bold text-xl flex-shrink-0">
             {initials(pract.users?.full_name ?? 'P')}
           </div>
           <div>
@@ -426,7 +426,7 @@ export default function BookingPage() {
                 <p className="text-4xl mb-3">📅</p>
                 <p className="font-semibold text-[#0b1c30]">Aucun créneau disponible</p>
                 <p className="text-sm text-[#6f787e] mt-1">Ce praticien n&apos;a pas encore configuré ses disponibilités.</p>
-                <button onClick={() => router.push('/patient/practitioners')} className="mt-4 px-5 py-2 bg-[#006685] text-white text-sm font-bold rounded-xl">Voir d&apos;autres praticiens</button>
+                <button onClick={() => router.push('/patient/practitioners')} className="mt-4 px-5 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl">Voir d&apos;autres praticiens</button>
               </div>
             ) : (
               <div className="space-y-2">
@@ -439,7 +439,7 @@ export default function BookingPage() {
                       <p className="font-bold text-[#0b1c30]">{t.name}</p>
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         <span className="text-xs text-slate-400">{t.duration_min} min</span>
-                        {t.price && <span className="text-xs font-semibold text-[#006685]">{t.price.toLocaleString('fr-FR')} {t.currency}</span>}
+                        {t.price && <span className="text-xs font-semibold text-[#82d8ff]">{t.price.toLocaleString('fr-FR')} {t.currency}</span>}
                         <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: `${t.color}15`, color: t.color }}>
                           {t.mode === 'both' ? '🏥 + 📹' : t.mode === 'video' ? '📹 Vidéo' : '🏥 Présentiel'}
                         </span>
@@ -485,7 +485,7 @@ export default function BookingPage() {
                       onClick={() => setSelectedMode(selectedMode === opt.value ? null : opt.value)}
                       className="flex flex-col items-center gap-1.5 p-4 rounded-2xl border transition-all"
                       style={selectedMode === opt.value
-                        ? { backgroundColor: '#e5eeff', borderColor: '#006685', color: '#006685' }
+                        ? { backgroundColor: '#e5eeff', borderColor: '#82d8ff', color: '#82d8ff' }
                         : { backgroundColor: 'rgba(255,255,255,0.70)', borderColor: 'rgba(190,200,206,0.50)', color: '#3f484d' }}
                     >
                       <span className="text-2xl">{opt.icon}</span>
@@ -513,7 +513,7 @@ export default function BookingPage() {
                       <button
                         key={d}
                         onClick={() => { setSelectedDate(d); setSelectedSlot(null) }}
-                        className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${selectedDate === d ? 'bg-[#006685] text-white border-[#006685]' : 'bg-white/60 text-[#3f484d] border-slate-200/50 hover:bg-white'}`}
+                        className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${selectedDate === d ? 'bg-[#82d8ff] text-[#0b1c30] border-[#82d8ff]' : 'bg-white/60 text-[#3f484d] border-slate-200/50 hover:bg-white'}`}
                       >
                         {formatDate(d)}
                       </button>
@@ -527,7 +527,7 @@ export default function BookingPage() {
                       <p className="text-sm font-bold text-[#0b1c30]">
                         Créneaux disponibles — {formatDateLong(selectedDate)}
                       </p>
-                      <span className="text-[10px] bg-[#e5eeff] text-[#006685] font-semibold px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] bg-[#e5eeff] text-[#82d8ff] font-semibold px-2 py-0.5 rounded-full">
                         🕐 Heure Dakar (UTC+0)
                       </span>
                     </div>
@@ -545,7 +545,7 @@ export default function BookingPage() {
                             style={slot.taken
                               ? { backgroundColor: '#f1f5f9', color: '#94a3b8', borderColor: '#e2e8f0', cursor: 'not-allowed' }
                               : isSel
-                              ? { backgroundColor: '#006685', color: '#fff', borderColor: '#006685' }
+                              ? { backgroundColor: '#82d8ff', color: '#fff', borderColor: '#82d8ff' }
                               : { backgroundColor: 'rgba(255,255,255,0.70)', color: '#0b1c30', borderColor: 'rgba(190,200,206,0.50)' }}
                           >
                             <span className={`font-bold ${slot.taken ? 'line-through opacity-60' : ''}`}>{slot.start_time}</span>
@@ -563,7 +563,7 @@ export default function BookingPage() {
                 <button
                   onClick={() => { if (selectedSlot) setStep('confirm') }}
                   disabled={!selectedSlot}
-                  className="w-full py-4 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-40"
+                  className="w-full py-4 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-40"
                 >
                   {selectedSlot
                     ? `Continuer — ${formatDate(selectedSlot.date)} à ${selectedSlot.start_time}`
@@ -601,11 +601,11 @@ export default function BookingPage() {
                 Modifier
               </button>
               {selectedSlot.type.price ? (
-                <button onClick={() => setStep('payment')} className="flex-1 py-3 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg transition-all text-sm">
+                <button onClick={() => setStep('payment')} className="flex-1 py-3 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg transition-all text-sm">
                   Passer au paiement →
                 </button>
               ) : (
-                <button onClick={handleBook} disabled={loading} className="flex-1 py-3 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg transition-all text-sm disabled:opacity-50">
+                <button onClick={handleBook} disabled={loading} className="flex-1 py-3 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg transition-all text-sm disabled:opacity-50">
                   {loading ? 'Confirmation…' : 'Confirmer le rendez-vous'}
                 </button>
               )}
@@ -629,10 +629,10 @@ export default function BookingPage() {
               <div className="space-y-2">
                 {PROVIDERS.map(p => (
                   <button key={p.id} onClick={() => setProvider(p.id)}
-                    className={`w-full flex items-center gap-4 px-5 py-4 rounded-xl border transition-all ${provider === p.id ? 'border-[#006685] bg-[#e5eeff]' : 'border-slate-200/50 bg-white/60 hover:bg-white'}`}>
+                    className={`w-full flex items-center gap-4 px-5 py-4 rounded-xl border transition-all ${provider === p.id ? 'border-[#82d8ff] bg-[#e5eeff]' : 'border-slate-200/50 bg-white/60 hover:bg-white'}`}>
                     <span className="text-2xl">{p.icon}</span>
                     <span className="font-semibold text-[#0b1c30] flex-1 text-left">{p.label}</span>
-                    <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${provider === p.id ? 'border-[#006685] bg-[#006685]' : 'border-slate-300'}`}>
+                    <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${provider === p.id ? 'border-[#82d8ff] bg-[#82d8ff]' : 'border-slate-300'}`}>
                       {provider === p.id && <span className="w-2 h-2 rounded-full bg-white" />}
                     </span>
                   </button>
@@ -644,7 +644,7 @@ export default function BookingPage() {
               <div>
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1.5">Numéro de téléphone</label>
                 <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+221 7X XXX XX XX"
-                  className="w-full px-4 py-3 bg-white/60 border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#006685] transition-all" />
+                  className="w-full px-4 py-3 bg-white/60 border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
               </div>
             )}
 
@@ -655,7 +655,7 @@ export default function BookingPage() {
             {bookingError && <p className="text-sm text-red-500 text-center">{bookingError}</p>}
 
             <button onClick={handleBook} disabled={loading}
-              className="w-full py-4 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50 text-sm">
+              className="w-full py-4 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50 text-sm">
               {loading
                 ? <span className="flex items-center justify-center gap-2"><span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />Traitement...</span>
                 : `Confirmer — ${selectedSlot.type.price?.toLocaleString('fr-FR')} ${selectedSlot.type.currency}`}

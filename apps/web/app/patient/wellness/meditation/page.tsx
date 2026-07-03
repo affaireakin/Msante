@@ -11,7 +11,7 @@ const SESSIONS = [
     title: 'Cohérence cardiaque',
     desc: 'Inspirez 5s · Expirez 5s',
     duration: 300,
-    color: '#006685',
+    color: '#82d8ff',
     bg: '#e5eeff',
     icon: 'favorite',
     tagline: 'Idéal pour démarrer la journée ou avant une consultation',
@@ -55,7 +55,7 @@ export default function MeditationCataloguePage() {
       {/* Intro */}
       <div className="rounded-2xl p-5 flex items-center gap-4" style={{ background: 'linear-gradient(135deg, rgba(0,102,133,0.06) 0%, rgba(130,216,255,0.10) 100%)', border: '1px solid rgba(130,216,255,0.30)' }}>
         <div className="w-12 h-12 rounded-2xl bg-[#e5eeff] flex items-center justify-center flex-shrink-0">
-          <Icon name="self_improvement" style={{ fontSize: '28px', color: '#006685' }} />
+          <Icon name="self_improvement" style={{ fontSize: '28px', color: '#82d8ff' }} />
         </div>
         <div>
           <p className="text-sm font-semibold text-[#0b1c30]">3 techniques de respiration</p>

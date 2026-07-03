@@ -221,7 +221,7 @@ export default function PractitionerLayout({ children }: { children: React.React
           <img src="/logo.png" alt="M-Santé" className="w-10 h-10 rounded-xl object-cover shadow-sm" />
           <div className="flex-1">
             <h1 className="text-lg font-black tracking-tighter text-[#0b1c30]">M-Santé</h1>
-            <p className="text-xs text-[#006685] font-semibold tracking-wide uppercase">Clinical Portal</p>
+            <p className="text-xs text-[#82d8ff] font-semibold tracking-wide uppercase">Clinical Portal</p>
           </div>
           <button className="md:hidden p-1.5 rounded-lg text-slate-400 hover:bg-slate-100" onClick={() => setSidebarOpen(false)}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -231,7 +231,7 @@ export default function PractitionerLayout({ children }: { children: React.React
         {/* Profil praticien */}
         <div className="px-4 py-4 border-b border-slate-100/60">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-[#e5eeff]">
-            <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+            <div className="w-9 h-9 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-sm font-bold flex-shrink-0">
               {initials}
             </div>
             <div className="flex-1 min-w-0">
@@ -254,11 +254,11 @@ export default function PractitionerLayout({ children }: { children: React.React
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? 'bg-sky-50 text-[#006685] font-semibold border-r-4 border-[#006685] -mr-3 pr-4'
+                    ? 'bg-sky-50 text-[#82d8ff] font-semibold border-r-4 border-[#82d8ff] -mr-3 pr-4'
                     : 'text-[#3f484d] hover:translate-x-1 hover:bg-slate-50/50'
                 }`}
               >
-                <span className={isActive ? 'text-[#006685]' : 'text-[#6f787e]'}>{item.icon}</span>
+                <span className={isActive ? 'text-[#82d8ff]' : 'text-[#6f787e]'}>{item.icon}</span>
                 <span className="flex-1">{label}</span>
                 {item.href === '/practitioner/messages' && unreadMessages > 0 && (
                   <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: '#ba1a1a' }}>
@@ -293,7 +293,7 @@ export default function PractitionerLayout({ children }: { children: React.React
           }}
         >
           <div className="flex items-center gap-3">
-            <button className="md:hidden p-2 rounded-lg text-[#006685] hover:bg-white/50 transition-colors" onClick={() => setSidebarOpen(true)}>
+            <button className="md:hidden p-2 rounded-lg text-[#82d8ff] hover:bg-white/50 transition-colors" onClick={() => setSidebarOpen(true)}>
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
               </svg>
@@ -305,7 +305,7 @@ export default function PractitionerLayout({ children }: { children: React.React
           </div>
           <div className="flex items-center gap-3">
             {userId && <NotificationBell userId={userId} />}
-            <div className="w-9 h-9 rounded-full bg-[#006685] flex items-center justify-center text-white text-sm font-bold shadow-sm">
+            <div className="w-9 h-9 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-sm font-bold shadow-sm">
               {initials}
             </div>
           </div>
@@ -335,7 +335,7 @@ export default function PractitionerLayout({ children }: { children: React.React
                 }
               </p>
               <div className="flex items-center gap-2 text-xs text-[#6f787e] bg-white/60 border border-white/80 rounded-xl px-4 py-3">
-                <span className="material-symbols-outlined text-[16px] text-[#006685]">notifications</span>
+                <span className="material-symbols-outlined text-[16px] text-[#82d8ff]">notifications</span>
                 Notification push, email et WhatsApp envoyés à la validation
               </div>
               <button onClick={handleLogout} className="mt-6 text-sm text-[#6f787e] underline hover:text-[#0b1c30] transition-colors">

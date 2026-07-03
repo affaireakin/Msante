@@ -18,7 +18,7 @@ interface JournalEntry {
 
 const MOOD_COLORS: Record<number, string> = {
   1: '#ba1a1a', 2: '#ba1a1a', 3: '#c05000', 4: '#705d00', 5: '#705d00',
-  6: '#006685', 7: '#006685', 8: '#1d7a3a', 9: '#1d7a3a', 10: '#1d7a3a',
+  6: '#82d8ff', 7: '#82d8ff', 8: '#1d7a3a', 9: '#1d7a3a', 10: '#1d7a3a',
 }
 
 function useJournalEntries() {
@@ -56,7 +56,7 @@ export default function JournalListPage() {
         </div>
         <Link
           href="/patient/wellness/journal/new"
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#006685]/20 transition-all flex-shrink-0"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#82d8ff]/20 transition-all flex-shrink-0"
         >
           <Icon name="edit" style={{ color: '#fff', fontSize: '18px' }} />
           Nouvelle entrée
@@ -76,7 +76,7 @@ export default function JournalListPage() {
           </p>
           <Link
             href="/patient/wellness/journal/new"
-            className="mt-5 inline-flex items-center gap-2 px-6 py-3 bg-[#006685] text-white text-sm font-bold rounded-xl hover:shadow-lg transition-all"
+            className="mt-5 inline-flex items-center gap-2 px-6 py-3 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg transition-all"
           >
             <Icon name="edit" style={{ color: '#fff', fontSize: '18px' }} />
             Première entrée
@@ -121,7 +121,7 @@ export default function JournalListPage() {
                 {(entry.tags ?? []).length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2" style={{ marginLeft: '52px' }}>
                     {entry.tags.slice(0, 3).map((tag: string) => (
-                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-[#e5eeff] text-[#006685] font-semibold">{tag}</span>
+                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-[#e5eeff] text-[#82d8ff] font-semibold">{tag}</span>
                     ))}
                   </div>
                 )}

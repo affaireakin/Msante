@@ -40,7 +40,7 @@ function formatDate(iso: string): string {
 }
 
 function statusInfo(s: string): { label: string; bg: string; color: string } {
-  if (s === 'signed')    return { label: 'Signée',   bg: '#e5eeff', color: '#006685' }
+  if (s === 'signed')    return { label: 'Signée',   bg: '#e5eeff', color: '#82d8ff' }
   if (s === 'dispensed') return { label: 'Délivrée', bg: '#dcfce7', color: '#1d7a3a' }
   return { label: 'Autre', bg: '#f1f5f9', color: '#475569' }
 }
@@ -82,7 +82,7 @@ function RxCard({ rx, onPress }: { rx: Rx; onPress: () => void }) {
         borderWidth: 1,
         borderColor: '#e5eeff',
         marginBottom: scale(12),
-        shadowColor: '#006685',
+        shadowColor: '#82d8ff',
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.06,
         shadowRadius: 10,
@@ -118,7 +118,7 @@ function RxCard({ rx, onPress }: { rx: Rx; onPress: () => void }) {
               style={{
                 fontSize: scale(10),
                 fontWeight: '700',
-                color: isReco ? '#854d0e' : '#006685',
+                color: isReco ? '#854d0e' : '#82d8ff',
                 fontFamily: 'Manrope',
                 letterSpacing: 0.3,
               }}
@@ -149,7 +149,7 @@ function RxCard({ rx, onPress }: { rx: Rx; onPress: () => void }) {
         </View>
 
         {/* Chevron */}
-        <MaterialIcons name="chevron-right" size={scale(20)} color="#006685" />
+        <MaterialIcons name="chevron-right" size={scale(20)} color="#82d8ff" />
       </View>
 
       {/* Body */}
@@ -330,14 +330,14 @@ export default function PrescriptionsScreen() {
               paddingHorizontal: scale(10),
               paddingVertical: scale(4),
               borderWidth: 1,
-              borderColor: '#006685' + '30',
+              borderColor: '#82d8ff' + '30',
             }}
           >
             <Text
               style={{
                 fontSize: fs.xs,
                 fontWeight: '700',
-                color: '#006685',
+                color: '#82d8ff',
                 fontFamily: 'Manrope',
               }}
             >
@@ -364,7 +364,7 @@ export default function PrescriptionsScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={handleRefresh}
-              tintColor="#006685"
+              tintColor="#82d8ff"
             />
           }
           renderItem={({ item }) => (
@@ -397,7 +397,7 @@ export default function PrescriptionsScreen() {
                 <MaterialIcons
                   name="receipt-long"
                   size={scale(38)}
-                  color="#006685"
+                  color="#82d8ff"
                 />
               </View>
               <Text

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { use, useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 
@@ -25,7 +25,7 @@ const TECHNIQUE_CONFIG: Record<string, {
       { label: 'Inspirez', dur: 5, scale: 1.4 },
       { label: 'Expirez', dur: 5, scale: 0.7 },
     ],
-    color: '#006685',
+    color: '#82d8ff',
     bg: '#e5eeff',
     ringColor: 'rgba(0,102,133,0.25)',
   },

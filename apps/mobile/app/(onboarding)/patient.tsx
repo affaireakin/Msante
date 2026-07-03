@@ -61,7 +61,7 @@ type NotifPrefs = {
 function ProgressBar({ step, total }: { step: number; total: number }) {
   return (
     <View style={{ gap: 6, marginBottom: 16 }}>
-      <Text style={{ fontSize: 11, fontWeight: '700', color: '#006685', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: 6 }}>
+      <Text style={{ fontSize: 11, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: 6 }}>
         Étape {step} sur {total}
       </Text>
       <View style={{ flexDirection: 'row', gap: 6 }}>
@@ -72,7 +72,7 @@ function ProgressBar({ step, total }: { step: number; total: number }) {
               flex: 1,
               height: 4,
               borderRadius: 2,
-              backgroundColor: i < step ? '#006685' : '#bec8ce',
+              backgroundColor: i < step ? '#82d8ff' : '#bec8ce',
             }}
           />
         ))}
@@ -87,7 +87,7 @@ function StepHeader({
   icon,
   title,
   subtitle,
-  iconColor = '#006685',
+  iconColor = '#82d8ff',
   iconBg = '#e5eeff',
 }: {
   icon: string
@@ -141,8 +141,8 @@ function ChipSelector({
                 paddingVertical: 8,
                 borderRadius: 20,
                 borderWidth: 1.5,
-                borderColor: isSelected ? '#006685' : '#bec8ce',
-                backgroundColor: isSelected ? '#006685' : 'transparent',
+                borderColor: isSelected ? '#82d8ff' : '#bec8ce',
+                backgroundColor: isSelected ? '#82d8ff' : 'transparent',
               }}
             >
               <Text style={{ fontSize: 13, fontFamily: 'Manrope', fontWeight: '600', color: isSelected ? '#ffffff' : '#0b1c30' }}>
@@ -161,7 +161,7 @@ function ChipSelector({
 function SkipButton({ onPress }: { onPress: () => void }) {
   return (
     <TouchableOpacity onPress={onPress} style={{ alignSelf: 'flex-end', paddingVertical: 8, paddingHorizontal: 4 }}>
-      <Text style={{ fontSize: 14, color: '#006685', fontFamily: 'Manrope', fontWeight: '600' }}>
+      <Text style={{ fontSize: 14, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }}>
         Passer cette étape →
       </Text>
     </TouchableOpacity>
@@ -173,7 +173,7 @@ function SkipButton({ onPress }: { onPress: () => void }) {
 function BackButton({ onPress }: { onPress: () => void }) {
   return (
     <TouchableOpacity onPress={onPress} style={{ marginBottom: 16, alignSelf: 'flex-start', padding: 4 }}>
-      <MaterialIcons name="arrow-back" size={24} color="#006685" />
+      <MaterialIcons name="arrow-back" size={24} color="#82d8ff" />
     </TouchableOpacity>
   )
 }
@@ -305,8 +305,8 @@ export default function PatientOnboardingScreen() {
                             paddingVertical: 8,
                             borderRadius: 20,
                             borderWidth: 1.5,
-                            borderColor: selected ? '#006685' : '#bec8ce',
-                            backgroundColor: selected ? '#006685' : 'transparent',
+                            borderColor: selected ? '#82d8ff' : '#bec8ce',
+                            backgroundColor: selected ? '#82d8ff' : 'transparent',
                             flexDirection: 'row',
                             alignItems: 'center',
                             gap: 6,
@@ -343,8 +343,8 @@ export default function PatientOnboardingScreen() {
                             paddingVertical: 10,
                             borderRadius: 20,
                             borderWidth: 1.5,
-                            borderColor: selected ? '#006685' : '#bec8ce',
-                            backgroundColor: selected ? '#006685' : 'transparent',
+                            borderColor: selected ? '#82d8ff' : '#bec8ce',
+                            backgroundColor: selected ? '#82d8ff' : 'transparent',
                           }}
                         >
                           <Text style={{ fontSize: 14, fontFamily: 'Manrope', fontWeight: '600', color: selected ? '#fff' : '#0b1c30' }}>
@@ -467,7 +467,7 @@ export default function PatientOnboardingScreen() {
                 }}
               >
                 <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                  <MaterialIcons name={row.icon as 'alarm'} size={20} color="#006685" />
+                  <MaterialIcons name={row.icon as 'alarm'} size={20} color="#82d8ff" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontSize: 14, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope' }}>{row.label}</Text>
@@ -476,7 +476,7 @@ export default function PatientOnboardingScreen() {
                 <Switch
                   value={notifPrefs[row.key]}
                   onValueChange={() => toggleNotif(row.key)}
-                  trackColor={{ false: '#bec8ce', true: '#006685' }}
+                  trackColor={{ false: '#bec8ce', true: '#82d8ff' }}
                   thumbColor="#ffffff"
                 />
               </View>
@@ -501,7 +501,7 @@ export default function PatientOnboardingScreen() {
   const featureCards = [
     {
       icon: 'mood',
-      iconColor: '#006685',
+      iconColor: '#82d8ff',
       iconBg: '#e5eeff',
       title: 'Mood Tracker',
       subtitle: 'Suivez votre humeur chaque jour et identifiez vos tendances émotionnelles.',

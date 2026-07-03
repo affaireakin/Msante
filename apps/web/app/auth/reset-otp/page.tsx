@@ -118,17 +118,17 @@ function ResetOtpContent() {
             <p className="text-lg font-black text-[#0b1c30]">Code vérifié !</p>
             <p className="text-sm text-slate-400 mt-1">Choisissez votre nouveau mot de passe…</p>
           </div>
-          <div className="w-5 h-5 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <>
           <div className="text-center mb-7">
             <div className="w-14 h-14 rounded-2xl bg-[#e5eeff] flex items-center justify-center mx-auto mb-4">
-              <span className="material-symbols-outlined text-[#006685]" style={{ fontSize: '28px' }}>lock_reset</span>
+              <span className="material-symbols-outlined text-[#82d8ff]" style={{ fontSize: '28px' }}>lock_reset</span>
             </div>
             <h1 className="text-xl font-black text-[#0b1c30]">Code de vérification</h1>
             <p className="text-sm text-slate-400 mt-2">Code envoyé à</p>
-            <p className="text-sm font-bold text-[#006685] mt-0.5">{email}</p>
+            <p className="text-sm font-bold text-[#82d8ff] mt-0.5">{email}</p>
           </div>
 
           <div className="flex gap-2 justify-center mb-6">
@@ -146,11 +146,11 @@ function ResetOtpContent() {
                 disabled={loading || success}
                 className="w-11 h-14 text-center text-2xl font-black rounded-xl border-2 outline-none transition-all bg-[#f8f9ff]"
                 style={{
-                  borderColor: error ? '#ba1a1a' : d ? '#006685' : '#bec8ce',
+                  borderColor: error ? '#ba1a1a' : d ? '#82d8ff' : '#bec8ce',
                   color: '#0b1c30',
                 }}
-                onFocus={e => { e.target.style.borderColor = '#006685'; e.target.style.boxShadow = '0 0 0 3px rgba(0,102,133,0.1)' }}
-                onBlur={e => { e.target.style.borderColor = error ? '#ba1a1a' : d ? '#006685' : '#bec8ce'; e.target.style.boxShadow = 'none' }}
+                onFocus={e => { e.target.style.borderColor = '#82d8ff'; e.target.style.boxShadow = '0 0 0 3px rgba(0,102,133,0.1)' }}
+                onBlur={e => { e.target.style.borderColor = error ? '#ba1a1a' : d ? '#82d8ff' : '#bec8ce'; e.target.style.boxShadow = 'none' }}
               />
             ))}
           </div>
@@ -165,7 +165,7 @@ function ResetOtpContent() {
           {codeComplete && !loading && !success && (
             <button
               onClick={() => void verify(digits.join(''))}
-              className="w-full py-3.5 bg-[#006685] text-white font-bold rounded-xl hover:shadow-lg transition-all mb-4"
+              className="w-full py-3.5 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg transition-all mb-4"
             >
               Vérifier le code
             </button>
@@ -173,8 +173,8 @@ function ResetOtpContent() {
 
           {loading && (
             <div className="flex items-center justify-center gap-2 py-3 mb-4">
-              <div className="w-5 h-5 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm text-[#006685] font-medium">Vérification…</span>
+              <div className="w-5 h-5 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
+              <span className="text-sm text-[#82d8ff] font-medium">Vérification…</span>
             </div>
           )}
 
@@ -184,14 +184,14 @@ function ResetOtpContent() {
               onClick={() => void handleResend()}
               disabled={!canResend}
               className="text-sm font-bold transition-all"
-              style={{ color: canResend ? '#006685' : '#bec8ce' }}
+              style={{ color: canResend ? '#82d8ff' : '#bec8ce' }}
             >
               {canResend ? 'Renvoyer le code' : `Renvoyer dans ${cooldown}s`}
             </button>
           </div>
 
           <div className="mt-6 pt-5 border-t border-slate-100 text-center">
-            <Link href="/auth/forgot-password" className="text-xs text-slate-400 hover:text-[#006685] transition-colors">
+            <Link href="/auth/forgot-password" className="text-xs text-slate-400 hover:text-[#82d8ff] transition-colors">
               ← Modifier l&apos;adresse email
             </Link>
           </div>
@@ -205,7 +205,7 @@ export default function ResetOtpPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center p-8">
-        <div className="w-8 h-8 border-2 border-[#006685] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <ResetOtpContent />

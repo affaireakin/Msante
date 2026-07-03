@@ -230,7 +230,7 @@ export default function VoiceSessionScreen() {
   }, [exchanges, elapsed, router])
 
   const isActive = isRecording || isPlaying || isProcessing
-  const waveColor = isRecording ? '#ba1a1a' : isPlaying ? '#82d8ff' : '#006685'
+  const waveColor = isRecording ? '#ba1a1a' : isPlaying ? '#82d8ff' : '#82d8ff'
   const micIcon = isRecording ? 'mic' : isProcessing ? 'hourglass-empty' : isPlaying ? 'volume-up' : 'mic-none'
 
   return (
@@ -345,7 +345,7 @@ export default function VoiceSessionScreen() {
             borderRadius: 32,
             backgroundColor: isProcessing || isPlaying
               ? 'rgba(255,255,255,0.08)'
-              : pressed || isRecording ? '#ba1a1a' : '#006685',
+              : pressed || isRecording ? '#ba1a1a' : '#82d8ff',
             alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'row',

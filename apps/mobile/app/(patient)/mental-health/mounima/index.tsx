@@ -32,10 +32,10 @@ export default function MounimaChat() {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View>
-            <Text style={{ fontSize: 12, color: '#006685', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>M-Santé</Text>
+            <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>M-Santé</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Mounima</Text>
-              <MaterialIcons name="favorite" size={18} color="#006685" />
+              <MaterialIcons name="favorite" size={18} color="#82d8ff" />
             </View>
           </View>
           <TouchableOpacity
@@ -43,7 +43,7 @@ export default function MounimaChat() {
             style={{ padding: 8 }}
             accessibilityLabel="Session vocale"
           >
-            <MaterialIcons name="mic" size={24} color="#006685" />
+            <MaterialIcons name="mic" size={24} color="#82d8ff" />
           </TouchableOpacity>
         </View>
 
@@ -62,7 +62,7 @@ export default function MounimaChat() {
                     borderRadius: 64,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: '#006685',
+                    backgroundColor: '#82d8ff',
                     shadowColor: '#82d8ff',
                     shadowOffset: { width: 0, height: 0 },
                     shadowOpacity: 1,
@@ -139,7 +139,7 @@ export default function MounimaChat() {
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: '#006685',
+                backgroundColor: '#82d8ff',
                 alignItems: 'center',
                 justifyContent: 'center',
                 opacity: !input.trim() || isLoading ? 0.4 : 1,

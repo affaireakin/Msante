@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -25,8 +25,8 @@ const MOOD_CONFIG: Record<number, { label: string; color: string; bg: string }> 
   3:  { label: 'Faible',    color: '#c05000', bg: '#ffe5d0' },
   4:  { label: 'Moyen',     color: '#705d00', bg: '#fff8e1' },
   5:  { label: 'Correct',   color: '#705d00', bg: '#fff8e1' },
-  6:  { label: 'Bien',      color: '#006685', bg: '#e5eeff' },
-  7:  { label: 'Bien',      color: '#006685', bg: '#e5eeff' },
+  6:  { label: 'Bien',      color: '#82d8ff', bg: '#e5eeff' },
+  7:  { label: 'Bien',      color: '#82d8ff', bg: '#e5eeff' },
   8:  { label: 'Très bien', color: '#1d7a3a', bg: '#e8f5e9' },
   9:  { label: 'Excellent', color: '#1d7a3a', bg: '#e8f5e9' },
   10: { label: 'Parfait',   color: '#1d7a3a', bg: '#e8f5e9' },
@@ -74,7 +74,7 @@ export default function JournalEntryPage() {
     <div className="max-w-2xl mx-auto text-center py-20">
       <Icon name="error" style={{ fontSize: '48px', color: '#ba1a1a' }} />
       <p className="font-semibold text-[#0b1c30] mt-3">Entrée introuvable</p>
-      <Link href="/patient/wellness/journal" className="mt-4 inline-block text-sm font-bold text-[#006685] hover:underline">
+      <Link href="/patient/wellness/journal" className="mt-4 inline-block text-sm font-bold text-[#82d8ff] hover:underline">
         ← Retour au journal
       </Link>
     </div>
@@ -126,7 +126,7 @@ export default function JournalEntryPage() {
             </span>
           )}
           {(entry.tags ?? []).map((tag: string) => (
-            <span key={tag} className="text-xs px-2.5 py-1 rounded-full bg-[#e5eeff] text-[#006685] font-semibold">{tag}</span>
+            <span key={tag} className="text-xs px-2.5 py-1 rounded-full bg-[#e5eeff] text-[#82d8ff] font-semibold">{tag}</span>
           ))}
           {entry.is_private && (
             <span className="flex items-center gap-1 text-xs text-[#6f787e]">
@@ -153,7 +153,7 @@ export default function JournalEntryPage() {
         </Link>
         <Link
           href="/patient/wellness/journal"
-          className="flex-1 py-3 rounded-xl bg-[#006685] text-white text-sm font-semibold hover:shadow-lg transition-all text-center"
+          className="flex-1 py-3 rounded-xl bg-[#82d8ff] text-[#0b1c30] text-sm font-semibold hover:shadow-lg transition-all text-center"
         >
           Toutes les entrées
         </Link>

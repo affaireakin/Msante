@@ -168,7 +168,7 @@ export function CreateWorkflowModal({ onClose }: CreateWorkflowModalProps) {
                   className={`w-full text-left flex items-center gap-4 p-4 rounded-xl border-2 ${c.bg} ${c.border} hover:ring-2 ${c.ring} transition-all`}
                 >
                   <div className={`w-10 h-10 rounded-xl ${c.bg} border ${c.border} flex items-center justify-center flex-shrink-0`}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#006685' }}>{tpl.icon}</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#82d8ff' }}>{tpl.icon}</span>
                   </div>
                   <div className="flex-1">
                     <p className={`text-sm font-bold ${c.text}`}>{tpl.label}</p>
@@ -197,29 +197,29 @@ export function CreateWorkflowModal({ onClose }: CreateWorkflowModalProps) {
               const c = COLOR_CLASSES[selectedTemplate.color]
               return (
                 <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${c.bg} border ${c.border}`}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#006685' }}>{selectedTemplate.icon}</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#82d8ff' }}>{selectedTemplate.icon}</span>
                   <span className={`text-xs font-semibold ${c.text}`}>{selectedTemplate.label}</span>
                 </div>
               )
             })()}
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#006685] uppercase tracking-widest">Nom *</label>
+              <label className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Nom *</label>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ex: Rappel rendez-vous 24h"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white/60 text-sm text-[#0b1c30] outline-none focus:border-[#006685] transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white/60 text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff] transition-colors"
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#006685] uppercase tracking-widest">Description</label>
+              <label className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Description</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={2}
                 placeholder="Décrivez ce que fait ce workflow…"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white/60 text-sm text-[#0b1c30] outline-none focus:border-[#006685] transition-colors resize-none"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white/60 text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff] transition-colors resize-none"
               />
             </div>
 
@@ -234,7 +234,7 @@ export function CreateWorkflowModal({ onClose }: CreateWorkflowModalProps) {
                 onClick={handleCreate}
                 disabled={!name.trim() || createWorkflow.isPending}
                 className="flex-1 py-2.5 rounded-full text-sm font-bold text-white transition-colors disabled:opacity-50"
-                style={{ backgroundColor: '#006685' }}
+                style={{ backgroundColor: '#82d8ff' }}
               >
                 {createWorkflow.isPending ? 'Création…' : 'Créer le workflow →'}
               </button>

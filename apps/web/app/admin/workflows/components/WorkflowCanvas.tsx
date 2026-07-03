@@ -27,7 +27,7 @@ function ActionNode({ data }: NodeProps) {
       className="px-4 py-3 rounded-xl border-2 border-slate-200 min-w-[140px] text-center"
       style={{ backgroundColor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)' }}
     >
-      <p className="text-xs font-bold text-[#006685] uppercase tracking-widest mb-1">Action</p>
+      <p className="text-xs font-bold text-[#82d8ff] uppercase tracking-widest mb-1">Action</p>
       <p className="text-sm font-semibold text-[#0b1c30]">{d.label}</p>
       <p className="text-xs text-[#6f787e] mt-0.5">{d.nodeType}</p>
       <Handle type="target" position={Position.Left} className="!bg-slate-300" />
