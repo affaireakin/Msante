@@ -23,7 +23,7 @@ const FEATURES: {
 ]
 
 const QUICK_ACTIONS = [
-  { icon: 'search' as const, label: 'Praticiens', route: '/(patient)/find-practitioners', bg: '#82d8ff', text: '#fff' },
+  { icon: 'search' as const, label: 'Praticiens', route: '/(patient)/find-practitioners', bg: '#82d8ff', text: '#0b1c30' },
   { icon: 'psychology' as const, label: 'Mounima', route: '/(patient)/assistant', bg: '#e5eeff', text: '#82d8ff' },
   { icon: 'mood' as const, label: 'Humeur', route: '/(patient)/mental-health', bg: '#fff8e1', text: '#705d00' },
   { icon: 'calendar-today' as const, label: 'RDV', route: '/(patient)/appointments', bg: '#f0fdf4', text: '#1d7a3a' },
@@ -95,8 +95,8 @@ export default function PatientHome() {
               </Text>
               <TouchableOpacity onPress={() => router.push('/(patient)/find-practitioners')}
                 style={{ backgroundColor: '#82d8ff', paddingHorizontal: scale(18), paddingVertical: scale(11), borderRadius: scale(13), alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.sm, fontFamily: 'Manrope' }}>Trouver un praticien</Text>
-                <MaterialIcons name="arrow-forward" size={scale(15)} color="#fff" />
+                <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.sm, fontFamily: 'Manrope' }}>Trouver un praticien</Text>
+                <MaterialIcons name="arrow-forward" size={scale(15)} color="#0b1c30" />
               </TouchableOpacity>
             </View>
           </View>
@@ -180,12 +180,12 @@ export default function PatientHome() {
 
         {/* CTA Final */}
         <View style={{ marginHorizontal: px, marginTop: scale(20), backgroundColor: '#82d8ff', borderRadius: scale(22), padding: scale(22), overflow: 'hidden' }}>
-          <View style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, borderRadius: 50, backgroundColor: 'rgba(255,255,255,0.08)' }} />
-          <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: fs.sm, fontFamily: 'Manrope', marginBottom: 4 }}>Prêt à commencer ?</Text>
-          <Text style={{ color: '#fff', fontSize: fs.xl, fontWeight: '800', fontFamily: 'Manrope', letterSpacing: -0.5, marginBottom: 4 }}>Transformez votre rapport à la santé mentale.</Text>
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: fs.sm, fontFamily: 'Manrope', marginBottom: scale(18) }}>Essai IA gratuit · Sans engagement</Text>
-          <TouchableOpacity onPress={() => router.push('/(patient)/find-practitioners')} style={{ backgroundColor: '#fff', borderRadius: scale(13), paddingVertical: scale(13), alignItems: 'center' }}>
-            <Text style={{ color: '#82d8ff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>Commencer maintenant →</Text>
+          <View style={{ position: 'absolute', top: -20, right: -20, width: 100, height: 100, borderRadius: 50, backgroundColor: 'rgba(255,255,255,0.25)' }} />
+          <Text style={{ color: 'rgba(11,28,48,0.65)', fontSize: fs.sm, fontFamily: 'Manrope', marginBottom: 4, fontWeight: '600' }}>Prêt à commencer ?</Text>
+          <Text style={{ color: '#0b1c30', fontSize: fs.xl, fontWeight: '800', fontFamily: 'Manrope', letterSpacing: -0.5, marginBottom: 4 }}>Transformez votre rapport à la santé mentale.</Text>
+          <Text style={{ color: 'rgba(11,28,48,0.55)', fontSize: fs.sm, fontFamily: 'Manrope', marginBottom: scale(18), fontWeight: '500' }}>Essai IA gratuit · Sans engagement</Text>
+          <TouchableOpacity onPress={() => router.push('/(patient)/find-practitioners')} style={{ backgroundColor: '#0b1c30', borderRadius: scale(13), paddingVertical: scale(13), alignItems: 'center' }}>
+            <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>Commencer maintenant →</Text>
           </TouchableOpacity>
         </View>
 

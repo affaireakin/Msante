@@ -30,13 +30,13 @@ export function PrimaryButton({
       }}
     >
       {loading ? (
-        <ActivityIndicator color={isPrimary ? '#ffffff' : '#82d8ff'} />
+        <ActivityIndicator color={isPrimary ? '#0b1c30' : '#82d8ff'} />
       ) : (
         <Text style={{
           fontFamily: 'Manrope',
-          fontWeight: '700',
+          fontWeight: '800',
           fontSize: 15,
-          color: isPrimary ? '#ffffff' : '#82d8ff',
+          color: isPrimary ? '#0b1c30' : '#005e7a',
         }}>
           {label}
         </Text>
