@@ -35,7 +35,7 @@ const STATUS_ORDER: VerifStatus[] = ['pending', 'under_review', 'approved', 'rej
 const STATUS_LABELS: Record<VerifStatus, string> = {
   pending: 'En attente',
   under_review: 'En revue',
-  approved: 'Approuvé',
+  approved: 'Validé',
   rejected: 'Rejeté',
 }
 const STATUS_COLORS: Record<VerifStatus, string> = {
@@ -83,7 +83,7 @@ const STATUS_FILTERS = [
   { value: 'all', label: 'Tous' },
   { value: 'pending', label: 'En attente' },
   { value: 'under_review', label: 'En revue' },
-  { value: 'approved', label: 'Approuvés' },
+  { value: 'approved', label: 'Validés' },
   { value: 'rejected', label: 'Rejetés' },
 ] as const
 

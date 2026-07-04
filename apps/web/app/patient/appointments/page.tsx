@@ -134,10 +134,12 @@ export default function AppointmentsPage() {
             const tz = { timeZone: 'Africa/Dakar' }
             const dateStr = dt.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', ...tz })
             const time = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', ...tz })
-            const status = STATUS_CONFIG[apt.status] ?? STATUS_CONFIG.pending
+            const isPast = dt < new Date()
+            // Past confirmed/pending appointments are shown as "Terminé" (derived from date, DB untouched)
+            const effStatus = (apt.status === 'confirmed' || apt.status === 'pending') && isPast ? 'completed' : apt.status
+            const status = STATUS_CONFIG[effStatus] ?? STATUS_CONFIG.pending
             const practName = apt.practitioners?.users?.full_name ?? '—'
             const typeIcon = TYPE_ICONS[apt.type] ?? 'event'
-            const isPast = dt < new Date()
             const docs = apt.consultations?.[0]?.practitioner_documents ?? []
 
             return (

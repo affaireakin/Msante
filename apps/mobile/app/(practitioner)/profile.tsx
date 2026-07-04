@@ -304,7 +304,9 @@ export default function ProfileScreen() {
   const initials = (profile?.full_name ?? 'P')
     .split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
 
-  const isApproved = practitioner?.verification_status === 'approved'
+  // Tolerate a stale split between the two fields: a practitioner marked
+  // is_verified should read as validated even if verification_status lags behind.
+  const isApproved = practitioner?.verification_status === 'approved' || practitioner?.is_verified === true
 
   const handleSignOut = () => {
     Alert.alert('Déconnexion', 'Voulez-vous vous déconnecter ?', [
@@ -396,7 +398,7 @@ export default function ProfileScreen() {
               fontFamily: 'Manrope', fontSize: 12, fontWeight: '700',
               color: isApproved ? '#1d7a3a' : '#92400e',
             }}>
-              {isApproved ? '✓ Compte vérifié' : 'Vérification en cours'}
+              {isApproved ? '✓ Profil validé' : 'Validation en cours'}
             </Text>
           </View>
         </View>

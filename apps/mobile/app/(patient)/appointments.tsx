@@ -65,9 +65,20 @@ function isUpcoming(iso: string) {
   return new Date(iso) > new Date()
 }
 
+/**
+ * Effective status for display. A confirmed/pending appointment whose time
+ * has passed is shown as "Terminé" (done) — derived from the date, the DB row
+ * is left untouched. Explicit terminal states (cancelled/no_show/completed)
+ * are always respected.
+ */
+function effectiveStatus(appt: Pick<AppointmentRow, 'status' | 'scheduled_at'>): AppointmentStatus {
+  if (appt.status === 'cancelled' || appt.status === 'no_show' || appt.status === 'completed') return appt.status
+  return isUpcoming(appt.scheduled_at) ? appt.status : 'completed'
+}
+
 function AppointmentCard({ appt, onJoin, onCancel }: { appt: AppointmentRow; onJoin: () => void; onCancel: () => void }) {
   const { px, fs, scale } = useResponsive()
-  const status = STATUS_CONFIG[appt.status]
+  const status = STATUS_CONFIG[effectiveStatus(appt)]
   const practitioner = appt.practitioners
   const name = practitioner?.users?.full_name ?? 'Praticien inconnu'
   const speciality = practitioner?.speciality ?? ''
