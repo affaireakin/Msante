@@ -164,10 +164,10 @@ export default function WellnessHub() {
                   <MaterialIcons
                     name={todayScore >= 8 ? 'sentiment-satisfied' : todayScore >= 5 ? 'sentiment-neutral' : todayScore >= 3 ? 'sentiment-dissatisfied' : 'sentiment-very-dissatisfied'}
                     size={28}
-                    color="#ffffff"
+                    color="#0b1c30"
                   />
-                  <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#ffffff', fontFamily: 'Manrope' }}>{todayScore}</Text>
-                  <Text style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontFamily: 'Manrope', textAlign: 'center' }}>Aujourd'hui</Text>
+                  <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>{todayScore}</Text>
+                  <Text style={{ fontSize: 10, color: 'rgba(11,28,48,0.65)', fontFamily: 'Manrope', textAlign: 'center' }}>Aujourd'hui</Text>
                 </>
               ) : (
                 <>

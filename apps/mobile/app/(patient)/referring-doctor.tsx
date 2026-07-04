@@ -109,7 +109,7 @@ export default function ReferringDoctorScreen() {
                     justifyContent: 'center',
                   }}
                 >
-                  <MaterialIcons name="medical-services" size={24} color="#fff" />
+                  <MaterialIcons name="medical-services" size={24} color="#005e7a" />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontFamily: 'Manrope', fontSize: 16, fontWeight: '700', color: '#0b1c30' }}>
@@ -234,7 +234,7 @@ export default function ReferringDoctorScreen() {
                   marginTop: 4,
                 }}
               >
-                <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#fff' }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '800', color: '#0b1c30' }}>
                   Choisir mon médecin traitant
                 </Text>
               </TouchableOpacity>
@@ -278,7 +278,7 @@ export default function ReferringDoctorScreen() {
                           flexShrink: 0,
                         }}
                       >
-                        <Text style={{ fontFamily: 'Manrope', fontSize: 16, fontWeight: '700', color: '#fff' }}>
+                        <Text style={{ fontFamily: 'Manrope', fontSize: 16, fontWeight: '800', color: '#005e7a' }}>
                           {gp.users.full_name.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()}
                         </Text>
                       </View>

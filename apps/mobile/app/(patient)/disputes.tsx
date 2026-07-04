@@ -158,8 +158,8 @@ export default function DisputesScreen() {
           onPress={() => setShowNew(true)}
           style={{ backgroundColor: '#82d8ff', borderRadius: scale(14), paddingHorizontal: scale(14), paddingVertical: scale(10), flexDirection: 'row', alignItems: 'center', gap: scale(6) }}
         >
-          <MaterialIcons name="add" size={scale(18)} color="#fff" />
-          <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.sm, fontFamily: 'Manrope' }}>Ouvrir</Text>
+          <MaterialIcons name="add" size={scale(18)} color="#0b1c30" />
+          <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.sm, fontFamily: 'Manrope' }}>Ouvrir</Text>
         </TouchableOpacity>
       </View>
 
@@ -288,7 +288,7 @@ export default function DisputesScreen() {
                   disabled={!comment.trim() || commentMutation.isPending}
                   style={{ backgroundColor: comment.trim() ? '#82d8ff' : '#bec8ce', borderRadius: scale(12), paddingVertical: scale(13), alignItems: 'center' }}
                 >
-                  <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
+                  <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.md, fontFamily: 'Manrope' }}>
                     {commentMutation.isPending ? 'Envoi…' : 'Envoyer'}
                   </Text>
                 </TouchableOpacity>
@@ -354,7 +354,7 @@ export default function DisputesScreen() {
               disabled={createMutation.isPending}
               style={{ backgroundColor: '#82d8ff', borderRadius: scale(14), paddingVertical: scale(15), alignItems: 'center' }}
             >
-              <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
+              <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.md, fontFamily: 'Manrope' }}>
                 {createMutation.isPending ? 'Envoi…' : 'Soumettre le litige'}
               </Text>
             </TouchableOpacity>

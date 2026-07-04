@@ -350,7 +350,7 @@ export default function PermissionsScreen() {
           activeOpacity={0.85}
         >
           {isPending ? (
-            <ActivityIndicator size="small" color="#ffffff" />
+            <ActivityIndicator size="small" color="#0b1c30" />
           ) : (
             <Text
               style={[
@@ -471,8 +471,8 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     fontFamily: 'Manrope',
-    fontWeight: '700',
-    color: '#ffffff',
+    fontWeight: '800',
+    color: '#0b1c30',
     letterSpacing: 0.2,
   },
 })
