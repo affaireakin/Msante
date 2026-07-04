@@ -197,7 +197,7 @@ RETURNS BOOLEAN LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS
 $$;
 ```
 
-**Acceptation :** catalogue de 21 permissions inséré ; `user_has_permission('roles.manage')` renvoie `true` pour un super admin.
+**Acceptation :** catalogue de 20 permissions inséré (exactement la liste du spec) ; `user_has_permission('roles.manage')` renvoie `true` pour un super admin.
 
 ### Task 1.5 : Rôle système par défaut à la création d'orga
 
