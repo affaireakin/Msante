@@ -613,7 +613,7 @@ function NewNoteModal({ visible, patientId, onClose }: NewNoteModalProps) {
                   justifyContent: 'center',
                 }}
               >
-                <MaterialIcons name="add" size={scale(20)} color="#fff" />
+                <MaterialIcons name="add" size={scale(20)} color="#0b1c30" />
               </TouchableOpacity>
             </View>
 
@@ -856,13 +856,13 @@ export default function PatientNotesScreen() {
             backgroundColor: '#82d8ff',
           }}
         >
-          <MaterialIcons name="add" size={scale(16)} color="#fff" />
+          <MaterialIcons name="add" size={scale(16)} color="#0b1c30" />
           <Text
             style={{
               fontFamily: 'Manrope',
               fontSize: fs.sm,
-              fontWeight: '700',
-              color: '#fff',
+              fontWeight: '800',
+              color: '#0b1c30',
             }}
           >
             Nouvelle note

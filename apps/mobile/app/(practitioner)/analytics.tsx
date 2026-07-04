@@ -400,7 +400,7 @@ export default function PractitionerAnalyticsScreen() {
               borderRadius: 12,
             }}
           >
-            <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#fff' }}>
+            <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '800', color: '#0b1c30' }}>
               Réessayer
             </Text>
           </TouchableOpacity>

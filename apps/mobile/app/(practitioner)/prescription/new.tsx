@@ -556,13 +556,13 @@ export default function NewPrescriptionScreen() {
                 borderRadius: 20,
               }}
             >
-              <MaterialIcons name="add" size={16} color="#ffffff" />
+              <MaterialIcons name="add" size={16} color="#0b1c30" />
               <Text
                 style={{
                   fontSize: r.fs.sm,
-                  color: '#ffffff',
+                  color: '#0b1c30',
                   fontFamily: 'Manrope',
-                  fontWeight: '600',
+                  fontWeight: '800',
                 }}
               >
                 Ajouter
@@ -672,13 +672,13 @@ export default function NewPrescriptionScreen() {
             }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <MaterialIcons name="draw" size={18} color="#ffffff" />
+              <MaterialIcons name="draw" size={18} color="#0b1c30" />
               <Text
                 style={{
                   fontSize: r.fs.md,
-                  color: '#ffffff',
+                  color: '#0b1c30',
                   fontFamily: 'Manrope',
-                  fontWeight: '700',
+                  fontWeight: '800',
                 }}
               >
                 Signer

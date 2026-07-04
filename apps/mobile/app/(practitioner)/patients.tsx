@@ -171,8 +171,8 @@ function PatientCard({
             backgroundColor: '#82d8ff',
           }}
         >
-          <MaterialIcons name="chat-bubble" size={15} color="#fff" />
-          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#fff' }}>
+          <MaterialIcons name="chat-bubble" size={15} color="#0b1c30" />
+          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '800', color: '#0b1c30' }}>
             Message
           </Text>
         </TouchableOpacity>

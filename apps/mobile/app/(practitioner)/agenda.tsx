@@ -29,7 +29,7 @@ function InitialsAvatar({ initials, size }: { initials: string; size: number }) 
       width: size, height: size, borderRadius: size / 2,
       backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center',
     }}>
-      <Text style={{ color: '#fff', fontFamily: 'Manrope', fontWeight: '700', fontSize: size * 0.35 }}>
+      <Text style={{ color: '#005e7a', fontFamily: 'Manrope', fontWeight: '800', fontSize: size * 0.35 }}>
         {initials}
       </Text>
     </View>
@@ -119,13 +119,13 @@ function AppointmentCard({
             disabled={isWorking}
             style={{ flex: 2, paddingVertical: scale(11), borderRadius: 9999, alignItems: 'center', backgroundColor: '#82d8ff', opacity: isWorking ? 0.5 : 1 }}
           >
-            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#fff' }}>Approuver</Text>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '800', color: '#0b1c30' }}>Approuver</Text>
           </TouchableOpacity>
           <TouchableOpacity
             disabled={isWorking}
             style={{ flex: 2, paddingVertical: scale(11), borderRadius: 9999, alignItems: 'center', borderWidth: 1, borderColor: '#bec8ce', backgroundColor: 'rgba(255,255,255,0.6)' }}
           >
-            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '600', color: '#82d8ff' }}>Reporter</Text>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#005e7a' }}>Reporter</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={onDecline}

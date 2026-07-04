@@ -359,11 +359,11 @@ export default function ProfileScreen() {
               overflow: 'hidden', borderWidth: 3, borderColor: '#bee9ff',
             }}>
               {uploading === 'avatar' ? (
-                <ActivityIndicator color="#fff" size="large" />
+                <ActivityIndicator color="#005e7a" size="large" />
               ) : profile?.avatar_url ? (
                 <Image source={{ uri: profile.avatar_url }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
               ) : (
-                <Text style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 32, color: '#fff' }}>{initials}</Text>
+                <Text style={{ fontFamily: 'Manrope', fontWeight: '800', fontSize: 32, color: '#005e7a' }}>{initials}</Text>
               )}
             </View>
             <View style={{
@@ -372,7 +372,7 @@ export default function ProfileScreen() {
               backgroundColor: '#82d8ff', borderWidth: 2, borderColor: '#fff',
               alignItems: 'center', justifyContent: 'center',
             }}>
-              <MaterialIcons name="photo-camera" size={13} color="#fff" />
+              <MaterialIcons name="photo-camera" size={13} color="#0b1c30" />
             </View>
           </TouchableOpacity>
 

@@ -204,7 +204,7 @@ export default function PractitionerConsultationSummary() {
               onPress={handleDownloadPrescription}
               style={{ backgroundColor: '#82d8ff', borderRadius: 8, paddingVertical: 10, alignItems: 'center' }}
             >
-              <Text style={{ color: '#fff', fontSize: 14, fontWeight: '600', fontFamily: 'Manrope' }}>
+              <Text style={{ color: '#0b1c30', fontSize: 14, fontWeight: '800', fontFamily: 'Manrope' }}>
                 Télécharger le PDF
               </Text>
             </TouchableOpacity>
@@ -216,7 +216,7 @@ export default function PractitionerConsultationSummary() {
           onPress={handleAgenda}
           style={{ width: '100%', backgroundColor: '#82d8ff', borderRadius: 9999, paddingVertical: 14, alignItems: 'center', marginTop: 8 }}
         >
-          <Text style={{ color: '#fff', fontWeight: '600', fontFamily: 'Manrope', fontSize: 15 }}>
+          <Text style={{ color: '#0b1c30', fontWeight: '800', fontFamily: 'Manrope', fontSize: 15 }}>
             Retour à l'agenda
           </Text>
         </TouchableOpacity>

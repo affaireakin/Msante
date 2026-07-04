@@ -128,7 +128,7 @@ export default function DashboardScreen() {
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
-                  <MaterialIcons name="account-balance-wallet" size={18} color="#fff" />
+                  <MaterialIcons name="account-balance-wallet" size={18} color="#0b1c30" />
                 </View>
                 <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase' }}>
                   Revenus ce mois
@@ -336,13 +336,13 @@ export default function DashboardScreen() {
                         backgroundColor: '#82d8ff',
                       }}
                     >
-                      <MaterialIcons name="videocam" size={20} color="#fff" />
+                      <MaterialIcons name="videocam" size={20} color="#0b1c30" />
                       <Text
                         style={{
                           fontFamily: 'Manrope',
                           fontSize: 15,
-                          fontWeight: '600',
-                          color: '#fff',
+                          fontWeight: '800',
+                          color: '#0b1c30',
                         }}
                       >
                         Démarrer la session

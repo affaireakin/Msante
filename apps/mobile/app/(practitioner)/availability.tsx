@@ -327,8 +327,8 @@ function ServiceModal({
               style={{ flex: 1, paddingVertical: 14, borderRadius: 999, alignItems: 'center', backgroundColor: '#82d8ff', opacity: (isSaving || !draft.name.trim() || draft.price <= 0) ? 0.5 : 1 }}
             >
               {isSaving
-                ? <ActivityIndicator color="#fff" size="small" />
-                : <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#fff' }}>Enregistrer</Text>
+                ? <ActivityIndicator color="#0b1c30" size="small" />
+                : <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '800', color: '#0b1c30' }}>Enregistrer</Text>
               }
             </TouchableOpacity>
           </View>
@@ -446,7 +446,7 @@ export default function AvailabilityScreen() {
         </Text>
         {isDirty ? (
           <TouchableOpacity onPress={handleSave} disabled={isSaving} style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999, backgroundColor: '#82d8ff', opacity: isSaving ? 0.6 : 1 }}>
-            {isSaving ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#fff' }}>Enregistrer</Text>}
+            {isSaving ? <ActivityIndicator size="small" color="#0b1c30" /> : <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '800', color: '#0b1c30' }}>Enregistrer</Text>}
           </TouchableOpacity>
         ) : (
           <View style={{ width: 80, alignItems: 'flex-end' }}>
@@ -720,7 +720,7 @@ export default function AvailabilityScreen() {
                 <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '600', color: '#3f484d' }}>Annuler</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={handleAddException} disabled={addException.isPending} style={{ flex: 1, paddingVertical: 14, borderRadius: 999, alignItems: 'center', backgroundColor: '#82d8ff', opacity: addException.isPending ? 0.6 : 1 }}>
-                <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#fff' }}>Confirmer</Text>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '800', color: '#0b1c30' }}>Confirmer</Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -32,7 +32,7 @@ function InitialsAvatar({ name, size = 56 }: { name: string; size?: number }) {
       width: size, height: size, borderRadius: size / 2,
       backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center',
     }}>
-      <Text style={{ color: '#fff', fontSize: size * 0.36, fontFamily: 'Manrope', fontWeight: '700' }}>
+      <Text style={{ color: '#005e7a', fontSize: size * 0.36, fontFamily: 'Manrope', fontWeight: '800' }}>
         {initials}
       </Text>
     </View>

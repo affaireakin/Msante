@@ -387,8 +387,8 @@ export default function ServicesScreen() {
             paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999,
             backgroundColor: '#82d8ff',
           }}>
-          <MaterialIcons name="add" size={18} color="#fff" />
-          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#fff' }}>
+          <MaterialIcons name="add" size={18} color="#0b1c30" />
+          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '800', color: '#0b1c30' }}>
             Ajouter
           </Text>
         </TouchableOpacity>
@@ -427,8 +427,8 @@ export default function ServicesScreen() {
                 paddingHorizontal: 24, paddingVertical: 12, borderRadius: 999,
                 backgroundColor: '#82d8ff', marginTop: 8,
               }}>
-              <MaterialIcons name="add" size={18} color="#fff" />
-              <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#fff' }}>
+              <MaterialIcons name="add" size={18} color="#0b1c30" />
+              <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '800', color: '#0b1c30' }}>
                 Créer une prestation
               </Text>
             </TouchableOpacity>

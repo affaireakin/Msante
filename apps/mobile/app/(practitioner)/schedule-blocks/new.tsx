@@ -302,9 +302,9 @@ export default function NewScheduleBlockScreen() {
           }}
         >
           {isLoading
-            ? <ActivityIndicator color="#fff" size="small" />
+            ? <ActivityIndicator color="#0b1c30" size="small" />
             : (
-              <Text style={{ fontFamily: 'Manrope', fontSize: fs.md, fontWeight: '700', color: '#fff' }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.md, fontWeight: '800', color: '#0b1c30' }}>
                 Confirmer le blocage
               </Text>
             )
