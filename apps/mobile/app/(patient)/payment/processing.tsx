@@ -159,7 +159,7 @@ export default function PaymentProcessingScreen() {
           onPress={() => void handleOpenPayDunya()}
           style={{ backgroundColor: '#82d8ff', paddingHorizontal: 36, paddingVertical: 16, borderRadius: 999, shadowColor: '#82d8ff', shadowOpacity: 0.3, shadowRadius: 16, elevation: 6 }}
         >
-          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700', fontFamily: 'Manrope' }}>
+          <Text style={{ color: '#0b1c30', fontSize: 16, fontWeight: '800', fontFamily: 'Manrope' }}>
             Ouvrir PayDunya →
           </Text>
         </TouchableOpacity>

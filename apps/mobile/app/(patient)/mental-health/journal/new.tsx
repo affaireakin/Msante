@@ -54,7 +54,7 @@ export default function JournalNew() {
               opacity: !content.trim() || createEntry.isPending ? 0.5 : 1,
             }}
           >
-            <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600', fontFamily: 'Manrope' }}>Enregistrer</Text>
+            <Text style={{ color: '#0b1c30', fontSize: 14, fontWeight: '800', fontFamily: 'Manrope' }}>Enregistrer</Text>
           </TouchableOpacity>
         </View>
         <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} contentContainerStyle={{ paddingBottom: 40, gap: 16 }}>

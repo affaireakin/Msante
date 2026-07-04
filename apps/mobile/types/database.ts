@@ -41,6 +41,7 @@ export interface Practitioner {
   timezone: string
   stamp_url: string | null
   signature_url: string | null
+  accepting_new_patients: boolean
   created_at: string
 }
 

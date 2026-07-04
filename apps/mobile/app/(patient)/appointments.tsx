@@ -154,8 +154,8 @@ function AppointmentCard({ appt, onJoin, onCancel }: { appt: AppointmentRow; onJ
               onPress={onJoin}
               style={{ flex: 1, backgroundColor: '#82d8ff', borderRadius: scale(14), paddingVertical: scale(13), alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: scale(8) }}
             >
-              <MaterialIcons name="videocam" size={scale(18)} color="#fff" />
-              <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>Rejoindre</Text>
+              <MaterialIcons name="videocam" size={scale(18)} color="#0b1c30" />
+              <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.md, fontFamily: 'Manrope' }}>Rejoindre</Text>
             </TouchableOpacity>
           )}
           {canCancel && (
@@ -254,8 +254,8 @@ export default function AppointmentsScreen() {
           onPress={() => router.push('/(patient)/find-practitioners')}
           style={{ backgroundColor: '#82d8ff', borderRadius: scale(14), paddingHorizontal: scale(14), paddingVertical: scale(10), flexDirection: 'row', alignItems: 'center', gap: scale(6) }}
         >
-          <MaterialIcons name="add" size={scale(18)} color="#fff" />
-          <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.sm, fontFamily: 'Manrope' }}>Nouveau</Text>
+          <MaterialIcons name="add" size={scale(18)} color="#0b1c30" />
+          <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.sm, fontFamily: 'Manrope' }}>Nouveau</Text>
         </TouchableOpacity>
       </View>
 
@@ -318,10 +318,10 @@ export default function AppointmentsScreen() {
                 onPress={() => router.push('/(patient)/find-practitioners')}
                 style={{ backgroundColor: '#82d8ff', borderRadius: scale(16), paddingHorizontal: scale(24), paddingVertical: scale(14), flexDirection: 'row', alignItems: 'center', gap: scale(8) }}
               >
-                <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
+                <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.md, fontFamily: 'Manrope' }}>
                   Trouver un praticien
                 </Text>
-                <MaterialIcons name="arrow-forward" size={scale(18)} color="#fff" />
+                <MaterialIcons name="arrow-forward" size={scale(18)} color="#0b1c30" />
               </TouchableOpacity>
             </View>
           )}

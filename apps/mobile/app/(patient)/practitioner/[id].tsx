@@ -65,7 +65,7 @@ export default function PractitionerProfileScreen() {
 
           <View style={{ alignItems: 'center', gap: 16 }}>
             <View style={{ width: 96, height: 96, borderRadius: 16, backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ color: '#82d8ff', fontFamily: 'Manrope', fontWeight: 'bold', fontSize: 28 }}>{getInitials(name)}</Text>
+              <Text style={{ color: '#0b1c30', fontFamily: 'Manrope', fontWeight: 'bold', fontSize: 28 }}>{getInitials(name)}</Text>
             </View>
             <View style={{ alignItems: 'center', gap: 4 }}>
               <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>{name}</Text>

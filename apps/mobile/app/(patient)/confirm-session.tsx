@@ -204,8 +204,8 @@ export default function ConfirmSessionScreen() {
             opacity: createAppointment.isPending ? 0.7 : 1,
           }}
         >
-          <MaterialIcons name="lock" size={scale(18)} color="#fff" />
-          <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
+          <MaterialIcons name="lock" size={scale(18)} color="#0b1c30" />
+          <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.md, fontFamily: 'Manrope' }}>
             {createAppointment.isPending ? 'Traitement…' : 'Procéder au paiement'}
           </Text>
         </TouchableOpacity>

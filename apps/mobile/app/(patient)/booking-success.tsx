@@ -157,7 +157,7 @@ export default function BookingSuccessScreen() {
             onPress={handleHome}
             style={{ backgroundColor: '#82d8ff', borderRadius: scale(14), paddingVertical: scale(15), alignItems: 'center' }}
           >
-            <Text style={{ color: '#fff', fontWeight: '700', fontSize: fs.md, fontFamily: 'Manrope' }}>
+            <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.md, fontFamily: 'Manrope' }}>
               Retour à l'accueil
             </Text>
           </TouchableOpacity>

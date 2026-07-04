@@ -110,7 +110,7 @@ export default function BookingScreen() {
           Ce praticien ne peut pas vous recevoir en consultation pour le moment.
         </Text>
         <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 24, backgroundColor: '#82d8ff', borderRadius: 14, paddingHorizontal: 24, paddingVertical: 12 }}>
-          <Text style={{ color: '#fff', fontWeight: '700', fontFamily: 'Manrope' }}>Retour</Text>
+          <Text style={{ color: '#0b1c30', fontWeight: '800', fontFamily: 'Manrope' }}>Retour</Text>
         </TouchableOpacity>
       </SafeAreaView>
     )
@@ -129,7 +129,7 @@ export default function BookingScreen() {
           Ce praticien n'accepte pas de nouveaux patients actuellement. Consultez d'autres professionnels disponibles.
         </Text>
         <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 24, backgroundColor: '#82d8ff', borderRadius: 14, paddingHorizontal: 24, paddingVertical: 12 }}>
-          <Text style={{ color: '#fff', fontWeight: '700', fontFamily: 'Manrope' }}>Voir d'autres praticiens</Text>
+          <Text style={{ color: '#0b1c30', fontWeight: '800', fontFamily: 'Manrope' }}>Voir d'autres praticiens</Text>
         </TouchableOpacity>
       </SafeAreaView>
     )

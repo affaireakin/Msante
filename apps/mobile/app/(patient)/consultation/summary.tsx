@@ -203,7 +203,7 @@ export default function ConsultationSummary() {
               onPress={handleDownloadPrescription}
               style={{ backgroundColor: '#82d8ff', borderRadius: 8, paddingVertical: 10, alignItems: 'center' }}
             >
-              <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600', fontFamily: 'Manrope' }}>
+              <Text style={{ color: '#0b1c30', fontSize: 14, fontWeight: '700', fontFamily: 'Manrope' }}>
                 Télécharger le PDF
               </Text>
             </TouchableOpacity>
@@ -224,7 +224,7 @@ export default function ConsultationSummary() {
             onPress={handleHome}
             style={{ width: '100%', backgroundColor: '#82d8ff', borderRadius: 9999, paddingVertical: 14, alignItems: 'center' }}
           >
-            <Text style={{ color: '#ffffff', fontWeight: '600', fontFamily: 'Manrope' }}>
+            <Text style={{ color: '#0b1c30', fontWeight: '800', fontFamily: 'Manrope' }}>
               Retour à l'accueil
             </Text>
           </TouchableOpacity>

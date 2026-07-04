@@ -196,9 +196,9 @@ export default function WaitingRoom() {
             style={{ width: '100%', backgroundColor: '#82d8ff', borderRadius: 9999, paddingVertical: 16, alignItems: 'center', opacity: isCreating ? 0.7 : 1 }}
           >
             {isCreating ? (
-              <ActivityIndicator color="#ffffff" />
+              <ActivityIndicator color="#0b1c30" />
             ) : (
-              <Text style={{ color: '#ffffff', fontWeight: 'bold', fontFamily: 'Manrope', fontSize: 16 }}>Rejoindre la session</Text>
+              <Text style={{ color: '#0b1c30', fontWeight: '800', fontFamily: 'Manrope', fontSize: 16 }}>Rejoindre la session</Text>
             )}
           </TouchableOpacity>
           <TouchableOpacity onPress={handleCancel} style={{ width: '100%', paddingVertical: 12, alignItems: 'center' }}>

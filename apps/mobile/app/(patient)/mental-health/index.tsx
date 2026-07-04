@@ -103,7 +103,7 @@ export default function WellnessHub() {
                   }
                   style={{ flex: 1, backgroundColor: '#82d8ff', borderRadius: 9999, paddingVertical: 12, alignItems: 'center' }}
                 >
-                  <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600', fontFamily: 'Manrope' }}>Commencer</Text>
+                  <Text style={{ color: '#0b1c30', fontSize: 14, fontWeight: '800', fontFamily: 'Manrope' }}>Commencer</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() =>

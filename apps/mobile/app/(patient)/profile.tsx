@@ -310,7 +310,7 @@ export default function ProfileScreen() {
                   <Text style={{ fontFamily: 'Manrope', fontWeight: '600', color: '#6f787e', fontSize: 13 }}>Annuler</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => updateProfile.mutate({ full_name: editValue.trim() })} disabled={updateProfile.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#82d8ff', alignItems: 'center' }}>
-                  {updateProfile.isPending ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '700', color: '#fff', fontSize: 13 }}>Enregistrer</Text>}
+                  {updateProfile.isPending ? <ActivityIndicator size="small" color="#0b1c30" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '800', color: '#0b1c30', fontSize: 13 }}>Enregistrer</Text>}
                 </TouchableOpacity>
               </View>
             </View>
@@ -361,7 +361,7 @@ export default function ProfileScreen() {
                   <Text style={{ fontFamily: 'Manrope', fontWeight: '600', color: '#6f787e', fontSize: 13 }}>Annuler</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleSavePhone} disabled={updateProfile.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#82d8ff', alignItems: 'center' }}>
-                  {updateProfile.isPending ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '700', color: '#fff', fontSize: 13 }}>Enregistrer</Text>}
+                  {updateProfile.isPending ? <ActivityIndicator size="small" color="#0b1c30" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '800', color: '#0b1c30', fontSize: 13 }}>Enregistrer</Text>}
                 </TouchableOpacity>
               </View>
             </View>
@@ -405,7 +405,7 @@ export default function ProfileScreen() {
                   <Text style={{ fontFamily: 'Manrope', fontWeight: '600', color: '#6f787e', fontSize: 13 }}>Annuler</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleSaveConditions} disabled={updateMedical.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#82d8ff', alignItems: 'center' }}>
-                  {updateMedical.isPending ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '700', color: '#fff', fontSize: 13 }}>Enregistrer</Text>}
+                  {updateMedical.isPending ? <ActivityIndicator size="small" color="#0b1c30" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '800', color: '#0b1c30', fontSize: 13 }}>Enregistrer</Text>}
                 </TouchableOpacity>
               </View>
             </View>
@@ -466,7 +466,7 @@ export default function ProfileScreen() {
                   <Text style={{ fontFamily: 'Manrope', fontWeight: '600', color: '#6f787e', fontSize: 13 }}>Annuler</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleSavePriorities} disabled={updateMedical.isPending} style={{ flex: 1, paddingVertical: 10, borderRadius: 100, backgroundColor: '#82d8ff', alignItems: 'center' }}>
-                  {updateMedical.isPending ? <ActivityIndicator size="small" color="#fff" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '700', color: '#fff', fontSize: 13 }}>Enregistrer</Text>}
+                  {updateMedical.isPending ? <ActivityIndicator size="small" color="#0b1c30" /> : <Text style={{ fontFamily: 'Manrope', fontWeight: '800', color: '#0b1c30', fontSize: 13 }}>Enregistrer</Text>}
                 </TouchableOpacity>
               </View>
             </View>
