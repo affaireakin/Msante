@@ -198,7 +198,7 @@ export default function LandingPage() {
               {
                 icon: 'psychology',
                 iconBg: '#82d8ff',
-                iconColor: '#82d8ff',
+                iconColor: '#006685',
                 title: 'Compagnon Bien-être IA',
                 desc: "Un assistant émotionnel intelligent disponible 24/7 pour vous écouter, analyser vos humeurs et proposer des exercices adaptés.",
                 gradient: 'from-[#e5eeff] to-[#bee9ff]',
@@ -214,7 +214,7 @@ export default function LandingPage() {
               {
                 icon: 'video_chat',
                 iconBg: '#82d8ff',
-                iconColor: '#82d8ff',
+                iconColor: '#006685',
                 title: 'Téléconsultation Sécurisée',
                 desc: "Des sessions vidéo chiffrées de bout en bout pour garantir une confidentialité totale. Consultez depuis chez vous.",
                 gradient: 'from-[#e5eeff] to-[#82d8ff]/20',
