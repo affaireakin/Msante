@@ -16,7 +16,7 @@ const FEATURES: {
   accent: string
   route: string
 }[] = [
-  { icon: 'psychology', title: 'Compagnon Bien-être IA', desc: 'Mounima vous écoute, analyse vos humeurs et propose des exercices 24/7.', bg: '#e5eeff', accent: '#82d8ff', route: '/(patient)/assistant' },
+  { icon: 'psychology', title: 'Compagnon Bien-être IA', desc: 'Mounima vous écoute, analyse vos humeurs et propose des exercices 24/7.', bg: '#e5eeff', accent: '#006685', route: '/(patient)/assistant' },
   { icon: 'medical-services', title: "Réseau d'Experts", desc: '500+ psychologues, psychiatres et coachs certifiés au Sénégal.', bg: '#fff8e1', accent: '#705d00', route: '/(patient)/find-practitioners' },
   { icon: 'videocam', title: 'Téléconsultation', desc: 'Sessions vidéo chiffrées depuis chez vous, partout en Afrique.', bg: '#e8f5e9', accent: '#1d7a3a', route: '/(patient)/find-practitioners' },
   { icon: 'favorite', title: 'Bien-être quotidien', desc: 'Suivi humeur, méditation, journal émotionnel — construisez votre routine.', bg: '#fce4ec', accent: '#c2185b', route: '/(patient)/mental-health' },
@@ -24,7 +24,7 @@ const FEATURES: {
 
 const QUICK_ACTIONS = [
   { icon: 'search' as const, label: 'Praticiens', route: '/(patient)/find-practitioners', bg: '#82d8ff', text: '#0b1c30' },
-  { icon: 'psychology' as const, label: 'Mounima', route: '/(patient)/assistant', bg: '#e5eeff', text: '#82d8ff' },
+  { icon: 'psychology' as const, label: 'Mounima', route: '/(patient)/assistant', bg: '#e5eeff', text: '#006685' },
   { icon: 'mood' as const, label: 'Humeur', route: '/(patient)/mental-health', bg: '#fff8e1', text: '#705d00' },
   { icon: 'calendar-today' as const, label: 'RDV', route: '/(patient)/appointments', bg: '#f0fdf4', text: '#1d7a3a' },
   { icon: 'folder-shared' as const, label: 'Mon dossier', route: '/(patient)/dossier', bg: '#f3e8ff', text: '#6b21a8' },
