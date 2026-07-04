@@ -164,6 +164,25 @@ export default function MessageThreadScreen() {
     },
   })
 
+  // Thread closure status — a practitioner can close a conversation; once closed
+  // the patient can no longer send messages until a new appointment is booked.
+  const { data: threadStatus } = useQuery<{ closed_at: string | null }>({
+    queryKey: ['thread-status', profile?.id, partnerId],
+    enabled: !!profile?.id && !!partnerId,
+    refetchInterval: 5_000,
+    queryFn: async () => {
+      const a = profile!.id < partnerId! ? profile!.id : partnerId!
+      const b = profile!.id < partnerId! ? partnerId! : profile!.id
+      const { data } = await supabase
+        .from('message_threads')
+        .select('closed_at')
+        .eq('participant_a', a).eq('participant_b', b)
+        .maybeSingle()
+      return { closed_at: data?.closed_at ?? null }
+    },
+  })
+  const isClosed = !!threadStatus?.closed_at
+
   useEffect(() => {
     if (!profile?.id || !partnerId) return
     supabase.from('messages')
@@ -194,12 +213,12 @@ export default function MessageThreadScreen() {
 
   const handleSend = useCallback(async () => {
     const trimmed = text.trim()
-    if (!trimmed || sending) return
+    if (!trimmed || sending || isClosed) return
     setText('')
     setSending(true)
     await sendMessage.mutateAsync({ body: trimmed })
     setSending(false)
-  }, [text, sending, sendMessage])
+  }, [text, sending, isClosed, sendMessage])
 
   const handleOpenDoc = useCallback(async (urlOrPath: string) => {
     const path = toStoragePath(urlOrPath)
@@ -327,7 +346,15 @@ export default function MessageThreadScreen() {
           />
         )}
 
-        {/* Input bar */}
+        {/* Input bar — replaced by a closed notice when the practitioner clôtured the thread */}
+        {isClosed ? (
+          <View style={{ backgroundColor: '#fff8e1', borderTopWidth: 1, borderTopColor: 'rgba(226,232,240,0.5)', paddingHorizontal: 16, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <MaterialIcons name="lock" size={18} color="#705d00" />
+            <Text style={{ flex: 1, fontSize: 12, color: '#705d00', fontFamily: 'Manrope', lineHeight: 17 }}>
+              Cette conversation a été clôturée par votre praticien. Pour reprendre contact, prenez un nouveau rendez-vous.
+            </Text>
+          </View>
+        ) : (
         <View style={{ backgroundColor: 'rgba(255,255,255,0.95)', borderTopWidth: 1, borderTopColor: 'rgba(226,232,240,0.5)', paddingHorizontal: 12, paddingTop: 10, paddingBottom: Platform.OS === 'ios' ? 12 : 10 }}>
           <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
             <TextInput
@@ -362,6 +389,7 @@ export default function MessageThreadScreen() {
             </Text>
           </TouchableOpacity>
         </View>
+        )}
       </KeyboardAvoidingView>
 
       {/* Fullscreen image modal */}

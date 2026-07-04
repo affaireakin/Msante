@@ -170,6 +170,68 @@ export default function PractitionerMessageThreadScreen() {
       .then(() => { void queryClient.invalidateQueries({ queryKey: ['practitioner-conversations', profile.id] }) })
   }, [profile?.id, partnerId, messages.length])
 
+  // Thread closure — the practitioner can close a conversation, which blocks the
+  // patient from sending new messages until it is reopened.
+  const { data: threadStatus } = useQuery<{ closed_at: string | null }>({
+    queryKey: ['pract-thread-status', profile?.id, partnerId],
+    enabled: !!profile?.id && !!partnerId,
+    refetchInterval: 5_000,
+    queryFn: async () => {
+      const a = profile!.id < partnerId! ? profile!.id : partnerId!
+      const b = profile!.id < partnerId! ? partnerId! : profile!.id
+      const { data } = await supabase
+        .from('message_threads')
+        .select('closed_at')
+        .eq('participant_a', a).eq('participant_b', b)
+        .maybeSingle()
+      return { closed_at: data?.closed_at ?? null }
+    },
+  })
+  const isClosed = !!threadStatus?.closed_at
+
+  const closeConv = useMutation({
+    mutationFn: async (close: boolean) => {
+      const a = profile!.id < partnerId! ? profile!.id : partnerId!
+      const b = profile!.id < partnerId! ? partnerId! : profile!.id
+      if (close) {
+        await supabase.from('message_threads').upsert(
+          { participant_a: a, participant_b: b, closed_at: new Date().toISOString(), closed_by: profile!.id },
+          { onConflict: 'participant_a,participant_b' },
+        )
+        await supabase.from('notifications').insert({
+          user_id: partnerId,
+          type: 'conversation_closed',
+          title: 'Conversation clôturée',
+          body: 'Votre praticien a clôturé cette conversation.',
+          data: { closed_by: profile!.id },
+          channel: 'push',
+          status: 'pending',
+        })
+      } else {
+        await supabase.from('message_threads')
+          .update({ closed_at: null, closed_by: null })
+          .eq('participant_a', a).eq('participant_b', b)
+      }
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['pract-thread-status', profile?.id, partnerId] })
+    },
+    onError: () => Alert.alert('Erreur', 'Action impossible pour le moment.'),
+  })
+
+  const toggleClose = useCallback(() => {
+    Alert.alert(
+      isClosed ? 'Rouvrir la conversation' : 'Clôturer la conversation',
+      isClosed
+        ? 'Le patient pourra de nouveau vous envoyer des messages.'
+        : 'Le patient ne pourra plus vous écrire tant que la conversation reste clôturée.',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        { text: isClosed ? 'Rouvrir' : 'Clôturer', style: isClosed ? 'default' : 'destructive', onPress: () => closeConv.mutate(!isClosed) },
+      ],
+    )
+  }, [isClosed, closeConv])
+
   const sendMessage = useMutation({
     mutationFn: async (payload: { body: string; attachmentUrl?: string; attachmentName?: string; attachmentType?: DocTypeId }) => {
       const { error } = await supabase.from('messages').insert({
@@ -246,10 +308,16 @@ export default function PractitionerMessageThreadScreen() {
           </Text>
           <Text style={{ fontSize: 11, color: '#6f787e', fontFamily: 'Manrope' }}>Patient</Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, backgroundColor: '#e8f5e9' }}>
-          <MaterialIcons name="lock" size={11} color="#1d7a3a" />
-          <Text style={{ fontSize: 10, color: '#1d7a3a', fontFamily: 'Manrope', fontWeight: '700' }}>Sécurisé</Text>
-        </View>
+        <TouchableOpacity
+          onPress={toggleClose}
+          disabled={closeConv.isPending}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: isClosed ? '#e8f5e9' : '#fff8e1' }}
+        >
+          <MaterialIcons name={isClosed ? 'lock-open' : 'lock'} size={13} color={isClosed ? '#1d7a3a' : '#705d00'} />
+          <Text style={{ fontSize: 11, color: isClosed ? '#1d7a3a' : '#705d00', fontFamily: 'Manrope', fontWeight: '700' }}>
+            {isClosed ? 'Rouvrir' : 'Clôturer'}
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -312,6 +380,16 @@ export default function PractitionerMessageThreadScreen() {
               </View>
             )}
           />
+        )}
+
+        {/* Closed banner */}
+        {isClosed && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 10, backgroundColor: '#fff8e1', borderTopWidth: 1, borderTopColor: 'rgba(226,232,240,0.5)' }}>
+            <MaterialIcons name="lock" size={14} color="#705d00" />
+            <Text style={{ flex: 1, fontSize: 11, color: '#705d00', fontFamily: 'Manrope', lineHeight: 16 }}>
+              Conversation clôturée — le patient ne peut plus vous écrire tant qu&apos;elle reste fermée.
+            </Text>
+          </View>
         )}
 
         {/* Input bar */}
