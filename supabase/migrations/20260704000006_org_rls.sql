@@ -45,10 +45,18 @@ CREATE POLICY "org_update_admin" ON public.organizations
 
 -- Guard: only a super admin may change `status`. Prevents an org admin from
 -- flipping their own organization to 'active' or out of 'suspended'.
+-- NOTE: triggers run even for service-role connections (Edge Functions use the
+-- SUPABASE_SERVICE_ROLE_KEY, which bypasses RLS but NOT triggers, and has no
+-- auth.uid() so is_super_admin() would be false). The validate-organization /
+-- suspend-organization Edge Functions already re-check caller.role === 'admin'
+-- in application code before writing, so we trust auth.role() = 'service_role'
+-- here — the same trust boundary the rest of this codebase's Edge Functions use.
 CREATE OR REPLACE FUNCTION public.prevent_org_status_tamper()
 RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 BEGIN
-  IF NEW.status IS DISTINCT FROM OLD.status AND NOT public.is_super_admin() THEN
+  IF NEW.status IS DISTINCT FROM OLD.status
+     AND auth.role() <> 'service_role'
+     AND NOT public.is_super_admin() THEN
     RAISE EXCEPTION 'Only a super admin can change the organization status';
   END IF;
   RETURN NEW;
