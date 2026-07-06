@@ -10,10 +10,11 @@ function VerifyOtpContent() {
   const router = useRouter()
 
   const email      = searchParams.get('email') ?? ''
-  const role       = (searchParams.get('role') ?? 'patient') as 'patient' | 'practitioner' | 'admin'
+  const role       = (searchParams.get('role') ?? 'patient') as 'patient' | 'practitioner' | 'admin' | 'organization'
   const speciality = searchParams.get('speciality') ?? ''
   const practType  = searchParams.get('practType') ?? 'healthcare'
   const orgInvitationId = searchParams.get('orgInvitationId') ?? ''
+  const accountType = searchParams.get('accountType') ?? 'practitioner'
 
   const OTP_LENGTH = 8
   const [digits, setDigits]     = useState<string[]>(Array(OTP_LENGTH).fill(''))
@@ -75,11 +76,13 @@ function VerifyOtpContent() {
 
     setSuccess(true)
     setTimeout(() => {
-      if (role === 'practitioner') router.push('/onboarding/practitioner')
+      if (orgInvitationId && accountType === 'collaborator') router.push('/organization-member')
+      else if (role === 'practitioner') router.push('/onboarding/practitioner')
       else if (role === 'admin') router.push('/admin')
+      else if (role === 'organization') router.push('/onboarding/organization')
       else router.push('/onboarding/patient')
     }, 800)
-  }, [email, loading, practType, role, router, speciality, orgInvitationId])
+  }, [email, loading, practType, role, router, speciality, orgInvitationId, accountType])
 
   const handleInput = (idx: number, val: string) => {
     const digit = val.replace(/\D/g, '').slice(-1)

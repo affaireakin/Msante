@@ -27,6 +27,13 @@ function slugify(name: string): string {
   return `${base || 'organisation'}-${suffix}`
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  pending: 'En attente de validation',
+  rejected: 'Demande refusée',
+  suspended: 'Organisation suspendue',
+  archived: 'Organisation archivée',
+}
+
 export default function OrganizationOnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(0)
@@ -35,6 +42,8 @@ export default function OrganizationOnboardingPage() {
   const [requesterName, setRequesterName] = useState('')
   const [requesterEmail, setRequesterEmail] = useState('')
   const [error, setError] = useState('')
+  const [checking, setChecking] = useState(true)
+  const [existingRequest, setExistingRequest] = useState<{ name: string; status: string } | null>(null)
 
   // Step 0 — organisation
   const [name, setName] = useState('')
@@ -55,13 +64,39 @@ export default function OrganizationOnboardingPage() {
       if (!user) { router.push(`/auth/login?redirect=${encodeURIComponent('/onboarding/organization')}`); return }
       setUserId(user.id)
       const { data: profile } = await supabase.from('users').select('full_name, email, organization_id, role').eq('id', user.id).single()
-      if (profile?.organization_id) { setError('Vous êtes déjà rattaché à une organisation.'); return }
+
+      // Already approved & attached (role flipped to organization_admin) — safety
+      // net in case the client landed here from a stale link.
+      if (profile?.organization_id && profile.role === 'organization_admin') {
+        router.push('/organization')
+        return
+      }
+
+      // Already submitted a request — show its current status instead of the form.
+      const { data: existingOrg } = await supabase
+        .from('organizations')
+        .select('name, status')
+        .eq('created_by', user.id)
+        .order('created_at', { ascending: false })
+        .maybeSingle()
+      if (existingOrg) {
+        setExistingRequest({ name: existingOrg.name, status: existingOrg.status })
+        setChecking(false)
+        return
+      }
+
       setRequesterName(profile?.full_name ?? '')
       setRequesterEmail(profile?.email ?? user.email ?? '')
       if (!email && (profile?.email ?? user.email)) setEmail(profile?.email ?? user.email ?? '')
+      setChecking(false)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router])
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/auth/login')
+  }
 
   const addDoc = () => setDocs(d => [...d, emptyDoc('autre')])
   const removeDoc = (idx: number) => setDocs(d => d.filter((_, i) => i !== idx))
@@ -153,6 +188,41 @@ export default function OrganizationOnboardingPage() {
       setSaving(false)
     }
   }
+
+  if (checking) return (
+    <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+
+  if (existingRequest) return (
+    <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
+      <div className="bg-white rounded-2xl p-10 max-w-md w-full text-center space-y-5 shadow-xl">
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto ${
+          existingRequest.status === 'rejected' ? 'bg-red-100' : 'bg-amber-100'
+        }`}>
+          <Icon
+            name={existingRequest.status === 'rejected' ? 'cancel' : existingRequest.status === 'suspended' ? 'block' : 'pending_actions'}
+            size={32}
+            color={existingRequest.status === 'rejected' ? '#dc2626' : '#d97706'}
+          />
+        </div>
+        <h2 className="text-xl font-black text-[#0b1c30]">
+          {STATUS_LABELS[existingRequest.status] ?? existingRequest.status}
+        </h2>
+        <p className="text-sm text-[#6f787e]">
+          Votre demande pour <strong>{existingRequest.name}</strong>{' '}
+          {existingRequest.status === 'pending' && 'est en cours d\'examen par notre équipe. Vous serez notifié dès sa validation.'}
+          {existingRequest.status === 'rejected' && 'n\'a pas été retenue. Contactez notre équipe pour plus d\'informations.'}
+          {existingRequest.status === 'suspended' && 'a été suspendue. Contactez notre équipe pour plus d\'informations.'}
+          {existingRequest.status === 'archived' && 'est archivée et n\'est plus active.'}
+        </p>
+        <button onClick={handleLogout} className="w-full py-3 rounded-xl bg-[#82d8ff] text-[#0b1c30] font-bold text-sm">
+          Retour à la connexion
+        </button>
+      </div>
+    </div>
+  )
 
   if (step === 3) return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">

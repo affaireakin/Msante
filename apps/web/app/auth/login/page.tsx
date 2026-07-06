@@ -55,10 +55,25 @@ function LoginForm() {
 
     if (profile.role === 'admin') {
       router.push('/admin/overview')
+    } else if (profile.role === 'organization_admin') {
+      router.push('/organization')
+    } else if (profile.role === 'organization_member') {
+      router.push('/organization-member')
     } else if (profile.role === 'practitioner') {
       router.push(profile.onboarding_completed ? '/practitioner' : '/onboarding/practitioner')
     } else if (profile.role === 'patient') {
-      router.push(profile.onboarding_completed ? '/patient' : '/onboarding/patient')
+      // A patient-role account may actually be an organization creator awaiting
+      // Super Admin approval (role only flips to organization_admin on approval).
+      const { data: pendingOrg } = await supabase
+        .from('organizations')
+        .select('id')
+        .eq('created_by', data.user.id)
+        .maybeSingle()
+      if (pendingOrg) {
+        router.push('/onboarding/organization')
+      } else {
+        router.push(profile.onboarding_completed ? '/patient' : '/onboarding/patient')
+      }
     } else {
       setError('Rôle inconnu. Contactez le support.')
       await supabase.auth.signOut()
@@ -155,7 +170,7 @@ function LoginForm() {
             </p>
             <p className="text-xs text-slate-400">
               Vous représentez un cabinet ou une clinique ?{' '}
-              <Link href="/onboarding/organization" className="text-[#005e7a] font-semibold hover:underline">Créer une organisation</Link>
+              <Link href="/auth/signup?role=organization" className="text-[#005e7a] font-semibold hover:underline">Créer une organisation</Link>
             </p>
           </div>
         </div>

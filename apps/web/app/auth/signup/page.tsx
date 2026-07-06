@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
-type Role = 'patient' | 'practitioner'
+type Role = 'patient' | 'practitioner' | 'organization'
 type PractType = 'healthcare' | 'wellness'
 
 function translateError(msg: string): string {
@@ -16,9 +16,11 @@ function translateError(msg: string): string {
   return msg
 }
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter()
-  const [role, setRole]               = useState<Role>('patient')
+  const searchParams = useSearchParams()
+  const initialRole = (searchParams.get('role') as Role | null)
+  const [role, setRole] = useState<Role>(initialRole === 'organization' || initialRole === 'practitioner' ? initialRole : 'patient')
   const [practType, setPractType]     = useState<PractType>('healthcare')
   const [fullName, setFullName]       = useState('')
   const [email, setEmail]             = useState('')
@@ -62,10 +64,15 @@ export default function SignupPage() {
 
     setLoading(true)
 
+    // The DB role check only accepts patient/practitioner/admin/organization_admin.
+    // A future org creator starts as a plain 'patient' — validate-organization
+    // promotes them to 'organization_admin' once the Super Admin approves the org.
+    const dbRole = role === 'organization' ? 'patient' : role
+
     const { data: signUpData, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { role, full_name: fullName } },
+      options: { data: { role: dbRole, full_name: fullName } },
     })
 
     if (authError) {
@@ -114,21 +121,22 @@ export default function SignupPage() {
           <p className="text-sm text-slate-400 mb-6">Rejoignez la plateforme M-Santé</p>
 
           {/* Choix rôle */}
-          <div className="flex gap-2 mb-6 p-1 bg-[#e5eeff] rounded-xl">
+          <div className="flex gap-1 mb-6 p-1 bg-[#e5eeff] rounded-xl">
             {([
-              { value: 'patient',      label: 'Patient',   icon: 'person' },
-              { value: 'practitioner', label: 'Praticien', icon: 'medical_services' },
+              { value: 'patient',      label: 'Patient',      icon: 'person' },
+              { value: 'practitioner', label: 'Praticien',    icon: 'medical_services' },
+              { value: 'organization', label: 'Organisation', icon: 'business' },
             ] as { value: Role; label: string; icon: string }[]).map(({ value, label, icon }) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => handleRoleChange(value)}
-                className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                className={`flex-1 min-w-0 py-2 px-1 rounded-lg text-[11px] sm:text-sm font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 ${
                   role === value ? 'bg-white text-[#82d8ff] shadow-sm' : 'text-slate-500 hover:text-[#82d8ff]'
                 }`}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>{icon}</span>
-                {label}
+                <span className="truncate">{label}</span>
               </button>
             ))}
           </div>
@@ -137,7 +145,7 @@ export default function SignupPage() {
           {role === 'practitioner' && (
             <div className="mb-5">
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Type de pratique</p>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {([
                   { value: 'healthcare', label: 'Professionnel de santé', icon: 'local_hospital', desc: 'Médecins, psychiatres, infirmiers…' },
                   { value: 'wellness',   label: 'Praticien bien-être',     icon: 'self_improvement', desc: 'Coachs, relaxologues, thérapeutes…' },
@@ -170,7 +178,7 @@ export default function SignupPage() {
                 type="text"
                 value={fullName}
                 onChange={e => setFullName(e.target.value)}
-                placeholder={role === 'practitioner' ? 'Aminata Diallo' : 'Moussa Ndiaye'}
+                placeholder={role === 'practitioner' ? 'Aminata Diallo' : role === 'organization' ? 'Nom du responsable' : 'Moussa Ndiaye'}
                 required
                 className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
               />
@@ -245,6 +253,14 @@ export default function SignupPage() {
               </div>
             )}
 
+            {role === 'organization' && (
+              <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-amber-700 flex items-start gap-2">
+                <span className="material-symbols-outlined" style={{ fontSize: '15px', flexShrink: 0, marginTop: '1px' }}>info</span>
+                Après confirmation de votre email, vous renseignerez les informations de votre organisation (cabinet, clinique…).
+                Une fois validée par notre équipe, vous pourrez inviter vos praticiens et collaborateurs.
+              </div>
+            )}
+
             {/* CGU */}
             <label className="flex items-start gap-3 cursor-pointer">
               <input
@@ -267,7 +283,7 @@ export default function SignupPage() {
               disabled={loading || !acceptedCGU}
               className="w-full py-3.5 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
-              {loading ? 'Création du compte...' : `Créer mon compte ${role === 'practitioner' ? 'praticien' : 'patient'}`}
+              {loading ? 'Création du compte...' : `Créer mon compte ${role === 'practitioner' ? 'praticien' : role === 'organization' ? 'organisation' : 'patient'}`}
             </button>
           </form>
 
@@ -280,5 +296,17 @@ export default function SignupPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <SignupForm />
+    </Suspense>
   )
 }
