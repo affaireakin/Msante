@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
 
     const { data: practUser } = await supabase
       .from('users')
-      .select('id, full_name, push_token, email, phone')
+      .select('id, full_name, push_token, email, phone, organization_id')
       .eq('id', practitionerUserId)
       .single()
 
@@ -111,6 +111,30 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'User not found' }), {
         status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
+    }
+
+    // If this practitioner belongs to an organization, notify its admin(s) too —
+    // completes the double-validation loop (Super Admin approval on top of the
+    // org's own org_validated_at check).
+    if (practUser.organization_id) {
+      const { data: orgAdmins } = await supabase
+        .from('users')
+        .select('id')
+        .eq('organization_id', practUser.organization_id)
+        .eq('role', 'organization_admin')
+      if (orgAdmins && orgAdmins.length > 0) {
+        await supabase.from('notifications').insert(
+          orgAdmins.map((a) => ({
+            user_id: a.id,
+            type: 'practitioner_super_admin_approved',
+            title: 'Praticien validé par M-Santé ✓',
+            body: `${practUser.full_name} a été validé par notre équipe.`,
+            data: { practitioner_user_id: practUser.id },
+            channel: 'push',
+            status: 'pending',
+          }))
+        )
+      }
     }
 
     const results: Record<string, string> = {}
