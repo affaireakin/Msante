@@ -47,8 +47,15 @@ export default function PractitionerConsultationScreen() {
   const [consultation, setConsultation] = useState<ConsultationInfo | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isJoining, setIsJoining] = useState(false)
+  const [now, setNow] = useState(Date.now())
   const channelRef = useRef<RealtimeChannel | null>(null)
   const { setPractitionerConsultation } = useConsultationStore()
+
+  // Ticks so the join window (5 min before -> duration after) opens/closes live.
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     let channel: RealtimeChannel | null = null
@@ -163,6 +170,16 @@ export default function PractitionerConsultationScreen() {
 
   const typeLabel: Record<string, string> = { video: 'Vidéo', audio: 'Audio', chat: 'Chat' }
 
+  // Same 5-min-before / duration-after window enforced server-side in
+  // join-consultation — mirrored here for a clear disabled state instead of
+  // letting the practitioner tap and get an opaque error.
+  const scheduledAtMs = appointment ? new Date(appointment.scheduledAt).getTime() : 0
+  const windowOpen = scheduledAtMs - 5 * 60 * 1000
+  const windowClose = scheduledAtMs + (appointment?.durationMin ?? 60) * 60 * 1000
+  const tooEarly = !!appointment && now < windowOpen
+  const tooLate = !!appointment && now > windowClose
+  const canStart = !!consultation && !tooEarly && !tooLate
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }} edges={['top']}>
       <StatusBar barStyle="dark-content" />
@@ -255,9 +272,9 @@ export default function PractitionerConsultationScreen() {
             {/* Actions */}
             <TouchableOpacity
               onPress={handleJoin}
-              disabled={!consultation || isJoining}
+              disabled={!canStart || isJoining}
               style={{
-                backgroundColor: consultation ? '#82d8ff' : '#bec8ce',
+                backgroundColor: canStart ? '#82d8ff' : '#bec8ce',
                 paddingVertical: 18,
                 borderRadius: 16,
                 flexDirection: 'row',
@@ -267,18 +284,21 @@ export default function PractitionerConsultationScreen() {
                 opacity: isJoining ? 0.7 : 1,
                 shadowColor: '#82d8ff',
                 shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: consultation ? 0.20 : 0,
+                shadowOpacity: canStart ? 0.20 : 0,
                 shadowRadius: 16,
-                elevation: consultation ? 4 : 0,
+                elevation: canStart ? 4 : 0,
               }}
             >
               {isJoining ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
-                <MaterialIcons name="videocam" size={22} color="#fff" />
+                <MaterialIcons name={tooLate ? 'event-busy' : 'videocam'} size={22} color="#fff" />
               )}
               <Text style={{ color: '#fff', fontFamily: 'Manrope', fontWeight: '700', fontSize: 16 }}>
-                {isJoining ? 'Connexion…' : consultation ? 'Démarrer la consultation' : 'En attente du patient'}
+                {isJoining ? 'Connexion…'
+                  : tooLate ? 'Session expirée'
+                  : tooEarly ? 'Disponible 5 min avant l\'heure'
+                  : consultation ? 'Démarrer la consultation' : 'En attente du patient'}
               </Text>
             </TouchableOpacity>
 

@@ -68,7 +68,7 @@ Deno.serve(async (req) => {
 
     const { data: aptCheck } = await supabase
       .from('appointments')
-      .select('id')
+      .select('id, scheduled_at, duration_min')
       .eq('id', consultation.appointment_id)
       .eq('practitioner_id', practCheck.id)
       .single()
@@ -76,6 +76,25 @@ Deno.serve(async (req) => {
     if (!aptCheck) {
       return new Response(JSON.stringify({ error: 'Forbidden: appointment mismatch' }), {
         status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Same 5-min-before / duration-after window as create-consultation-room —
+    // previously enforced client-side only (web UI), so a practitioner could
+    // call this endpoint directly at any time.
+    const scheduledAt = new Date(aptCheck.scheduled_at).getTime()
+    const durationMin = aptCheck.duration_min ?? 60
+    const windowOpen = scheduledAt - 5 * 60 * 1000
+    const windowClose = scheduledAt + durationMin * 60 * 1000
+    const now = Date.now()
+    if (now < windowOpen) {
+      return new Response(JSON.stringify({ error: 'Trop tôt pour rejoindre cette consultation.' }), {
+        status: 422, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+    if (now > windowClose) {
+      return new Response(JSON.stringify({ error: 'Cette consultation est terminée.' }), {
+        status: 422, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 

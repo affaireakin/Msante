@@ -120,18 +120,12 @@ export default function BookingSuccessScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* Join waiting room (if video) */}
-          {sessionType === 'video' && appointmentId && (
+          {/* Join waiting room (video or audio — both use the same LiveKit flow) */}
+          {(sessionType === 'video' || sessionType === 'audio') && appointmentId && (
             <TouchableOpacity
               onPress={() => router.push({
                 pathname: '/(patient)/consultation/waiting',
-                params: {
-                  appointmentId,
-                  practitionerName: practitionerName ?? '',
-                  scheduledAt: selectedSlot?.date
-                    ? `${selectedSlot.date}T${selectedSlot.startTime ?? '00:00'}:00`
-                    : new Date().toISOString(),
-                },
+                params: { appointmentId, practitionerName: practitionerName ?? '' },
               })}
               style={{
                 borderWidth: 1,
@@ -145,7 +139,7 @@ export default function BookingSuccessScreen() {
                 backgroundColor: '#f0fdf4',
               }}
             >
-              <MaterialIcons name="videocam" size={scale(18)} color="#1d7a3a" />
+              <MaterialIcons name={sessionType === 'audio' ? 'mic' : 'videocam'} size={scale(18)} color="#1d7a3a" />
               <Text style={{ color: '#1d7a3a', fontWeight: '600', fontFamily: 'Manrope', fontSize: fs.md }}>
                 Accéder à la salle d'attente
               </Text>

@@ -97,7 +97,7 @@ Deno.serve(async (req) => {
     // 1. Vérifie appointment confirmé + appartient au patient
     const { data: appointment, error: aErr } = await supabase
       .from('appointments')
-      .select('id, status, patient_id, practitioner_id')
+      .select('id, status, patient_id, practitioner_id, scheduled_at, duration_min')
       .eq('id', appointmentId)
       .eq('patient_id', user.id)
       .single()
@@ -110,6 +110,25 @@ Deno.serve(async (req) => {
 
     if (appointment.status !== 'confirmed') {
       return new Response(JSON.stringify({ error: 'Appointment not confirmed' }), {
+        status: 422, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // Enforce the same 5-min-before / duration-after window the client UI
+    // shows — previously UI-only, so any authenticated patient could call this
+    // endpoint directly and open a room far ahead of or after their slot.
+    const scheduledAt = new Date(appointment.scheduled_at).getTime()
+    const durationMin = appointment.duration_min ?? 60
+    const windowOpen = scheduledAt - 5 * 60 * 1000
+    const windowClose = scheduledAt + durationMin * 60 * 1000
+    const now = Date.now()
+    if (now < windowOpen) {
+      return new Response(JSON.stringify({ error: 'Trop tôt pour rejoindre cette consultation.' }), {
+        status: 422, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+    if (now > windowClose) {
+      return new Response(JSON.stringify({ error: 'Cette consultation est terminée.' }), {
         status: 422, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }

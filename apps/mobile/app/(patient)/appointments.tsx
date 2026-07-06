@@ -85,7 +85,10 @@ function AppointmentCard({ appt, onJoin, onCancel }: { appt: AppointmentRow; onJ
   const price = practitioner?.session_price
   const currency = practitioner?.session_currency ?? 'XOF'
   const upcoming = isUpcoming(appt.scheduled_at)
-  const canJoin = appt.status === 'confirmed' && upcoming && appt.type === 'video'
+  // Video AND audio consultations both go through the same LiveKit waiting
+  // room/session — only 'video' was wired here, so audio-only bookings had no
+  // way to actually join their call.
+  const canJoin = appt.status === 'confirmed' && upcoming && (appt.type === 'video' || appt.type === 'audio')
   const canCancel = upcoming && (appt.status === 'pending' || appt.status === 'confirmed')
 
   return (
@@ -154,7 +157,7 @@ function AppointmentCard({ appt, onJoin, onCancel }: { appt: AppointmentRow; onJ
               onPress={onJoin}
               style={{ flex: 1, backgroundColor: '#82d8ff', borderRadius: scale(14), paddingVertical: scale(13), alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: scale(8) }}
             >
-              <MaterialIcons name="videocam" size={scale(18)} color="#0b1c30" />
+              <MaterialIcons name={appt.type === 'audio' ? 'mic' : 'videocam'} size={scale(18)} color="#0b1c30" />
               <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.md, fontFamily: 'Manrope' }}>Rejoindre</Text>
             </TouchableOpacity>
           )}
