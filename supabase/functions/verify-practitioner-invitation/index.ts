@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
 
     const { data: invitation } = await supabase
       .from('practitioner_invitations')
-      .select('id, firstname, lastname, email, phone, otp, status, expires_at, organization_id, organizations(name)')
+      .select('id, firstname, lastname, email, phone, otp, status, expires_at, organization_id, account_type, organizations(name)')
       .eq('id', invitation_id)
       .single()
 
@@ -48,6 +48,7 @@ Deno.serve(async (req) => {
       email: invitation.email,
       phone: invitation.phone,
       organization_name: org?.name ?? '',
+      account_type: invitation.account_type,
     })
   } catch (e) {
     return json({ error: (e as Error).message }, 500)

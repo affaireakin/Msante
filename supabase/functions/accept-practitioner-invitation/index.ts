@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
 
     const { data: invitation } = await supabase
       .from('practitioner_invitations')
-      .select('id, organization_id, email, status, expires_at')
+      .select('id, organization_id, email, status, expires_at, account_type, role_id')
       .eq('id', invitation_id)
       .single()
 
@@ -45,37 +45,48 @@ Deno.serve(async (req) => {
       return json({ error: 'Cette invitation ne correspond pas à votre compte.' }, 403)
     }
 
-    // Attach the practitioner to the organization.
+    const isPractitioner = invitation.account_type !== 'collaborator'
+
+    // Attach the account to the organization.
     await supabase.from('users').update({
-      role: 'practitioner',
+      role: isPractitioner ? 'practitioner' : 'organization_member',
       organization_id: invitation.organization_id,
     }).eq('id', user.id)
 
-    // Create the practitioner row (speciality left blank — filled during the
-    // standard practitioner onboarding that follows, same as any other practitioner).
-    const { data: existing } = await supabase.from('practitioners').select('id').eq('user_id', user.id).maybeSingle()
-    if (!existing) {
-      await supabase.from('practitioners').insert({
+    if (isPractitioner) {
+      // Create the practitioner row (speciality left blank — filled during the
+      // standard practitioner onboarding that follows, same as any other practitioner).
+      const { data: existing } = await supabase.from('practitioners').select('id').eq('user_id', user.id).maybeSingle()
+      if (!existing) {
+        await supabase.from('practitioners').insert({
+          user_id: user.id,
+          speciality: '',
+          organization_id: invitation.organization_id,
+          verification_status: 'pending',
+        })
+      } else {
+        await supabase.from('practitioners').update({ organization_id: invitation.organization_id }).eq('id', existing.id)
+      }
+    } else if (invitation.role_id) {
+      // Collaborator with a role pre-assigned at invite time.
+      await supabase.from('user_roles').insert({
         user_id: user.id,
-        speciality: '',
+        role_id: invitation.role_id,
         organization_id: invitation.organization_id,
-        verification_status: 'pending',
       })
-    } else {
-      await supabase.from('practitioners').update({ organization_id: invitation.organization_id }).eq('id', existing.id)
     }
 
     await supabase.from('practitioner_invitations').update({ status: 'used' }).eq('id', invitation.id)
 
     await supabase.from('audit_logs').insert({
       actor_id: user.id,
-      action: 'practitioner.accept_invitation',
+      action: isPractitioner ? 'practitioner.accept_invitation' : 'collaborator.accept_invitation',
       resource_type: 'practitioner_invitation',
       resource_id: invitation.id,
       new_values: { organization_id: invitation.organization_id },
     })
 
-    return json({ success: true, organization_id: invitation.organization_id })
+    return json({ success: true, organization_id: invitation.organization_id, account_type: invitation.account_type })
   } catch (e) {
     return json({ error: (e as Error).message }, 500)
   }

@@ -24,6 +24,7 @@ function InvitePractitionerContent() {
   const [lastname, setLastname] = useState('')
   const [email, setEmail] = useState('')
   const [orgName, setOrgName] = useState('')
+  const [accountType, setAccountType] = useState<'practitioner' | 'collaborator'>('practitioner')
 
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -55,6 +56,7 @@ function InvitePractitionerContent() {
       setLastname(data.lastname)
       setEmail(data.email)
       setOrgName(data.organization_name)
+      setAccountType(data.account_type === 'collaborator' ? 'collaborator' : 'practitioner')
       setVerified(true)
     } catch {
       setError('Une erreur est survenue. Réessayez.')
@@ -70,10 +72,11 @@ function InvitePractitionerContent() {
     if (password !== confirm) { setError('Les mots de passe ne correspondent pas.'); return }
 
     setSubmitting(true)
+    const dbRole = accountType === 'practitioner' ? 'practitioner' : 'organization_member'
     const { data: signUpData, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { role: 'practitioner', full_name: `${firstname} ${lastname}` } },
+      options: { data: { role: dbRole, full_name: `${firstname} ${lastname}` } },
     })
 
     if (authError) {
@@ -87,7 +90,7 @@ function InvitePractitionerContent() {
       return
     }
 
-    const params = new URLSearchParams({ email, role: 'practitioner', orgInvitationId: invitationId })
+    const params = new URLSearchParams({ email, role: 'practitioner', orgInvitationId: invitationId, accountType })
     router.push(`/auth/verify-otp?${params.toString()}`)
   }
 

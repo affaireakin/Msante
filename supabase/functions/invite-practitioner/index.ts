@@ -16,7 +16,10 @@ function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString() // 6 digits
 }
 
-async function sendInviteEmail(apiKey: string, from: string, to: string, firstname: string, orgName: string, otp: string, inviteUrl: string): Promise<void> {
+async function sendInviteEmail(apiKey: string, from: string, to: string, firstname: string, orgName: string, otp: string, inviteUrl: string, accountType: 'practitioner' | 'collaborator', roleName?: string): Promise<void> {
+  const roleWording = accountType === 'practitioner'
+    ? 'en tant que praticien'
+    : roleName ? `en tant que ${roleName}` : 'au sein de son équipe'
   const html = `
     <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#f8f9ff;">
       <div style="background:#006685;padding:24px;border-radius:12px 12px 0 0;text-align:center;">
@@ -26,7 +29,7 @@ async function sendInviteEmail(apiKey: string, from: string, to: string, firstna
         <h2 style="color:#0b1c30;font-size:18px;margin-top:0;">Vous êtes invité(e) à rejoindre ${orgName}</h2>
         <p style="color:#3f484d;line-height:1.6;">Bonjour ${firstname},</p>
         <p style="color:#3f484d;line-height:1.6;">
-          <strong>${orgName}</strong> vous invite à rejoindre M-Santé en tant que praticien. Cliquez sur le lien
+          <strong>${orgName}</strong> vous invite à rejoindre M-Santé ${roleWording}. Cliquez sur le lien
           ci-dessous puis saisissez le code de vérification pour créer votre compte.
         </p>
         <div style="text-align:center;margin:24px 0;">
@@ -69,9 +72,14 @@ Deno.serve(async (req) => {
     // Organization is always derived from the caller's own profile — never
     // trusted from the request body — except for a super admin, who may target
     // any organization explicitly.
-    const body = await req.json() as { firstname?: string; lastname?: string; email?: string; phone?: string; organization_id?: string }
+    const body = await req.json() as {
+      firstname?: string; lastname?: string; email?: string; phone?: string
+      organization_id?: string; account_type?: 'practitioner' | 'collaborator'; role_id?: string
+    }
     const organizationId = caller.role === 'admin' ? (body.organization_id ?? caller.organization_id) : caller.organization_id
     if (!organizationId) return json({ error: 'No organization context' }, 400)
+
+    const accountType: 'practitioner' | 'collaborator' = body.account_type === 'collaborator' ? 'collaborator' : 'practitioner'
 
     // user_has_permission() reads auth.uid() internally — must run through a
     // client carrying the CALLER's own JWT, not the service-role client (which
@@ -81,10 +89,11 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY')!,
       { global: { headers: { Authorization: authHeader } } }
     )
-    const { data: hasPermission } = await userClient.rpc('user_has_permission', { perm_code: 'practitioner.invite' })
+    const permCode = accountType === 'practitioner' ? 'practitioner.invite' : 'users.manage'
+    const { data: hasPermission } = await userClient.rpc('user_has_permission', { perm_code: permCode })
     if (!hasPermission) return json({ error: 'Forbidden' }, 403)
 
-    const { firstname, lastname, email, phone } = body
+    const { firstname, lastname, email, phone, role_id: roleId } = body
     if (!firstname?.trim() || !lastname?.trim() || !email?.trim()) {
       return json({ error: 'firstname, lastname and email are required' }, 400)
     }
@@ -92,6 +101,12 @@ Deno.serve(async (req) => {
     const { data: org } = await supabase.from('organizations').select('id, name, status').eq('id', organizationId).single()
     if (!org) return json({ error: 'Organization not found' }, 404)
     if (org.status !== 'active') return json({ error: 'Organization is not active' }, 400)
+
+    let roleName: string | undefined
+    if (roleId) {
+      const { data: role } = await supabase.from('org_roles').select('name').eq('id', roleId).eq('organization_id', organizationId).maybeSingle()
+      roleName = role?.name
+    }
 
     const otp = generateOtp()
     const expiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString()
@@ -107,6 +122,8 @@ Deno.serve(async (req) => {
         otp,
         expires_at: expiresAt,
         created_by: user.id,
+        account_type: accountType,
+        role_id: accountType === 'collaborator' ? (roleId ?? null) : null,
       })
       .select('id')
       .single()
@@ -119,15 +136,15 @@ Deno.serve(async (req) => {
     const resendKey = Deno.env.get('RESEND_API_KEY')
     const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.sn'
     if (resendKey) {
-      await sendInviteEmail(resendKey, fromEmail, email.trim(), firstname.trim(), org.name, otp, inviteUrl)
+      await sendInviteEmail(resendKey, fromEmail, email.trim(), firstname.trim(), org.name, otp, inviteUrl, accountType, roleName)
     }
 
     await supabase.from('audit_logs').insert({
       actor_id: user.id,
-      action: 'practitioner.invite',
+      action: accountType === 'practitioner' ? 'practitioner.invite' : 'collaborator.invite',
       resource_type: 'practitioner_invitation',
       resource_id: invitation.id,
-      new_values: { organization_id: organizationId, email: email.trim() },
+      new_values: { organization_id: organizationId, email: email.trim(), account_type: accountType, role_id: roleId ?? null },
     })
 
     return json({ success: true, invitation_id: invitation.id })
