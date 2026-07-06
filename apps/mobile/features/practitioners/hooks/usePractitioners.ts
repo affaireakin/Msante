@@ -16,6 +16,9 @@ export function usePractitioners(filters: PractitionerFilter = {}) {
         .select('*, users(full_name, avatar_url)')
         .eq('verification_status', 'approved')
         .eq('is_verified', true)
+        // Org-affiliated practitioners also need their organization's own
+        // validation (double validation); independents are unaffected.
+        .or('organization_id.is.null,org_validated_at.not.is.null')
 
       if (filters.speciality) {
         query = query.ilike('speciality', `%${filters.speciality}%`)

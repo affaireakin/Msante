@@ -13,6 +13,7 @@ function VerifyOtpContent() {
   const role       = (searchParams.get('role') ?? 'patient') as 'patient' | 'practitioner' | 'admin'
   const speciality = searchParams.get('speciality') ?? ''
   const practType  = searchParams.get('practType') ?? 'healthcare'
+  const orgInvitationId = searchParams.get('orgInvitationId') ?? ''
 
   const OTP_LENGTH = 8
   const [digits, setDigits]     = useState<string[]>(Array(OTP_LENGTH).fill(''))
@@ -62,13 +63,23 @@ function VerifyOtpContent() {
       })
     }
 
+    // Organization-invited practitioner: attach organization_id + practitioners
+    // row via the accept-invitation Edge Function (checked server-side against
+    // the invitation's email, marks it 'used').
+    if (role === 'practitioner' && orgInvitationId && data.session) {
+      await supabase.functions.invoke('accept-practitioner-invitation', {
+        body: { invitation_id: orgInvitationId },
+        headers: { Authorization: `Bearer ${data.session.access_token}` },
+      })
+    }
+
     setSuccess(true)
     setTimeout(() => {
       if (role === 'practitioner') router.push('/onboarding/practitioner')
       else if (role === 'admin') router.push('/admin')
       else router.push('/onboarding/patient')
     }, 800)
-  }, [email, loading, practType, role, router, speciality])
+  }, [email, loading, practType, role, router, speciality, orgInvitationId])
 
   const handleInput = (idx: number, val: string) => {
     const digit = val.replace(/\D/g, '').slice(-1)

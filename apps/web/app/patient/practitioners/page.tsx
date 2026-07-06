@@ -31,6 +31,9 @@ function usePractitioners(speciality: string, search: string) {
         .select('id, speciality, session_duration_min, rating, total_reviews, bio, accepting_new_patients, users!user_id(full_name), practitioner_services(duration_min, is_active)')
         .eq('verification_status', 'approved')
         .eq('accepting_new_patients', true)
+        // Org-affiliated practitioners also need their organization's own
+        // validation (double validation); independents are unaffected.
+        .or('organization_id.is.null,org_validated_at.not.is.null')
         .order('rating', { ascending: false })
 
       if (speciality !== 'Tous') q = q.eq('speciality', speciality)

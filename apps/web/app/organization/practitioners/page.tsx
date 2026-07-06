@@ -1,5 +1,6 @@
 'use client'
-import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
 function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
@@ -13,6 +14,7 @@ interface OrgPractitioner {
   speciality: string
   verification_status: VerifStatus
   account_status: string | null
+  org_validated_at: string | null
   created_at: string
   users: { full_name: string } | null
 }
@@ -41,7 +43,7 @@ function useOrgPractitioners() {
 
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, speciality, verification_status, account_status, created_at, users!user_id(full_name)')
+        .select('id, speciality, verification_status, account_status, org_validated_at, created_at, users!user_id(full_name)')
         .eq('organization_id', profile.organization_id)
         .order('created_at', { ascending: false })
       if (error) throw error
@@ -51,14 +53,104 @@ function useOrgPractitioners() {
   })
 }
 
+function InviteModal({ onClose }: { onClose: () => void }) {
+  const queryClient = useQueryClient()
+  const [firstname, setFirstname] = useState('')
+  const [lastname, setLastname] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [sent, setSent] = useState(false)
+
+  const invite = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.functions.invoke('invite-practitioner', {
+        body: { firstname, lastname, email, phone },
+      })
+      if (error) throw error
+    },
+    onSuccess: () => {
+      setSent(true)
+      queryClient.invalidateQueries({ queryKey: ['org-practitioners'] })
+    },
+  })
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+        {sent ? (
+          <div className="text-center space-y-4">
+            <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
+              <Icon name="check_circle" style={{ fontSize: '28px', color: '#059669' }} />
+            </div>
+            <h3 className="text-lg font-bold text-[#0b1c30]">Invitation envoyée !</h3>
+            <p className="text-sm text-[#6f787e]">{firstname} recevra un email avec un code de vérification.</p>
+            <button onClick={onClose} className="w-full py-2.5 bg-[#82d8ff] text-[#0b1c30] rounded-full text-sm font-semibold">
+              Fermer
+            </button>
+          </div>
+        ) : (
+          <>
+            <h3 className="text-lg font-bold text-[#0b1c30] mb-4">Inviter un praticien</h3>
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <input value={firstname} onChange={e => setFirstname(e.target.value)} placeholder="Prénom"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
+                <input value={lastname} onChange={e => setLastname(e.target.value)} placeholder="Nom"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
+              </div>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
+              <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Téléphone (optionnel)"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
+            </div>
+            {invite.isError && <p className="text-sm text-red-500 mt-3">{(invite.error as Error).message}</p>}
+            <div className="flex gap-3 mt-6">
+              <button onClick={onClose} className="flex-1 py-2.5 border border-slate-200 rounded-full text-sm font-medium text-[#6f787e] hover:bg-slate-50">
+                Annuler
+              </button>
+              <button
+                onClick={() => invite.mutate()}
+                disabled={!firstname.trim() || !lastname.trim() || !email.trim() || invite.isPending}
+                className="flex-1 py-2.5 bg-[#82d8ff] text-[#0b1c30] rounded-full text-sm font-semibold disabled:opacity-50"
+              >
+                {invite.isPending ? 'Envoi...' : 'Envoyer l\'invitation'}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function OrganizationPractitionersPage() {
   const { data: practitioners, isLoading, error } = useOrgPractitioners()
+  const queryClient = useQueryClient()
+  const [showInvite, setShowInvite] = useState(false)
+
+  const validate = useMutation({
+    mutationFn: async (practitionerId: string) => {
+      const { error: fnError } = await supabase.functions.invoke('validate-org-practitioner', {
+        body: { practitioner_id: practitionerId },
+      })
+      if (fnError) throw fnError
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['org-practitioners'] }),
+  })
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[#0b1c30]">Praticiens</h1>
-        <p className="text-sm text-[#6f787e] mt-1">Membres de votre organisation</p>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold text-[#0b1c30]">Praticiens</h1>
+          <p className="text-sm text-[#6f787e] mt-1">Membres de votre organisation</p>
+        </div>
+        <button onClick={() => setShowInvite(true)}
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg transition-all">
+          <Icon name="person_add" style={{ fontSize: '18px' }} />
+          Inviter un praticien
+        </button>
       </div>
 
       {error && (
@@ -75,27 +167,43 @@ export default function OrganizationPractitionersPage() {
         <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
           <Icon name="group" style={{ fontSize: '48px', color: '#bec8ce' }} />
           <p className="font-semibold text-[#0b1c30] mt-3">Aucun praticien pour le moment</p>
-          <p className="text-sm text-[#6f787e] mt-1">L&apos;invitation de praticiens sera bientôt disponible depuis cet écran.</p>
+          <p className="text-sm text-[#6f787e] mt-1">Invitez votre premier praticien pour commencer.</p>
         </div>
       ) : (
         <div className="space-y-3">
           {(practitioners ?? []).map(p => (
-            <div key={p.id} className="rounded-2xl p-5 flex items-center gap-4"
+            <div key={p.id} className="rounded-2xl p-5 flex items-center gap-4 flex-wrap"
               style={{ backgroundColor: 'rgba(255,255,255,0.60)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.80)' }}>
               <div className="w-11 h-11 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] font-bold text-sm flex-shrink-0">
                 {(p.users?.full_name ?? 'P').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-[#0b1c30] truncate">{p.users?.full_name ?? '—'}</p>
-                <p className="text-sm text-[#6f787e] truncate">{p.speciality}</p>
+                <p className="text-sm text-[#6f787e] truncate">{p.speciality || 'Spécialité non renseignée'}</p>
               </div>
-              <span className={`text-xs font-semibold px-3 py-1 rounded-full flex-shrink-0 ${STATUS_COLORS[p.verification_status]}`}>
-                {STATUS_LABELS[p.verification_status]}
-              </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className={`text-xs font-semibold px-3 py-1 rounded-full flex-shrink-0 ${STATUS_COLORS[p.verification_status]}`}>
+                  M-Santé : {STATUS_LABELS[p.verification_status]}
+                </span>
+                <span className={`text-xs font-semibold px-3 py-1 rounded-full flex-shrink-0 ${p.org_validated_at ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                  Organisation : {p.org_validated_at ? 'Validé' : 'En attente'}
+                </span>
+                {!p.org_validated_at && (
+                  <button
+                    onClick={() => validate.mutate(p.id)}
+                    disabled={validate.isPending}
+                    className="px-3 py-1.5 bg-emerald-500 text-white text-xs font-semibold rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                  >
+                    Valider
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
       )}
+
+      {showInvite && <InviteModal onClose={() => setShowInvite(false)} />}
     </div>
   )
 }
