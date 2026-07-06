@@ -1,6 +1,8 @@
 -- Tenant columns — Phase 1, Task 1.3
 -- Ajoute organization_id (NULLABLE) aux entités métier.
 -- NULL = praticien indépendant / hors organisation (rétro-compatibilité stricte).
+-- NOTE: doit s'exécuter AVANT tenant_helpers.sql, car current_user_org_id()
+-- lit users.organization_id (renommé 20260704000002, avant les helpers 000003).
 
 ALTER TABLE public.users              ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES public.organizations(id);
 ALTER TABLE public.practitioners      ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES public.organizations(id);

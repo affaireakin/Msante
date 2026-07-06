@@ -77,7 +77,7 @@ CREATE TABLE public.organization_documents (
 ### Task 1.2 : Helpers `SECURITY DEFINER` (anti-récursion)
 
 **Files :**
-- Create : `supabase/migrations/20260704000002_tenant_helpers.sql`
+- Create : `supabase/migrations/20260704000003_tenant_helpers.sql` (renumbered — must run after tenant_columns, since it reads users.organization_id)
 
 ```sql
 -- Org de l'utilisateur courant (NULL si indépendant / patient)
@@ -106,7 +106,7 @@ $$;
 ### Task 1.3 : Colonnes `organization_id` sur les entités métier
 
 **Files :**
-- Create : `supabase/migrations/20260704000003_tenant_columns.sql`
+- Create : `supabase/migrations/20260704000002_tenant_columns.sql` (renumbered — must run before tenant_helpers)
 
 ```sql
 ALTER TABLE public.users            ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES public.organizations(id);
