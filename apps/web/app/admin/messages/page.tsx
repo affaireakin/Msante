@@ -1,29 +1,37 @@
 'use client'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+
+interface UserInfo { full_name: string; role: string }
 
 interface Thread {
   id: string
   created_at: string
   closed_at: string | null
-  patient: { full_name: string } | null
-  practitioner: { full_name: string } | null
+  participant_a: string
+  participant_b: string
+  patient: UserInfo | null
+  practitioner: UserInfo | null
   last_message: string | null
   last_message_at: string | null
-  unread_count: number
 }
 
 interface Message {
   id: string
-  content: string
+  body: string | null
+  attachment_name: string | null
   created_at: string
   sender_id: string
-  sender: { full_name: string; role: string } | null
+  sender: UserInfo | null
 }
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+function pairKey(a: string, b: string) {
+  return a < b ? `${a}_${b}` : `${b}_${a}`
 }
 
 export default function AdminMessagesPage() {
@@ -33,38 +41,55 @@ export default function AdminMessagesPage() {
   const { data: threads = [], isLoading } = useQuery<Thread[]>({
     queryKey: ['admin-message-threads'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: rawThreads, error } = await supabase
         .from('message_threads')
-        .select(`
-          id, created_at, closed_at,
-          patient:patient_id(full_name),
-          practitioner:practitioner_id(full_name)
-        `)
+        .select('id, created_at, closed_at, participant_a, participant_b')
         .order('created_at', { ascending: false })
         .limit(200)
       if (error) throw error
+      const threadRows = rawThreads ?? []
+      if (threadRows.length === 0) return []
 
-      const ids = (data ?? []).map((t: { id: string }) => t.id)
-      if (!ids.length) return []
+      // message_threads has no patient_id/practitioner_id — resolve each
+      // participant's identity via a separate users lookup, then use role to
+      // tell them apart (messaging is always a patient<->practitioner pair).
+      const participantIds = [...new Set(threadRows.flatMap(t => [t.participant_a, t.participant_b]))]
+      const { data: users } = await supabase
+        .from('users')
+        .select('id, full_name, role')
+        .in('id', participantIds)
+      const userMap = new Map((users ?? []).map(u => [u.id, { full_name: u.full_name, role: u.role } as UserInfo]))
 
-      // Last message per thread
-      const { data: lastMsgs } = await supabase
+      // Last message per pair — messages has no thread_id, it's matched by
+      // the (sender_id, receiver_id) pair. Fetch once for all pairs, then
+      // group client-side by the same normalized pair key.
+      const { data: allMessages } = await supabase
         .from('messages')
-        .select('thread_id, content, created_at')
-        .in('thread_id', ids)
+        .select('sender_id, receiver_id, body, created_at')
+        .in('sender_id', participantIds)
+        .in('receiver_id', participantIds)
         .order('created_at', { ascending: false })
 
-      const lastMap: Record<string, { content: string; at: string }> = {}
-      for (const m of (lastMsgs ?? []) as { thread_id: string; content: string; created_at: string }[]) {
-        if (!lastMap[m.thread_id]) lastMap[m.thread_id] = { content: m.content, at: m.created_at }
+      const lastByPair = new Map<string, { body: string | null; created_at: string }>()
+      for (const m of allMessages ?? []) {
+        const key = pairKey(m.sender_id, m.receiver_id)
+        if (!lastByPair.has(key)) lastByPair.set(key, { body: m.body, created_at: m.created_at })
       }
 
-      return ((data ?? []) as unknown as Thread[]).map(t => ({
-        ...t,
-        last_message: lastMap[t.id]?.content ?? null,
-        last_message_at: lastMap[t.id]?.at ?? null,
-        unread_count: 0,
-      }))
+      return threadRows.map((t): Thread => {
+        const a = userMap.get(t.participant_a) ?? null
+        const b = userMap.get(t.participant_b) ?? null
+        const practitioner = a?.role === 'practitioner' ? a : b?.role === 'practitioner' ? b : null
+        const patient = a?.role === 'practitioner' ? b : a
+        const last = lastByPair.get(pairKey(t.participant_a, t.participant_b))
+        return {
+          ...t,
+          patient,
+          practitioner,
+          last_message: last?.body ?? null,
+          last_message_at: last?.created_at ?? null,
+        }
+      })
     },
     staleTime: 30_000,
   })
@@ -73,23 +98,26 @@ export default function AdminMessagesPage() {
     queryKey: ['admin-thread-messages', selected?.id],
     enabled: !!selected,
     queryFn: async () => {
+      if (!selected) return []
+      const a = selected.participant_a
+      const b = selected.participant_b
       const { data } = await supabase
         .from('messages')
-        .select('id, content, created_at, sender_id, sender:sender_id(full_name, role)')
-        .eq('thread_id', selected!.id)
+        .select('id, body, attachment_name, created_at, sender_id, sender:sender_id(full_name, role)')
+        .or(`and(sender_id.eq.${a},receiver_id.eq.${b}),and(sender_id.eq.${b},receiver_id.eq.${a})`)
         .order('created_at', { ascending: true })
       return (data ?? []) as unknown as Message[]
     },
   })
 
-  const filtered = threads.filter(t => {
+  const filtered = useMemo(() => threads.filter(t => {
     const q = search.toLowerCase()
     return (
       !q ||
       (t.patient?.full_name ?? '').toLowerCase().includes(q) ||
       (t.practitioner?.full_name ?? '').toLowerCase().includes(q)
     )
-  })
+  }), [threads, search])
 
   const ROLE_STYLE: Record<string, string> = {
     patient:      'bg-sky-100 text-sky-700',
@@ -209,7 +237,7 @@ export default function AdminMessagesPage() {
                       <div className={`max-w-xs lg:max-w-sm px-3 py-2 rounded-2xl text-sm ${
                         isRight ? 'bg-purple-50 text-[#0b1c30] rounded-tr-none' : 'bg-sky-50 text-[#0b1c30] rounded-tl-none'
                       }`}>
-                        {msg.content}
+                        {msg.body ?? (msg.attachment_name ? `📎 ${msg.attachment_name}` : '—')}
                       </div>
                     </div>
                   )
