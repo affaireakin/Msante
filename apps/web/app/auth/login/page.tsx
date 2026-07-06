@@ -148,10 +148,14 @@ function LoginForm() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-slate-100 text-center">
+          <div className="mt-6 pt-6 border-t border-slate-100 text-center space-y-2">
             <p className="text-sm text-slate-400">
               Pas encore de compte ?{' '}
               <Link href="/auth/signup" className="text-[#82d8ff] font-semibold hover:underline">S&apos;inscrire</Link>
+            </p>
+            <p className="text-xs text-slate-400">
+              Vous représentez un cabinet ou une clinique ?{' '}
+              <Link href="/onboarding/organization" className="text-[#005e7a] font-semibold hover:underline">Créer une organisation</Link>
             </p>
           </div>
         </div>
