@@ -50,7 +50,13 @@ export const useConsultationStore = create<ConsultationState>((set) => ({
   }),
   setStatus: (status) => set({ status }),
   setStartedAt: (startedAt) => set({ startedAt }),
-  addChatMessage: (msg) => set((s) => ({ chatMessages: [...s.chatMessages, msg] })),
+  // Dedupe by id: with useConsultationRoom now mounted in both the waiting
+  // screen and the session screen simultaneously (Expo Router keeps the
+  // waiting screen alive underneath after a push), the same broadcast can be
+  // delivered twice via two separate channel subscriptions.
+  addChatMessage: (msg) => set((s) => (
+    s.chatMessages.some((m) => m.id === msg.id) ? s : { chatMessages: [...s.chatMessages, msg] }
+  )),
   setSummary: (aiSummary, durationMin) => set({ aiSummary, durationMin }),
   setPrescriptionUrl: (prescriptionUrl) => set({ prescriptionUrl }),
   reset: () => set(initial),

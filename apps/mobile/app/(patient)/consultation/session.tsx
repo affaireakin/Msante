@@ -14,7 +14,7 @@ import {
 } from '@livekit/react-native'
 import { Track } from 'livekit-client'
 import { useConsultationStore } from '@/features/consultation/store/consultationStore'
-import { useSendChatMessage, useEndConsultation } from '@/features/consultation/hooks/useConsultation'
+import { useSendChatMessage, useEndConsultation, useConsultationRoom } from '@/features/consultation/hooks/useConsultation'
 import { ConsultationTimer } from '@/features/consultation/components/ConsultationTimer'
 import type { ChatMessage } from '@/types/consultation'
 
@@ -188,6 +188,10 @@ function ConsultationInner({
   const { consultationId, chatMessages, startedAt } = useConsultationStore()
   const sendMessage = useSendChatMessage(consultationId)
   const { endSession } = useEndConsultation()
+  // Keep the realtime subscription alive for the actual duration of the call —
+  // previously only wired in the waiting screen, so chat/timer sync silently
+  // depended on that screen staying mounted underneath (push, not replace).
+  useConsultationRoom(consultationId)
 
   const { localParticipant } = useLocalParticipant()
   const remoteParticipants = useRemoteParticipants()

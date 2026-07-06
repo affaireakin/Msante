@@ -14,7 +14,7 @@ import {
 } from '@livekit/react-native'
 import { Track } from 'livekit-client'
 import { useConsultationStore } from '@/features/consultation/store/consultationStore'
-import { useSendChatMessage, useEndConsultation } from '@/features/consultation/hooks/useConsultation'
+import { useSendChatMessage, useEndConsultation, useConsultationRoom } from '@/features/consultation/hooks/useConsultation'
 import { ConsultationTimer } from '@/features/consultation/components/ConsultationTimer'
 import type { ChatMessage } from '@/types/consultation'
 
@@ -183,6 +183,10 @@ function ConsultationInner({ patientName }: { patientName: string }) {
   const { consultationId, chatMessages, startedAt } = useConsultationStore()
   const sendMessage = useSendChatMessage(consultationId)
   const { endSession } = useEndConsultation()
+  // Realtime status (started_at) + incoming chat broadcasts — previously only
+  // wired in the waiting screen, so the practitioner never received the
+  // patient's messages and the timer stayed stuck at 00:00.
+  useConsultationRoom(consultationId)
 
   const { localParticipant } = useLocalParticipant()
   const remoteParticipants = useRemoteParticipants()
