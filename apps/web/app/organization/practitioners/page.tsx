@@ -11,6 +11,7 @@ type VerifStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
 
 interface OrgPractitioner {
   id: string
+  user_id: string
   speciality: string
   verification_status: VerifStatus
   account_status: string | null
@@ -18,6 +19,8 @@ interface OrgPractitioner {
   created_at: string
   users: { full_name: string } | null
 }
+
+interface OrgRole { id: string; name: string }
 
 const STATUS_LABELS: Record<VerifStatus, string> = {
   pending: 'En attente',
@@ -43,13 +46,29 @@ function useOrgPractitioners() {
 
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, speciality, verification_status, account_status, org_validated_at, created_at, users!user_id(full_name)')
+        .select('id, user_id, speciality, verification_status, account_status, org_validated_at, created_at, users!user_id(full_name)')
         .eq('organization_id', profile.organization_id)
         .order('created_at', { ascending: false })
       if (error) throw error
       return (data ?? []) as unknown as OrgPractitioner[]
     },
     staleTime: 30_000,
+  })
+}
+
+function useOrgRoleAssignments(userIds: string[], organizationId: string | null) {
+  return useQuery<{ roles: OrgRole[]; assignments: Record<string, string> }>({
+    queryKey: ['org-role-assignments', organizationId, userIds],
+    enabled: !!organizationId && userIds.length > 0,
+    queryFn: async () => {
+      const [{ data: roles }, { data: userRoles }] = await Promise.all([
+        supabase.from('org_roles').select('id, name').eq('organization_id', organizationId as string).order('is_system', { ascending: false }),
+        supabase.from('user_roles').select('user_id, role_id').eq('organization_id', organizationId as string).in('user_id', userIds),
+      ])
+      const assignments: Record<string, string> = {}
+      for (const ur of userRoles ?? []) assignments[ur.user_id] = ur.role_id
+      return { roles: (roles ?? []) as OrgRole[], assignments }
+    },
   })
 }
 
@@ -124,10 +143,27 @@ function InviteModal({ onClose }: { onClose: () => void }) {
   )
 }
 
+function useMyOrgId() {
+  return useQuery<string | null>({
+    queryKey: ['my-org-id'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return null
+      const { data: profile } = await supabase.from('users').select('organization_id').eq('id', user.id).single()
+      return profile?.organization_id ?? null
+    },
+    staleTime: 5 * 60_000,
+  })
+}
+
 export default function OrganizationPractitionersPage() {
   const { data: practitioners, isLoading, error } = useOrgPractitioners()
+  const { data: organizationId } = useMyOrgId()
   const queryClient = useQueryClient()
   const [showInvite, setShowInvite] = useState(false)
+
+  const userIds = (practitioners ?? []).map(p => p.user_id)
+  const { data: roleData } = useOrgRoleAssignments(userIds, organizationId ?? null)
 
   const validate = useMutation({
     mutationFn: async (practitionerId: string) => {
@@ -137,6 +173,19 @@ export default function OrganizationPractitionersPage() {
       if (fnError) throw fnError
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['org-practitioners'] }),
+  })
+
+  const assignRole = useMutation({
+    mutationFn: async ({ userId, roleId }: { userId: string; roleId: string }) => {
+      if (!organizationId) return
+      // v1: one role per member — replace any existing assignment in this org.
+      await supabase.from('user_roles').delete().eq('user_id', userId).eq('organization_id', organizationId)
+      if (roleId) {
+        const { error: insertError } = await supabase.from('user_roles').insert({ user_id: userId, role_id: roleId, organization_id: organizationId })
+        if (insertError) throw insertError
+      }
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['org-role-assignments'] }),
   })
 
   return (
@@ -188,6 +237,17 @@ export default function OrganizationPractitionersPage() {
                 <span className={`text-xs font-semibold px-3 py-1 rounded-full flex-shrink-0 ${p.org_validated_at ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
                   Organisation : {p.org_validated_at ? 'Validé' : 'En attente'}
                 </span>
+                {roleData?.roles && roleData.roles.length > 0 && (
+                  <select
+                    value={roleData.assignments[p.user_id] ?? ''}
+                    onChange={e => assignRole.mutate({ userId: p.user_id, roleId: e.target.value })}
+                    disabled={assignRole.isPending}
+                    className="text-xs border border-slate-200 rounded-full px-3 py-1.5 bg-white/60 text-[#0b1c30] outline-none focus:border-[#82d8ff]"
+                  >
+                    <option value="">Aucun rôle</option>
+                    {roleData.roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                  </select>
+                )}
                 {!p.org_validated_at && (
                   <button
                     onClick={() => validate.mutate(p.id)}
