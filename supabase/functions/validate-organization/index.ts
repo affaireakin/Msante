@@ -116,6 +116,23 @@ Deno.serve(async (req) => {
         .from('users')
         .update({ role: 'organization_admin', organization_id })
         .eq('id', org.created_by)
+
+      // Assign them to the org's auto-seeded "Administrateur" system role —
+      // without this, user_has_permission() has nothing to check against and
+      // every permission-gated action (invite, roles, etc.) silently 403s.
+      const { data: adminRole } = await supabase
+        .from('org_roles')
+        .select('id')
+        .eq('organization_id', organization_id)
+        .eq('name', 'Administrateur')
+        .eq('is_system', true)
+        .maybeSingle()
+      if (adminRole) {
+        await supabase.from('user_roles').upsert(
+          { user_id: org.created_by, role_id: adminRole.id, organization_id },
+          { onConflict: 'user_id,role_id,organization_id' }
+        )
+      }
     }
 
     if (org.created_by) {

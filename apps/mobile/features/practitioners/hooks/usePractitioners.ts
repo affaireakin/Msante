@@ -5,6 +5,7 @@ import type { Practitioner } from '@/types/database'
 
 export interface PractitionerWithUser extends Practitioner {
   users: { full_name: string; avatar_url: string | null }
+  organizations?: { name: string; logo_url: string | null } | null
 }
 
 export function usePractitioners(filters: PractitionerFilter = {}) {
@@ -13,7 +14,7 @@ export function usePractitioners(filters: PractitionerFilter = {}) {
     queryFn: async (): Promise<PractitionerWithUser[]> => {
       let query = supabase
         .from('practitioners')
-        .select('*, users(full_name, avatar_url)')
+        .select('*, users(full_name, avatar_url), organizations(name, logo_url)')
         .eq('verification_status', 'approved')
         .eq('is_verified', true)
         // Org-affiliated practitioners also need their organization's own

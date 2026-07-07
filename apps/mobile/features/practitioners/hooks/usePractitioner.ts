@@ -8,7 +8,7 @@ export function usePractitioner(id: string) {
     queryFn: async (): Promise<PractitionerWithUser | null> => {
       const { data, error } = await supabase
         .from('practitioners')
-        .select('*, users(full_name, avatar_url)')
+        .select('*, users(full_name, avatar_url), organizations(name, logo_url)')
         .eq('id', id)
         .single()
       if (error) return null

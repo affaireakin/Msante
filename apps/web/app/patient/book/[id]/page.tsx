@@ -122,7 +122,7 @@ function useBookingData(practId: string) {
         { data: appointments },
         { data: patientBlock },
       ] = await Promise.all([
-        supabase.from('practitioners').select('id, speciality, accepting_new_patients, users!user_id(full_name)').eq('id', practId).single(),
+        supabase.from('practitioners').select('id, speciality, accepting_new_patients, users!user_id(full_name), organizations(name, logo_url)').eq('id', practId).single(),
         supabase.from('consultation_types').select('id, name, duration_min, price, currency, color, description, mode').eq('practitioner_id', practId).eq('is_active', true).order('sort_order'),
         supabase.from('weekly_availabilities').select('day_of_week, start_time, end_time, consultation_type_ids, is_active, location:practitioner_locations(name, address, city, is_teleconsult)').eq('practitioner_id', practId).eq('is_active', true),
         supabase.from('blocked_periods').select('start_date, end_date, start_time, end_time').eq('practitioner_id', practId).gte('end_date', new Date().toISOString().split('T')[0]),
@@ -133,7 +133,11 @@ function useBookingData(practId: string) {
           : Promise.resolve({ data: null }),
       ])
 
-      const practData = pract as unknown as { id: string; speciality: string; accepting_new_patients: boolean; users: { full_name: string } | null }
+      const practData = pract as unknown as {
+        id: string; speciality: string; accepting_new_patients: boolean
+        users: { full_name: string } | null
+        organizations: { name: string; logo_url: string | null } | null
+      }
 
       // Patient bloqué par ce praticien
       if (patientBlock) {
@@ -411,10 +415,21 @@ export default function BookingPage() {
           <div className="w-14 h-14 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] font-bold text-xl flex-shrink-0">
             {initials(pract.users?.full_name ?? 'P')}
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="font-bold text-[#0b1c30] text-lg">{pract.users?.full_name}</p>
             <p className="text-sm text-[#6f787e] capitalize">{pract.speciality}</p>
           </div>
+          {pract.organizations && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl flex-shrink-0" style={{ backgroundColor: 'rgba(229,238,255,0.7)' }}>
+              {pract.organizations.logo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={pract.organizations.logo_url} alt={pract.organizations.name} className="w-8 h-8 rounded-lg object-cover flex-shrink-0" />
+              ) : (
+                <span className="material-symbols-outlined text-[#005e7a]" style={{ fontSize: '20px' }}>storefront</span>
+              )}
+              <span className="text-xs font-semibold text-[#005e7a] max-w-[100px] truncate">{pract.organizations.name}</span>
+            </div>
+          )}
         </div>
 
         {/* ── STEP 1 : Choisir un type ─────────────────────────────────── */}

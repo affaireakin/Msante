@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -70,6 +70,16 @@ export default function PractitionerProfileScreen() {
             <View style={{ alignItems: 'center', gap: 4 }}>
               <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>{name}</Text>
               <Text style={{ fontSize: 16, color: '#3f484d', fontFamily: 'Manrope' }}>{practitioner.speciality}</Text>
+              {practitioner.organizations && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#e5eeff', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5, marginTop: 2 }}>
+                  {practitioner.organizations.logo_url ? (
+                    <Image source={{ uri: practitioner.organizations.logo_url }} style={{ width: 18, height: 18, borderRadius: 5 }} />
+                  ) : (
+                    <MaterialIcons name="storefront" size={14} color="#005e7a" />
+                  )}
+                  <Text style={{ fontSize: 12, fontWeight: '700', color: '#005e7a', fontFamily: 'Manrope' }}>{practitioner.organizations.name}</Text>
+                </View>
+              )}
               {practitioner.rating != null && (
                 <RatingStars rating={practitioner.rating} total={practitioner.total_reviews} />
               )}

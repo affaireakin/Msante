@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Image } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import type { PractitionerWithUser } from '../hooks/usePractitioners'
 
@@ -64,6 +64,20 @@ export function PractitionerCard({ practitioner, onPress }: PractitionerCardProp
 
           {/* Speciality */}
           <Text style={{ fontSize: 13, color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600' }}>{practitioner.speciality}</Text>
+
+          {/* Organization badge — helps patients recognize a cabinet/clinique */}
+          {practitioner.organizations && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, alignSelf: 'flex-start', backgroundColor: '#e5eeff', borderRadius: 999, paddingHorizontal: 7, paddingVertical: 3 }}>
+              {practitioner.organizations.logo_url ? (
+                <Image source={{ uri: practitioner.organizations.logo_url }} style={{ width: 12, height: 12, borderRadius: 3 }} />
+              ) : (
+                <MaterialIcons name="storefront" size={11} color="#005e7a" />
+              )}
+              <Text style={{ fontSize: 9, fontWeight: '700', color: '#005e7a', fontFamily: 'Manrope' }} numberOfLines={1}>
+                {practitioner.organizations.name}
+              </Text>
+            </View>
+          )}
 
           {/* Rating + languages */}
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
