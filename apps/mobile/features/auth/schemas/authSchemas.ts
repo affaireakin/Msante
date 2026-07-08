@@ -1,12 +1,18 @@
 import { z } from 'zod'
 
 export const loginSchema = z.object({
-  email: z.string().email('Email invalide'),
-  password: z.string().min(8, 'Minimum 8 caractères'),
+  // Login must not impose a NEW minimum stricter than what was required at
+  // signup time (web only ever required 6). A previously-valid 6-7 char
+  // password would otherwise be silently blocked by client-side validation
+  // before the request even reaches Supabase — the account owner sees no
+  // useful error, just a form that won't submit. The server is the source of
+  // truth for whether the password is correct; only require non-empty here.
+  email: z.string().trim().email('Email invalide'),
+  password: z.string().min(1, 'Mot de passe requis'),
 })
 
 export const signupSchema = z.object({
-  email: z.string().email('Email invalide'),
+  email: z.string().trim().email('Email invalide'),
   password: z.string().min(8, 'Minimum 8 caractères'),
   confirmPassword: z.string(),
   full_name: z.string().min(2, 'Nom requis'),
@@ -33,7 +39,7 @@ export const practitionerStep1Schema = z.object({
 })
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email('Email invalide'),
+  email: z.string().trim().email('Email invalide'),
 })
 
 export const resetPasswordSchema = z.object({
