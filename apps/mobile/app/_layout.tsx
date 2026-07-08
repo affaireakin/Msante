@@ -80,6 +80,20 @@ export default function RootLayout() {
       return
     }
 
+    // admin / organization_admin / organization_member have no mobile
+    // experience (web-only). Without this guard, they fell through to the
+    // "else" branch below and got silently routed into patient ONBOARDING
+    // (onboarding_completed is never set for these accounts, since they're
+    // created via web signup/invite, not the mobile onboarding flow) — which
+    // looks exactly like being sent back to signup.
+    if (profile && profile.role !== 'patient' && profile.role !== 'practitioner') {
+      const path = (segments as string[]).join('/')
+      if (path !== '(auth)/web-only') {
+        router.replace('/(auth)/web-only')
+      }
+      return
+    }
+
     if (!profile?.onboarding_completed) {
       if (!inOnboarding) {
         const route = profile?.role === 'practitioner'

@@ -1,4 +1,4 @@
-export type UserRole = 'patient' | 'practitioner' | 'admin'
+export type UserRole = 'patient' | 'practitioner' | 'admin' | 'organization_admin' | 'organization_member'
 export type VerificationStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
 export type DocumentType =
   | 'diploma'
