@@ -24,7 +24,8 @@ function InvitePractitionerContent() {
   const [lastname, setLastname] = useState('')
   const [email, setEmail] = useState('')
   const [orgName, setOrgName] = useState('')
-  const [accountType, setAccountType] = useState<'practitioner' | 'collaborator'>('practitioner')
+  const [practitionerName, setPractitionerName] = useState('')
+  const [accountType, setAccountType] = useState<'practitioner' | 'collaborator' | 'secretary'>('practitioner')
 
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -56,7 +57,8 @@ function InvitePractitionerContent() {
       setLastname(data.lastname)
       setEmail(data.email)
       setOrgName(data.organization_name)
-      setAccountType(data.account_type === 'collaborator' ? 'collaborator' : 'practitioner')
+      setPractitionerName(data.practitioner_name ?? '')
+      setAccountType(data.account_type === 'collaborator' ? 'collaborator' : data.account_type === 'secretary' ? 'secretary' : 'practitioner')
       setVerified(true)
     } catch {
       setError('Une erreur est survenue. Réessayez.')
@@ -72,7 +74,7 @@ function InvitePractitionerContent() {
     if (password !== confirm) { setError('Les mots de passe ne correspondent pas.'); return }
 
     setSubmitting(true)
-    const dbRole = accountType === 'practitioner' ? 'practitioner' : 'organization_member'
+    const dbRole = accountType === 'practitioner' ? 'practitioner' : accountType === 'secretary' ? 'secretary' : 'organization_member'
     const { data: signUpData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -125,7 +127,7 @@ function InvitePractitionerContent() {
           <div className="text-center mb-2">
             <h1 className="text-xl font-black text-[#0b1c30]">Bienvenue, {firstname} !</h1>
             <p className="text-sm text-slate-400 mt-1">
-              Créez votre compte pour rejoindre <strong>{orgName}</strong>
+              Créez votre compte pour rejoindre <strong>{orgName || practitionerName}</strong>
             </p>
           </div>
           <div>

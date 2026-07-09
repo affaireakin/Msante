@@ -64,19 +64,25 @@ function VerifyOtpContent() {
       })
     }
 
-    // Organization-invited practitioner: attach organization_id + practitioners
-    // row via the accept-invitation Edge Function (checked server-side against
-    // the invitation's email, marks it 'used').
+    // Organization/practitioner-invited account: attach organization_id (or
+    // practitioner_secretaries link) via the accept-invitation Edge Function
+    // (checked server-side against the invitation's email, marks it 'used').
+    // Its response carries the ACTUAL role assigned (a 'collaborator' invite
+    // can resolve to 'secretary' server-side if the org role is "Secrétaire"),
+    // so redirect off that instead of guessing from the querystring.
+    let acceptedRole: string | null = null
     if (role === 'practitioner' && orgInvitationId && data.session) {
-      await supabase.functions.invoke('accept-practitioner-invitation', {
+      const { data: acceptData } = await supabase.functions.invoke('accept-practitioner-invitation', {
         body: { invitation_id: orgInvitationId },
         headers: { Authorization: `Bearer ${data.session.access_token}` },
       })
+      acceptedRole = (acceptData as { role?: string } | null)?.role ?? null
     }
 
     setSuccess(true)
     setTimeout(() => {
-      if (orgInvitationId && accountType === 'collaborator') router.push('/organization-member')
+      if (orgInvitationId && acceptedRole === 'secretary') router.push('/secretary')
+      else if (orgInvitationId && accountType === 'collaborator') router.push('/organization-member')
       else if (role === 'practitioner') router.push('/onboarding/practitioner')
       else if (role === 'admin') router.push('/admin')
       else if (role === 'organization') router.push('/onboarding/organization')

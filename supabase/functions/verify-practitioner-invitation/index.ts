@@ -30,7 +30,11 @@ Deno.serve(async (req) => {
 
     const { data: invitation } = await supabase
       .from('practitioner_invitations')
-      .select('id, firstname, lastname, email, phone, otp, status, expires_at, organization_id, account_type, organizations(name)')
+      .select(`
+        id, firstname, lastname, email, phone, otp, status, expires_at, organization_id, account_type,
+        organizations(name),
+        invited_by:invited_by_practitioner_id ( users!practitioners_user_id_fkey(full_name) )
+      `)
       .eq('id', invitation_id)
       .single()
 
@@ -40,6 +44,7 @@ Deno.serve(async (req) => {
     if (invitation.otp !== otp.trim()) return json({ error: 'Code incorrect.' }, 400)
 
     const org = invitation.organizations as unknown as { name: string } | null
+    const invitedBy = invitation.invited_by as unknown as { users: { full_name: string } | null } | null
 
     return json({
       success: true,
@@ -48,6 +53,7 @@ Deno.serve(async (req) => {
       email: invitation.email,
       phone: invitation.phone,
       organization_name: org?.name ?? '',
+      practitioner_name: invitedBy?.users?.full_name ?? '',
       account_type: invitation.account_type,
     })
   } catch (e) {

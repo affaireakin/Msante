@@ -16,10 +16,12 @@ function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString() // 6 digits
 }
 
-async function sendInviteEmail(apiKey: string, from: string, to: string, firstname: string, orgName: string, otp: string, inviteUrl: string, accountType: 'practitioner' | 'collaborator', roleName?: string): Promise<void> {
+async function sendInviteEmail(apiKey: string, from: string, to: string, firstname: string, orgName: string, otp: string, inviteUrl: string, accountType: 'practitioner' | 'collaborator' | 'secretary', roleName?: string): Promise<void> {
   const roleWording = accountType === 'practitioner'
     ? 'en tant que praticien'
-    : roleName ? `en tant que ${roleName}` : 'au sein de son équipe'
+    : accountType === 'secretary'
+      ? 'en tant que secrétaire'
+      : roleName ? `en tant que ${roleName}` : 'au sein de son équipe'
   const html = `
     <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#f8f9ff;">
       <div style="background:#006685;padding:24px;border-radius:12px 12px 0 0;text-align:center;">
@@ -69,17 +71,76 @@ Deno.serve(async (req) => {
     const { data: caller } = await supabase.from('users').select('role, organization_id').eq('id', user.id).single()
     if (!caller) return json({ error: 'Forbidden' }, 403)
 
+    const body = await req.json() as {
+      firstname?: string; lastname?: string; email?: string; phone?: string
+      organization_id?: string; account_type?: 'practitioner' | 'collaborator' | 'secretary'; role_id?: string
+    }
+    const accountType: 'practitioner' | 'collaborator' | 'secretary' =
+      body.account_type === 'collaborator' ? 'collaborator' : body.account_type === 'secretary' ? 'secretary' : 'practitioner'
+
+    // A "secretary" invite issued directly by a practitioner (personal
+    // assistant, no organization involved) is a separate branch: it doesn't
+    // need — and must not require — an organization context.
+    if (accountType === 'secretary') {
+      if (caller.role !== 'practitioner') return json({ error: 'Forbidden' }, 403)
+
+      const { data: practitioner } = await supabase.from('practitioners').select('id').eq('user_id', user.id).maybeSingle()
+      if (!practitioner) return json({ error: 'Practitioner profile not found' }, 404)
+
+      const { firstname, lastname, email, phone } = body
+      if (!firstname?.trim() || !lastname?.trim() || !email?.trim()) {
+        return json({ error: 'firstname, lastname and email are required' }, 400)
+      }
+
+      const { data: caller_user } = await supabase.from('users').select('full_name').eq('id', user.id).single()
+
+      const otp = generateOtp()
+      const expiresAt = new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString()
+
+      const { data: invitation, error: insertError } = await supabase
+        .from('practitioner_invitations')
+        .insert({
+          organization_id: null,
+          invited_by_practitioner_id: practitioner.id,
+          firstname: firstname.trim(),
+          lastname: lastname.trim(),
+          email: email.trim().toLowerCase(),
+          phone: phone?.trim() || null,
+          otp,
+          expires_at: expiresAt,
+          created_by: user.id,
+          account_type: 'secretary',
+        })
+        .select('id')
+        .single()
+
+      if (insertError || !invitation) return json({ error: insertError?.message ?? 'Failed to create invitation' }, 500)
+
+      const baseUrl = Deno.env.get('APP_URL') ?? 'https://app.msante.sn'
+      const inviteUrl = `${baseUrl}/invite/practitioner?invitation_id=${invitation.id}`
+
+      const resendKey = Deno.env.get('RESEND_API_KEY')
+      const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.sn'
+      if (resendKey) {
+        await sendInviteEmail(resendKey, fromEmail, email.trim(), firstname.trim(), caller_user?.full_name ?? 'votre praticien', otp, inviteUrl, 'secretary')
+      }
+
+      await supabase.from('audit_logs').insert({
+        actor_id: user.id,
+        action: 'secretary.invite',
+        resource_type: 'practitioner_invitation',
+        resource_id: invitation.id,
+        new_values: { invited_by_practitioner_id: practitioner.id, email: email.trim(), account_type: 'secretary' },
+      })
+
+      return json({ success: true, invitation_id: invitation.id })
+    }
+
     // Organization is always derived from the caller's own profile — never
     // trusted from the request body — except for a super admin, who may target
     // any organization explicitly.
-    const body = await req.json() as {
-      firstname?: string; lastname?: string; email?: string; phone?: string
-      organization_id?: string; account_type?: 'practitioner' | 'collaborator'; role_id?: string
-    }
     const organizationId = caller.role === 'admin' ? (body.organization_id ?? caller.organization_id) : caller.organization_id
     if (!organizationId) return json({ error: 'No organization context' }, 400)
-
-    const accountType: 'practitioner' | 'collaborator' = body.account_type === 'collaborator' ? 'collaborator' : 'practitioner'
 
     // user_has_permission() reads auth.uid() internally — must run through a
     // client carrying the CALLER's own JWT, not the service-role client (which

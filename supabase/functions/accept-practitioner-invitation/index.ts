@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
 
     const { data: invitation } = await supabase
       .from('practitioner_invitations')
-      .select('id, organization_id, email, status, expires_at, account_type, role_id')
+      .select('id, organization_id, invited_by_practitioner_id, email, status, expires_at, account_type, role_id')
       .eq('id', invitation_id)
       .single()
 
@@ -45,11 +45,43 @@ Deno.serve(async (req) => {
       return json({ error: 'Cette invitation ne correspond pas à votre compte.' }, 403)
     }
 
-    const isPractitioner = invitation.account_type !== 'collaborator'
+    // Personal secretary invite (issued directly by a practitioner, no org).
+    if (invitation.account_type === 'secretary' && invitation.invited_by_practitioner_id) {
+      await supabase.from('users').update({ role: 'secretary', organization_id: null }).eq('id', user.id)
+
+      await supabase.from('practitioner_secretaries').upsert({
+        practitioner_id: invitation.invited_by_practitioner_id,
+        user_id: user.id,
+        status: 'active',
+      }, { onConflict: 'practitioner_id,user_id' })
+
+      await supabase.from('practitioner_invitations').update({ status: 'used' }).eq('id', invitation.id)
+
+      await supabase.from('audit_logs').insert({
+        actor_id: user.id,
+        action: 'secretary.accept_invitation',
+        resource_type: 'practitioner_invitation',
+        resource_id: invitation.id,
+        new_values: { invited_by_practitioner_id: invitation.invited_by_practitioner_id },
+      })
+
+      return json({ success: true, organization_id: null, account_type: 'secretary', role: 'secretary' })
+    }
+
+    const isPractitioner = invitation.account_type === 'practitioner'
+
+    // A collaborator assigned the org's "Secrétaire" system role gets the same
+    // dedicated role/dashboard as a personal secretary — org_id/user_roles are
+    // still set normally so org-scoped RBAC permissions keep working.
+    let finalRole: 'practitioner' | 'organization_member' | 'secretary' = isPractitioner ? 'practitioner' : 'organization_member'
+    if (!isPractitioner && invitation.role_id) {
+      const { data: role } = await supabase.from('org_roles').select('name').eq('id', invitation.role_id).maybeSingle()
+      if (role?.name === 'Secrétaire') finalRole = 'secretary'
+    }
 
     // Attach the account to the organization.
     await supabase.from('users').update({
-      role: isPractitioner ? 'practitioner' : 'organization_member',
+      role: finalRole,
       organization_id: invitation.organization_id,
     }).eq('id', user.id)
 
@@ -86,7 +118,7 @@ Deno.serve(async (req) => {
       new_values: { organization_id: invitation.organization_id },
     })
 
-    return json({ success: true, organization_id: invitation.organization_id, account_type: invitation.account_type })
+    return json({ success: true, organization_id: invitation.organization_id, account_type: invitation.account_type, role: finalRole })
   } catch (e) {
     return json({ error: (e as Error).message }, 500)
   }

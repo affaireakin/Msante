@@ -80,6 +80,12 @@ export default function RootLayout() {
       return
     }
 
+    // Secretaries (personal or org-invited) have a dedicated mobile tab group.
+    if (profile?.role === 'secretary') {
+      if (segments[0] !== '(secretary)') router.replace('/(secretary)/')
+      return
+    }
+
     // admin / organization_admin / organization_member have no mobile
     // experience (web-only). Without this guard, they fell through to the
     // "else" branch below and got silently routed into patient ONBOARDING

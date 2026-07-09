@@ -32,7 +32,7 @@ function useCollaborators(organizationId: string | null) {
         .from('users')
         .select('id, full_name, email, created_at')
         .eq('organization_id', organizationId as string)
-        .eq('role', 'organization_member')
+        .in('role', ['organization_member', 'secretary'])
         .order('created_at', { ascending: false })
       if (error) throw error
       return (data ?? []) as Collaborator[]
@@ -157,10 +157,17 @@ export default function OrganizationCollaboratorsPage() {
     mutationFn: async ({ userId, roleId }: { userId: string; roleId: string }) => {
       if (!organizationId) return
       await supabase.from('user_roles').delete().eq('user_id', userId).eq('organization_id', organizationId)
+      let roleName: string | undefined
       if (roleId) {
         const { error: insertError } = await supabase.from('user_roles').insert({ user_id: userId, role_id: roleId, organization_id: organizationId })
         if (insertError) throw insertError
+        const { data: role } = await supabase.from('org_roles').select('name').eq('id', roleId).maybeSingle()
+        roleName = role?.name
       }
+      // Keep the dedicated dashboard routing (users.role) in sync with the
+      // RBAC role assignment — a collaborator moved to/from "Secrétaire" must
+      // land on the right dashboard next time they log in.
+      await supabase.from('users').update({ role: roleName === 'Secrétaire' ? 'secretary' : 'organization_member' }).eq('id', userId)
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['org-role-assignments'] }),
   })

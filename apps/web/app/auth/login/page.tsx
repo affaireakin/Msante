@@ -59,6 +59,8 @@ function LoginForm() {
       router.push('/organization')
     } else if (profile.role === 'organization_member') {
       router.push('/organization-member')
+    } else if (profile.role === 'secretary') {
+      router.push('/secretary')
     } else if (profile.role === 'practitioner') {
       router.push(profile.onboarding_completed ? '/practitioner' : '/onboarding/practitioner')
     } else if (profile.role === 'patient') {

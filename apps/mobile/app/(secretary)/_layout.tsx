@@ -39,9 +39,9 @@ function TabIcon({ name, label, focused }: TabIconProps) {
   )
 }
 
-export default function PractitionerLayout() {
+export default function SecretaryLayout() {
   const { isAuthenticated, profile } = useAuth()
-  if (!isAuthenticated || profile?.role !== 'practitioner') {
+  if (!isAuthenticated || profile?.role !== 'secretary') {
     return <Redirect href="/(auth)/welcome" />
   }
 
@@ -66,25 +66,7 @@ export default function PractitionerLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="dashboard" label="Dashboard" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="agenda"
-        options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="calendar-today" label="Agenda" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="patients"
-        options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="group" label="Patients" focused={focused} />,
-        }}
-      />
-      <Tabs.Screen
-        name="messages"
-        options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="chat-bubble-outline" label="Messages" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="calendar-today" label="Rendez-vous" focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -92,41 +74,6 @@ export default function PractitionerLayout() {
         options={{
           tabBarIcon: ({ focused }) => <TabIcon name="person" label="Profil" focused={focused} />,
         }}
-      />
-      <Tabs.Screen
-        name="services"
-        options={{ tabBarButton: () => null }}
-      />
-      <Tabs.Screen
-        name="secretary"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="consultation"
-        options={{
-          tabBarButton: () => null,
-          tabBarStyle: { display: 'none' },
-        }}
-      />
-      <Tabs.Screen
-        name="patient-notes"
-        options={{ tabBarButton: () => null }}
-      />
-      <Tabs.Screen
-        name="prescription"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="schedule-blocks"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="analytics"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="notes-cliniques"
-        options={{ href: null }}
       />
     </Tabs>
   )
