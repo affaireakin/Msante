@@ -18,7 +18,7 @@ export function useReferringDoctor() {
     queryFn: async () => {
       const { data } = await supabase
         .from('practitioners')
-        .select('id, speciality, session_price, users!inner(full_name, avatar_url)')
+        .select('id, speciality, session_price, users!practitioners_user_id_fkey!inner(full_name, avatar_url)')
         .ilike('speciality', '%generaliste%')
         .eq('is_verified', true)
         .eq('account_status', 'active')

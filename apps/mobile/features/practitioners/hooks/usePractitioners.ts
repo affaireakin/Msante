@@ -14,7 +14,7 @@ export function usePractitioners(filters: PractitionerFilter = {}) {
     queryFn: async (): Promise<PractitionerWithUser[]> => {
       let query = supabase
         .from('practitioners')
-        .select('*, users(full_name, avatar_url), organizations(name, logo_url)')
+        .select('*, users!practitioners_user_id_fkey(full_name, avatar_url), organizations(name, logo_url)')
         .eq('verification_status', 'approved')
         .eq('is_verified', true)
         // Org-affiliated practitioners also need their organization's own

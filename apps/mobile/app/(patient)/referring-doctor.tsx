@@ -34,7 +34,7 @@ export default function ReferringDoctorScreen() {
           referring_doctor_status,
           referring:practitioners!users_referring_doctor_id_fkey(
             speciality,
-            users!inner(full_name)
+            users!practitioners_user_id_fkey!inner(full_name)
           )
         `)
         .eq('id', profile!.id)
