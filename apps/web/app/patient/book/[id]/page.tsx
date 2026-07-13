@@ -3,106 +3,10 @@ import { useState, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface ConsultationType {
-  id: string; name: string; duration_min: number
-  price: number | null; currency: string; color: string
-  description: string | null; mode: 'presentiel' | 'video' | 'both'
-}
-interface WeeklyAvail {
-  day_of_week: number; start_time: string; end_time: string
-  consultation_type_ids: string[]; is_active: boolean
-  location?: { name: string; address: string | null; city: string | null; is_teleconsult: boolean } | null
-}
-interface BlockedPeriod { start_date: string; end_date: string; start_time: string | null; end_time: string | null }
-interface BookingSettings { min_booking_delay_h: number; max_booking_days_ahead: number; buffer_between_min: number; auto_confirm: boolean }
-
-interface TimeSlot {
-  date: string          // YYYY-MM-DD
-  start_time: string   // HH:MM
-  end_time: string
-  type: ConsultationType
-  location: WeeklyAvail['location']
-  taken: boolean
-}
-
-// ─── Slot generation ──────────────────────────────────────────────────────────
-
-function pad(n: number) { return String(n).padStart(2, '0') }
-
-function generateSlots(
-  weekly: WeeklyAvail[],
-  types: ConsultationType[],
-  blocked: BlockedPeriod[],
-  taken: string[],
-  settings: BookingSettings,
-): TimeSlot[] {
-  const slots: TimeSlot[] = []
-  const now = new Date()
-  const minDelay = settings.min_booking_delay_h * 60 * 60 * 1000
-  const earliest = new Date(now.getTime() + minDelay)
-  const latest = new Date(now)
-  latest.setUTCDate(latest.getUTCDate() + settings.max_booking_days_ahead)
-
-  // Use UTC dates — slot times are stored in Dakar/UTC+0, so UTC is the canonical reference.
-  // Local-time methods would cause France (UTC+2) browsers to skip today or mismap day-of-week.
-  function utcDateStr(d: Date) {
-    return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`
-  }
-
-  // Build blocked set (UTC dates)
-  const blockedDates = new Set<string>()
-  for (const b of blocked) {
-    const d = new Date(b.start_date + 'T00:00:00Z')
-    const end = new Date(b.end_date + 'T00:00:00Z')
-    while (d <= end) {
-      blockedDates.add(utcDateStr(d))
-      d.setUTCDate(d.getUTCDate() + 1)
-    }
-  }
-
-  // Walk each day in window (UTC — keeps day-of-week consistent with Dakar timezone)
-  const cursor = new Date(earliest)
-  cursor.setUTCHours(0, 0, 0, 0)
-  while (cursor <= latest) {
-    const dateStr = utcDateStr(cursor)
-    const dow = cursor.getUTCDay()
-
-    if (!blockedDates.has(dateStr)) {
-      const daySlots = weekly.filter(w => w.is_active && w.day_of_week === dow)
-      for (const avail of daySlots) {
-        const availTypes = types.filter(t => avail.consultation_type_ids.includes(t.id))
-        if (availTypes.length === 0) continue
-
-        for (const ctype of availTypes) {
-          const [sh, sm] = avail.start_time.split(':').map(Number)
-          const [eh, em] = avail.end_time.split(':').map(Number)
-          let cur = sh * 60 + sm
-          const endMin = eh * 60 + em
-          const dur = ctype.duration_min + settings.buffer_between_min
-
-          while (cur + ctype.duration_min <= endMin) {
-            const startStr = `${pad(Math.floor(cur / 60))}:${pad(cur % 60)}`
-            const endMin2 = cur + ctype.duration_min
-            const endStr = `${pad(Math.floor(endMin2 / 60))}:${pad(endMin2 % 60)}`
-            // Parse slot as UTC (Dakar = UTC+0), compare against UTC earliest
-            const slotDt = new Date(`${dateStr}T${startStr}:00Z`)
-            const takenKey = `${dateStr}T${startStr}:00`
-
-            if (slotDt >= earliest) {
-              slots.push({ date: dateStr, start_time: startStr, end_time: endStr, type: ctype, location: avail.location ?? null, taken: taken.includes(takenKey) })
-            }
-            cur += dur
-          }
-        }
-      }
-    }
-    cursor.setUTCDate(cursor.getUTCDate() + 1)
-  }
-  return slots
-}
+import {
+  generateSlots, groupByDate, formatDate, formatDateLong,
+  type ConsultationType, type WeeklyAvail, type BlockedPeriod, type BookingSettings, type TimeSlot,
+} from '@/lib/availabilitySlots'
 
 // ─── Data hook ────────────────────────────────────────────────────────────────
 
@@ -124,7 +28,7 @@ function useBookingData(practId: string) {
       ] = await Promise.all([
         supabase.from('practitioners').select('id, speciality, accepting_new_patients, users!user_id(full_name), organizations(name, logo_url)').eq('id', practId).single(),
         supabase.from('consultation_types').select('id, name, duration_min, price, currency, color, description, mode').eq('practitioner_id', practId).eq('is_active', true).order('sort_order'),
-        supabase.from('weekly_availabilities').select('day_of_week, start_time, end_time, consultation_type_ids, is_active, location:practitioner_locations(name, address, city, is_teleconsult)').eq('practitioner_id', practId).eq('is_active', true),
+        supabase.from('weekly_availabilities').select('day_of_week, specific_date, start_time, end_time, consultation_type_ids, is_active, location:practitioner_locations(name, address, city, is_teleconsult)').eq('practitioner_id', practId).eq('is_active', true),
         supabase.from('blocked_periods').select('start_date, end_date, start_time, end_time').eq('practitioner_id', practId).gte('end_date', new Date().toISOString().split('T')[0]),
         supabase.from('practitioner_booking_settings').select('min_booking_delay_h, max_booking_days_ahead, buffer_between_min, auto_confirm').eq('practitioner_id', practId).maybeSingle(),
         supabase.from('appointments').select('scheduled_at').eq('practitioner_id', practId).not('status', 'in', '("cancelled","no_show")').gte('scheduled_at', new Date().toISOString()),
@@ -176,23 +80,6 @@ function useBookingData(practId: string) {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function groupByDate(slots: TimeSlot[]) {
-  const map = new Map<string, TimeSlot[]>()
-  for (const s of slots) {
-    if (!map.has(s.date)) map.set(s.date, [])
-    map.get(s.date)!.push(s)
-  }
-  return map
-}
-
-function formatDate(d: string) {
-  return new Date(d + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
-}
-
-function formatDateLong(d: string) {
-  return new Date(d + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-}
 
 const PROVIDERS = [
   { id: 'wave',         label: 'Wave',           color: '#1B6CA8', bg: '#e8f4fd', icon: '🌊' },

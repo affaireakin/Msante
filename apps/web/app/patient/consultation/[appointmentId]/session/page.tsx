@@ -38,6 +38,8 @@ function VideoArea({
   const tracks = useTracks([
     { source: Track.Source.Camera, withPlaceholder: true },
   ])
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   useEffect(() => {
     localParticipant.setMicrophoneEnabled(!isMuted)
@@ -47,8 +49,19 @@ function VideoArea({
     localParticipant.setCameraEnabled(isCameraOn)
   }, [isCameraOn, localParticipant])
 
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(document.fullscreenElement === containerRef.current)
+    document.addEventListener('fullscreenchange', onChange)
+    return () => document.removeEventListener('fullscreenchange', onChange)
+  }, [])
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) void document.exitFullscreen()
+    else void containerRef.current?.requestFullscreen()
+  }
+
   return (
-    <div className="relative w-full h-full bg-[#1a2a3a] rounded-xl overflow-hidden border border-white/10">
+    <div ref={containerRef} className="relative w-full h-full bg-[#1a2a3a] rounded-xl overflow-hidden border border-white/10">
       <GridLayout tracks={tracks} style={{ height: '100%' }}>
         <ParticipantTile />
       </GridLayout>
@@ -86,6 +99,13 @@ function VideoArea({
           className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${!isCameraOn ? 'bg-[#ba1a1a]/70 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}
         >
           <span className="material-symbols-outlined select-none">{isCameraOn ? 'videocam' : 'videocam_off'}</span>
+        </button>
+        <button
+          onClick={toggleFullscreen}
+          className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10 text-white hover:bg-white/20 transition-all"
+          aria-label={isFullscreen ? 'Quitter le plein écran' : 'Plein écran'}
+        >
+          <span className="material-symbols-outlined select-none">{isFullscreen ? 'fullscreen_exit' : 'fullscreen'}</span>
         </button>
         <div className="w-px h-8 bg-white/20" />
         <button

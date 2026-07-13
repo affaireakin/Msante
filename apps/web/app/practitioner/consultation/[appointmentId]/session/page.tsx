@@ -31,16 +31,20 @@ function getInitials(name: string): string {
 function VideoArea({
   isMuted, isCameraOn, onToggleMic, onToggleCamera,
   onEndSession, isEnding, patientName, isEndingConfirmOpen, setIsEndingConfirmOpen,
+  skipAiSummary, setSkipAiSummary,
 }: {
   isMuted: boolean; isCameraOn: boolean
   onToggleMic: () => void; onToggleCamera: () => void
   onEndSession: () => void; isEnding: boolean; patientName: string
   isEndingConfirmOpen: boolean; setIsEndingConfirmOpen: (v: boolean) => void
+  skipAiSummary: boolean; setSkipAiSummary: (v: boolean) => void
 }) {
   const { localParticipant } = useLocalParticipant()
   const tracks = useTracks([
     { source: Track.Source.Camera, withPlaceholder: true },
   ])
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   useEffect(() => {
     localParticipant.setMicrophoneEnabled(!isMuted)
@@ -50,8 +54,19 @@ function VideoArea({
     localParticipant.setCameraEnabled(isCameraOn)
   }, [isCameraOn, localParticipant])
 
+  useEffect(() => {
+    const onChange = () => setIsFullscreen(document.fullscreenElement === containerRef.current)
+    document.addEventListener('fullscreenchange', onChange)
+    return () => document.removeEventListener('fullscreenchange', onChange)
+  }, [])
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) void document.exitFullscreen()
+    else void containerRef.current?.requestFullscreen()
+  }
+
   return (
-    <div className="relative w-full h-full bg-[#1a2a3a] rounded-xl overflow-hidden border border-white/10">
+    <div ref={containerRef} className="relative w-full h-full bg-[#1a2a3a] rounded-xl overflow-hidden border border-white/10">
       <GridLayout tracks={tracks} style={{ height: '100%' }}>
         <ParticipantTile />
       </GridLayout>
@@ -84,6 +99,13 @@ function VideoArea({
         >
           <span className="material-symbols-outlined select-none">{isCameraOn ? 'videocam' : 'videocam_off'}</span>
         </button>
+        <button
+          onClick={toggleFullscreen}
+          className="w-12 h-12 rounded-full flex items-center justify-center bg-white/10 text-white hover:bg-white/20 transition-all"
+          aria-label={isFullscreen ? 'Quitter le plein écran' : 'Plein écran'}
+        >
+          <span className="material-symbols-outlined select-none">{isFullscreen ? 'fullscreen_exit' : 'fullscreen'}</span>
+        </button>
         <div className="w-px h-8 bg-white/20" />
         <button
           onClick={() => setIsEndingConfirmOpen(true)}
@@ -108,9 +130,18 @@ function VideoArea({
                 <p className="text-sm text-[#6f787e]">Cette action est irréversible.</p>
               </div>
             </div>
-            <p className="text-sm text-[#3f484d] mb-6">
-              La consultation sera enregistrée et un résumé IA sera généré.
+            <p className="text-sm text-[#3f484d] mb-4">
+              La consultation sera enregistrée{skipAiSummary ? '.' : ' et un résumé IA sera généré.'}
             </p>
+            <label className="flex items-center gap-2 mb-6 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={!skipAiSummary}
+                onChange={e => setSkipAiSummary(!e.target.checked)}
+                className="w-4 h-4 rounded border-[#bec8ce] text-[#82d8ff] focus:ring-[#82d8ff]"
+              />
+              <span className="text-sm text-[#3f484d]">Générer un résumé IA de cette session</span>
+            </label>
             <div className="flex gap-3">
               <button
                 onClick={() => setIsEndingConfirmOpen(false)}
@@ -151,6 +182,7 @@ export default function PractitionerSessionPage() {
   const [isCameraOn, setIsCameraOn] = useState(true)
   const [activeTab, setActiveTab] = useState<'notes' | 'chat'>('notes')
   const [notes, setNotes] = useState('')
+  const [skipAiSummary, setSkipAiSummary] = useState(false)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [chatInput, setChatInput] = useState('')
   const [sessionSeconds, setSessionSeconds] = useState(0)
@@ -227,7 +259,7 @@ export default function PractitionerSessionPage() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${session?.access_token ?? ''}`,
           },
-          body: JSON.stringify({ consultationId, chatHistory: chatMessages, notes }),
+          body: JSON.stringify({ consultationId, chatHistory: chatMessages, notes, skipAiSummary }),
         }
       )
       let aiSummary = ''
@@ -300,6 +332,8 @@ export default function PractitionerSessionPage() {
             patientName={patientName}
             isEndingConfirmOpen={isEndingConfirmOpen}
             setIsEndingConfirmOpen={setIsEndingConfirmOpen}
+            skipAiSummary={skipAiSummary}
+            setSkipAiSummary={setSkipAiSummary}
           />
         </LiveKitRoom>
 

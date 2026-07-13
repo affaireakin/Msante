@@ -80,7 +80,7 @@ class ResendAdapter implements NotificationAdapter {
       method: 'POST',
       headers: { Authorization: `Bearer ${this.apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'M-Santé <noreply@msante.sn>',
+        from: 'M-Santé <noreply@m-sante.com>',
         to: [event.recipient.email],
         subject: payload.title,
         html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px"><h2 style="color:#006685">${payload.title}</h2><p style="color:#0b1c30;font-size:16px;line-height:1.6">${payload.body}</p><hr style="border:none;border-top:1px solid #e5eeff;margin:24px 0"/><p style="color:#6f787e;font-size:12px">M-Santé — votre santé, notre priorité.</p></div>`,

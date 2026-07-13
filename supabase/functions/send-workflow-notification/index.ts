@@ -5,7 +5,7 @@
 //   WHATSAPP_TOKEN           – Meta Business API bearer token
 //   WHATSAPP_PHONE_NUMBER_ID – Meta WhatsApp phone number ID
 //   RESEND_API_KEY           – Resend API key for transactional email
-//   FROM_EMAIL               – Sender address, e.g. notifications@m-sante.sn
+//   FROM_EMAIL               – Sender address, e.g. notifications@m-sante.com
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 

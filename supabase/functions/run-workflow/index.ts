@@ -136,7 +136,7 @@ async function handleSendEmail(
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: 'M-Santé <no-reply@m-sante.app>',
+        from: 'M-Santé <noreply@m-sante.com>',
         to: [email],
         subject,
         html: `<p>${body}</p><p style="color:#6f787e;font-size:12px">M-Santé · Votre santé mentale, réinventée.</p>`,

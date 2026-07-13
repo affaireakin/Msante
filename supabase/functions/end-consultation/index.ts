@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { consultationId, chatHistory = [], notes = '' } = await req.json()
+    const { consultationId, chatHistory = [], notes = '', skipAiSummary = false } = await req.json()
 
     if (!consultationId || typeof consultationId !== 'string') {
       return new Response(JSON.stringify({ error: 'consultationId is required' }), {
@@ -67,33 +67,41 @@ Deno.serve(async (req) => {
     const startedAt = consultation.started_at ? new Date(consultation.started_at) : endedAt
     const durationMin = Math.max(1, Math.round((endedAt.getTime() - startedAt.getTime()) / 60000))
 
-    // 2. Claude Haiku → résumé session
-    const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')! })
+    // 2. Claude Haiku → résumé session (sauf si le praticien a décliné la
+    // génération automatique dans la modale de fin de session)
+    let aiSummary = ''
+    if (!skipAiSummary) {
+      const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY')! })
 
-    const chatText = Array.isArray(chatHistory) && chatHistory.length > 0
-      ? (chatHistory as { role: string; content: string }[]).map((m) => `${m.role}: ${m.content}`).join('\n')
-      : 'Aucun message échangé.'
+      const chatText = Array.isArray(chatHistory) && chatHistory.length > 0
+        ? (chatHistory as { role: string; content: string }[]).map((m) => `${m.role}: ${m.content}`).join('\n')
+        : 'Aucun message échangé.'
 
-    const completion = await anthropic.messages.create({
-      model: AI_MODEL,
-      max_tokens: 400,
-      system: `Tu es un assistant médical. Génère un compte-rendu factuel et bienveillant
-               d'une session de téléconsultation à partir du chat et des notes du praticien.
-               RÈGLES ABSOLUES:
-               - JAMAIS de diagnostic médical
-               - JAMAIS de prescription de médicament
-               - Terminer par: "Ce résumé ne remplace pas les conseils de votre médecin."
-               - Format: 3-4 phrases, ton professionnel et rassurant, en français.`,
-      messages: [{
-        role: 'user',
-        content: `Durée: ${durationMin} minutes\nChat:\n${chatText}\nNotes praticien: ${notes || 'Aucune'}`,
-      }],
-    })
+      const completion = await anthropic.messages.create({
+        model: AI_MODEL,
+        max_tokens: 400,
+        system: `Tu es un assistant médical. Génère un compte-rendu factuel et bienveillant
+                 d'une session de téléconsultation à partir du chat et des notes du praticien.
+                 RÈGLES ABSOLUES:
+                 - JAMAIS de diagnostic médical
+                 - JAMAIS de prescription de médicament
+                 - Terminer par: "Ce résumé ne remplace pas les conseils de votre médecin."
+                 - Format: 3-4 phrases, ton professionnel et rassurant, en français.`,
+        messages: [{
+          role: 'user',
+          content: `Durée: ${durationMin} minutes\nChat:\n${chatText}\nNotes praticien: ${notes || 'Aucune'}`,
+        }],
+      })
 
-    const firstBlock = completion.content[0]
-    const aiSummary = firstBlock.type === 'text' ? firstBlock.text : ''
+      const firstBlock = completion.content[0]
+      aiSummary = firstBlock.type === 'text' ? firstBlock.text : ''
+    }
 
     // 3. Update consultation
+    // practitioner_notes is what the /summary page reads back into "Notes de
+    // suivi" — it was never written here, so notes typed live during the
+    // session (used only as an LLM prompt input above) vanished and had to
+    // be retyped from scratch after every session.
     await supabase
       .from('consultations')
       .update({
@@ -102,6 +110,7 @@ Deno.serve(async (req) => {
         duration_actual_min: durationMin,
         chat_history: chatHistory,
         ai_summary: aiSummary,
+        practitioner_notes: notes || null,
       })
       .eq('id', consultationId)
 

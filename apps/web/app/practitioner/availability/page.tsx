@@ -15,7 +15,8 @@ interface Location {
   is_teleconsult: boolean; is_active: boolean
 }
 interface WeeklyAvail {
-  id: string; day_of_week: number; start_time: string; end_time: string
+  id: string; day_of_week: number | null; specific_date: string | null
+  start_time: string; end_time: string
   location_id: string | null; consultation_type_ids: string[]; is_active: boolean
 }
 interface BlockedPeriod {
@@ -297,18 +298,21 @@ function TypesTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
 function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }) {
   const qc = useQueryClient()
   const pid = data!.practitionerId
-  const weekly = data!.weekly
+  const weekly = data!.weekly.filter(w => w.day_of_week !== null)
+  const oneOff = data!.weekly.filter(w => w.specific_date !== null).sort((a, b) => a.specific_date!.localeCompare(b.specific_date!))
   const types = data!.types.filter(t => t.is_active)
   const locations = data!.locations
 
   const [showForm, setShowForm] = useState<number | null>(null) // day_of_week
+  const [showDateForm, setShowDateForm] = useState(false)
   const [form, setForm] = useState({ start_time: '09:00', end_time: '17:00', location_id: '', type_ids: [] as string[] })
+  const [dateForm, setDateForm] = useState({ specific_date: '', start_time: '09:00', end_time: '17:00', location_id: '', type_ids: [] as string[] })
 
   const byDay = useMemo(() => {
     const map = new Map<number, WeeklyAvail[]>()
     for (const w of weekly) {
-      if (!map.has(w.day_of_week)) map.set(w.day_of_week, [])
-      map.get(w.day_of_week)!.push(w)
+      if (!map.has(w.day_of_week!)) map.set(w.day_of_week!, [])
+      map.get(w.day_of_week!)!.push(w)
     }
     return map
   }, [weekly])
@@ -325,6 +329,21 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
       if (error) throw error
     },
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['avail-v2'] }); setShowForm(null) },
+    onError: (e: Error) => alert(e.message),
+  })
+
+  const addDate = useMutation({
+    mutationFn: async () => {
+      if (!dateForm.specific_date) return
+      const { error } = await supabase.from('weekly_availabilities').insert({
+        practitioner_id: pid, day_of_week: null, specific_date: dateForm.specific_date,
+        start_time: dateForm.start_time, end_time: dateForm.end_time,
+        location_id: dateForm.location_id || null,
+        consultation_type_ids: dateForm.type_ids,
+      })
+      if (error) throw error
+    },
+    onSuccess: () => { void qc.invalidateQueries({ queryKey: ['avail-v2'] }); setShowDateForm(false) },
     onError: (e: Error) => alert(e.message),
   })
 
@@ -349,9 +368,59 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
     setShowForm(day)
   }
 
+  function openDateForm() {
+    setDateForm({ specific_date: '', start_time: '09:00', end_time: '17:00', location_id: '', type_ids: types.map(t => t.id) })
+    setShowDateForm(true)
+  }
+
   return (
     <div className="space-y-3">
       <p className="text-sm text-slate-500">Les créneaux se répètent automatiquement chaque semaine.</p>
+
+      {/* Disponibilités ponctuelles (date précise) */}
+      <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl overflow-hidden shadow-sm">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100/60">
+          <div>
+            <p className="text-sm font-semibold text-[#0b1c30]">Dates spécifiques</p>
+            <p className="text-xs text-slate-400">Un créneau ponctuel, pour une seule date (ne se répète pas).</p>
+          </div>
+          <button onClick={openDateForm}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-[#82d8ff] bg-[#e5eeff] hover:bg-[#bee9ff] transition-colors flex-shrink-0">
+            <Icon name="add" size={13} color="#82d8ff" />Ajouter une date
+          </button>
+        </div>
+        {oneOff.length === 0 ? (
+          <div className="px-4 py-3 text-xs text-slate-400 italic">Aucune date spécifique ajoutée</div>
+        ) : (
+          <div className="divide-y divide-slate-100/60">
+            {oneOff.map(s => {
+              const loc = locations.find(l => l.id === s.location_id)
+              const slotTypes = types.filter(t => s.consultation_type_ids.includes(t.id))
+              const dateLabel = new Date(s.specific_date! + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'short' })
+              return (
+                <div key={s.id} className={`flex items-center gap-3 px-4 py-3 ${s.is_active ? '' : 'opacity-50'}`}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-semibold text-[#0b1c30] capitalize">{dateLabel}</span>
+                      <span className="text-sm text-slate-500">{s.start_time.slice(0,5)} – {s.end_time.slice(0,5)}</span>
+                      {loc && <span className="text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">{loc.name}</span>}
+                      {slotTypes.slice(0, 2).map(t => (
+                        <span key={t.id} className="text-xs px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: t.color }}>{t.name}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Toggle checked={s.is_active} onChange={() => toggle.mutate(s)} />
+                    <button onClick={() => del.mutate(s.id)} className="p-1 rounded hover:bg-red-50 transition-colors">
+                      <Icon name="delete" size={14} color="#ba1a1a" />
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
 
       {WORK_DAYS.map(day => {
         const slots = byDay.get(day) ?? []
@@ -473,6 +542,91 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
               <button onClick={() => add.mutate()} disabled={add.isPending || !form.start_time || !form.end_time || form.start_time >= form.end_time}
                 className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#82d8ff' }}>
                 {add.isPending ? 'Enregistrement…' : 'Enregistrer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDateForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowDateForm(false)} />
+          <div className="relative bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl overflow-y-auto max-h-[90vh]">
+            <h3 className="text-lg font-bold text-[#0b1c30] mb-1">Ajouter une date spécifique</h3>
+            <p className="text-sm text-slate-400 mb-4">Ce créneau ne s&apos;appliquera qu&apos;à la date choisie.</p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Date</label>
+                <input type="date" value={dateForm.specific_date} min={new Date().toISOString().split('T')[0]}
+                  onChange={e => setDateForm(f => ({ ...f, specific_date: e.target.value }))}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Début</label>
+                  <input type="time" value={dateForm.start_time} onChange={e => setDateForm(f => ({ ...f, start_time: e.target.value }))}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Fin</label>
+                  <input type="time" value={dateForm.end_time} onChange={e => setDateForm(f => ({ ...f, end_time: e.target.value }))}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
+                </div>
+              </div>
+
+              {locations.length > 0 && (
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Lieu</label>
+                  <select value={dateForm.location_id} onChange={e => setDateForm(f => ({ ...f, location_id: e.target.value }))}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none bg-white focus:border-[#82d8ff]">
+                    <option value="">Sans lieu spécifique</option>
+                    {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                  </select>
+                </div>
+              )}
+
+              {types.length > 0 && (
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1.5">Types de consultation</label>
+                  <div className="space-y-1.5 max-h-36 overflow-y-auto">
+                    {types.map(t => {
+                      const checked = dateForm.type_ids.includes(t.id)
+                      return (
+                        <label key={t.id} onClick={() => setDateForm(f => ({ ...f, type_ids: checked ? f.type_ids.filter(id => id !== t.id) : [...f.type_ids, t.id] }))}
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl border cursor-pointer hover:bg-slate-50 transition-colors"
+                          style={{ borderColor: checked ? t.color : '#e2e8f0', backgroundColor: checked ? `${t.color}10` : 'transparent' }}>
+                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: t.color }} />
+                          <span className="text-sm text-[#0b1c30] flex-1">{t.name}</span>
+                          <span className="text-xs text-slate-400">{t.duration_min} min</span>
+                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${checked ? 'bg-[#82d8ff] border-[#82d8ff]' : 'border-slate-300'}`}>
+                            {checked && <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>}
+                          </div>
+                        </label>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {types.length > 0 && dateForm.type_ids.length > 0 && dateForm.start_time < dateForm.end_time && (
+                <div className="bg-[#e5eeff] rounded-xl px-3 py-2.5">
+                  {dateForm.type_ids.map(tid => {
+                    const t = types.find(x => x.id === tid)!
+                    const count = generateSlotCount(dateForm.start_time, dateForm.end_time, t.duration_min)
+                    return <p key={tid} className="text-xs text-[#82d8ff]">{t.name}: <strong>{count} créneaux</strong> de {t.duration_min} min</p>
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3 mt-5">
+              <button onClick={() => setShowDateForm(false)} className="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-500">Annuler</button>
+              <button onClick={() => addDate.mutate()}
+                disabled={addDate.isPending || !dateForm.specific_date || !dateForm.start_time || !dateForm.end_time || dateForm.start_time >= dateForm.end_time}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-50" style={{ backgroundColor: '#82d8ff' }}>
+                {addDate.isPending ? 'Enregistrement…' : 'Enregistrer'}
               </button>
             </div>
           </div>

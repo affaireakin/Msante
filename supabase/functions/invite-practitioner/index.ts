@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
       const inviteUrl = `${baseUrl}/invite/practitioner?invitation_id=${invitation.id}`
 
       const resendKey = Deno.env.get('RESEND_API_KEY')
-      const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.sn'
+      const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.com'
       if (resendKey) {
         await sendInviteEmail(resendKey, fromEmail, email.trim(), firstname.trim(), caller_user?.full_name ?? 'votre praticien', otp, inviteUrl, 'secretary')
       }
@@ -195,7 +195,7 @@ Deno.serve(async (req) => {
     const inviteUrl = `${baseUrl}/invite/practitioner?invitation_id=${invitation.id}`
 
     const resendKey = Deno.env.get('RESEND_API_KEY')
-    const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.sn'
+    const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.com'
     if (resendKey) {
       await sendInviteEmail(resendKey, fromEmail, email.trim(), firstname.trim(), org.name, otp, inviteUrl, accountType, roleName)
     }

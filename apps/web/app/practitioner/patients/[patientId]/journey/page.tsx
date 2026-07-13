@@ -694,7 +694,7 @@ export default function WellnessJourneyPage() {
 
         <div className="flex flex-wrap gap-3">
           <a
-            href="/practitioner/appointments"
+            href={`/practitioner/patients/${patientId}/book`}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold text-white transition-colors hover:bg-[#005070]"
             style={{ backgroundColor: '#82d8ff' }}
           >
@@ -702,22 +702,14 @@ export default function WellnessJourneyPage() {
             Planifier un RDV
           </a>
 
-          <button
-            type="button"
-            disabled
-            title="Fonctionnalité à venir"
+          <a
+            href={`/practitioner/messages?patientId=${patientId}&patientName=${encodeURIComponent(data.patient.full_name)}`}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-colors"
-            style={{
-              backgroundColor: 'transparent',
-              border: '1.5px solid #82d8ff',
-              color: '#82d8ff',
-              opacity: 0.5,
-              cursor: 'not-allowed',
-            }}
+            style={{ backgroundColor: 'transparent', border: '1.5px solid #82d8ff', color: '#82d8ff' }}
           >
             <Icon name="mail" size={16} color="#82d8ff" />
             Envoyer un message
-          </button>
+          </a>
         </div>
       </div>
 

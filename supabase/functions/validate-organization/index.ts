@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
         })
       }
       const resendKey = Deno.env.get('RESEND_API_KEY')
-      const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.sn'
+      const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.com'
       if (resendKey) await sendEmail(resendKey, fromEmail, org.email, org.name, 'info_requested', note)
 
       await supabase.from('audit_logs').insert({
@@ -150,7 +150,7 @@ Deno.serve(async (req) => {
     }
 
     const resendKey = Deno.env.get('RESEND_API_KEY')
-    const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.sn'
+    const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.com'
     if (resendKey) await sendEmail(resendKey, fromEmail, org.email, org.name, action === 'approve' ? 'approved' : 'rejected', note)
 
     await supabase.from('audit_logs').insert({

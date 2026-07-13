@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
 
     // Email via Resend
     const resendKey = Deno.env.get('RESEND_API_KEY')
-    const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.sn'
+    const fromEmail = Deno.env.get('FROM_EMAIL') ?? 'notifications@m-sante.com'
     if (practUser.email && resendKey) {
       try {
         await sendEmail(resendKey, fromEmail, practUser.email, practUser.full_name)

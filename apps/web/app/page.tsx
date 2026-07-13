@@ -401,15 +401,21 @@ export default function LandingPage() {
             </div>
           </div>
           {[
-            { title: 'Produit', links: ['Wellness IA', 'Praticiens', 'Tarifs', 'Aide'] },
-            { title: 'Entreprise', links: ['À propos', 'Carrières', 'Presse', 'Contact'] },
-            { title: 'Légal', links: ['Plan du site', 'Mentions légales', 'Confidentialité', "Conditions d'utilisation"] },
+            { title: 'Produit', links: [{ label: 'Wellness IA', href: '#' }, { label: 'Praticiens', href: '#' }, { label: 'Tarifs', href: '#' }, { label: 'Aide', href: '#' }] },
+            { title: 'Entreprise', links: [{ label: 'À propos', href: '#' }, { label: 'Carrières', href: '#' }, { label: 'Presse', href: '#' }, { label: 'Contact', href: '#' }] },
+            { title: 'Légal', links: [{ label: 'Plan du site', href: '#' }, { label: 'Mentions légales', href: '#' }, { label: 'Confidentialité', href: '#' }, { label: "Conditions d'utilisation", href: '/cgu' }] },
           ].map(col => (
             <div key={col.title}>
               <h5 className="font-bold mb-5 text-[#0b1c30]">{col.title}</h5>
               <ul className="space-y-3">
                 {col.links.map(l => (
-                  <li key={l}><a href="#" className="text-sm text-[#6f787e] hover:text-[#82d8ff] transition-colors">{l}</a></li>
+                  <li key={l.label}>
+                    {l.href === '#' ? (
+                      <span className="text-sm text-[#6f787e]/60 cursor-default">{l.label}</span>
+                    ) : (
+                      <Link href={l.href} className="text-sm text-[#6f787e] hover:text-[#82d8ff] transition-colors">{l.label}</Link>
+                    )}
+                  </li>
                 ))}
               </ul>
             </div>

@@ -133,6 +133,7 @@ export default function PractitionerLayout({ children }: { children: React.React
   const [showAppealForm, setShowAppealForm] = useState(false)
   const [appealText, setAppealText] = useState('')
   const [appealSent, setAppealSent] = useState(false)
+  const [latestAppeal, setLatestAppeal] = useState<{ status: string; admin_response: string | null } | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
   const [unreadMessages, setUnreadMessages] = useState(0)
@@ -173,6 +174,22 @@ export default function PractitionerLayout({ children }: { children: React.React
         })
     })
   }, [router])
+
+  // The banner previously only ever showed the ORIGINAL suspension reason
+  // (status_reason) and a purely local "appealSent" flag that reset on every
+  // reload — so once an admin rejected an appeal with a different
+  // explanation than the initial one, the practitioner had no way to see it.
+  useEffect(() => {
+    if (!practitionerId) return
+    supabase
+      .from('practitioner_appeals')
+      .select('status, admin_response')
+      .eq('practitioner_id', practitionerId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => setLatestAppeal(data ?? null))
+  }, [practitionerId, appealSent])
 
   useEffect(() => {
     if (!userId) return
@@ -367,15 +384,20 @@ export default function PractitionerLayout({ children }: { children: React.React
                   {accountStatus === 'blocked' ? 'Votre compte est bloqué' : 'Votre compte est suspendu'}
                 </p>
                 {statusReason && <p className="text-sm mt-0.5">Motif : {statusReason}</p>}
-                {!appealSent ? (
+                {latestAppeal?.status === 'rejected' && (
+                  <p className="text-sm mt-2 font-semibold">
+                    Votre appel a été rejeté.{latestAppeal.admin_response ? ` Motif : ${latestAppeal.admin_response}` : ''}
+                  </p>
+                )}
+                {latestAppeal?.status === 'pending' || appealSent ? (
+                  <p className="mt-2 text-sm font-semibold">Appel soumis — en attente de révision.</p>
+                ) : (
                   <button
                     onClick={() => setShowAppealForm(!showAppealForm)}
                     className="mt-2 text-sm font-semibold underline"
                   >
-                    Contester cette décision
+                    {latestAppeal?.status === 'rejected' ? 'Contester à nouveau' : 'Contester cette décision'}
                   </button>
-                ) : (
-                  <p className="mt-2 text-sm font-semibold">Appel soumis — en attente de révision.</p>
                 )}
                 {showAppealForm && (
                   <div className="mt-3 space-y-2">

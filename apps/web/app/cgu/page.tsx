@@ -54,7 +54,7 @@ export default function CGUPage() {
             M-Santé traite des données de santé à caractère sensible (humeur, journal émotionnel, antécédents médicaux). Ces données sont chiffrées au repos, accessibles uniquement par vous-même et, dans le cadre d&apos;une consultation, par le praticien concerné. Elles ne sont jamais transmises à des tiers sans votre consentement explicite.
           </p>
           <p className="text-sm text-[#3f484d] leading-relaxed">
-            Conformément au RGPD et aux législations locales applicables, vous disposez d&apos;un droit d&apos;accès, de rectification, de portabilité et de suppression de vos données. Pour exercer ces droits, contactez-nous à <strong>privacy@m-sante.app</strong>.
+            Conformément au RGPD et aux législations locales applicables, vous disposez d&apos;un droit d&apos;accès, de rectification, de portabilité et de suppression de vos données. Pour exercer ces droits, contactez-nous à <strong>privacy@m-sante.com</strong>.
           </p>
         </section>
 

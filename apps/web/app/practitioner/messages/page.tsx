@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
@@ -75,6 +76,8 @@ function toStoragePath(urlOrPath: string): string {
 
 export default function PractitionerMessagesPage() {
   const queryClient = useQueryClient()
+  const searchParams = useSearchParams()
+  const deepLinkHandledRef = useRef(false)
   const [myId, setMyId] = useState<string | null>(null)
   const [practId, setPractId] = useState<string | null>(null)
   const [activeConv, setActiveConv] = useState<ConversationPreview | null>(null)
@@ -131,6 +134,25 @@ export default function PractitionerMessagesPage() {
       return Array.from(map.values())
     },
   })
+
+  // Deep link from a patient fiche ("Envoyer un message") — opens/starts the
+  // thread directly instead of requiring the practitioner to search for the
+  // patient again via "Nouveau".
+  useEffect(() => {
+    if (deepLinkHandledRef.current || loadingConvs) return
+    const patientId = searchParams.get('patientId')
+    if (!patientId) return
+    deepLinkHandledRef.current = true
+    const existing = conversations.find(c => c.partnerId === patientId)
+    const patientName = searchParams.get('patientName')
+    setActiveConv(existing ?? {
+      partnerId: patientId,
+      partnerName: patientName ? decodeURIComponent(patientName) : 'Patient',
+      lastMessage: '',
+      lastAt: new Date().toISOString(),
+      unread: 0,
+    })
+  }, [searchParams, conversations, loadingConvs])
 
   // Patients available to message (from appointments)
   const { data: myPatients = [], isLoading: loadingPatients } = useQuery<PatientRow[]>({
