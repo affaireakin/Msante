@@ -630,24 +630,18 @@ function UserProfilePanel({
   const suspendMutation = useMutation({
     mutationFn: async () => {
       const newStatus: AccountStatus = isSuspended ? 'active' : 'suspended'
-      const { error } = await supabase
-        .from('users')
-        .update({ account_status: newStatus })
-        .eq('id', user.id)
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('Session expirée, reconnectez-vous.')
+      // Suspending must actually lock the account out (Supabase Auth ban), not
+      // just flip a display-only column — see set-account-status.
+      const { data, error } = await supabase.functions.invoke('set-account-status', {
+        body: { user_id: user.id, new_status: newStatus },
+      })
       if (error) throw error
+      if ((data as { error?: string })?.error) throw new Error((data as { error?: string }).error)
       return newStatus
     },
-    onSuccess: async (newStatus: AccountStatus) => {
-      try {
-        await supabase.from('audit_logs').insert({
-          action: newStatus === 'suspended' ? 'user.suspended' : 'user.unsuspended',
-          resource_type: 'user',
-          resource_id: user.id,
-          new_values: { account_status: newStatus },
-        })
-      } catch {
-        // audit log failure is non-blocking
-      }
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       queryClient.invalidateQueries({ queryKey: ['admin-users-suspended-count'] })
     },

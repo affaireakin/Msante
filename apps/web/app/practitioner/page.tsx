@@ -46,14 +46,20 @@ function useDashboard() {
 
       const now = new Date()
       const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
-      const in7days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString()
+      // "Cette semaine" must mean the current calendar week (Mon–Sun), not a
+      // rolling 7-day window — a rolling window pulled in next Monday's
+      // appointment and counted it under "this week" whenever today wasn't
+      // itself a Monday.
+      const day = now.getDay()
+      const daysUntilSunday = day === 0 ? 0 : 7 - day
+      const weekEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSunday, 23, 59, 59, 999).toISOString()
 
       const { data: appointments } = await supabase
         .from('appointments')
         .select('id, scheduled_at, duration_min, status, type, users!patient_id(full_name)')
         .eq('practitioner_id', pract.id)
         .gte('scheduled_at', todayStart)
-        .lte('scheduled_at', in7days)
+        .lte('scheduled_at', weekEnd)
         .not('status', 'in', '("cancelled","no_show")')
         .order('scheduled_at', { ascending: true })
 

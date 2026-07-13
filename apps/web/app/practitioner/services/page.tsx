@@ -82,11 +82,11 @@ function usePractitionerServicesPage() {
     },
   })
 
-  return { services, createService, deleteService }
+  return { practitioner, services, createService, deleteService }
 }
 
 export default function ServicesPage() {
-  const { services, createService, deleteService } = usePractitionerServicesPage()
+  const { practitioner, services, createService, deleteService } = usePractitionerServicesPage()
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
   const [formError, setFormError] = useState<string | null>(null)
@@ -115,7 +115,11 @@ export default function ServicesPage() {
       setShowModal(false)
       setForm(EMPTY_FORM)
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Erreur lors de l'enregistrement")
+      // Supabase errors are plain PostgrestError objects, not `instanceof Error`
+      // — the previous check always fell through to the generic fallback,
+      // hiding the real reason (e.g. RLS violation, constraint) from the user.
+      const message = (err as { message?: string } | null)?.message
+      setFormError(message || "Erreur lors de l'enregistrement")
     }
   }
 

@@ -11,6 +11,7 @@ interface AppointmentWithUser {
     id: string
     full_name: string
     phone: string | null
+    share_contact_with_practitioners: boolean
     country: string | null
     created_at: string
   } | null
@@ -24,6 +25,7 @@ interface Patient {
   id: string
   full_name: string
   phone: string | null
+  shareContact: boolean
   country: string | null
   created_at: string
   lastAppt: string | null
@@ -68,14 +70,14 @@ function usePatients() {
 
       const { data: apts, error } = await supabase
         .from('appointments')
-        .select('patient_id, scheduled_at, users!patient_id(id, full_name, phone, country, created_at)')
+        .select('patient_id, scheduled_at, users!patient_id(id, full_name, phone, share_contact_with_practitioners, country, created_at)')
         .eq('practitioner_id', practitionerId)
         .not('status', 'in', '("cancelled")')
         .order('scheduled_at', { ascending: false })
 
       if (error) throw error
 
-      const patientMap: Record<string, { user: { id: string; full_name: string; phone: string | null; country: string | null; created_at: string }; apts: string[] }> = {}
+      const patientMap: Record<string, { user: { id: string; full_name: string; phone: string | null; share_contact_with_practitioners: boolean; country: string | null; created_at: string }; apts: string[] }> = {}
       for (const a of (apts ?? []) as unknown as AppointmentWithUser[]) {
         const u = a.users
         if (!u) continue
@@ -158,7 +160,11 @@ function usePatients() {
         return {
           id: u.id,
           full_name: u.full_name ?? '—',
-          phone: u.phone,
+          // Only surface the raw number if the patient has explicitly opted in
+          // (see share_contact_with_practitioners) — otherwise a shared
+          // appointment alone gave a practitioner access to the phone number.
+          phone: u.share_contact_with_practitioners ? u.phone : null,
+          shareContact: u.share_contact_with_practitioners,
           country: u.country,
           created_at: u.created_at,
           lastAppt: dates[0] ?? null,
@@ -789,7 +795,14 @@ export default function PatientsPage() {
                         </td>
 
                         {/* Contact */}
-                        <td className="px-4 py-3 text-sm text-[#6f787e] whitespace-nowrap">{p.phone ?? '—'}</td>
+                        <td className="px-4 py-3 text-sm text-[#6f787e] whitespace-nowrap">
+                          {p.shareContact ? (p.phone ?? '—') : (
+                            <span className="inline-flex items-center gap-1 text-xs text-[#6f787e]/70 italic">
+                              <Icon name="lock" size={12} color="#6f787e" />
+                              Non partagé
+                            </span>
+                          )}
+                        </td>
 
                         {/* Humeur moyenne */}
                         <td className="px-4 py-3">
@@ -913,7 +926,7 @@ export default function PatientsPage() {
               {/* Infos */}
               <div className="space-y-3 border-t border-slate-100 pt-3">
                 {[
-                  { icon: 'phone', label: 'Téléphone', value: selected.phone ?? '—' },
+                  { icon: 'phone', label: 'Téléphone', value: selected.shareContact ? (selected.phone ?? '—') : 'Non partagé par le patient' },
                   { icon: 'public', label: 'Pays', value: selected.country ?? '—' },
                   {
                     icon: 'event_available',

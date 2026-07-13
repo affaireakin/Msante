@@ -50,7 +50,7 @@ interface PrescriptionRow {
   consultation_type?: string | null
   created_at: string
 }
-interface PrescriptionsData { patient: PatientInfo; prescriptions: PrescriptionRow[]; practitionerId: string; practitionerType: 'healthcare' | 'wellness' }
+interface PrescriptionsData { patient: PatientInfo; prescriptions: PrescriptionRow[]; practitionerId: string; practitionerType: 'healthcare' | 'wellness'; canPrescribe: boolean }
 
 function usePrescriptionsData(patientId: string) {
   return useQuery<PrescriptionsData>({
@@ -59,7 +59,7 @@ function usePrescriptionsData(patientId: string) {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Non connecté')
-      const { data: pract, error: pErr } = await supabase.from('practitioners').select('id, practitioner_type').eq('user_id', user.id).single()
+      const { data: pract, error: pErr } = await supabase.from('practitioners').select('id, practitioner_type, permissions').eq('user_id', user.id).single()
       if (pErr || !pract) throw new Error('Profil praticien introuvable')
       const [{ data: patientData, error: ptErr }, { data: rxData, error: rxErr }] = await Promise.all([
         supabase.from('users').select('id, full_name, created_at').eq('id', patientId).single(),
@@ -70,7 +70,17 @@ function usePrescriptionsData(patientId: string) {
       ])
       if (ptErr) throw ptErr
       if (rxErr) throw rxErr
-      return { patient: patientData as PatientInfo, prescriptions: (rxData ?? []) as PrescriptionRow[], practitionerId: pract.id as string, practitionerType: (pract.practitioner_type ?? 'healthcare') as 'healthcare' | 'wellness' }
+      const permissions = pract.permissions as { can_prescribe?: boolean } | null
+      return {
+        patient: patientData as PatientInfo,
+        prescriptions: (rxData ?? []) as PrescriptionRow[],
+        practitionerId: pract.id as string,
+        practitionerType: (pract.practitioner_type ?? 'healthcare') as 'healthcare' | 'wellness',
+        // Admin-set permission (admin/practitioners toggle) — only gates actual
+        // medical ordonnances, not wellness "recommandations". Absence of the
+        // field (older rows / not yet reviewed) defaults to allowed.
+        canPrescribe: (pract.practitioner_type ?? 'healthcare') === 'wellness' || permissions?.can_prescribe !== false,
+      }
     },
     staleTime: 3 * 60 * 1000,
   })
@@ -667,14 +677,14 @@ export default function PatientPrescriptionsPage() {
     )
   }
 
-  const { patient, prescriptions, practitionerId, practitionerType } = data
+  const { patient, prescriptions, practitionerId, practitionerType, canPrescribe } = data
   const isWellness = practitionerType === 'wellness'
   const docLabel = isWellness ? 'recommandation' : 'ordonnance'
   const docLabelPlural = isWellness ? 'recommandations' : 'ordonnances'
 
   return (
     <>
-      {showModal && (
+      {showModal && canPrescribe && (
         <NewPrescriptionModal patientId={patientId} practitionerId={practitionerId} practitionerType={practitionerType} onClose={() => setShowModal(false)} />
       )}
 
@@ -682,11 +692,19 @@ export default function PatientPrescriptionsPage() {
         <PatientHeader patient={patient} patientId={patientId} />
         <TabNav patientId={patientId} practitionerType={practitionerType} />
 
+        {!canPrescribe && (
+          <div className="mt-6 flex items-center gap-2 rounded-xl px-4 py-3 bg-amber-50 border border-amber-200 text-sm text-amber-800">
+            <Icon name="lock" size={16} color="#92400e" />
+            La rédaction d&apos;ordonnances a été désactivée pour votre compte par l&apos;administration.
+          </div>
+        )}
+
         <div className="mt-6 space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-slate-500">{prescriptions.length} {prescriptions.length !== 1 ? docLabelPlural : docLabel}</p>
             <button onClick={() => setShowModal(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors"
+              disabled={!canPrescribe}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: '#82d8ff' }}>
               <Icon name="add_circle" size={16} color="#ffffff" />
               {`Nouvelle ${docLabel}`}
@@ -697,9 +715,11 @@ export default function PatientPrescriptionsPage() {
             <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm p-10 text-center">
               <Icon name="receipt_long" size={36} color="#cbd5e1" />
               <p className="mt-3 text-slate-400 text-sm">{`Aucune ${docLabel} pour ce patient`}</p>
-              <button onClick={() => setShowModal(true)} className="mt-4 px-4 py-2 rounded-lg text-sm font-medium text-white" style={{ background: '#82d8ff' }}>
-                {`Créer une ${docLabel}`}
-              </button>
+              {canPrescribe && (
+                <button onClick={() => setShowModal(true)} className="mt-4 px-4 py-2 rounded-lg text-sm font-medium text-white" style={{ background: '#82d8ff' }}>
+                  {`Créer une ${docLabel}`}
+                </button>
+              )}
             </div>
           ) : (
             <div className="space-y-4">

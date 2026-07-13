@@ -32,6 +32,13 @@ Deno.serve(async (req) => {
       })
     }
 
+    const { data: caller } = await supabase.from('users').select('account_status').eq('id', user.id).single()
+    if (caller?.account_status === 'suspended' || caller?.account_status === 'blocked') {
+      return new Response(JSON.stringify({ error: 'Votre compte est suspendu.' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
     const { consultationId } = await req.json()
 
     if (!consultationId || typeof consultationId !== 'string') {

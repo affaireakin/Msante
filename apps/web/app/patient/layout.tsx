@@ -31,15 +31,17 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
   const [unreadMessages, setUnreadMessages] = useState(0)
+  const [accountStatus, setAccountStatus] = useState<'active' | 'suspended' | 'blocked' | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
       setUserId(user.id)
-      supabase.from('users').select('full_name, role').eq('id', user.id).single().then(({ data }) => {
+      supabase.from('users').select('full_name, role, account_status').eq('id', user.id).single().then(({ data }) => {
         if (!data || data.role !== 'patient') { router.push('/auth/login'); return }
         setName(data.full_name ?? '')
         setInitials((data.full_name ?? 'P').split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2))
+        setAccountStatus((data.account_status as 'active' | 'suspended' | 'blocked' | null) ?? 'active')
       })
     })
   }, [router])
@@ -209,7 +211,28 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
         </header>
 
         <main className="flex-1 mt-16 p-4 md:p-8 overflow-y-auto">
-          {children}
+          {accountStatus === 'suspended' || accountStatus === 'blocked' ? (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+              <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-6 ${
+                accountStatus === 'blocked' ? 'bg-red-100' : 'bg-amber-100'
+              }`}>
+                <span className={`material-symbols-outlined text-4xl ${
+                  accountStatus === 'blocked' ? 'text-red-500' : 'text-amber-500'
+                }`}>
+                  {accountStatus === 'blocked' ? 'block' : 'lock'}
+                </span>
+              </div>
+              <h2 className="text-xl font-bold text-[#0b1c30] mb-2">
+                {accountStatus === 'blocked' ? 'Votre compte est bloqué' : 'Votre compte est suspendu'}
+              </h2>
+              <p className="text-sm text-[#6f787e] max-w-md mb-4">
+                Contactez notre équipe pour plus d&apos;informations sur cette décision.
+              </p>
+              <button onClick={handleSignOut} className="mt-2 text-sm text-[#6f787e] underline hover:text-[#0b1c30] transition-colors">
+                Se déconnecter
+              </button>
+            </div>
+          ) : children}
         </main>
       </div>
     </div>

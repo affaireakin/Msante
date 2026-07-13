@@ -57,6 +57,17 @@ Deno.serve(async (req) => {
     status_changed_by: user.id,
   }).eq('id', practitioner_id)
 
+  // account_status alone was never enforced anywhere (banner-only in the
+  // practitioner portal) — a "suspended"/"blocked" practitioner kept full
+  // access. Ban at the Supabase Auth layer (blocks login/token refresh) and
+  // keep users.account_status in sync so the layout gate below can rely on
+  // a single column regardless of which admin screen triggered the change.
+  const TEN_YEARS = '87600h'
+  await supabase.auth.admin.updateUserById(practitioner.user_id, {
+    ban_duration: new_status === 'active' ? 'none' : TEN_YEARS,
+  })
+  await supabase.from('users').update({ account_status: new_status }).eq('id', practitioner.user_id)
+
   // Log history
   await supabase.from('practitioner_status_history').insert({
     practitioner_id,

@@ -406,7 +406,12 @@ export default function PractitionerLayout({ children }: { children: React.React
               </div>
             </div>
           )}
-          {(!practitionerLoaded || verificationStatus === null || verificationStatus === 'approved') && children}
+          {/* The banner above was purely cosmetic — a suspended/blocked account kept
+              full access to every tool below it. Actually gate the content: only the
+              appeal banner is reachable while suspended/blocked. */}
+          {(!practitionerLoaded || verificationStatus === null || verificationStatus === 'approved')
+            && accountStatus !== 'suspended' && accountStatus !== 'blocked'
+            && children}
         </main>
       </div>
     </div>

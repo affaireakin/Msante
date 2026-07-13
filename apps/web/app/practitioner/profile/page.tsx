@@ -112,7 +112,8 @@ export default function PractitionerProfilePage() {
       if (!userId || !practId) throw new Error('Non connecté')
 
       await supabase.from('users').update({ full_name: fullName, phone: phone || null }).eq('id', userId)
-      await supabase.from('practitioners').update({
+
+      const updates: Record<string, unknown> = {
         bio, speciality, languages,
         session_price: parseFloat(price) || null,
         session_currency: currency,
@@ -122,7 +123,32 @@ export default function PractitionerProfilePage() {
         professional_title: professionalTitle || null,
         registration_number: registrationNumber || null,
         clinic_address: clinicAddress || null,
-      }).eq('id', practId)
+      }
+
+      // Changing the claimed speciality on an already-approved profile
+      // previously took effect instantly, with no re-check — a practitioner
+      // could switch from "Coach bien-être" to "Psychiatre" and immediately
+      // show up in patient search under it. Send it back through review.
+      const originalSpeciality = data?.pract?.speciality
+      const wasApproved = data?.pract?.verification_status === 'approved'
+      if (wasApproved && speciality !== originalSpeciality) {
+        updates.verification_status = 'under_review'
+        updates.is_verified = false
+      }
+
+      const { error } = await supabase.from('practitioners').update(updates).eq('id', practId)
+      if (error) throw error
+
+      if (updates.verification_status === 'under_review') {
+        await supabase.from('audit_logs').insert({
+          actor_id: userId,
+          action: 'practitioner.speciality_changed',
+          resource_type: 'practitioner',
+          resource_id: practId,
+          old_values: { speciality: originalSpeciality },
+          new_values: { speciality },
+        })
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['practitioner-full-profile'] })

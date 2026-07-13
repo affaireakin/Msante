@@ -36,7 +36,9 @@ const TYPE_META: Record<string, { icon: string; bg: string; border: string; text
 }
 
 const HOUR_START = 7
-const HOUR_END   = 21
+// Availabilities can be configured up to 23:00 (see practitioner/availability) —
+// the grid used to stop at 21:00, hiding any appointment booked past that.
+const HOUR_END   = 23
 const HOUR_H     = 80   // px per hour
 const DAYS_FR    = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
 
@@ -172,7 +174,12 @@ function DetailPanel({ apt, onClose }: { apt: Appointment; onClose: () => void }
       })
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['pract-apts'] })
+      // The write succeeded, but nothing refetched: the actual query keys are
+      // 'pract-apts-week' / 'pract-apts-list' (see useWeekAppointments /
+      // useListAppointments below) — 'pract-apts' matched neither, so the
+      // week grid / list kept showing the stale status after the modal closed.
+      qc.invalidateQueries({ queryKey: ['pract-apts-week'] })
+      qc.invalidateQueries({ queryKey: ['pract-apts-list'] })
       onClose()
     },
   })
@@ -489,7 +496,10 @@ export default function AppointmentsPage() {
         body: { appointment_id: id, new_status: status },
       })
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['pract-apts'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['pract-apts-week'] })
+      qc.invalidateQueries({ queryKey: ['pract-apts-list'] })
+    },
   })
 
   const goToday = () => setWeekStart(getWeekStart(new Date()))

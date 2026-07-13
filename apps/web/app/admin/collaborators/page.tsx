@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
-type Tab = 'team' | 'invitations' | 'patients' | 'practitioners'
+type Tab = 'team' | 'invitations' | 'patients' | 'practitioners' | 'secretaries'
 
 const COLLAB_ROLES = [
   { value: 'admin',      label: 'Administrateur', description: 'Accès complet : validation praticiens, gestion utilisateurs, workflows, paiements.' },
@@ -196,6 +196,46 @@ export default function CollaboratorsPage() {
     },
   })
 
+  // ── Secrétaires (invitées par un praticien indépendant, hors RBAC org) ──────
+  interface PractSecretary {
+    id: string
+    status: 'active' | 'revoked'
+    created_at: string
+    user: { full_name: string; email: string | null } | null
+    practitioner: { speciality: string; users: { full_name: string } | null } | null
+  }
+
+  const { data: secretaries = [], isLoading: loadingSec } = useQuery<PractSecretary[]>({
+    queryKey: ['admin-practitioner-secretaries'],
+    enabled: tab === 'secretaries',
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('practitioner_secretaries')
+        .select(`
+          id, status, created_at,
+          user:user_id(full_name, email),
+          practitioner:practitioner_id(speciality, users!practitioners_user_id_fkey(full_name))
+        `)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return (data ?? []) as unknown as PractSecretary[]
+    },
+  })
+
+  const toggleSecretaryStatus = useMutation({
+    mutationFn: async (sec: PractSecretary) => {
+      const newStatus = sec.status === 'active' ? 'revoked' : 'active'
+      const { error } = await supabase.from('practitioner_secretaries').update({ status: newStatus }).eq('id', sec.id)
+      if (error) throw error
+      await logAudit(
+        newStatus === 'revoked' ? 'secretary.revoked' : 'secretary.reactivated',
+        'practitioner_secretary', sec.id,
+        { status: sec.status }, { status: newStatus },
+      )
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-practitioner-secretaries'] }),
+  })
+
   // ── Invite mutation ───────────────────────────────────────────────────────
   const invite = useMutation({
     mutationFn: async ({ email, role }: { email: string; role: string }) => {
@@ -226,6 +266,7 @@ export default function CollaboratorsPage() {
     { key: 'invitations',  label: 'Invitations',            icon: 'mail' },
     { key: 'patients',     label: 'Patients',               icon: 'person' },
     { key: 'practitioners',label: 'Praticiens',             icon: 'medical_services' },
+    { key: 'secretaries',  label: 'Secrétaires',            icon: 'support_agent' },
   ]
 
   const roleLabel = (r: string | null) => COLLAB_ROLES.find(c => c.value === r)?.label ?? (r ?? 'Admin')
@@ -460,6 +501,68 @@ export default function CollaboratorsPage() {
                 })}
                 {practitioners.length === 0 && (
                   <tr><td colSpan={5} className="px-6 py-12 text-center text-[#6f787e] text-sm">Aucun praticien inscrit</td></tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+
+      {/* ── Secrétaires ── */}
+      {tab === 'secretaries' && (
+        <div className="rounded-2xl overflow-hidden overflow-x-auto" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
+          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h2 className="font-semibold text-[#0b1c30]">Secrétaires invité(e)s par des praticiens</h2>
+              <p className="text-xs text-[#6f787e] mt-0.5">Accès limité à la gestion des rendez-vous du praticien qui les a invité(e)s.</p>
+            </div>
+            <span className="text-xs text-[#6f787e]">{secretaries.length} au total</span>
+          </div>
+          {loadingSec ? (
+            <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" /></div>
+          ) : (
+            <table className="w-full min-w-[600px]">
+              <thead className="bg-slate-50/50">
+                <tr>{['Secrétaire', 'Invité(e) par', 'Statut', 'Depuis', ''].map(h => (
+                  <th key={h} className="text-left px-6 py-3 text-xs font-semibold text-[#6f787e] uppercase tracking-wide">{h}</th>
+                ))}</tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {secretaries.map(sec => (
+                  <tr key={sec.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#e5eeff] flex items-center justify-center text-xs font-bold text-[#005e7a]">{initials(sec.user?.full_name ?? '?')}</div>
+                        <div>
+                          <span className="text-sm font-medium text-[#0b1c30] block">{sec.user?.full_name ?? '—'}</span>
+                          <span className="text-xs text-[#6f787e]">{sec.user?.email ?? ''}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[#6f787e]">
+                      {sec.practitioner?.users?.full_name ? `Dr. ${sec.practitioner.users.full_name}` : '—'}
+                      {sec.practitioner?.speciality ? ` · ${sec.practitioner.speciality}` : ''}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${sec.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                        {sec.status === 'active' ? 'Actif' : 'Révoqué'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-[#6f787e]">{new Date(sec.created_at).toLocaleDateString('fr-FR')}</td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={() => toggleSecretaryStatus.mutate(sec)}
+                        disabled={toggleSecretaryStatus.isPending}
+                        className="px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors disabled:opacity-50"
+                        style={{ borderColor: sec.status === 'active' ? '#705d00' : '#1d7a3a', color: sec.status === 'active' ? '#705d00' : '#1d7a3a' }}
+                      >
+                        {sec.status === 'active' ? 'Révoquer' : 'Réactiver'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {secretaries.length === 0 && (
+                  <tr><td colSpan={5} className="px-6 py-12 text-center text-[#6f787e] text-sm">Aucun(e) secrétaire</td></tr>
                 )}
               </tbody>
             </table>

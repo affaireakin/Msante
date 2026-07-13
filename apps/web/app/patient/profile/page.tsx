@@ -26,7 +26,7 @@ function useProfile() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Non connecté')
       const [{ data: profile }, { data: med }] = await Promise.all([
-        supabase.from('users').select('full_name, phone, country, language, reminder_email, avatar_url').eq('id', user.id).single(),
+        supabase.from('users').select('full_name, phone, country, language, reminder_email, avatar_url, share_contact_with_practitioners').eq('id', user.id).single(),
         supabase.from('patient_medical_profiles').select('*').eq('patient_id', user.id).maybeSingle(),
       ])
       return { user, profile, med }
@@ -71,6 +71,9 @@ export default function PatientProfilePage() {
   const [emergencyName, setEmergencyName] = useState('')
   const [emergencyPhone, setEmergencyPhone] = useState('')
 
+  // Privacy
+  const [shareContact, setShareContact] = useState(false)
+
   useEffect(() => {
     if (!data) return
     const { profile, med } = data
@@ -85,6 +88,7 @@ export default function PatientProfilePage() {
       const matched = DIAL_CODES.find(d => storedPhone.startsWith(d.code))
       if (matched) { setDialCode(matched.code); setPhoneLocal(storedPhone.slice(matched.code.length).trim()) }
       else setPhoneLocal(storedPhone)
+      setShareContact((profile as { share_contact_with_practitioners?: boolean }).share_contact_with_practitioners ?? false)
     }
     if (med) {
       setBloodType(med.blood_type ?? '')
@@ -106,7 +110,10 @@ export default function PatientProfilePage() {
       if (!userId) throw new Error('Non connecté')
 
       const fullPhone = phoneLocal.trim() ? `${dialCode} ${phoneLocal.trim()}` : null
-      await supabase.from('users').update({ full_name: fullName, phone: fullPhone, country, language, reminder_email: reminderEmail || null }).eq('id', userId)
+      await supabase.from('users').update({
+        full_name: fullName, phone: fullPhone, country, language, reminder_email: reminderEmail || null,
+        share_contact_with_practitioners: shareContact,
+      }).eq('id', userId)
 
       await supabase.from('patient_medical_profiles').upsert({
         patient_id: userId,
@@ -415,6 +422,35 @@ export default function PatientProfilePage() {
         {/* TAB — Confidentialité & RGPD */}
         {tab === 'privacy' && (
           <div className="space-y-5">
+            {/* Partage du contact */}
+            <div className="rounded-xl border border-[#bec8ce] p-5 space-y-3">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <Icon name="contact_phone" color="#82d8ff" size={22} />
+                  <div className="flex-1">
+                    <p className="text-sm font-bold text-[#0b1c30]">Partager mon numéro avec mes praticiens</p>
+                    <p className="text-xs text-[#6f787e] mt-0.5">
+                      Par défaut, votre praticien ne voit pas votre numéro de téléphone. Activez cette option
+                      si vous souhaitez qu&apos;il/elle puisse vous appeler directement.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={shareContact}
+                  onClick={() => setShareContact(v => !v)}
+                  className="relative flex-shrink-0 w-11 h-6 rounded-full transition-colors"
+                  style={{ backgroundColor: shareContact ? '#82d8ff' : '#bec8ce' }}
+                >
+                  <span
+                    className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"
+                    style={{ transform: shareContact ? 'translateX(20px)' : 'translateX(0)' }}
+                  />
+                </button>
+              </div>
+            </div>
+
             {/* Export */}
             <div className="rounded-xl border border-[#bec8ce] p-5 space-y-3">
               <div className="flex items-start gap-3">

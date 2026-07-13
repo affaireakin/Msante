@@ -6,7 +6,6 @@ import { supabase } from '@/lib/supabase'
 
 interface Medication { name: string; dosage?: string; frequency?: string; duration?: string; instructions?: string }
 interface RxData {
-  diagnosis: string | null
   medications: Medication[]
   instructions: string | null
   valid_until: string | null
@@ -34,7 +33,7 @@ export default function PrescriptionPrintPage() {
       const { data: rx, error: rxErr } = await supabase
         .from('prescriptions')
         .select(`
-          diagnosis, medications, instructions, valid_until, status, created_at,
+          medications, instructions, valid_until, status, created_at,
           patient:patient_id ( full_name ),
           practitioner:practitioner_id (
             speciality, professional_title, registration_number, clinic_address, signature_url, stamp_url,
@@ -54,7 +53,6 @@ export default function PrescriptionPrintPage() {
       const patient = rx.patient as unknown as { full_name: string }
 
       setData({
-        diagnosis: rx.diagnosis,
         medications: (rx.medications as Medication[]) ?? [],
         instructions: rx.instructions,
         valid_until: rx.valid_until,
@@ -167,13 +165,9 @@ export default function PrescriptionPrintPage() {
                 <p className="text-base font-bold text-[#0b1c30]">{data.patient_name}</p>
               </div>
 
-              {/* Diagnostic */}
-              {data.diagnosis && (
-                <div className="mb-5">
-                  <p className="text-[10px] font-bold text-[#6f787e] uppercase tracking-widest mb-1">Diagnostic / Motif</p>
-                  <p className="text-sm text-[#0b1c30] font-medium">{data.diagnosis}</p>
-                </div>
-              )}
+              {/* Le diagnostic n'apparaît volontairement pas sur ce document : c'est
+                  une donnée confidentielle qui n'a pas sa place sur une ordonnance
+                  remise au patient/à la pharmacie. */}
 
               {/* Médicaments */}
               <div className="mb-6 space-y-4">
