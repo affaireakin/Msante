@@ -46,13 +46,17 @@ Deno.serve(async (req) => {
     }
 
     // Personal secretary invite (issued directly by a practitioner, no org).
+    // Verifying the invite email only proves identity — it used to also grant
+    // full access instantly, with no super admin oversight at all. Now it
+    // lands as 'pending': is_practitioner_secretary() only matches 'active',
+    // so the account is fully locked out until an admin approves it below.
     if (invitation.account_type === 'secretary' && invitation.invited_by_practitioner_id) {
       await supabase.from('users').update({ role: 'secretary', organization_id: null }).eq('id', user.id)
 
       await supabase.from('practitioner_secretaries').upsert({
         practitioner_id: invitation.invited_by_practitioner_id,
         user_id: user.id,
-        status: 'active',
+        status: 'pending',
       }, { onConflict: 'practitioner_id,user_id' })
 
       await supabase.from('practitioner_invitations').update({ status: 'used' }).eq('id', invitation.id)
@@ -65,7 +69,26 @@ Deno.serve(async (req) => {
         new_values: { invited_by_practitioner_id: invitation.invited_by_practitioner_id },
       })
 
-      return json({ success: true, organization_id: null, account_type: 'secretary', role: 'secretary' })
+      try {
+        const { data: admins } = await supabase.from('users').select('id').eq('role', 'admin')
+        const { data: practUser } = await supabase
+          .from('practitioners').select('users!user_id(full_name)').eq('id', invitation.invited_by_practitioner_id).single()
+        const practName = (practUser?.users as unknown as { full_name: string } | null)?.full_name ?? 'un praticien'
+        if (admins?.length) {
+          await supabase.from('notifications').insert(admins.map(a => ({
+            user_id: a.id,
+            type: 'secretary_pending_approval',
+            title: 'Secrétaire à valider',
+            body: `${user.email} a été invité(e) par ${practName} et attend votre validation.`,
+            data: { practitioner_id: invitation.invited_by_practitioner_id, secretary_user_id: user.id },
+            channel: 'push',
+          })))
+        }
+      } catch (notifErr) {
+        console.error('accept-practitioner-invitation: admin notify failed', notifErr)
+      }
+
+      return json({ success: true, pending_approval: true, organization_id: null, account_type: 'secretary', role: 'secretary' })
     }
 
     const isPractitioner = invitation.account_type === 'practitioner'

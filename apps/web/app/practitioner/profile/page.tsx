@@ -223,6 +223,21 @@ export default function PractitionerProfilePage() {
       if (uploadError) throw uploadError
       const { data: { publicUrl } } = supabase.storage.from('documents').getPublicUrl(path)
       await supabase.from('verification_documents').insert({ practitioner_id: practId, document_type: type, file_url: publicUrl, status: 'pending' })
+
+      // Best-effort: notify admins and, if this practitioner was already
+      // approved, send them back through review — a new/changed document
+      // shouldn't sit unreviewed while full access continues silently.
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session) {
+          await supabase.functions.invoke('notify-document-change', {
+            body: { document_type: type },
+          })
+        }
+      } catch {
+        // non-blocking — the document itself was uploaded successfully
+      }
+
       queryClient.invalidateQueries({ queryKey: ['practitioner-full-profile'] })
     } catch {
       setDocError('Erreur lors du téléchargement. Réessayez.')

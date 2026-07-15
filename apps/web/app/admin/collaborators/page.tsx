@@ -199,7 +199,8 @@ export default function CollaboratorsPage() {
   // ── Secrétaires (invitées par un praticien indépendant, hors RBAC org) ──────
   interface PractSecretary {
     id: string
-    status: 'active' | 'revoked'
+    user_id: string
+    status: 'pending' | 'active' | 'revoked' | 'rejected'
     created_at: string
     user: { full_name: string; email: string | null } | null
     practitioner: { speciality: string; users: { full_name: string } | null } | null
@@ -212,7 +213,7 @@ export default function CollaboratorsPage() {
       const { data, error } = await supabase
         .from('practitioner_secretaries')
         .select(`
-          id, status, created_at,
+          id, user_id, status, created_at,
           user:user_id(full_name, email),
           practitioner:practitioner_id(speciality, users!practitioners_user_id_fkey(full_name))
         `)
@@ -221,6 +222,16 @@ export default function CollaboratorsPage() {
       return (data ?? []) as unknown as PractSecretary[]
     },
   })
+
+  const notifySecretary = async (sec: PractSecretary, title: string, body: string) => {
+    try {
+      await supabase.from('notifications').insert({
+        user_id: sec.user_id, type: 'secretary_status_change', title, body, channel: 'push', data: {},
+      })
+    } catch {
+      // best-effort — the admin action itself already succeeded
+    }
+  }
 
   const toggleSecretaryStatus = useMutation({
     mutationFn: async (sec: PractSecretary) => {
@@ -232,6 +243,27 @@ export default function CollaboratorsPage() {
         'practitioner_secretary', sec.id,
         { status: sec.status }, { status: newStatus },
       )
+      await notifySecretary(sec,
+        newStatus === 'revoked' ? 'Accès révoqué' : 'Accès réactivé',
+        newStatus === 'revoked' ? 'Votre accès secrétaire a été révoqué par un administrateur.' : 'Votre accès secrétaire a été réactivé.')
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-practitioner-secretaries'] }),
+  })
+
+  const decideSecretary = useMutation({
+    mutationFn: async ({ sec, decision }: { sec: PractSecretary; decision: 'active' | 'rejected' }) => {
+      const { error } = await supabase.from('practitioner_secretaries').update({ status: decision }).eq('id', sec.id)
+      if (error) throw error
+      await logAudit(
+        decision === 'active' ? 'secretary.approved' : 'secretary.rejected',
+        'practitioner_secretary', sec.id,
+        { status: 'pending' }, { status: decision },
+      )
+      await notifySecretary(sec,
+        decision === 'active' ? 'Compte secrétaire validé ✓' : 'Demande de secrétaire refusée',
+        decision === 'active'
+          ? 'Votre accès secrétaire a été validé par un administrateur. Vous pouvez maintenant vous connecter.'
+          : 'Votre demande d\'accès secrétaire a été refusée par un administrateur.')
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-practitioner-secretaries'] }),
   })
@@ -544,20 +576,46 @@ export default function CollaboratorsPage() {
                       {sec.practitioner?.speciality ? ` · ${sec.practitioner.speciality}` : ''}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${sec.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                        {sec.status === 'active' ? 'Actif' : 'Révoqué'}
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                        sec.status === 'active' ? 'bg-emerald-100 text-emerald-700'
+                        : sec.status === 'pending' ? 'bg-amber-100 text-amber-700'
+                        : sec.status === 'rejected' ? 'bg-red-100 text-red-700'
+                        : 'bg-slate-100 text-slate-500'
+                      }`}>
+                        {sec.status === 'active' ? 'Actif' : sec.status === 'pending' ? 'En attente de validation' : sec.status === 'rejected' ? 'Refusé' : 'Révoqué'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-[#6f787e]">{new Date(sec.created_at).toLocaleDateString('fr-FR')}</td>
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => toggleSecretaryStatus.mutate(sec)}
-                        disabled={toggleSecretaryStatus.isPending}
-                        className="px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors disabled:opacity-50"
-                        style={{ borderColor: sec.status === 'active' ? '#705d00' : '#1d7a3a', color: sec.status === 'active' ? '#705d00' : '#1d7a3a' }}
-                      >
-                        {sec.status === 'active' ? 'Révoquer' : 'Réactiver'}
-                      </button>
+                      {sec.status === 'pending' ? (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => decideSecretary.mutate({ sec, decision: 'active' })}
+                            disabled={decideSecretary.isPending}
+                            className="px-3 py-1.5 rounded-lg text-xs font-bold text-white disabled:opacity-50"
+                            style={{ backgroundColor: '#1d7a3a' }}
+                          >
+                            Valider
+                          </button>
+                          <button
+                            onClick={() => decideSecretary.mutate({ sec, decision: 'rejected' })}
+                            disabled={decideSecretary.isPending}
+                            className="px-3 py-1.5 rounded-lg border text-xs font-semibold disabled:opacity-50"
+                            style={{ borderColor: '#ba1a1a', color: '#ba1a1a' }}
+                          >
+                            Rejeter
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => toggleSecretaryStatus.mutate(sec)}
+                          disabled={toggleSecretaryStatus.isPending}
+                          className="px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors disabled:opacity-50"
+                          style={{ borderColor: sec.status === 'active' ? '#705d00' : '#1d7a3a', color: sec.status === 'active' ? '#705d00' : '#1d7a3a' }}
+                        >
+                          {sec.status === 'active' ? 'Révoquer' : 'Réactiver'}
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

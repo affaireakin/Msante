@@ -170,18 +170,33 @@ function AppointmentRow({ apt }: { apt: Appointment }) {
   )
 }
 
+type AccessState = 'active' | 'pending' | 'rejected' | 'revoked'
+
 export default function SecretaryPage() {
   const router = useRouter()
   const [filter, setFilter] = useState<Filter>('today')
   const [checking, setChecking] = useState(true)
+  const [accessState, setAccessState] = useState<AccessState>('active')
   const ctx = useContext_()
   const { data: appointments, isLoading, error } = useAppointments(filter)
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
-      const { data: profile } = await supabase.from('users').select('role').eq('id', user.id).single()
+      const { data: profile } = await supabase.from('users').select('role, organization_id').eq('id', user.id).single()
       if (profile?.role !== 'secretary') { router.push('/auth/login'); return }
+
+      // Org-attached secretaries go through the org's own RBAC/invite
+      // approval — only personal (practitioner-invited) secretaries need
+      // this admin-approval gate.
+      if (!profile.organization_id) {
+        const { data: links } = await supabase.from('practitioner_secretaries').select('status').eq('user_id', user.id)
+        const hasActive = (links ?? []).some(l => l.status === 'active')
+        if (!hasActive) {
+          const hasPending = (links ?? []).some(l => l.status === 'pending')
+          setAccessState(hasPending ? 'pending' : (links?.length ? 'rejected' : 'pending'))
+        }
+      }
       setChecking(false)
     })
   }, [router])
@@ -194,6 +209,27 @@ export default function SecretaryPage() {
   if (checking) return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center">
       <div className="w-8 h-8 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+
+  if (accessState !== 'active') return (
+    <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
+      <div className="max-w-sm w-full text-center space-y-4 bg-white/70 rounded-2xl p-8 border border-white/80">
+        <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto ${accessState === 'pending' ? 'bg-amber-100' : 'bg-red-100'}`}>
+          <span className={`material-symbols-outlined text-3xl ${accessState === 'pending' ? 'text-amber-500' : 'text-red-500'}`}>
+            {accessState === 'pending' ? 'hourglass_top' : 'block'}
+          </span>
+        </div>
+        <h2 className="text-lg font-bold text-[#0b1c30]">
+          {accessState === 'pending' ? 'Compte en attente de validation' : 'Accès refusé'}
+        </h2>
+        <p className="text-sm text-[#6f787e]">
+          {accessState === 'pending'
+            ? 'Un administrateur doit valider votre accès secrétaire avant que vous puissiez consulter les rendez-vous.'
+            : 'Votre demande d\'accès secrétaire a été refusée ou révoquée par un administrateur.'}
+        </p>
+        <button onClick={handleLogout} className="text-sm text-[#6f787e] underline hover:text-[#0b1c30]">Se déconnecter</button>
+      </div>
     </div>
   )
 

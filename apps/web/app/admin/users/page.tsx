@@ -404,6 +404,29 @@ function PractitionerSection({ userId }: { userId: string }) {
     },
   })
 
+  // Individual document review never existed — the admin could only
+  // approve/reject the practitioner's profile as a whole, with no way to
+  // record a decision on any specific uploaded document.
+  const reviewDocumentMutation = useMutation({
+    mutationFn: async ({ docId, decision }: { docId: string; decision: 'approved' | 'rejected' }) => {
+      const { data: { session } } = await supabase.auth.getSession()
+      const { error } = await supabase
+        .from('verification_documents')
+        .update({ status: decision, reviewed_by: session?.user.id ?? null, reviewed_at: new Date().toISOString() })
+        .eq('id', docId)
+      if (error) throw error
+      await supabase.from('notifications').insert({
+        user_id: userId,
+        type: 'document_reviewed',
+        title: decision === 'approved' ? 'Document validé ✓' : 'Document rejeté',
+        body: decision === 'approved' ? 'Un de vos documents a été validé par un administrateur.' : 'Un de vos documents a été rejeté — vérifiez votre profil pour le remplacer.',
+        channel: 'push',
+        data: {},
+      })
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['verification-documents', practitioner?.id ?? null] }),
+  })
+
   if (loadingPrac) {
     return (
       <div className="space-y-2">
@@ -514,6 +537,26 @@ function PractitionerSection({ userId }: { userId: string }) {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <DocStatusBadge status={doc.status as DocumentStatus} />
+                  {doc.status === 'pending' && (
+                    <>
+                      <button
+                        onClick={() => reviewDocumentMutation.mutate({ docId: doc.id, decision: 'approved' })}
+                        disabled={reviewDocumentMutation.isPending}
+                        title="Valider ce document"
+                        className="text-[#1d7a3a] hover:text-[#145c2c] transition-colors disabled:opacity-50"
+                      >
+                        <span className="material-symbols-outlined text-sm">check_circle</span>
+                      </button>
+                      <button
+                        onClick={() => reviewDocumentMutation.mutate({ docId: doc.id, decision: 'rejected' })}
+                        disabled={reviewDocumentMutation.isPending}
+                        title="Rejeter ce document"
+                        className="text-[#ba1a1a] hover:text-[#930009] transition-colors disabled:opacity-50"
+                      >
+                        <span className="material-symbols-outlined text-sm">cancel</span>
+                      </button>
+                    </>
+                  )}
                   <a
                     href={doc.file_url}
                     target="_blank"
