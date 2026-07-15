@@ -19,7 +19,7 @@ export class ResendAdapter implements NotificationAdapter {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'M-Santé <noreply@msante.sn>',
+        from: 'M-Santé <noreply@m-sante.com>',
         to: [event.recipient.email],
         subject: payload.title,
         html: `

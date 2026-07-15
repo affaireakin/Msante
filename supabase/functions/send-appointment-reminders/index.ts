@@ -1,6 +1,6 @@
 // supabase/functions/send-appointment-reminders/index.ts
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { createNotificationService } from '../../packages/notifications/index.ts'
+import { createNotificationService } from '../../../packages/notifications/index.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
