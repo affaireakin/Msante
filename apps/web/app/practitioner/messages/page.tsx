@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
@@ -75,6 +75,14 @@ function toStoragePath(urlOrPath: string): string {
 }
 
 export default function PractitionerMessagesPage() {
+  return (
+    <Suspense fallback={null}>
+      <PractitionerMessagesPageInner />
+    </Suspense>
+  )
+}
+
+function PractitionerMessagesPageInner() {
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
   const deepLinkHandledRef = useRef(false)
