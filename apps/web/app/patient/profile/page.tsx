@@ -358,6 +358,11 @@ export default function PatientProfilePage() {
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Allergies</label>
               <div className="flex flex-wrap gap-2">
+                <button type="button" onClick={() => setAllergies([])}
+                  className="px-3 py-1 rounded-full text-xs font-semibold transition-all"
+                  style={{ backgroundColor: allergies.length === 0 ? '#e8f5e9' : '#f8f9ff', color: allergies.length === 0 ? '#1d7a3a' : '#6f787e', border: `1px solid ${allergies.length === 0 ? '#1d7a3a' : '#bec8ce'}` }}>
+                  Aucune connue
+                </button>
                 {COMMON_ALLERGIES.map(a => (
                   <button key={a} type="button" onClick={() => setAllergies(toggle(allergies, a))}
                     className="px-3 py-1 rounded-full text-xs font-semibold transition-all"
@@ -406,9 +411,18 @@ export default function PatientProfilePage() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Médicaments actuels</label>
-              <textarea value={medications} onChange={e => setMedications(e.target.value)} rows={2} placeholder="Ex: Sertraline 50mg..."
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none" />
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Médicaments actuels</label>
+                <button type="button" onClick={() => setMedications(m => m === 'Aucun' ? '' : 'Aucun')}
+                  className="px-2.5 py-0.5 rounded-full text-xs font-semibold transition-all"
+                  style={{ backgroundColor: medications === 'Aucun' ? '#e8f5e9' : '#f8f9ff', color: medications === 'Aucun' ? '#1d7a3a' : '#6f787e', border: `1px solid ${medications === 'Aucun' ? '#1d7a3a' : '#bec8ce'}` }}>
+                  Aucun
+                </button>
+              </div>
+              <textarea value={medications === 'Aucun' ? '' : medications} onChange={e => setMedications(e.target.value)} rows={2}
+                placeholder={medications === 'Aucun' ? 'Aucun médicament actuel' : 'Ex: Sertraline 50mg...'}
+                disabled={medications === 'Aucun'}
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none disabled:opacity-60" />
             </div>
 
             <div className="flex flex-col gap-1">
@@ -519,8 +533,11 @@ export default function PatientProfilePage() {
             <div className="bg-[#ffdad6]/40 border border-[#ba1a1a]/20 rounded-xl p-4 flex items-start gap-3">
               <Icon name="emergency" color="#ba1a1a" />
               <div>
-                <p className="text-sm font-bold text-[#0b1c30]">Contact d&apos;urgence</p>
-                <p className="text-xs text-[#6f787e] mt-0.5">Personne à contacter en cas de situation d&apos;urgence médicale</p>
+                <p className="text-sm font-bold text-[#0b1c30]">Contact d&apos;urgence <span className="font-normal text-[#6f787e]">(optionnel)</span></p>
+                <p className="text-xs text-[#6f787e] mt-0.5">
+                  Personne à contacter en cas de situation d&apos;urgence médicale. Vous n&apos;êtes pas obligé·e de remplir ce champ —
+                  si vous ne souhaitez désigner personne, les lignes d&apos;urgence ci-dessous restent disponibles à tout moment.
+                </p>
               </div>
             </div>
 

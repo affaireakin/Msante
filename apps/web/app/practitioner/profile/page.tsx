@@ -7,8 +7,17 @@ function Icon({ name, size = 20, color }: { name: string; size?: number; color?:
   return <span className="material-symbols-outlined" style={{ fontSize: `${size}px`, color }}>{name}</span>
 }
 
-const SPECIALITIES = ['Psychologue', 'Psychiatre', 'Thérapeute', 'Coach bien-être', 'Nutritionniste', 'Médecin généraliste', 'Sage-femme', 'Infirmier(e)']
 const LANGUAGES = ['Français', 'Wolof', 'Anglais', 'Arabe', 'Diola', 'Mandingue', 'Pulaar']
+
+function useSpecialitiesFor(category: 'healthcare' | 'wellness') {
+  return useQuery({
+    queryKey: ['profession-specialities', category],
+    queryFn: async () => {
+      const { data } = await supabase.from('profession_permissions').select('profession_label').eq('category', category).order('profession_label')
+      return (data ?? []).map(r => r.profession_label)
+    },
+  })
+}
 const DURATIONS = [{ value: 30, label: '30 min' }, { value: 45, label: '45 min' }, { value: 60, label: '1h' }, { value: 90, label: '1h30' }]
 const SESSION_TYPES = [
   { value: 'video', icon: 'videocam', label: 'Vidéo' },
@@ -51,6 +60,8 @@ export default function PractitionerProfilePage() {
   const [phone, setPhone] = useState('')
   const [bio, setBio] = useState('')
   const [speciality, setSpeciality] = useState('')
+  const [practitionerType, setPractitionerType] = useState<'healthcare' | 'wellness'>('healthcare')
+  const { data: specialityOptions = [] } = useSpecialitiesFor(practitionerType)
   const [languages, setLanguages] = useState<string[]>(['Français'])
   const [price, setPrice] = useState('')
   const [currency, setCurrency] = useState('XOF')
@@ -89,6 +100,7 @@ export default function PractitionerProfilePage() {
     if (pract) {
       setBio(pract.bio ?? '')
       setSpeciality(pract.speciality ?? '')
+      setPractitionerType(((pract as unknown as Record<string, string>).practitioner_type as 'healthcare' | 'wellness') ?? 'healthcare')
       setLanguages(pract.languages ?? ['Français'])
       setPrice(pract.session_price ? String(pract.session_price) : '')
       setCurrency(pract.session_currency ?? 'XOF')
@@ -343,7 +355,7 @@ export default function PractitionerProfilePage() {
               <select value={speciality} onChange={e => setSpeciality(e.target.value)}
                 className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all">
                 <option value="">Sélectionnez</option>
-                {SPECIALITIES.map(s => <option key={s}>{s}</option>)}
+                {specialityOptions.map(s => <option key={s}>{s}</option>)}
               </select>
             </div>
 

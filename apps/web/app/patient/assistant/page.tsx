@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 interface AmiMessage {
@@ -79,7 +80,13 @@ function CrisisBanner() {
   )
 }
 
-function WelcomeState() {
+const QUICK_TOPICS = [
+  { icon: 'self_improvement', label: 'Gérer mon stress', message: "J'aimerais parler de comment gérer mon stress en ce moment." },
+  { icon: 'bedtime', label: 'Troubles du sommeil', message: "J'ai des troubles du sommeil dont j'aimerais parler." },
+  { icon: 'sentiment_sad', label: 'Sentiment de tristesse', message: "Je me sens triste ces derniers temps." },
+]
+
+function WelcomeState({ onQuickTopic, onTalkToPractitioner }: { onQuickTopic: (message: string) => void; onTalkToPractitioner: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-8">
       <div
@@ -100,14 +107,11 @@ function WelcomeState() {
         </p>
       </div>
       <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
-        {[
-          { icon: 'self_improvement', label: 'Gérer mon stress' },
-          { icon: 'bedtime', label: 'Troubles du sommeil' },
-          { icon: 'sentiment_sad', label: 'Sentiment de tristesse' },
-          { icon: 'medical_services', label: 'Parler à un praticien' },
-        ].map((card) => (
-          <div
+        {QUICK_TOPICS.map((card) => (
+          <button
             key={card.label}
+            type="button"
+            onClick={() => onQuickTopic(card.message)}
             className="p-4 rounded-2xl text-center cursor-pointer hover:shadow-md transition-all"
             style={{
               backgroundColor: 'rgba(255,255,255,0.70)',
@@ -119,20 +123,61 @@ function WelcomeState() {
             <p className="text-xs font-semibold text-[#0b1c30] mt-2" style={{ fontFamily: 'Manrope' }}>
               {card.label}
             </p>
-          </div>
+          </button>
         ))}
+        <button
+          type="button"
+          onClick={onTalkToPractitioner}
+          className="p-4 rounded-2xl text-center cursor-pointer hover:shadow-md transition-all"
+          style={{
+            backgroundColor: 'rgba(255,255,255,0.70)',
+            border: '1px solid rgba(255,255,255,0.80)',
+            backdropFilter: 'blur(12px)',
+          }}
+        >
+          <Icon name="medical_services" style={{ fontSize: '28px', color: '#82d8ff' }} />
+          <p className="text-xs font-semibold text-[#0b1c30] mt-2" style={{ fontFamily: 'Manrope' }}>
+            Parler à un praticien
+          </p>
+        </button>
       </div>
     </div>
   )
 }
 
 export default function AssistantPage() {
+  const router = useRouter()
+  const [userId, setUserId] = useState<string | null>(null)
   const [messages, setMessages] = useState<AmiMessage[]>([])
+  const [historyLoaded, setHistoryLoaded] = useState(false)
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showCrisis, setShowCrisis] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Conversations used to reset to zero on every page load — a real cost for
+  // someone in distress, who'd have to re-explain their situation each time.
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) { setHistoryLoaded(true); return }
+      setUserId(user.id)
+      const { data } = await supabase
+        .from('mounima_messages')
+        .select('id, role, content, is_crisis, created_at')
+        .eq('patient_id', user.id)
+        .order('created_at', { ascending: true })
+        .limit(200)
+      if (data?.length) {
+        setMessages(data.map(m => ({
+          id: m.id, role: m.role as 'user' | 'assistant', content: m.content,
+          timestamp: new Date(m.created_at).getTime(), isCrisis: m.is_crisis,
+        })))
+        if (data.some(m => m.is_crisis)) setShowCrisis(true)
+      }
+      setHistoryLoaded(true)
+    })
+  }, [])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -149,6 +194,7 @@ export default function AssistantPage() {
     setIsLoading(true)
 
     if (CRISIS_KEYWORDS_REGEX.test(text)) setShowCrisis(true)
+    if (userId) void supabase.from('mounima_messages').insert({ patient_id: userId, role: 'user', content: text })
 
     try {
       const { data: { session } } = await supabase.auth.getSession()
@@ -172,6 +218,7 @@ export default function AssistantPage() {
       const { text: replyText, isCrisis } = await res.json() as { text: string; isCrisis: boolean }
 
       if (isCrisis) setShowCrisis(true)
+      if (userId) void supabase.from('mounima_messages').insert({ patient_id: userId, role: 'assistant', content: replyText, is_crisis: isCrisis })
 
       setMessages(prev => [
         ...prev,
@@ -183,14 +230,14 @@ export default function AssistantPage() {
         {
           id: `err_${Date.now()}`,
           role: 'assistant',
-          content: 'Je suis temporairement indisponible. Réessayez dans quelques instants. 💙',
+          content: 'Je suis temporairement indisponible. Réessayez dans quelques instants.',
           timestamp: Date.now(),
         },
       ])
     } finally {
       setIsLoading(false)
     }
-  }, [messages])
+  }, [messages, userId])
 
   const handleSend = async () => {
     const text = input.trim()
@@ -246,8 +293,8 @@ export default function AssistantPage() {
         }}
       >
         <div className="flex-1 overflow-y-auto p-6">
-          {messages.length === 0 ? (
-            <WelcomeState />
+          {!historyLoaded ? null : messages.length === 0 ? (
+            <WelcomeState onQuickTopic={m => void sendMessage(m)} onTalkToPractitioner={() => router.push('/patient/practitioners')} />
           ) : (
             <>
               {messages.map(msg => (
@@ -286,7 +333,7 @@ export default function AssistantPage() {
         {/* Disclaimer */}
         <div className="px-6 py-2 border-t border-slate-100/60">
           <p className="text-xs text-center text-[#6f787e]" style={{ fontFamily: 'Manrope' }}>
-            Cet espace ne remplace pas un professionnel de santé
+            Cet espace ne remplace pas un professionnel de santé · Vos échanges restent confidentiels
           </p>
         </div>
 

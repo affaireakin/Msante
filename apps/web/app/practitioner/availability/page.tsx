@@ -483,12 +483,12 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Début</label>
                   <input type="time" value={form.start_time} onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Fin</label>
                   <input type="time" value={form.end_time} onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
                 </div>
               </div>
 
@@ -567,12 +567,12 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Début</label>
                   <input type="time" value={dateForm.start_time} onChange={e => setDateForm(f => ({ ...f, start_time: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Fin</label>
                   <input type="time" value={dateForm.end_time} onChange={e => setDateForm(f => ({ ...f, end_time: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
                 </div>
               </div>
 
@@ -726,13 +726,13 @@ function BlockedTab({ data }: { data: ReturnType<typeof useAvailData>['data'] })
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Date début</label>
                   <input type="date" value={form.start_date} min={new Date().toISOString().split('T')[0]}
                     onChange={e => setForm(f => ({ ...f, start_date: e.target.value, end_date: f.end_date || e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Date fin</label>
                   <input type="date" value={form.end_date} min={form.start_date || new Date().toISOString().split('T')[0]}
                     onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
+                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
                 </div>
               </div>
 
@@ -746,12 +746,12 @@ function BlockedTab({ data }: { data: ReturnType<typeof useAvailData>['data'] })
                   <div>
                     <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Début</label>
                     <input type="time" value={form.start_time} onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
+                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Fin</label>
                     <input type="time" value={form.end_time} onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm outline-none focus:border-[#82d8ff]" />
+                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
                   </div>
                 </div>
               )}
@@ -932,7 +932,7 @@ function SettingsTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
             <div className="flex items-center gap-2 flex-shrink-0">
               <input type="number" value={form[key] ?? ''} min={min} max={max}
                 onChange={e => upd(key, parseInt(e.target.value) || 0)}
-                className="w-20 px-3 py-1.5 border border-slate-200 rounded-xl text-sm text-center outline-none focus:border-[#82d8ff]" />
+                className="w-20 px-3 py-1.5 border border-slate-200 rounded-xl text-sm text-center text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
               <span className="text-xs text-slate-400">{unit}</span>
             </div>
           </div>
@@ -945,7 +945,7 @@ function SettingsTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
         <input type="number" value={form.max_patients_per_day ?? ''} min={1}
           onChange={e => upd('max_patients_per_day', e.target.value ? parseInt(e.target.value) : null)}
           placeholder="Illimité"
-          className="w-28 px-3 py-1.5 border border-slate-200 rounded-xl text-sm text-center outline-none focus:border-[#82d8ff]" />
+          className="w-28 px-3 py-1.5 border border-slate-200 rounded-xl text-sm text-center text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
       </div>
 
       {[

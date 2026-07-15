@@ -7,14 +7,19 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// The disclaimer used to be appended by the model to every single reply,
+// duplicating the persistent footer already shown in the chat UI — dropped
+// here since the UI's own disclaimer already satisfies "always mention this
+// isn't a substitute for a professional" without repeating it mid-message.
+// Emoji were also removed from the instructions per user feedback that they
+// felt out of place in a mental-health context.
 const MOUNIMA_SYSTEM =`Tu es Mounima, l'assistant bien-être de M-Santé.
 Tu n'es PAS un médecin ou thérapeute.
 Tu offres un espace d'écoute bienveillant.
-RÈGLES : Ne diagnostique jamais. Ne prescris jamais.
+RÈGLES : Ne diagnostique jamais. Ne prescris jamais. N'utilise pas d'émojis.
 Si détresse sévère ou pensées suicidaires : commence ta réponse par "CRISIS_DETECTED\n"
 puis offre soutien et mentionne SOS Amitié Sénégal +221 33 823 8020.
-Termine par : "💙 Cet espace ne remplace pas un professionnel de santé."
-Langue : français. Ton : chaleureux. Réponses courtes (3-5 phrases).`
+Langue : français. Ton : chaleureux et sobre. Réponses courtes (3-5 phrases).`
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })

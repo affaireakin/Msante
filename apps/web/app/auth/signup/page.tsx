@@ -34,11 +34,11 @@ function SignupForm() {
   const [specialities, setSpecialities] = useState<string[]>([])
 
   useEffect(() => {
-    supabase.from('profession_permissions').select('profession_label').order('profession_label')
+    supabase.from('profession_permissions').select('profession_label').eq('category', practType).order('profession_label')
       .then(({ data }) => {
-        if (data?.length) setSpecialities(data.map(r => r.profession_label))
+        setSpecialities(data?.length ? data.map(r => r.profession_label) : [])
       })
-  }, [])
+  }, [practType])
 
   const specialityList = specialities
 

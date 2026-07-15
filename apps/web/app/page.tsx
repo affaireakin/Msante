@@ -165,26 +165,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── Trust Bar ── */}
-        <section className="py-12 bg-[#eff4ff] border-y border-[#bec8ce]/30">
-          <div className="max-w-7xl mx-auto px-6">
-            <p className="text-center text-xs font-bold text-[#6f787e] mb-8 uppercase tracking-widest opacity-60">NOS PARTENAIRES DE CONFIANCE</p>
-            <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-              {[
-                { icon: 'account_balance', label: 'Ministère de la Santé' },
-                { icon: 'waves', label: 'Wave' },
-                { icon: 'cell_tower', label: 'Orange Money' },
-                { icon: 'shield', label: 'Santevie' },
-              ].map(p => (
-                <div key={p.label} className="flex items-center gap-2">
-                  <Icon name={p.icon} className="text-[#82d8ff]" />
-                  <span className="font-bold text-[#0b1c30]/50">{p.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ── Features Grid ── */}
         <section id="features" className="py-24 max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 space-y-4">
@@ -375,6 +355,26 @@ export default function LandingPage() {
         </section>
 
       </main>
+
+      {/* ── Trust Bar ── */}
+      <section className="py-12 bg-[#eff4ff] border-y border-[#bec8ce]/30">
+        <div className="max-w-7xl mx-auto px-6">
+          <p className="text-center text-xs font-bold text-[#6f787e] mb-8 uppercase tracking-widest opacity-60">NOS PARTENAIRES DE CONFIANCE</p>
+          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+            {[
+              { icon: 'account_balance', label: 'Ministère de la Santé' },
+              { icon: 'waves', label: 'Wave' },
+              { icon: 'cell_tower', label: 'Orange Money' },
+              { icon: 'shield', label: 'Santevie' },
+            ].map(p => (
+              <div key={p.label} className="flex items-center gap-2">
+                <Icon name={p.icon} className="text-[#82d8ff]" />
+                <span className="font-bold text-[#0b1c30]/50">{p.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── Footer ── */}
       <footer className="bg-[#dce9ff] border-t border-[#bec8ce]/30">

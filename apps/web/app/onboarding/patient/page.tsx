@@ -333,6 +333,7 @@ export default function PatientOnboardingPage() {
                 </p>
               </div>
 
+              <p className="text-xs font-bold text-[#6f787e] uppercase tracking-wide text-left">Comment ça marche</p>
               <div className="grid grid-cols-3 gap-3 text-left">
                 {[
                   { icon: 'search', title: 'Trouver', desc: 'Parcourez nos praticiens' },

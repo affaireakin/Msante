@@ -1,3 +1,4 @@
+
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
@@ -18,7 +19,7 @@ async function triggerWorkflowNotif(
   supabaseUrl: string,
   serviceRoleKey: string,
   template_key: string,
-  recipients: Array<{ user_id: string; full_name: string; email?: string | null; phone?: string | null; push_token?: string | null }>,
+  recipients: Array<{ user_id: string; full_name: string; email?: string | null; phone?: string | null; push_token?: string | null; role?: 'patient' | 'practitioner' }>,
   data: Record<string, string | number>,
 ) {
   try {
@@ -115,11 +116,11 @@ Deno.serve(async (req) => {
     }
 
     const patientRecipient = patient
-      ? [{ user_id: appt.patient_id, full_name: patient.full_name, email: patient.email, phone: patient.phone, push_token: null }]
+      ? [{ user_id: appt.patient_id, full_name: patient.full_name, email: patient.email, phone: patient.phone, push_token: null, role: 'patient' as const }]
       : []
 
     const practRecipient = (pract?.user_id && practUser)
-      ? [{ user_id: pract.user_id, full_name: practUser.full_name, email: practUser.email, phone: practUser.phone, push_token: null }]
+      ? [{ user_id: pract.user_id, full_name: practUser.full_name, email: practUser.email, phone: practUser.phone, push_token: null, role: 'practitioner' as const }]
       : []
 
     void triggerWorkflowNotif(SUPABASE_URL, SERVICE_ROLE_KEY, templateKey, [...patientRecipient, ...practRecipient], notifData)

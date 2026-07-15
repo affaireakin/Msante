@@ -9,6 +9,7 @@ import {
   RoomAudioRenderer,
   useTracks,
   useLocalParticipant,
+  useRemoteParticipants,
 } from '@livekit/components-react'
 import '@livekit/components-styles'
 import { Track } from 'livekit-client'
@@ -40,6 +41,20 @@ function VideoArea({
   ])
   const containerRef = useRef<HTMLDivElement>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const remoteParticipants = useRemoteParticipants()
+  const [practitionerLeft, setPractitionerLeft] = useState(false)
+  const hadRemoteRef = useRef(false)
+
+  // The practitioner's tile just silently disappeared with no explanation
+  // when they left — surface it explicitly instead.
+  useEffect(() => {
+    if (remoteParticipants.length > 0) {
+      hadRemoteRef.current = true
+      setPractitionerLeft(false)
+    } else if (hadRemoteRef.current) {
+      setPractitionerLeft(true)
+    }
+  }, [remoteParticipants.length])
 
   useEffect(() => {
     localParticipant.setMicrophoneEnabled(!isMuted)
@@ -66,6 +81,13 @@ function VideoArea({
         <ParticipantTile />
       </GridLayout>
       <RoomAudioRenderer />
+
+      {practitionerLeft && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-20 bg-[#213145]/90 backdrop-blur-md border border-white/15 rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xl">
+          <span className="material-symbols-outlined text-amber-300 text-lg select-none">info</span>
+          <p className="text-white text-sm">{practitionerName} a quitté la consultation.</p>
+        </div>
+      )}
 
       {/* Praticien badge bas gauche */}
       <div className="absolute bottom-20 left-4 z-10">
