@@ -86,6 +86,9 @@ const PROVIDERS = [
   { id: 'orange_money', label: 'Orange Money',   color: '#FF6900', bg: '#fff3e0', icon: '🟠' },
   { id: 'card',         label: 'Carte bancaire', color: '#82d8ff', bg: '#e5eeff', icon: '💳' },
 ]
+// Only offered for in-person slots — paying online for a consultation you
+// walk into in person was a real trust barrier per user feedback.
+const ON_SITE_PROVIDER = { id: 'on_site', label: 'Payer sur place', color: '#1d7a3a', bg: '#e8f5e9', icon: '💵' }
 
 type Step = 'type' | 'slot' | 'confirm' | 'payment' | 'success'
 
@@ -181,7 +184,11 @@ export default function BookingPage() {
         return
       }
 
-      const type = selectedMode === 'video' ? 'video' : 'audio'
+      // 'presentiel' is a valid appointments.type value but was never actually
+      // written here — in-person bookings were mislabeled 'audio' (an
+      // audio-only *call*, not a physical visit), which is why the
+      // practitioner calendar always showed the phone/audio icon for them.
+      const type = selectedMode === 'video' ? 'video' : 'presentiel'
 
       const { data: appt, error: apptErr } = await supabase.from('appointments').insert({
         patient_id: session.user.id,
@@ -529,7 +536,7 @@ export default function BookingPage() {
             <div>
               <p className="text-sm font-bold text-[#0b1c30] mb-2">Moyen de paiement</p>
               <div className="space-y-2">
-                {PROVIDERS.map(p => (
+                {(selectedMode === 'presentiel' ? [...PROVIDERS, ON_SITE_PROVIDER] : PROVIDERS).map(p => (
                   <button key={p.id} onClick={() => setProvider(p.id)}
                     className={`w-full flex items-center gap-4 px-5 py-4 rounded-xl border transition-all ${provider === p.id ? 'border-[#82d8ff] bg-[#e5eeff]' : 'border-slate-200/50 bg-white/60 hover:bg-white'}`}>
                     <span className="text-2xl">{p.icon}</span>
@@ -550,9 +557,15 @@ export default function BookingPage() {
               </div>
             )}
 
-            <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-amber-700">
-              ⚠️ Mode simulation — aucun débit réel ne sera effectué.
-            </div>
+            {provider === 'on_site' ? (
+              <div className="bg-[#e8f5e9] border border-[#1d7a3a]/20 rounded-xl px-4 py-3 text-xs text-[#1d7a3a]">
+                💵 Vous réglerez directement le praticien lors de votre consultation en présentiel.
+              </div>
+            ) : (
+              <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-amber-700">
+                ⚠️ Mode simulation — aucun débit réel ne sera effectué.
+              </div>
+            )}
 
             {bookingError && <p className="text-sm text-red-500 text-center">{bookingError}</p>}
 
@@ -560,7 +573,9 @@ export default function BookingPage() {
               className="w-full py-4 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50 text-sm">
               {loading
                 ? <span className="flex items-center justify-center gap-2"><span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />Traitement...</span>
-                : `Confirmer — ${selectedSlot.type.price?.toLocaleString('fr-FR')} ${selectedSlot.type.currency}`}
+                : provider === 'on_site'
+                  ? 'Confirmer le rendez-vous — à régler sur place'
+                  : `Confirmer — ${selectedSlot.type.price?.toLocaleString('fr-FR')} ${selectedSlot.type.currency}`}
             </button>
           </div>
         )}

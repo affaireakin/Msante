@@ -103,7 +103,11 @@ Deno.serve(async (req) => {
         scheduled_at,
         duration_min,
         type,
-        status: 'confirmed',
+        // A practitioner-created RDV must be accepted by the patient, not
+        // auto-confirmed — the patient gets an Accepter/Refuser action on
+        // their appointments page (see created_by-gated UI).
+        status: 'pending',
+        created_by: 'practitioner',
         ...(service_id ? { service_id } : {}),
       })
       .select()
@@ -127,8 +131,8 @@ Deno.serve(async (req) => {
       const dateTimeStr = apptDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
         + ' à ' + apptDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
       const { data: practUser } = await supabase.from('users').select('full_name').eq('id', practitioner.user_id).single()
-      const title = 'Nouveau rendez-vous programmé'
-      const body = `${practUser?.full_name ?? 'Votre praticien'} a programmé un RDV le ${dateTimeStr}.`
+      const title = 'Rendez-vous à confirmer'
+      const body = `${practUser?.full_name ?? 'Votre praticien'} vous propose un RDV le ${dateTimeStr}. Confirmez-le dans votre espace patient.`
 
       await supabase.from('notifications').insert({
         user_id: patient_id, type: 'appointment_confirm', title, body, channel: 'push',

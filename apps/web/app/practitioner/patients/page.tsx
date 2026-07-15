@@ -223,7 +223,7 @@ interface PendingApt {
   id: string
   scheduled_at: string
   duration_min: number
-  type: 'video' | 'audio' | 'chat'
+  type: 'video' | 'audio' | 'chat' | 'presentiel'
   users: { full_name: string; phone: string | null } | null
 }
 
@@ -232,7 +232,7 @@ interface UpcomingApt {
   scheduled_at: string
   duration_min: number
   status: 'confirmed' | 'pending'
-  type: 'video' | 'audio' | 'chat'
+  type: 'video' | 'audio' | 'chat' | 'presentiel'
   users: { full_name: string } | null
 }
 
@@ -352,7 +352,7 @@ function PendingTab({ practId }: { practId: string }) {
             <span className="hidden sm:flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full"
               style={{ background: tc.bg, color: tc.text }}>
               <Icon name={TYPE_ICONS[apt.type] ?? 'event'} size={13} color={tc.text} />
-              {apt.type === 'video' ? 'Vidéo' : apt.type === 'audio' ? 'Audio' : 'Chat'}
+              {apt.type === 'video' ? 'Vidéo' : apt.type === 'audio' ? 'Audio' : apt.type === 'presentiel' ? 'Présentiel' : 'Chat'}
             </span>
 
             {/* Actions */}

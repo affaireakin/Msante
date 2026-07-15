@@ -104,7 +104,7 @@ export default function PractitionerBookForPatientPage() {
       if (!session) { router.push('/auth/login'); return }
 
       const scheduled_at = `${selectedSlot.date}T${selectedSlot.start_time}:00Z`
-      const type = selectedMode === 'video' ? 'video' : 'audio'
+      const type = selectedMode === 'video' ? 'video' : 'presentiel'
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/create-practitioner-appointment`, {
         method: 'POST',
@@ -142,9 +142,10 @@ export default function PractitionerBookForPatientPage() {
           <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto">
             <Icon name="check_circle" size={32} color="#1d7a3a" />
           </div>
-          <h2 className="text-xl font-bold text-[#0b1c30]">Rendez-vous programmé</h2>
+          <h2 className="text-xl font-bold text-[#0b1c30]">Proposition envoyée</h2>
           <p className="text-sm text-[#6f787e]">
-            Le RDV avec {data.patient.full_name} le {selectedSlot ? formatDateLong(selectedSlot.date) : ''} à {selectedSlot?.start_time} a été confirmé et le patient a été notifié.
+            Le RDV avec {data.patient.full_name} le {selectedSlot ? formatDateLong(selectedSlot.date) : ''} à {selectedSlot?.start_time} a été proposé et le patient a été notifié.
+            Il apparaîtra sur votre agenda une fois que {data.patient.full_name} l&apos;aura accepté.
           </p>
           <button onClick={() => router.push(`/practitioner/patients/${patientId}/journey`)}
             className="w-full py-3 rounded-xl text-sm font-bold text-white" style={{ backgroundColor: '#82d8ff' }}>
@@ -251,6 +252,7 @@ export default function PractitionerBookForPatientPage() {
               { label: 'Date', value: formatDateLong(selectedSlot.date) },
               { label: 'Heure', value: `${selectedSlot.start_time} – ${selectedSlot.end_time}` },
               { label: 'Mode', value: selectedMode === 'video' ? '📹 Téléconsultation' : '🏥 Présentiel' },
+              { label: 'Paiement', value: selectedMode === 'presentiel' ? 'À régler sur place' : 'À convenir avec le patient' },
             ].map(row => (
               <div key={row.label} className="flex items-center justify-between text-sm">
                 <span className="text-[#6f787e]">{row.label}</span>
@@ -259,11 +261,15 @@ export default function PractitionerBookForPatientPage() {
             ))}
           </div>
 
+          <div className="rounded-xl px-4 py-3 text-xs text-[#705d00] bg-[#fff8e1] border border-[#705d00]/20">
+            Ce créneau sera réservé sous réserve de l&apos;acceptation du patient — il devra confirmer le RDV depuis son espace.
+          </div>
+
           {bookingError && <p className="text-sm text-[#ba1a1a] bg-red-50 rounded-lg px-3 py-2">{bookingError}</p>}
 
           <button onClick={() => void handleConfirm()} disabled={loading}
             className="w-full py-3 rounded-xl text-sm font-bold text-white disabled:opacity-50" style={{ backgroundColor: '#82d8ff' }}>
-            {loading ? 'Création…' : 'Confirmer le rendez-vous'}
+            {loading ? 'Envoi…' : 'Envoyer la proposition de RDV'}
           </button>
         </div>
       )}

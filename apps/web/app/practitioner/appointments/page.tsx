@@ -12,7 +12,8 @@ interface Appointment {
   scheduled_at: string
   duration_min: number
   status: AptStatus
-  type: 'video' | 'audio' | 'chat'
+  type: 'video' | 'audio' | 'chat' | 'presentiel'
+  created_by: 'patient' | 'practitioner'
   users: { full_name: string } | null
 }
 
@@ -30,9 +31,10 @@ const STATUS_COLORS: Record<AptStatus, { bg: string; text: string }> = {
   no_show:   { bg: '#fee2e2', text: '#991b1b' },
 }
 const TYPE_META: Record<string, { icon: string; bg: string; border: string; text: string; label: string }> = {
-  video: { icon: 'videocam',     bg: '#e5eeff', border: '#82d8ff', text: '#82d8ff', label: 'Vidéo' },
-  audio: { icon: 'mic',          bg: '#f3e8ff', border: '#7c3aed', text: '#7c3aed', label: 'Audio' },
-  chat:  { icon: 'chat_bubble',  bg: '#dcfce7', border: '#1d7a3a', text: '#1d7a3a', label: 'Chat'  },
+  video:      { icon: 'videocam',     bg: '#e5eeff', border: '#82d8ff', text: '#82d8ff', label: 'Vidéo' },
+  audio:      { icon: 'mic',          bg: '#f3e8ff', border: '#7c3aed', text: '#7c3aed', label: 'Audio' },
+  chat:       { icon: 'chat_bubble',  bg: '#dcfce7', border: '#1d7a3a', text: '#1d7a3a', label: 'Chat'  },
+  presentiel: { icon: 'location_on',  bg: '#fff8e1', border: '#705d00', text: '#705d00', label: 'Présentiel' },
 }
 
 const HOUR_START = 7
@@ -121,7 +123,7 @@ function useWeekAppointments(weekStart: Date) {
       const practId = await getPractitionerId()
       const { data, error } = await supabase
         .from('appointments')
-        .select('id, scheduled_at, duration_min, status, type, users!patient_id(full_name)')
+        .select('id, scheduled_at, duration_min, status, type, created_by, users!patient_id(full_name)')
         .eq('practitioner_id', practId)
         .gte('scheduled_at', weekStart.toISOString())
         .lte('scheduled_at', weekEnd.toISOString())
@@ -142,7 +144,7 @@ function useListAppointments(filter: 'upcoming' | 'past') {
       const now = new Date().toISOString()
       let q = supabase
         .from('appointments')
-        .select('id, scheduled_at, duration_min, status, type, users!patient_id(full_name)')
+        .select('id, scheduled_at, duration_min, status, type, created_by, users!patient_id(full_name)')
         .eq('practitioner_id', practId)
         .order('scheduled_at', { ascending: filter === 'upcoming' })
       if (filter === 'upcoming') {
@@ -250,13 +252,18 @@ function DetailPanel({ apt, onClose }: { apt: Appointment; onClose: () => void }
                 Rejoindre la session
               </Link>
             )}
-            {apt.status === 'pending' && (
+            {apt.status === 'pending' && apt.created_by !== 'practitioner' && (
               <button onClick={() => updateStatus.mutate('confirmed')} disabled={updateStatus.isPending}
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-bold text-white disabled:opacity-60"
                 style={{ background: '#1d7a3a' }}>
                 <Icon name="check_circle" size={16} color="#fff" />
                 Confirmer le RDV
               </button>
+            )}
+            {apt.status === 'pending' && apt.created_by === 'practitioner' && (
+              <p className="text-xs text-center text-[#705d00] bg-[#fff8e1] rounded-xl py-2.5 px-3">
+                En attente de la confirmation du patient
+              </p>
             )}
             {(apt.status === 'confirmed' || apt.status === 'pending') && (
               <>
@@ -655,7 +662,7 @@ export default function AppointmentsPage() {
                           Rejoindre
                         </Link>
                       )}
-                      {listFilter === 'upcoming' && apt.status === 'pending' && (
+                      {listFilter === 'upcoming' && apt.status === 'pending' && apt.created_by !== 'practitioner' && (
                         <div className="flex gap-1.5 mt-1.5" onClick={e => e.stopPropagation()}>
                           <button onClick={() => updateStatus.mutate({ id: apt.id, status: 'confirmed' })}
                             disabled={updateStatus.isPending}
@@ -670,6 +677,11 @@ export default function AppointmentsPage() {
                           </button>
                       </div>
                     )}
+                      {listFilter === 'upcoming' && apt.status === 'pending' && apt.created_by === 'practitioner' && (
+                        <span className="inline-block mt-1.5 px-3 py-1 rounded-full text-xs font-bold text-[#705d00] bg-[#fff8e1]">
+                          En attente du patient
+                        </span>
+                      )}
                     </div>
                   </div>
                 )

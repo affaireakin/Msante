@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
@@ -32,6 +32,7 @@ interface Appointment {
   status: string
   type: string
   notes: string | null
+  created_by: string
   practitioners: { id: string; speciality: string; users: { full_name: string } | null } | null
   consultations: { id: string; practitioner_documents: PractDoc[] }[] | null
 }
@@ -52,7 +53,7 @@ function useAppointments(filter: Filter) {
 
       let q = supabase
         .from('appointments')
-        .select('id, scheduled_at, duration_min, status, type, notes, practitioners!inner(id, speciality, users!user_id(full_name)), consultations(id, practitioner_documents(id, document_type))')
+        .select('id, scheduled_at, duration_min, status, type, notes, created_by, practitioners!inner(id, speciality, users!user_id(full_name)), consultations(id, practitioner_documents(id, document_type))')
         .eq('patient_id', user.id)
         .order('scheduled_at', { ascending: false })
 
@@ -74,6 +75,18 @@ function useAppointments(filter: Filter) {
 export default function AppointmentsPage() {
   const [filter, setFilter] = useState<Filter>('all')
   const { data = [], isLoading } = useAppointments(filter)
+  const queryClient = useQueryClient()
+
+  const respondToRequest = useMutation({
+    mutationFn: async ({ appointmentId, decision }: { appointmentId: string; decision: 'confirmed' | 'cancelled' }) => {
+      const { error } = await supabase.from('appointments').update({ status: decision }).eq('id', appointmentId)
+      if (error) throw error
+      void supabase.functions.invoke('on-appointment-status-change', {
+        body: { appointment_id: appointmentId, new_status: decision },
+      })
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['patient-appointments'] }),
+  })
 
   const FILTERS: { key: Filter; label: string }[] = [
     { key: 'all', label: 'Tous' },
@@ -198,6 +211,33 @@ export default function AppointmentsPage() {
                       <Icon name="video_call" style={{ fontSize: '14px' }} />
                       Rejoindre la consultation →
                     </Link>
+                  )}
+
+                  {/* RDV proposé par le praticien — nécessite l'acceptation du patient */}
+                  {apt.status === 'pending' && apt.created_by === 'practitioner' && !isPast && (
+                    <div className="mt-2.5 space-y-1.5">
+                      <p className="text-xs text-[#705d00] font-semibold">Ce praticien vous propose ce créneau — confirmez-vous ?</p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => respondToRequest.mutate({ appointmentId: apt.id, decision: 'confirmed' })}
+                          disabled={respondToRequest.isPending}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-white disabled:opacity-50"
+                          style={{ backgroundColor: '#1d7a3a' }}
+                        >
+                          <Icon name="check" style={{ fontSize: '13px' }} />
+                          Accepter
+                        </button>
+                        <button
+                          onClick={() => respondToRequest.mutate({ appointmentId: apt.id, decision: 'cancelled' })}
+                          disabled={respondToRequest.isPending}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold border disabled:opacity-50"
+                          style={{ borderColor: '#ba1a1a', color: '#ba1a1a' }}
+                        >
+                          <Icon name="close" style={{ fontSize: '13px' }} />
+                          Refuser
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
