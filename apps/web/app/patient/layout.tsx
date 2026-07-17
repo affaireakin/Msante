@@ -12,6 +12,7 @@ function Icon({ name }: { name: string }) {
 const navItems = [
   { href: '/patient', label: 'Accueil', icon: 'home', exact: true },
   { href: '/patient/practitioners', label: 'Trouver un praticien', icon: 'medical_services', exact: false },
+  { href: '/patient/organizations', label: 'Organisations', icon: 'storefront', exact: false },
   { href: '/patient/mon-equipe', label: 'Mon équipe', icon: 'groups', exact: false },
   { href: '/patient/appointments', label: 'Rendez-vous', icon: 'calendar_today', exact: false },
   { href: '/patient/prescriptions', label: 'Ordonnances', icon: 'receipt_long', exact: false },

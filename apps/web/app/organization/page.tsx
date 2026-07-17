@@ -14,6 +14,8 @@ interface OrgOverview {
   city: string | null
   status: string
   logoUrl: string | null
+  description: string | null
+  openingHours: string | null
   practitionerCount: number
   todayAppointmentCount: number
   pendingAppointmentCount: number
@@ -32,7 +34,7 @@ function useOrgOverview() {
 
       const { data: org } = await supabase
         .from('organizations')
-        .select('name, city, status, logo_url')
+        .select('name, city, status, logo_url, description, opening_hours')
         .eq('id', organizationId)
         .single()
 
@@ -57,6 +59,8 @@ function useOrgOverview() {
         city: org?.city ?? null,
         status: org?.status ?? 'active',
         logoUrl: org?.logo_url ?? null,
+        description: org?.description ?? null,
+        openingHours: org?.opening_hours ?? null,
         practitionerCount: practitionerCount ?? 0,
         todayAppointmentCount: todayAppointmentCount ?? 0,
         pendingAppointmentCount: pendingAppointmentCount ?? 0,
@@ -123,6 +127,51 @@ function LogoUploader({ organizationId, logoUrl }: { organizationId: string; log
   )
 }
 
+function PublicProfileEditor({ organizationId, description, openingHours }: { organizationId: string; description: string | null; openingHours: string | null }) {
+  const queryClient = useQueryClient()
+  const [desc, setDesc] = useState(description ?? '')
+  const [hours, setHours] = useState(openingHours ?? '')
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  const handleSave = async () => {
+    setSaving(true)
+    setSaved(false)
+    await supabase.from('organizations').update({ description: desc || null, opening_hours: hours || null }).eq('id', organizationId)
+    void queryClient.invalidateQueries({ queryKey: ['org-overview'] })
+    setSaving(false)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2500)
+  }
+
+  return (
+    <div className="rounded-2xl p-5 space-y-4"
+      style={{ backgroundColor: 'rgba(255,255,255,0.60)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.80)' }}>
+      <div>
+        <p className="font-semibold text-[#0b1c30] text-sm">Profil public</p>
+        <p className="text-xs text-[#6f787e] mt-0.5">Visible par les patients sur la fiche de votre organisation.</p>
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Description</label>
+        <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={3}
+          placeholder="Présentez votre cabinet, votre équipe, votre approche..."
+          className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none" />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Horaires d&apos;ouverture</label>
+        <textarea value={hours} onChange={e => setHours(e.target.value)} rows={2}
+          placeholder="Ex: Lun-Ven 8h-18h, Sam 9h-13h"
+          className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none" />
+      </div>
+      <button onClick={() => void handleSave()} disabled={saving}
+        className="px-4 py-2 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50"
+        style={{ backgroundColor: saved ? '#1d7a3a' : '#82d8ff' }}>
+        {saving ? 'Sauvegarde...' : saved ? 'Sauvegardé !' : 'Sauvegarder'}
+      </button>
+    </div>
+  )
+}
+
 export default function OrganizationOverviewPage() {
   const { data, isLoading, error } = useOrgOverview()
 
@@ -156,6 +205,7 @@ export default function OrganizationOverviewPage() {
       </div>
 
       <LogoUploader organizationId={data.organizationId} logoUrl={data.logoUrl} />
+      <PublicProfileEditor organizationId={data.organizationId} description={data.description} openingHours={data.openingHours} />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {KPIS.map(kpi => (

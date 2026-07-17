@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import AuthRedirect from '@/components/AuthRedirect'
+import FeaturedOrganizations from '@/components/FeaturedOrganizations'
 
 export const metadata: Metadata = {
   title: 'M-Santé | Psychologues & Psychiatres en ligne au Sénégal',
@@ -329,6 +330,8 @@ export default function LandingPage() {
             ))}
           </div>
         </section>
+
+        <FeaturedOrganizations />
 
         {/* ── CTA Final ── */}
         <section className="py-24 px-6">
