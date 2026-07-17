@@ -26,18 +26,22 @@ Deno.serve(async (req) => {
     )
 
     const now = new Date()
-    const windowStart = new Date(now.getTime() + 23 * 60 * 60 * 1000).toISOString()
-    const windowEnd = new Date(now.getTime() + 25 * 60 * 60 * 1000).toISOString()
+    // Patients choose their own lead time (reminder_hours_before, default 24h) instead
+    // of everyone getting a hardcoded 24h-before reminder — fetch a wide window covering
+    // every possible preference (up to 7 days) and filter per-appointment below.
+    const MAX_REMINDER_HOURS = 168
+    const windowStart = now.toISOString()
+    const windowEnd = new Date(now.getTime() + (MAX_REMINDER_HOURS + 1) * 60 * 60 * 1000).toISOString()
 
     const { data: appointments, error } = await supabase
       .from('appointments')
       .select(`
         id,
         scheduled_at,
-        patient:users!appointments_patient_id_fkey (id, full_name, email, push_token, whatsapp_number),
+        patient:users!appointments_patient_id_fkey (id, full_name, email, push_token, whatsapp_number, reminder_hours_before),
         practitioner:practitioners!inner (
           id,
-          practitioner_user:users!practitioners_user_id_fkey (id, full_name, email, push_token, whatsapp_number)
+          practitioner_user:users!practitioners_user_id_fkey (id, full_name, email, push_token, whatsapp_number, reminder_hours_before)
         )
       `)
       .eq('status', 'confirmed')
@@ -53,15 +57,22 @@ Deno.serve(async (req) => {
 
     let sent = 0
 
+    // Due within the last hour of ticking (the cron runs hourly): fires exactly
+    // once per recipient since the anti-dup check below also guards it.
+    function isDue(scheduledAt: Date, hoursBefore: number): boolean {
+      const reminderAt = scheduledAt.getTime() - hoursBefore * 60 * 60 * 1000
+      return now.getTime() >= reminderAt && now.getTime() - reminderAt < 60 * 60 * 1000
+    }
+
     for (const appt of (appointments ?? [])) {
       const patient = appt.patient as {
         id: string; full_name: string; email: string | null
-        push_token: string | null; whatsapp_number: string | null
+        push_token: string | null; whatsapp_number: string | null; reminder_hours_before: number | null
       } | null
       const practitionerUser = (appt.practitioner as {
         practitioner_user: {
           id: string; full_name: string; email: string | null
-          push_token: string | null; whatsapp_number: string | null
+          push_token: string | null; whatsapp_number: string | null; reminder_hours_before: number | null
         } | null
       } | null)?.practitioner_user
 
@@ -71,16 +82,18 @@ Deno.serve(async (req) => {
       const dateStr = scheduledDate.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long' })
       const timeStr = scheduledDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
 
+      const patientDue = isDue(scheduledDate, patient.reminder_hours_before ?? 24)
+
       // Anti-duplicate: skip if already sent for this appointment
-      const { data: existing } = await supabase
+      const { data: existing } = patientDue ? await supabase
         .from('notifications')
         .select('id')
         .eq('type', 'appointment_reminder')
         .eq('user_id', patient.id)
         .contains('data', { appointment_id: appt.id })
-        .maybeSingle()
+        .maybeSingle() : { data: null }
 
-      if (!existing) {
+      if (patientDue && !existing) {
         try {
           await notifService.send({
             type: 'appointment_reminder',
@@ -104,8 +117,8 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Notify practitioner (no anti-dup needed — different user_id)
-      if (practitionerUser) {
+      // Notify practitioner (own reminder_hours_before preference, own anti-dup — different user_id)
+      if (practitionerUser && isDue(scheduledDate, practitionerUser.reminder_hours_before ?? 24)) {
         const { data: existingPract } = await supabase
           .from('notifications')
           .select('id')

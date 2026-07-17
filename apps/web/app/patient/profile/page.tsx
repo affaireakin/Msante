@@ -26,7 +26,7 @@ function useProfile() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Non connecté')
       const [{ data: profile }, { data: med }] = await Promise.all([
-        supabase.from('users').select('full_name, phone, country, language, reminder_email, avatar_url, share_contact_with_practitioners').eq('id', user.id).single(),
+        supabase.from('users').select('full_name, phone, country, language, reminder_email, reminder_hours_before, avatar_url, share_contact_with_practitioners').eq('id', user.id).single(),
         supabase.from('patient_medical_profiles').select('*').eq('patient_id', user.id).maybeSingle(),
       ])
       return { user, profile, med }
@@ -55,6 +55,7 @@ export default function PatientProfilePage() {
   const [country, setCountry]           = useState('SN')
   const [language, setLanguage]         = useState('fr')
   const [reminderEmail, setReminderEmail] = useState('')
+  const [reminderHoursBefore, setReminderHoursBefore] = useState(24)
 
   // Medical
   const [bloodType, setBloodType]         = useState('')
@@ -81,6 +82,7 @@ export default function PatientProfilePage() {
       setFullName(profile.full_name ?? '')
       setAvatarUrl((profile as { avatar_url?: string | null }).avatar_url ?? null)
       setReminderEmail(profile.reminder_email ?? '')
+      setReminderHoursBefore((profile as { reminder_hours_before?: number }).reminder_hours_before ?? 24)
       setCountry(profile.country ?? 'SN')
       setLanguage(profile.language ?? 'fr')
       // Split stored phone into dial code + local number
@@ -112,6 +114,7 @@ export default function PatientProfilePage() {
       const fullPhone = phoneLocal.trim() ? `${dialCode} ${phoneLocal.trim()}` : null
       await supabase.from('users').update({
         full_name: fullName, phone: fullPhone, country, language, reminder_email: reminderEmail || null,
+        reminder_hours_before: reminderHoursBefore,
         share_contact_with_practitioners: shareContact,
       }).eq('id', userId)
 
@@ -298,6 +301,19 @@ export default function PatientProfilePage() {
               <input type="email" value={reminderEmail} onChange={e => setReminderEmail(e.target.value)} placeholder="rappels@example.com"
                 className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all" />
               <p className="text-xs text-[#6f787e]">Laissez vide pour utiliser votre email de connexion</p>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Rappel de rendez-vous</label>
+              <select value={reminderHoursBefore} onChange={e => setReminderHoursBefore(Number(e.target.value))}
+                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] transition-all">
+                <option value={48}>48h avant</option>
+                <option value={24}>24h avant</option>
+                <option value={12}>12h avant</option>
+                <option value={6}>6h avant</option>
+                <option value={2}>2h avant</option>
+                <option value={1}>1h avant</option>
+              </select>
+              <p className="text-xs text-[#6f787e]">Délai avant lequel vous recevez le rappel de rendez-vous</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
