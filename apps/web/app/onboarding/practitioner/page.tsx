@@ -10,6 +10,12 @@ function Icon({ name, size = 20, color }: { name: string; size?: number; color?:
 const STEPS = ['Votre profil', 'Votre pratique', 'Documents', 'Confirmation']
 
 const LANGUAGES = ['Français', 'Wolof', 'Anglais', 'Arabe', 'Diola', 'Mandingue', 'Pulaar']
+const LANGUAGE_CODE_MAP: Record<string, string> = { fr: 'Français', en: 'Anglais', ar: 'Arabe', wo: 'Wolof' }
+// Older rows carry raw codes (DB column default used to be ARRAY['fr']) which never
+// match a toggle button above, so they'd sit invisibly in the array forever.
+function normalizeLanguages(langs: string[]): string[] {
+  return Array.from(new Set(langs.map(l => LANGUAGE_CODE_MAP[l] ?? l)))
+}
 const DURATIONS = [{ value: 30, label: '30 min' }, { value: 45, label: '45 min' }, { value: 60, label: '1h' }, { value: 90, label: '1h30' }]
 const SESSION_TYPES = [
   { value: 'video', icon: 'videocam', label: 'Vidéo' },
@@ -75,7 +81,7 @@ export default function PractitionerOnboardingPage() {
         setPractitionerId(pract.id)
         if (pract.speciality) setSpeciality(pract.speciality)
         if (pract.bio) setBio(pract.bio)
-        if (pract.languages?.length) setLanguages(pract.languages)
+        if (pract.languages?.length) setLanguages(normalizeLanguages(pract.languages))
         if (pract.session_price) setPrice(String(pract.session_price))
         if (pract.session_currency) setCurrency(pract.session_currency)
         if (pract.session_duration_min) setDuration(pract.session_duration_min)

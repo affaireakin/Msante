@@ -132,8 +132,8 @@ export default function LandingPage() {
                       <div className="w-24 h-24 rounded-full bg-[#82d8ff] flex items-center justify-center mx-auto shadow-2xl">
                         <Icon name="medical_services" className="text-white" style={{ fontSize: '48px' }} />
                       </div>
-                      <div>
-                        <p className="text-xl font-black text-[#82d8ff]">Dr. Aminata Diallo</p>
+                      <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-lg">
+                        <p className="text-xl font-black text-[#0b1c30]">Dr. Aminata Diallo</p>
                         <p className="text-sm text-[#6f787e] font-medium">Psychologue Clinicienne</p>
                         <div className="flex items-center justify-center gap-1 mt-2">
                           {[1,2,3,4,5].map(i => (

@@ -8,6 +8,12 @@ function Icon({ name, size = 20, color }: { name: string; size?: number; color?:
 }
 
 const LANGUAGES = ['Français', 'Wolof', 'Anglais', 'Arabe', 'Diola', 'Mandingue', 'Pulaar']
+const LANGUAGE_CODE_MAP: Record<string, string> = { fr: 'Français', en: 'Anglais', ar: 'Arabe', wo: 'Wolof' }
+// Older rows carry raw codes (DB column default used to be ARRAY['fr']) which never
+// match a toggle button above, so they'd sit invisibly in the array forever.
+function normalizeLanguages(langs: string[]): string[] {
+  return Array.from(new Set(langs.map(l => LANGUAGE_CODE_MAP[l] ?? l)))
+}
 
 function useSpecialitiesFor(category: 'healthcare' | 'wellness') {
   return useQuery({
@@ -101,7 +107,7 @@ export default function PractitionerProfilePage() {
       setBio(pract.bio ?? '')
       setSpeciality(pract.speciality ?? '')
       setPractitionerType(((pract as unknown as Record<string, string>).practitioner_type as 'healthcare' | 'wellness') ?? 'healthcare')
-      setLanguages(pract.languages ?? ['Français'])
+      setLanguages(pract.languages?.length ? normalizeLanguages(pract.languages) : ['Français'])
       setPrice(pract.session_price ? String(pract.session_price) : '')
       setCurrency(pract.session_currency ?? 'XOF')
       setDuration(pract.session_duration_min ?? 60)
