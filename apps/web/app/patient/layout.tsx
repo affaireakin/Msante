@@ -32,16 +32,18 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const [userId, setUserId] = useState<string | null>(null)
   const [unreadMessages, setUnreadMessages] = useState(0)
   const [accountStatus, setAccountStatus] = useState<'active' | 'suspended' | 'blocked' | null>(null)
+  const [statusReason, setStatusReason] = useState<string | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
       setUserId(user.id)
-      supabase.from('users').select('full_name, role, account_status').eq('id', user.id).single().then(({ data }) => {
+      supabase.from('users').select('full_name, role, account_status, status_reason').eq('id', user.id).single().then(({ data }) => {
         if (!data || data.role !== 'patient') { router.push('/auth/login'); return }
         setName(data.full_name ?? '')
         setInitials((data.full_name ?? 'P').split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2))
         setAccountStatus((data.account_status as 'active' | 'suspended' | 'blocked' | null) ?? 'active')
+        setStatusReason((data as { status_reason?: string | null }).status_reason ?? null)
       })
     })
   }, [router])
@@ -225,8 +227,9 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
               <h2 className="text-xl font-bold text-[#0b1c30] mb-2">
                 {accountStatus === 'blocked' ? 'Votre compte est bloqué' : 'Votre compte est suspendu'}
               </h2>
+              {statusReason && <p className="text-sm text-[#0b1c30] max-w-md mb-2">Motif : {statusReason}</p>}
               <p className="text-sm text-[#6f787e] max-w-md mb-4">
-                Contactez notre équipe pour plus d&apos;informations sur cette décision.
+                Si vous pensez qu&apos;il s&apos;agit d&apos;une erreur, contactez notre équipe à <strong>privacy@m-sante.com</strong> pour contester cette décision.
               </p>
               <button onClick={handleSignOut} className="mt-2 text-sm text-[#6f787e] underline hover:text-[#0b1c30] transition-colors">
                 Se déconnecter

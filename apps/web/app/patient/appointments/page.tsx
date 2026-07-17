@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
@@ -33,7 +33,8 @@ interface Appointment {
   type: string
   notes: string | null
   created_by: string
-  practitioners: { id: string; speciality: string; users: { full_name: string } | null } | null
+  cancellation_reason: string | null
+  practitioners: { id: string; speciality: string; users: { full_name: string } | null; practitioner_booking_settings: { cancellation_deadline_hours: number | null } | null } | null
   consultations: { id: string; practitioner_documents: PractDoc[] }[] | null
 }
 
@@ -53,7 +54,7 @@ function useAppointments(filter: Filter) {
 
       let q = supabase
         .from('appointments')
-        .select('id, scheduled_at, duration_min, status, type, notes, created_by, practitioners!inner(id, speciality, users!user_id(full_name)), consultations(id, practitioner_documents(id, document_type))')
+        .select('id, scheduled_at, duration_min, status, type, notes, created_by, cancellation_reason, practitioners!inner(id, speciality, users!user_id(full_name), practitioner_booking_settings(cancellation_deadline_hours)), consultations(id, practitioner_documents(id, document_type))')
         .eq('patient_id', user.id)
         .order('scheduled_at', { ascending: false })
 
@@ -72,20 +73,52 @@ function useAppointments(filter: Filter) {
   })
 }
 
+function getDeadlineHours(apt: Appointment): number | null {
+  const settings = apt.practitioners?.practitioner_booking_settings
+  const row = Array.isArray(settings) ? settings[0] : settings
+  return row?.cancellation_deadline_hours ?? null
+}
+
+function isPastDeadline(apt: Appointment): boolean {
+  const hours = getDeadlineHours(apt)
+  if (hours === null) return false
+  const deadline = new Date(apt.scheduled_at).getTime() - hours * 60 * 60 * 1000
+  return Date.now() >= deadline
+}
+
 export default function AppointmentsPage() {
   const [filter, setFilter] = useState<Filter>('all')
   const { data = [], isLoading } = useAppointments(filter)
   const queryClient = useQueryClient()
+  const [cancelTarget, setCancelTarget] = useState<Appointment | null>(null)
+  const [cancelReason, setCancelReason] = useState('')
+
+  // Confirmations/annulations/rappels devaient jusqu'ici être découverts en
+  // rafraîchissant la page manuellement — inacceptable pour une appli santé.
+  useEffect(() => {
+    let channel: ReturnType<typeof supabase.channel> | null = null
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return
+      channel = supabase
+        .channel(`patient-appointments-${user.id}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments', filter: `patient_id=eq.${user.id}` },
+          () => { void queryClient.invalidateQueries({ queryKey: ['patient-appointments'] }) })
+        .subscribe()
+    })
+    return () => { if (channel) void supabase.removeChannel(channel) }
+  }, [queryClient])
 
   const respondToRequest = useMutation({
-    mutationFn: async ({ appointmentId, decision }: { appointmentId: string; decision: 'confirmed' | 'cancelled' }) => {
-      const { error } = await supabase.from('appointments').update({ status: decision }).eq('id', appointmentId)
+    mutationFn: async ({ appointmentId, decision, reason }: { appointmentId: string; decision: 'confirmed' | 'cancelled'; reason?: string }) => {
+      const { error } = await supabase.from('appointments')
+        .update(decision === 'cancelled' ? { status: decision, cancellation_reason: reason } : { status: decision })
+        .eq('id', appointmentId)
       if (error) throw error
       void supabase.functions.invoke('on-appointment-status-change', {
         body: { appointment_id: appointmentId, new_status: decision },
       })
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['patient-appointments'] }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['patient-appointments'] }); setCancelTarget(null); setCancelReason('') },
   })
 
   const FILTERS: { key: Filter; label: string }[] = [
@@ -228,7 +261,7 @@ export default function AppointmentsPage() {
                           Accepter
                         </button>
                         <button
-                          onClick={() => respondToRequest.mutate({ appointmentId: apt.id, decision: 'cancelled' })}
+                          onClick={() => { setCancelTarget(apt); setCancelReason('') }}
                           disabled={respondToRequest.isPending}
                           className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold border disabled:opacity-50"
                           style={{ borderColor: '#ba1a1a', color: '#ba1a1a' }}
@@ -239,10 +272,64 @@ export default function AppointmentsPage() {
                       </div>
                     </div>
                   )}
+
+                  {/* Annuler mon propre RDV (déjà confirmé, ou ma propre demande en attente) */}
+                  {!isPast && (apt.status === 'confirmed' || (apt.status === 'pending' && apt.created_by !== 'practitioner')) && (
+                    <div className="mt-2">
+                      {isPastDeadline(apt) ? (
+                        <p className="text-xs text-[#6f787e] italic">
+                          Délai d&apos;annulation dépassé — contactez directement le praticien.
+                        </p>
+                      ) : (
+                        <button
+                          onClick={() => { setCancelTarget(apt); setCancelReason('') }}
+                          className="inline-flex items-center gap-1 text-xs font-bold text-[#ba1a1a] hover:underline"
+                        >
+                          <Icon name="event_busy" style={{ fontSize: '13px' }} />
+                          Annuler ce rendez-vous
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Motif d'annulation */}
+                  {apt.status === 'cancelled' && apt.cancellation_reason && (
+                    <p className="text-xs text-[#6f787e] mt-1.5 italic">Motif : {apt.cancellation_reason}</p>
+                  )}
                 </div>
               </div>
             )
           })}
+        </div>
+      )}
+
+      {/* Modal annulation / refus — motif obligatoire */}
+      {cancelTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setCancelTarget(null)}>
+          <div className="w-full max-w-sm rounded-2xl p-6 space-y-4 bg-white" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-[#0b1c30]">
+              {cancelTarget.created_by === 'practitioner' && cancelTarget.status === 'pending' ? 'Refuser ce rendez-vous' : 'Annuler ce rendez-vous'}
+            </h3>
+            <div>
+              <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Motif (obligatoire)</label>
+              <textarea value={cancelReason} onChange={e => setCancelReason(e.target.value)} rows={3}
+                placeholder="Expliquez brièvement la raison..."
+                className="mt-1 w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] transition-all resize-none" />
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setCancelTarget(null)} className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-500">
+                Retour
+              </button>
+              <button
+                onClick={() => respondToRequest.mutate({ appointmentId: cancelTarget.id, decision: 'cancelled', reason: cancelReason.trim() })}
+                disabled={respondToRequest.isPending || !cancelReason.trim()}
+                className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white disabled:opacity-50"
+                style={{ backgroundColor: '#ba1a1a' }}
+              >
+                Confirmer
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

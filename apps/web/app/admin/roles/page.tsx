@@ -8,6 +8,7 @@ interface ProfessionPermission {
   id: string
   profession_key: string
   profession_label: string
+  category: 'healthcare' | 'wellness'
   can_prescribe: boolean
   can_write_observations: boolean
   can_write_reports: boolean
@@ -77,6 +78,7 @@ function AddProfessionModal({ onClose }: { onClose: () => void }) {
   const queryClient = useQueryClient()
   const [label, setLabel] = useState('')
   const [key, setKey] = useState('')
+  const [category, setCategory] = useState<'healthcare' | 'wellness' | ''>('')
   const [description, setDescription] = useState('')
   const [perms, setPerms] = useState({
     can_prescribe: false, can_write_observations: true, can_write_reports: true,
@@ -91,10 +93,12 @@ function AddProfessionModal({ onClose }: { onClose: () => void }) {
   const mutation = useMutation({
     mutationFn: async () => {
       if (!label.trim()) throw new Error('Le nom de la profession est requis')
+      if (!category) throw new Error('Précisez si ce métier est un professionnel de santé ou un praticien bien-être')
       const profKey = key.trim() || label.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '_')
       const { error } = await supabase.from('profession_permissions').insert({
         profession_key: profKey,
         profession_label: label.trim(),
+        category,
         description: description.trim() || null,
         allowed_data_categories: categories,
         ...perms,
@@ -156,6 +160,23 @@ function AddProfessionModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Catégorie <span className="text-red-500">*</span></label>
+            <div className="grid grid-cols-2 gap-2">
+              {([
+                { value: 'healthcare' as const, label: 'Professionnel de santé', icon: 'medical_services' },
+                { value: 'wellness' as const, label: 'Praticien bien-être', icon: 'self_improvement' },
+              ]).map(opt => (
+                <button key={opt.value} type="button" onClick={() => setCategory(opt.value)}
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors"
+                  style={{ borderColor: category === opt.value ? '#82d8ff' : '#e2e8f0', backgroundColor: category === opt.value ? '#f0f9ff' : 'transparent', color: category === opt.value ? '#005e7a' : '#3f484d' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>{opt.icon}</span>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
             <label className="block text-xs font-semibold text-slate-600 mb-1.5">Description <span className="text-slate-400 font-normal">(optionnel)</span></label>
             <textarea value={description} onChange={e => setDescription(e.target.value)} rows={2}
               placeholder="Contexte clinique, responsabilités…"
@@ -193,7 +214,7 @@ function AddProfessionModal({ onClose }: { onClose: () => void }) {
           <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm font-medium border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
             Annuler
           </button>
-          <button onClick={() => mutation.mutate()} disabled={mutation.isPending}
+          <button onClick={() => mutation.mutate()} disabled={mutation.isPending || !label.trim() || !category}
             className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-60"
             style={{ backgroundColor: '#82d8ff' }}>
             {mutation.isPending ? 'Création…' : 'Créer la profession'}
@@ -278,7 +299,13 @@ export default function RolesPage() {
                     className={`border-b border-slate-100/70 transition-colors hover:bg-sky-50/30 ${idx % 2 === 0 ? '' : 'bg-slate-50/30'}`}>
                     <td className="px-4 py-4">
                       <div>
-                        <p className="font-semibold text-[#0b1c30]">{prof.profession_label}</p>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="font-semibold text-[#0b1c30]">{prof.profession_label}</p>
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                            style={prof.category === 'wellness' ? { backgroundColor: '#e8f5e9', color: '#1d7a3a' } : { backgroundColor: '#e5eeff', color: '#005e7a' }}>
+                            {prof.category === 'wellness' ? 'Bien-être' : 'Santé'}
+                          </span>
+                        </div>
                         {prof.description && <p className="text-xs text-[#6f787e] mt-0.5 line-clamp-1">{prof.description}</p>}
                         {prof.allowed_data_categories?.length > 0 && (
                           <div className="flex gap-1 mt-1 flex-wrap">

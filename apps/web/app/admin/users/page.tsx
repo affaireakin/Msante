@@ -669,16 +669,20 @@ function UserProfilePanel({
   const queryClient = useQueryClient()
 
   const isSuspended = user.account_status === 'suspended'
+  const [showSuspendForm, setShowSuspendForm] = useState(false)
+  const [suspendReason, setSuspendReason] = useState('')
 
   const suspendMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (reason?: string) => {
       const newStatus: AccountStatus = isSuspended ? 'active' : 'suspended'
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) throw new Error('Session expirée, reconnectez-vous.')
       // Suspending must actually lock the account out (Supabase Auth ban), not
-      // just flip a display-only column — see set-account-status.
+      // just flip a display-only column — see set-account-status. The reason
+      // is now required so set-account-status can send the patient/practitioner
+      // a real email/WhatsApp notification (motif, actions possibles, recours).
       const { data, error } = await supabase.functions.invoke('set-account-status', {
-        body: { user_id: user.id, new_status: newStatus },
+        body: { user_id: user.id, new_status: newStatus, reason },
       })
       if (error) throw error
       if ((data as { error?: string })?.error) throw new Error((data as { error?: string }).error)
@@ -687,6 +691,8 @@ function UserProfilePanel({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       queryClient.invalidateQueries({ queryKey: ['admin-users-suspended-count'] })
+      setShowSuspendForm(false)
+      setSuspendReason('')
     },
   })
 
@@ -775,25 +781,45 @@ function UserProfilePanel({
           {user.role !== 'admin' && (
             <div>
               <p className="text-xs font-bold text-[#6f787e] uppercase tracking-wide mb-2">Actions compte</p>
-              <button
-                onClick={() => suspendMutation.mutate()}
-                disabled={suspendMutation.isPending}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
-                style={
-                  isSuspended
-                    ? { backgroundColor: '#e8f5e9', color: '#1d7a3a' }
-                    : { backgroundColor: '#ffdad6', color: '#ba1a1a' }
-                }
-              >
-                <span className="material-symbols-outlined text-base">
-                  {isSuspended ? 'lock_open' : 'lock'}
-                </span>
-                {suspendMutation.isPending
-                  ? 'Mise à jour…'
-                  : isSuspended
-                  ? 'Réactiver le compte'
-                  : 'Suspendre le compte'}
-              </button>
+              {isSuspended || !showSuspendForm ? (
+                <button
+                  onClick={() => isSuspended ? suspendMutation.mutate(undefined) : setShowSuspendForm(true)}
+                  disabled={suspendMutation.isPending}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
+                  style={
+                    isSuspended
+                      ? { backgroundColor: '#e8f5e9', color: '#1d7a3a' }
+                      : { backgroundColor: '#ffdad6', color: '#ba1a1a' }
+                  }
+                >
+                  <span className="material-symbols-outlined text-base">
+                    {isSuspended ? 'lock_open' : 'lock'}
+                  </span>
+                  {suspendMutation.isPending
+                    ? 'Mise à jour…'
+                    : isSuspended
+                    ? 'Réactiver le compte'
+                    : 'Suspendre le compte'}
+                </button>
+              ) : (
+                <div className="space-y-2 p-3 rounded-xl bg-[#ffdad6]/40 border border-[#ba1a1a]/20">
+                  <label className="text-xs font-semibold text-[#930009] uppercase tracking-wide">Motif de suspension (obligatoire)</label>
+                  <textarea value={suspendReason} onChange={e => setSuspendReason(e.target.value)} rows={2}
+                    placeholder="Ce motif sera envoyé par email/WhatsApp à l'utilisateur"
+                    className="w-full px-3 py-2 border border-[#ba1a1a]/30 rounded-lg text-sm text-[#0b1c30] outline-none focus:border-[#ba1a1a] resize-none" />
+                  <div className="flex gap-2">
+                    <button onClick={() => setShowSuspendForm(false)} className="flex-1 py-2 rounded-lg text-xs font-semibold border border-slate-200 text-slate-500">
+                      Annuler
+                    </button>
+                    <button
+                      onClick={() => suspendMutation.mutate(suspendReason.trim())}
+                      disabled={suspendMutation.isPending || !suspendReason.trim()}
+                      className="flex-1 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-50" style={{ backgroundColor: '#ba1a1a' }}>
+                      Suspendre
+                    </button>
+                  </div>
+                </div>
+              )}
               {suspendMutation.isError && (
                 <p className="text-xs text-[#ba1a1a] mt-1.5">
                   Erreur : {(suspendMutation.error as Error).message}

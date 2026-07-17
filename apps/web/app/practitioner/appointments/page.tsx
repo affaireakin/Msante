@@ -14,6 +14,7 @@ interface Appointment {
   status: AptStatus
   type: 'video' | 'audio' | 'chat' | 'presentiel'
   created_by: 'patient' | 'practitioner'
+  cancellation_reason: string | null
   users: { full_name: string } | null
 }
 
@@ -123,7 +124,7 @@ function useWeekAppointments(weekStart: Date) {
       const practId = await getPractitionerId()
       const { data, error } = await supabase
         .from('appointments')
-        .select('id, scheduled_at, duration_min, status, type, created_by, users!patient_id(full_name)')
+        .select('id, scheduled_at, duration_min, status, type, created_by, cancellation_reason, users!patient_id(full_name)')
         .eq('practitioner_id', practId)
         .gte('scheduled_at', weekStart.toISOString())
         .lte('scheduled_at', weekEnd.toISOString())
@@ -144,7 +145,7 @@ function useListAppointments(filter: 'upcoming' | 'past') {
       const now = new Date().toISOString()
       let q = supabase
         .from('appointments')
-        .select('id, scheduled_at, duration_min, status, type, created_by, users!patient_id(full_name)')
+        .select('id, scheduled_at, duration_min, status, type, created_by, cancellation_reason, users!patient_id(full_name)')
         .eq('practitioner_id', practId)
         .order('scheduled_at', { ascending: filter === 'upcoming' })
       if (filter === 'upcoming') {
@@ -166,10 +167,14 @@ function DetailPanel({ apt, onClose }: { apt: Appointment; onClose: () => void }
   const dt = new Date(apt.scheduled_at)
   const meta = TYPE_META[apt.type] ?? TYPE_META.video
   const status = STATUS_COLORS[apt.status]
+  const [showCancelForm, setShowCancelForm] = useState(false)
+  const [cancelReason, setCancelReason] = useState('')
 
   const updateStatus = useMutation({
-    mutationFn: async (s: AptStatus) => {
-      const { error } = await supabase.from('appointments').update({ status: s }).eq('id', apt.id)
+    mutationFn: async ({ s, reason }: { s: AptStatus; reason?: string }) => {
+      const { error } = await supabase.from('appointments')
+        .update(s === 'cancelled' ? { status: s, cancellation_reason: reason } : { status: s })
+        .eq('id', apt.id)
       if (error) throw error
       void supabase.functions.invoke('on-appointment-status-change', {
         body: { appointment_id: apt.id, new_status: s },
@@ -217,6 +222,10 @@ function DetailPanel({ apt, onClose }: { apt: Appointment; onClose: () => void }
             </div>
           </div>
 
+          {apt.status === 'cancelled' && apt.cancellation_reason && (
+            <p className="text-xs text-[#6f787e] italic bg-slate-50 rounded-lg px-3 py-2">Motif : {apt.cancellation_reason}</p>
+          )}
+
           {/* Infos */}
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50">
@@ -253,7 +262,7 @@ function DetailPanel({ apt, onClose }: { apt: Appointment; onClose: () => void }
               </Link>
             )}
             {apt.status === 'pending' && apt.created_by !== 'practitioner' && (
-              <button onClick={() => updateStatus.mutate('confirmed')} disabled={updateStatus.isPending}
+              <button onClick={() => updateStatus.mutate({ s: 'confirmed' })} disabled={updateStatus.isPending}
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-bold text-white disabled:opacity-60"
                 style={{ background: '#1d7a3a' }}>
                 <Icon name="check_circle" size={16} color="#fff" />
@@ -267,18 +276,37 @@ function DetailPanel({ apt, onClose }: { apt: Appointment; onClose: () => void }
             )}
             {(apt.status === 'confirmed' || apt.status === 'pending') && (
               <>
-                <button onClick={() => updateStatus.mutate('completed')} disabled={updateStatus.isPending}
+                <button onClick={() => updateStatus.mutate({ s: 'completed' })} disabled={updateStatus.isPending}
                   className="w-full py-2.5 rounded-xl text-sm font-semibold text-sky-700 bg-sky-50 border border-sky-200 disabled:opacity-60">
                   Marquer comme terminé
                 </button>
-                <button onClick={() => updateStatus.mutate('no_show')} disabled={updateStatus.isPending}
+                <button onClick={() => updateStatus.mutate({ s: 'no_show' })} disabled={updateStatus.isPending}
                   className="w-full py-2.5 rounded-xl text-sm font-semibold text-red-600 bg-red-50 border border-red-200 disabled:opacity-60">
                   Patient absent
                 </button>
-                <button onClick={() => updateStatus.mutate('cancelled')} disabled={updateStatus.isPending}
-                  className="w-full py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-50 border border-slate-200 disabled:opacity-60">
-                  Annuler le RDV
-                </button>
+                {!showCancelForm ? (
+                  <button onClick={() => setShowCancelForm(true)} disabled={updateStatus.isPending}
+                    className="w-full py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-50 border border-slate-200 disabled:opacity-60">
+                    Annuler le RDV
+                  </button>
+                ) : (
+                  <div className="space-y-2 p-3 rounded-xl border border-slate-200 bg-slate-50">
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Motif d&apos;annulation (obligatoire)</label>
+                    <textarea value={cancelReason} onChange={e => setCancelReason(e.target.value)} rows={2}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff] resize-none" />
+                    <div className="flex gap-2">
+                      <button onClick={() => { setShowCancelForm(false); setCancelReason('') }}
+                        className="flex-1 py-2 rounded-lg text-xs font-semibold border border-slate-200 text-slate-500">
+                        Retour
+                      </button>
+                      <button onClick={() => updateStatus.mutate({ s: 'cancelled', reason: cancelReason.trim() })}
+                        disabled={updateStatus.isPending || !cancelReason.trim()}
+                        className="flex-1 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-50" style={{ backgroundColor: '#ba1a1a' }}>
+                        Confirmer l&apos;annulation
+                      </button>
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -489,6 +517,23 @@ export default function AppointmentsPage() {
     }
   }, [])
 
+  // Confirmations/annulations/rappels devaient jusqu'ici être découverts en
+  // rafraîchissant la page manuellement — inacceptable pour une appli santé.
+  useEffect(() => {
+    let channel: ReturnType<typeof supabase.channel> | null = null
+    getPractitionerId().then(practId => {
+      channel = supabase
+        .channel(`pract-appointments-${practId}`)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments', filter: `practitioner_id=eq.${practId}` },
+          () => {
+            void qc.invalidateQueries({ queryKey: ['pract-apts-week'] })
+            void qc.invalidateQueries({ queryKey: ['pract-apts-list'] })
+          })
+        .subscribe()
+    }).catch(() => { /* not a practitioner / not logged in yet — page-level auth already handles this */ })
+    return () => { if (channel) void supabase.removeChannel(channel) }
+  }, [qc])
+
   const weekDays = useMemo(() => getWeekDays(weekStart), [weekStart])
 
   const { data: weekApts = [], isLoading: weekLoading, error: weekError } = useWeekAppointments(weekStart)
@@ -496,8 +541,10 @@ export default function AppointmentsPage() {
   const { data: weeklyAvails = [] } = useWeeklyAvail()
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: AptStatus }) => {
-      const { error } = await supabase.from('appointments').update({ status }).eq('id', id)
+    mutationFn: async ({ id, status, reason }: { id: string; status: AptStatus; reason?: string }) => {
+      const { error } = await supabase.from('appointments')
+        .update(status === 'cancelled' ? { status, cancellation_reason: reason } : { status })
+        .eq('id', id)
       if (error) throw error
       void supabase.functions.invoke('on-appointment-status-change', {
         body: { appointment_id: id, new_status: status },
@@ -508,6 +555,12 @@ export default function AppointmentsPage() {
       qc.invalidateQueries({ queryKey: ['pract-apts-list'] })
     },
   })
+
+  function handleCancelFromList(id: string) {
+    const reason = window.prompt('Motif d\'annulation (obligatoire) :')
+    if (!reason?.trim()) return
+    updateStatus.mutate({ id, status: 'cancelled', reason: reason.trim() })
+  }
 
   const goToday = () => setWeekStart(getWeekStart(new Date()))
   const prevWeek = () => { const d = new Date(weekStart); d.setDate(d.getDate() - 7); setWeekStart(d) }
@@ -670,7 +723,7 @@ export default function AppointmentsPage() {
                             style={{ background: '#1d7a3a' }}>
                             Confirmer
                           </button>
-                          <button onClick={() => updateStatus.mutate({ id: apt.id, status: 'cancelled' })}
+                          <button onClick={() => handleCancelFromList(apt.id)}
                             disabled={updateStatus.isPending}
                             className="px-3 py-1 rounded-full text-xs font-bold text-red-600 bg-red-50 border border-red-200 disabled:opacity-60">
                             Annuler

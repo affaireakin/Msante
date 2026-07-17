@@ -27,6 +27,7 @@ interface BlockedPeriod {
 interface BookingSettings {
   min_booking_delay_h: number; max_booking_days_ahead: number
   buffer_between_min: number; max_patients_per_day: number | null
+  cancellation_deadline_hours: number | null
   auto_confirm: boolean; waitlist_enabled: boolean
 }
 
@@ -102,6 +103,7 @@ function useAvailData() {
         settings: (settings.data ?? {
           min_booking_delay_h: 2, max_booking_days_ahead: 60,
           buffer_between_min: 0, max_patients_per_day: null,
+          cancellation_deadline_hours: 24,
           auto_confirm: true, waitlist_enabled: false,
         }) as BookingSettings,
       }
@@ -938,6 +940,27 @@ function SettingsTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
           </div>
         </div>
       ))}
+
+      <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 shadow-sm">
+        <p className="text-sm font-semibold text-[#0b1c30] mb-0.5">Délai d&apos;annulation</p>
+        <p className="text-xs text-slate-400 mb-3">Passé ce délai avant le RDV, ni le patient ni vous ne pouvez plus annuler en ligne</p>
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          {[48, 24, 12, 2].map(h => (
+            <button key={h} type="button" onClick={() => upd('cancellation_deadline_hours', h)}
+              className="px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all"
+              style={{ backgroundColor: form.cancellation_deadline_hours === h ? '#82d8ff' : '#f8f9ff', color: form.cancellation_deadline_hours === h ? '#fff' : '#6f787e', borderColor: form.cancellation_deadline_hours === h ? '#82d8ff' : '#e2e8f0' }}>
+              {h}h avant
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <input type="number" value={form.cancellation_deadline_hours ?? ''} min={0}
+            onChange={e => upd('cancellation_deadline_hours', e.target.value ? parseInt(e.target.value) : null)}
+            placeholder="Personnalisé"
+            className="w-28 px-3 py-1.5 border border-slate-200 rounded-xl text-sm text-center text-[#0b1c30] outline-none focus:border-[#82d8ff]" />
+          <span className="text-xs text-slate-400">heures avant le RDV (vide = pas de limite)</span>
+        </div>
+      </div>
 
       <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-4 shadow-sm">
         <p className="text-sm font-semibold text-[#0b1c30] mb-0.5">Patients max par jour</p>

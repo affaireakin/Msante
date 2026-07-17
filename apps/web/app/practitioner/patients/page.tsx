@@ -292,8 +292,10 @@ function PendingTab({ practId }: { practId: string }) {
   const { data: apts = [], isLoading } = usePendingAppointments(practId)
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: 'confirmed' | 'cancelled' }) => {
-      const { error } = await supabase.from('appointments').update({ status }).eq('id', id)
+    mutationFn: async ({ id, status, reason }: { id: string; status: 'confirmed' | 'cancelled'; reason?: string }) => {
+      const { error } = await supabase.from('appointments')
+        .update(status === 'cancelled' ? { status, cancellation_reason: reason } : { status })
+        .eq('id', id)
       if (error) throw error
       void supabase.functions.invoke('on-appointment-status-change', {
         body: { appointment_id: id, new_status: status },
@@ -304,6 +306,15 @@ function PendingTab({ practId }: { practId: string }) {
       qc.invalidateQueries({ queryKey: ['pract-upcoming-confirmed'] })
     },
   })
+
+  // A reason is now mandatory (enforced in the DB) — a lightweight prompt()
+  // is enough here since this is a secondary quick-action list, not the
+  // main appointments management surface.
+  function handleRefuse(id: string) {
+    const reason = window.prompt('Motif du refus (obligatoire) :')
+    if (!reason?.trim()) return
+    updateStatus.mutate({ id, status: 'cancelled', reason: reason.trim() })
+  }
 
   if (isLoading) return <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-20 rounded-xl bg-white/40 animate-pulse" />)}</div>
 
@@ -357,7 +368,7 @@ function PendingTab({ practId }: { practId: string }) {
 
             {/* Actions */}
             <div className="flex gap-2 shrink-0">
-              <button onClick={() => updateStatus.mutate({ id: apt.id, status: 'cancelled' })}
+              <button onClick={() => handleRefuse(apt.id)}
                 disabled={updateStatus.isPending}
                 className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50">
                 <Icon name="close" size={14} color="#dc2626" />
