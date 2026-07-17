@@ -96,10 +96,33 @@ export default function PatientMessagesPage() {
     supabase.auth.getUser().then(({ data: { user } }) => { if (user) setMyId(user.id) })
   }, [])
 
+  // Conversations/threads used to only refresh every 5-10s (polling) — messages
+  // and thread-closure status now push live updates via Realtime instead.
+  useEffect(() => {
+    if (!myId) return
+    const partnerId = activeConv?.partnerId
+    const channel = supabase
+      .channel(`patient-messages-${myId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `sender_id=eq.${myId}` }, () => {
+        void queryClient.invalidateQueries({ queryKey: ['patient-conversations', myId] })
+        void queryClient.invalidateQueries({ queryKey: ['patient-thread', myId, partnerId] })
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `receiver_id=eq.${myId}` }, () => {
+        void queryClient.invalidateQueries({ queryKey: ['patient-conversations', myId] })
+        void queryClient.invalidateQueries({ queryKey: ['patient-thread', myId, partnerId] })
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'message_threads', filter: `participant_a=eq.${myId}` },
+        () => void queryClient.invalidateQueries({ queryKey: ['patient-thread-status', myId, partnerId] }))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'message_threads', filter: `participant_b=eq.${myId}` },
+        () => void queryClient.invalidateQueries({ queryKey: ['patient-thread-status', myId, partnerId] }))
+      .subscribe()
+    return () => { void supabase.removeChannel(channel) }
+  }, [myId, activeConv?.partnerId, queryClient])
+
   const { data: conversations = [], isLoading: loadingConvs } = useQuery<ConversationPreview[]>({
     queryKey: ['patient-conversations', myId],
     enabled: !!myId,
-    refetchInterval: 10_000,
+    staleTime: 30_000,
     queryFn: async () => {
       const { data: msgs, error } = await supabase
         .from('messages')
@@ -175,7 +198,7 @@ export default function PatientMessagesPage() {
   const { data: messages = [], isLoading: loadingThread } = useQuery<Message[]>({
     queryKey: threadKey,
     enabled: !!myId && !!activeConv,
-    refetchInterval: 5_000,
+    staleTime: 30_000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('messages')
@@ -266,7 +289,6 @@ export default function PatientMessagesPage() {
   const { data: threadStatus } = useQuery<{ closed_at: string | null }>({
     queryKey: ['patient-thread-status', myId, activeConv?.partnerId],
     enabled: !!myId && !!activeConv,
-    refetchInterval: 10_000,
     queryFn: async () => {
       if (!myId || !activeConv) return { closed_at: null }
       const a = myId < activeConv.partnerId ? myId : activeConv.partnerId

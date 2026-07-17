@@ -110,10 +110,33 @@ function PractitionerMessagesPageInner() {
       .then(({ data }) => { if (data) setPractId(data.id) })
   }, [myId])
 
+  // Conversations/threads used to only refresh every 5-10s (polling) — messages
+  // and thread-closure status now push live updates via Realtime instead.
+  useEffect(() => {
+    if (!myId) return
+    const partnerId = activeConv?.partnerId
+    const channel = supabase
+      .channel(`pract-messages-${myId}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `sender_id=eq.${myId}` }, () => {
+        void queryClient.invalidateQueries({ queryKey: ['pract-conversations', myId] })
+        void queryClient.invalidateQueries({ queryKey: ['pract-thread', myId, partnerId] })
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `receiver_id=eq.${myId}` }, () => {
+        void queryClient.invalidateQueries({ queryKey: ['pract-conversations', myId] })
+        void queryClient.invalidateQueries({ queryKey: ['pract-thread', myId, partnerId] })
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'message_threads', filter: `participant_a=eq.${myId}` },
+        () => void queryClient.invalidateQueries({ queryKey: ['pract-thread-status', myId, partnerId] }))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'message_threads', filter: `participant_b=eq.${myId}` },
+        () => void queryClient.invalidateQueries({ queryKey: ['pract-thread-status', myId, partnerId] }))
+      .subscribe()
+    return () => { void supabase.removeChannel(channel) }
+  }, [myId, activeConv?.partnerId, queryClient])
+
   const { data: conversations = [], isLoading: loadingConvs } = useQuery<ConversationPreview[]>({
     queryKey: ['pract-conversations', myId],
     enabled: !!myId,
-    refetchInterval: 10_000,
+    staleTime: 30_000,
     queryFn: async () => {
       const { data: msgs, error } = await supabase
         .from('messages')
@@ -189,7 +212,7 @@ function PractitionerMessagesPageInner() {
   const { data: messages = [], isLoading: loadingThread } = useQuery<Message[]>({
     queryKey: threadKey,
     enabled: !!myId && !!activeConv,
-    refetchInterval: 5_000,
+    staleTime: 30_000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('messages')
