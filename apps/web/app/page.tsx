@@ -3,6 +3,9 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import AuthRedirect from '@/components/AuthRedirect'
 import FeaturedOrganizations from '@/components/FeaturedOrganizations'
+import SiteLogo from '@/components/SiteLogo'
+import SiteSocialLinks from '@/components/SiteSocialLinks'
+import SiteContactLine from '@/components/SiteContactLine'
 
 export const metadata: Metadata = {
   title: 'M-Santé | Psychologues & Psychiatres en ligne au Sénégal',
@@ -68,9 +71,7 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 bg-[#f8f9ff]/80 backdrop-blur-xl border-b border-white/10 shadow-sm">
         <div className="flex justify-between items-center h-20 px-6 max-w-7xl mx-auto w-full">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#82d8ff] flex items-center justify-center shadow-md">
-              <Icon name="medical_services" className="text-white" style={{ fontSize: '20px' }} />
-            </div>
+            <SiteLogo size={40} />
             <div>
               <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
               <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
@@ -78,8 +79,8 @@ export default function LandingPage() {
           </div>
           <nav className="hidden md:flex items-center space-x-8">
             <a className="text-[#82d8ff] font-bold border-b-2 border-[#82d8ff] py-1 text-sm" href="#">Accueil</a>
-            <a className="text-[#6f787e] hover:text-[#82d8ff] transition-colors text-sm font-medium" href="#">Bien-être</a>
-            <a className="text-[#6f787e] hover:text-[#82d8ff] transition-colors text-sm font-medium" href="#">Praticiens</a>
+            <a className="text-[#6f787e] hover:text-[#82d8ff] transition-colors text-sm font-medium" href="#features">Bien-être</a>
+            <a className="text-[#6f787e] hover:text-[#82d8ff] transition-colors text-sm font-medium" href="#praticiens">Praticiens</a>
           </nav>
           <div className="flex items-center gap-3">
             <Link href="/auth/login" className="px-5 py-2 text-[#82d8ff] text-sm font-semibold hover:bg-[#82d8ff]/5 transition-all rounded-lg">
@@ -384,9 +385,7 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 px-6 py-12 max-w-7xl mx-auto w-full">
           <div className="space-y-5">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#82d8ff] flex items-center justify-center shadow-sm">
-                <Icon name="medical_services" className="text-white" style={{ fontSize: '18px' }} />
-              </div>
+              <SiteLogo size={36} />
               <div>
                 <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
                 <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
@@ -395,16 +394,11 @@ export default function LandingPage() {
             <p className="text-sm text-[#6f787e] max-w-xs leading-relaxed">
               Votre partenaire de confiance pour une santé mentale épanouie, alliant innovation et humanité.
             </p>
-            <div className="flex space-x-3">
-              {['share', 'mail'].map(icon => (
-                <a key={icon} href="#" className="w-10 h-10 rounded-full flex items-center justify-center text-[#82d8ff] hover:bg-[#82d8ff] hover:text-[#0b1c30] transition-all" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
-                  <Icon name={icon} style={{ fontSize: '20px' }} />
-                </a>
-              ))}
-            </div>
+            <SiteContactLine />
+            <SiteSocialLinks />
           </div>
           {[
-            { title: 'Produit', links: [{ label: 'Wellness IA', href: '#' }, { label: 'Praticiens', href: '#' }, { label: 'Tarifs', href: '#' }, { label: 'Aide', href: '#' }] },
+            { title: 'Produit', links: [{ label: 'Wellness IA', href: '#' }, { label: 'Praticiens', href: '#praticiens' }, { label: 'Tarifs', href: '#' }, { label: 'Aide', href: '/faq' }] },
             { title: 'Entreprise', links: [{ label: 'À propos', href: '#' }, { label: 'Carrières', href: '#' }, { label: 'Presse', href: '#' }, { label: 'Contact', href: '#' }] },
             { title: 'Légal', links: [{ label: 'Plan du site', href: '#' }, { label: 'Mentions légales', href: '#' }, { label: 'Confidentialité', href: '#' }, { label: "Conditions d'utilisation", href: '/cgu' }] },
           ].map(col => (

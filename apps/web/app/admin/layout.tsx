@@ -30,9 +30,7 @@ const PERMISSION_ROUTES: Record<string, string[]> = {
   'payments.view':           ['/admin/payments', '/admin/finance'],
   'analytics.view':          ['/admin/analytics'],
   'audit.view':              ['/admin/audit'],
-  // 'content.manage' n'a pas encore de page admin dédiée (pas de CMS CGU/FAQ) —
-  // le rôle et la permission existent déjà pour ne pas bloquer sur l'assignation,
-  // mais ne débloquent aucune route tant que cette page n'existe pas.
+  'content.manage':          ['/admin/content'],
 }
 
 const navItems = [
@@ -163,6 +161,16 @@ const navItems = [
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+      </svg>
+    ),
+  },
+  {
+    href: '/admin/content',
+    label: 'Contenu du site',
+    roles: ['admin'],
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
       </svg>
     ),
   },
