@@ -2,6 +2,7 @@
 import { useAdminKpis } from './useAdminKpis'
 import { KpiCard } from './KpiCard'
 import { AdminCharts } from './AdminCharts'
+import { UrgentItemsPanel } from './UrgentItemsPanel'
 
 function UsersIcon() {
   return (
@@ -44,42 +45,48 @@ export default function OverviewPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-[#0b1c30]">Vue d&apos;ensemble</h1>
+        <h1 className="text-2xl font-bold text-[#0b1c30]">Dashboard administrateur</h1>
         <p className="text-sm text-[#6f787e] mt-1">Données en temps réel</p>
       </div>
 
-      {/* KPI Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <KpiCard
-          title="Utilisateurs actifs (30j)"
-          value={isLoading ? '…' : (kpis?.activeUsers30d ?? 0)}
-          icon={<UsersIcon />}
-          subtitle="Derniers 30 jours"
-        />
-        <KpiCard
-          title="Revenus du mois"
-          value={isLoading ? '…' : formatXOF(kpis?.revenueThisMonth ?? 0)}
-          icon={<RevenueIcon />}
-          subtitle="Paiements complétés"
-        />
-        <KpiCard
-          title="Praticiens en attente"
-          value={isLoading ? '…' : (kpis?.pendingPractitioners ?? 0)}
-          icon={<ClockIcon />}
-          subtitle="Validation requise"
-          trend={kpis && kpis.pendingPractitioners > 0 ? `${kpis.pendingPractitioners} en attente` : undefined}
-          trendUp={false}
-        />
-        <KpiCard
-          title="Taux de no-show"
-          value={isLoading ? '…' : `${kpis?.noShowRate ?? 0}%`}
-          icon={<CalendarIcon />}
-          subtitle="Rendez-vous manqués"
-        />
-      </div>
+      {/* Ce qui nécessite une intervention — toujours en premier */}
+      <UrgentItemsPanel />
 
-      {/* Charts */}
-      <AdminCharts />
+      {/* Vue d'ensemble — déplacée en bas, c'est un résumé, pas une file d'action */}
+      <div className="space-y-6 pt-4 border-t border-slate-200/60">
+        <h2 className="text-lg font-bold text-[#0b1c30]">Vue d&apos;ensemble</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <KpiCard
+            title="Utilisateurs actifs (30j)"
+            value={isLoading ? '…' : (kpis?.activeUsers30d ?? 0)}
+            icon={<UsersIcon />}
+            subtitle="Derniers 30 jours"
+          />
+          <KpiCard
+            title="Revenus du mois"
+            value={isLoading ? '…' : formatXOF(kpis?.revenueThisMonth ?? 0)}
+            icon={<RevenueIcon />}
+            subtitle="Paiements complétés"
+          />
+          <KpiCard
+            title="Praticiens en attente"
+            value={isLoading ? '…' : (kpis?.pendingPractitioners ?? 0)}
+            icon={<ClockIcon />}
+            subtitle="Validation requise"
+            trend={kpis && kpis.pendingPractitioners > 0 ? `${kpis.pendingPractitioners} en attente` : undefined}
+            trendUp={false}
+          />
+          <KpiCard
+            title="Taux de no-show"
+            value={isLoading ? '…' : `${kpis?.noShowRate ?? 0}%`}
+            icon={<CalendarIcon />}
+            subtitle="Rendez-vous manqués"
+          />
+        </div>
+
+        <AdminCharts />
+      </div>
     </div>
   )
 }
