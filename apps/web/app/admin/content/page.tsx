@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { useSiteSettings, useContentPage, useFaqAdmin } from './useContent'
+import { useSiteSettings, useContentPages, useFaqAdmin } from './useContent'
 
 function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
   return <span className="material-symbols-outlined" style={style}>{name}</span>
@@ -96,30 +96,115 @@ function SiteSettingsTab() {
   )
 }
 
-function CguTab() {
-  const { page, save } = useContentPage('cgu')
+// Pages système avec une route dédiée (pas /pages/[slug]) — utile pour
+// afficher le bon chemin public dans l'éditeur.
+const KNOWN_ROUTES: Record<string, string> = { cgu: '/cgu' }
+
+function PagesTab() {
+  const { pages, save, create, remove } = useContentPages()
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
+  const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
   const [saved, setSaved] = useState(false)
+  const [showNew, setShowNew] = useState(false)
+  const [newSlug, setNewSlug] = useState('')
+  const [newTitle, setNewTitle] = useState('')
 
-  useEffect(() => { if (page.data) setBody(page.data.body) }, [page.data])
+  useEffect(() => {
+    if (!selectedSlug && (pages.data ?? []).length > 0) setSelectedSlug(pages.data![0].slug)
+  }, [pages.data, selectedSlug])
+
+  const selected = (pages.data ?? []).find(p => p.slug === selectedSlug) ?? null
+
+  useEffect(() => {
+    if (selected) { setTitle(selected.title); setBody(selected.body) }
+  }, [selected])
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault()
+    const slug = newSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-')
+    if (!slug || !newTitle.trim()) return
+    create.mutate({ slug, title: newTitle.trim() }, {
+      onSuccess: () => { setShowNew(false); setNewSlug(''); setNewTitle(''); setSelectedSlug(slug) },
+    })
+  }
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl p-5 space-y-3" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-[#0b1c30]">Conditions Générales d&apos;Utilisation</h3>
-          {page.data && <span className="text-xs text-[#6f787e]">Modifié le {new Date(page.data.updated_at).toLocaleDateString('fr-FR')}</span>}
-        </div>
-        <p className="text-xs text-[#6f787e]">HTML simple accepté (h2, p, ul/li, strong). Affiché tel quel sur la page publique /cgu.</p>
-        <textarea value={body} onChange={e => setBody(e.target.value)} rows={20}
-          className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-xs text-[#0b1c30] font-mono focus:outline-none focus:border-[#82d8ff] resize-y" />
-        <button onClick={() => save.mutate(body, { onSuccess: () => { setSaved(true); setTimeout(() => setSaved(false), 2500) } })}
-          disabled={save.isPending}
-          className="px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50"
-          style={{ backgroundColor: saved ? '#1d7a3a' : '#82d8ff', color: saved ? '#fff' : '#0b1c30' }}>
-          {save.isPending ? 'Sauvegarde...' : saved ? 'Sauvegardé !' : 'Sauvegarder'}
+    <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-5">
+      <div className="space-y-3">
+        <button onClick={() => setShowNew(true)}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-[#0b1c30]"
+          style={{ backgroundColor: '#82d8ff' }}>
+          + Nouvelle page
         </button>
+        <div className="space-y-2">
+          {(pages.data ?? []).map(p => (
+            <button key={p.slug} onClick={() => setSelectedSlug(p.slug)}
+              className="w-full text-left px-4 py-3 rounded-xl transition-all"
+              style={{
+                backgroundColor: selectedSlug === p.slug ? 'rgba(130,216,255,0.15)' : 'rgba(255,255,255,0.70)',
+                border: selectedSlug === p.slug ? '1px solid #82d8ff' : '1px solid rgba(255,255,255,0.80)',
+              }}>
+              <p className="text-sm font-bold text-[#0b1c30]">{p.title}</p>
+              <p className="text-xs text-[#6f787e] mt-0.5">{KNOWN_ROUTES[p.slug] ?? `/pages/${p.slug}`}</p>
+            </button>
+          ))}
+        </div>
       </div>
+
+      {selected && (
+        <div className="rounded-2xl p-5 space-y-3" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
+          <div className="flex items-center justify-between">
+            <input value={title} onChange={e => setTitle(e.target.value)}
+              className="text-sm font-bold text-[#0b1c30] bg-transparent border-b border-transparent focus:border-[#82d8ff] outline-none flex-1" />
+            <button onClick={() => { if (confirm('Supprimer cette page ?')) remove.mutate(selected.slug) }} className="text-[#ba1a1a] hover:bg-red-50 p-1.5 rounded-lg">
+              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
+            </button>
+          </div>
+          <p className="text-xs text-[#6f787e]">
+            Page publique : <strong>{KNOWN_ROUTES[selected.slug] ?? `/pages/${selected.slug}`}</strong> · HTML simple accepté (h2, p, ul/li, strong)
+          </p>
+          <textarea value={body} onChange={e => setBody(e.target.value)} rows={18}
+            className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-xs text-[#0b1c30] font-mono focus:outline-none focus:border-[#82d8ff] resize-y" />
+          <button onClick={() => save.mutate({ slug: selected.slug, title, body }, { onSuccess: () => { setSaved(true); setTimeout(() => setSaved(false), 2500) } })}
+            disabled={save.isPending}
+            className="px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50"
+            style={{ backgroundColor: saved ? '#1d7a3a' : '#82d8ff', color: saved ? '#fff' : '#0b1c30' }}>
+            {save.isPending ? 'Sauvegarde...' : saved ? 'Sauvegardé !' : 'Sauvegarder'}
+          </button>
+        </div>
+      )}
+
+      {showNew && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowNew(false)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-bold text-[#0b1c30]">Nouvelle page</h3>
+            <form onSubmit={handleCreate} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-[#0b1c30] mb-1.5">Titre</label>
+                <input value={newTitle} onChange={e => setNewTitle(e.target.value)}
+                  className="w-full rounded-xl border-2 border-slate-200 px-4 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]"
+                  placeholder="Ex : Programme partenaires" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-[#0b1c30] mb-1.5">Identifiant (slug)</label>
+                <input value={newSlug} onChange={e => setNewSlug(e.target.value)}
+                  className="w-full rounded-xl border-2 border-slate-200 px-4 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]"
+                  placeholder="Ex : programme-partenaires" />
+                <p className="text-xs text-[#6f787e] mt-1">Sera publiée sur /pages/{newSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-') || '...'}</p>
+              </div>
+              <div className="flex gap-3">
+                <button type="button" onClick={() => setShowNew(false)} className="flex-1 border-2 border-slate-200 text-[#0b1c30] rounded-xl py-2.5 text-sm font-bold hover:bg-slate-50">
+                  Annuler
+                </button>
+                <button type="submit" disabled={create.isPending} className="flex-1 bg-[#82d8ff] text-[#0b1c30] rounded-xl py-2.5 text-sm font-bold disabled:opacity-50">
+                  {create.isPending ? 'Création...' : 'Créer'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -200,27 +285,27 @@ function FaqTab() {
 }
 
 export default function AdminContentPage() {
-  const [tab, setTab] = useState<'settings' | 'cgu' | 'faq'>('settings')
+  const [tab, setTab] = useState<'settings' | 'pages' | 'faq'>('settings')
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-[#0b1c30]">Contenu du site</h1>
-        <p className="text-sm text-[#6f787e] mt-0.5">Logo, contact, réseaux sociaux, CGU et FAQ</p>
+        <p className="text-sm text-[#6f787e] mt-0.5">Logo, contact, réseaux sociaux, pages et FAQ</p>
       </div>
 
       <div className="flex gap-1 p-1 rounded-xl bg-white/60 w-fit" style={{ border: '1px solid rgba(255,255,255,0.80)' }}>
-        {(['settings', 'cgu', 'faq'] as const).map(t => (
+        {(['settings', 'pages', 'faq'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
             className="px-4 py-2 rounded-lg text-sm font-bold transition-all"
             style={{ backgroundColor: tab === t ? '#82d8ff' : 'transparent', color: tab === t ? '#fff' : '#6f787e' }}>
-            {t === 'settings' ? 'Paramètres du site' : t === 'cgu' ? 'CGU' : 'FAQ'}
+            {t === 'settings' ? 'Paramètres du site' : t === 'pages' ? 'Pages' : 'FAQ'}
           </button>
         ))}
       </div>
 
       {tab === 'settings' && <SiteSettingsTab />}
-      {tab === 'cgu' && <CguTab />}
+      {tab === 'pages' && <PagesTab />}
       {tab === 'faq' && <FaqTab />}
     </div>
   )

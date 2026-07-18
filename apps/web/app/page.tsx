@@ -398,9 +398,9 @@ export default function LandingPage() {
             <SiteSocialLinks />
           </div>
           {[
-            { title: 'Produit', links: [{ label: 'Wellness IA', href: '#' }, { label: 'Praticiens', href: '#praticiens' }, { label: 'Tarifs', href: '#' }, { label: 'Aide', href: '/faq' }] },
-            { title: 'Entreprise', links: [{ label: 'À propos', href: '#' }, { label: 'Carrières', href: '#' }, { label: 'Presse', href: '#' }, { label: 'Contact', href: '#' }] },
-            { title: 'Légal', links: [{ label: 'Plan du site', href: '#' }, { label: 'Mentions légales', href: '#' }, { label: 'Confidentialité', href: '#' }, { label: "Conditions d'utilisation", href: '/cgu' }] },
+            { title: 'Produit', links: [{ label: 'Wellness IA', href: '#features' }, { label: 'Praticiens', href: '#praticiens' }, { label: 'Tarifs', href: '/pages/tarifs' }, { label: 'Aide', href: '/faq' }] },
+            { title: 'Entreprise', links: [{ label: 'À propos', href: '/pages/a-propos' }, { label: 'Carrières', href: '/pages/carrieres' }, { label: 'Presse', href: '/pages/presse' }, { label: 'Contact', href: '/contact' }] },
+            { title: 'Légal', links: [{ label: 'Plan du site', href: '/plan-du-site' }, { label: 'Mentions légales', href: '/pages/mentions-legales' }, { label: 'Confidentialité', href: '/pages/confidentialite' }, { label: "Conditions d'utilisation", href: '/cgu' }] },
           ].map(col => (
             <div key={col.title}>
               <h5 className="font-bold mb-5 text-[#0b1c30]">{col.title}</h5>

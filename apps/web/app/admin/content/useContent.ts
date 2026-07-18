@@ -49,28 +49,44 @@ export function useSiteSettings() {
   return { settings, save, uploadLogo }
 }
 
-export function useContentPage(slug: string) {
+export function useContentPages() {
   const qc = useQueryClient()
 
-  const page = useQuery<ContentPage>({
-    queryKey: ['content-page', slug],
+  const pages = useQuery<ContentPage[]>({
+    queryKey: ['content-pages-list'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('content_pages').select('*').eq('slug', slug).single()
+      const { data, error } = await supabase.from('content_pages').select('*').order('title')
       if (error) throw error
-      return data
+      return data ?? []
     },
   })
 
   const save = useMutation({
-    mutationFn: async (body: string) => {
+    mutationFn: async ({ slug, title, body }: { slug: string; title: string; body: string }) => {
       const { data: { user } } = await supabase.auth.getUser()
-      const { error } = await supabase.from('content_pages').update({ body, updated_by: user?.id ?? null, updated_at: new Date().toISOString() }).eq('slug', slug)
+      const { error } = await supabase.from('content_pages').update({ title, body, updated_by: user?.id ?? null, updated_at: new Date().toISOString() }).eq('slug', slug)
       if (error) throw error
     },
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['content-page', slug] }),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['content-pages-list'] }),
   })
 
-  return { page, save }
+  const create = useMutation({
+    mutationFn: async ({ slug, title }: { slug: string; title: string }) => {
+      const { error } = await supabase.from('content_pages').insert({ slug, title, body: '' })
+      if (error) throw error
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['content-pages-list'] }),
+  })
+
+  const remove = useMutation({
+    mutationFn: async (slug: string) => {
+      const { error } = await supabase.from('content_pages').delete().eq('slug', slug)
+      if (error) throw error
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['content-pages-list'] }),
+  })
+
+  return { pages, save, create, remove }
 }
 
 export function useFaqAdmin() {
