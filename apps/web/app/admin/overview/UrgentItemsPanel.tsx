@@ -27,6 +27,7 @@ export function UrgentItemsPanel() {
     { key: 'organizations', label: 'Organisations à valider', count: data.pendingOrganizations, href: '/admin/organizations', icon: 'storefront', urgent: false },
     { key: 'collaborators', label: 'Collaborateurs à valider', count: data.pendingCollaborators, href: '/admin/collaborators', icon: 'group_add', urgent: false },
     { key: 'no-show', label: 'RDV manqués (7j)', count: data.recentNoShows, href: '/admin/analytics', icon: 'event_busy', urgent: false },
+    { key: 'tickets', label: 'Tickets ouverts', count: data.openTickets, href: '/admin/tickets', icon: 'confirmation_number', urgent: false },
   ] : []
 
   const totalUrgent = cards.reduce((sum, c) => sum + c.count, 0)

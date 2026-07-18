@@ -9,9 +9,9 @@ type SubRole = 'admin' | 'moderator' | 'accountant' | 'readonly' | null
 
 // routes accessible par rôle (null = super-admin, accès complet)
 const ROLE_ACCESS: Record<string, string[]> = {
-  moderator:  ['/admin/overview', '/admin/users', '/admin/practitioners', '/admin/organizations', '/admin/messages', '/admin/disputes', '/admin/appeals', '/admin/analytics'],
-  accountant: ['/admin/overview', '/admin/payments', '/admin/finance', '/admin/analytics'],
-  readonly:   ['/admin/overview', '/admin/analytics'],
+  moderator:  ['/admin/overview', '/admin/users', '/admin/practitioners', '/admin/organizations', '/admin/messages', '/admin/disputes', '/admin/appeals', '/admin/analytics', '/admin/tickets'],
+  accountant: ['/admin/overview', '/admin/payments', '/admin/finance', '/admin/analytics', '/admin/tickets'],
+  readonly:   ['/admin/overview', '/admin/analytics', '/admin/tickets'],
 }
 
 const navItems = [
@@ -82,6 +82,16 @@ const navItems = [
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+      </svg>
+    ),
+  },
+  {
+    href: '/admin/tickets',
+    label: 'Tickets',
+    roles: null,
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 3h6m-7.5 6h9a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0016.5 4.5h-9a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 007.5 21z" />
       </svg>
     ),
   },

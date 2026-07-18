@@ -12,6 +12,7 @@ export interface AdminUrgentItems {
   pendingAppeals: number
   suspendedUsers: number
   recentNoShows: number
+  openTickets: number
 }
 
 async function fetchUrgentItems(): Promise<AdminUrgentItems> {
@@ -27,6 +28,7 @@ async function fetchUrgentItems(): Promise<AdminUrgentItems> {
     { count: pendingAppeals },
     { count: suspendedUsers },
     { count: recentNoShows },
+    { count: openTickets },
   ] = await Promise.all([
     supabase.from('practitioners').select('*', { count: 'exact', head: true }).in('verification_status', ['pending', 'under_review']),
     supabase.from('organizations').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
@@ -37,6 +39,7 @@ async function fetchUrgentItems(): Promise<AdminUrgentItems> {
     supabase.from('practitioner_appeals').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('users').select('*', { count: 'exact', head: true }).eq('account_status', 'suspended'),
     supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('status', 'no_show').gte('scheduled_at', sevenDaysAgo),
+    supabase.from('tickets').select('*', { count: 'exact', head: true }).not('status', 'in', '("valide","deploye")'),
   ])
 
   return {
@@ -48,6 +51,7 @@ async function fetchUrgentItems(): Promise<AdminUrgentItems> {
     pendingAppeals: pendingAppeals ?? 0,
     suspendedUsers: suspendedUsers ?? 0,
     recentNoShows: recentNoShows ?? 0,
+    openTickets: openTickets ?? 0,
   }
 }
 
@@ -64,6 +68,7 @@ export function useAdminUrgentItems() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'disputes' }, () => void queryClient.invalidateQueries({ queryKey: ['admin-urgent-items'] }))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'practitioner_appeals' }, () => void queryClient.invalidateQueries({ queryKey: ['admin-urgent-items'] }))
       .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => void queryClient.invalidateQueries({ queryKey: ['admin-urgent-items'] }))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tickets' }, () => void queryClient.invalidateQueries({ queryKey: ['admin-urgent-items'] }))
       .subscribe()
 
     return () => { void supabase.removeChannel(channel) }
