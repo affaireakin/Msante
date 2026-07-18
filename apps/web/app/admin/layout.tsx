@@ -14,6 +14,27 @@ const ROLE_ACCESS: Record<string, string[]> = {
   readonly:   ['/admin/overview', '/admin/analytics', '/admin/tickets'],
 }
 
+// Rôles admin granulaires (section 9) : un utilisateur rattaché à un
+// admin_role_id personnalisé bascule sur ce système au lieu du sub_role
+// legacy ci-dessus — les routes accessibles dépendent des permissions
+// réellement accordées à son rôle, pas d'une liste figée par sub_role.
+const PERMISSION_ROUTES: Record<string, string[]> = {
+  'tickets.manage':          ['/admin/tickets'],
+  'disputes.manage':         ['/admin/disputes'],
+  'appeals.manage':          ['/admin/appeals'],
+  'practitioners.validate':  ['/admin/practitioners'],
+  'organizations.validate':  ['/admin/organizations'],
+  'collaborators.validate':  ['/admin/collaborators'],
+  'technical.manage':        ['/admin/tickets', '/admin/audit'],
+  'users.manage':            ['/admin/users'],
+  'payments.view':           ['/admin/payments', '/admin/finance'],
+  'analytics.view':          ['/admin/analytics'],
+  'audit.view':              ['/admin/audit'],
+  // 'content.manage' n'a pas encore de page admin dédiée (pas de CMS CGU/FAQ) —
+  // le rôle et la permission existent déjà pour ne pas bloquer sur l'assignation,
+  // mais ne débloquent aucune route tant que cette page n'existe pas.
+}
+
 const navItems = [
   {
     href: '/admin/users',
@@ -146,6 +167,16 @@ const navItems = [
     ),
   },
   {
+    href: '/admin/staff-roles',
+    label: 'Rôles équipe',
+    roles: ['admin'],
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+  },
+  {
     href: '/admin/prefixes',
     label: 'Préfixes',
     roles: ['admin'],
@@ -178,7 +209,10 @@ const navItems = [
   },
 ]
 
-function canAccess(subRole: SubRole, href: string): boolean {
+function canAccess(subRole: SubRole, href: string, permissionRoutes: Set<string> | null): boolean {
+  if (permissionRoutes) {
+    return href.startsWith('/admin/overview') || Array.from(permissionRoutes).some(r => href.startsWith(r))
+  }
   if (!subRole || subRole === 'admin') return true
   const allowed = ROLE_ACCESS[subRole]
   return allowed ? allowed.some(r => href.startsWith(r)) : false
@@ -192,28 +226,46 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [authChecked, setAuthChecked] = React.useState(false)
   const [subRole, setSubRole] = React.useState<SubRole>(null)
   const [userId, setUserId] = React.useState<string | null>(null)
+  const [isSuperAdmin, setIsSuperAdmin] = React.useState(false)
+  const [permissionRoutes, setPermissionRoutes] = React.useState<Set<string> | null>(null)
 
   React.useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { router.replace('/auth/login'); return }
-      const { data } = await supabase.from('users').select('status, role, sub_role').eq('id', user.id).single()
+      const { data } = await supabase.from('users').select('status, role, sub_role, admin_role_id').eq('id', user.id).single()
       if (!data || data.role !== 'admin') { router.replace('/auth/login'); return }
       if (data.status === 'suspended') { setSuspended(true); return }
       const sr = (data.sub_role as SubRole) ?? null
       setSubRole(sr)
       setUserId(user.id)
+      setIsSuperAdmin(!sr && !data.admin_role_id)
+
+      if (data.admin_role_id) {
+        const { data: perms } = await supabase
+          .from('admin_role_permissions')
+          .select('admin_permissions(key)')
+          .eq('role_id', data.admin_role_id)
+        const routes = new Set<string>()
+        for (const p of (perms ?? []) as unknown as { admin_permissions: { key: string } | null }[]) {
+          const key = p.admin_permissions?.key
+          if (key && PERMISSION_ROUTES[key]) PERMISSION_ROUTES[key].forEach(r => routes.add(r))
+        }
+        setPermissionRoutes(routes)
+      } else {
+        setPermissionRoutes(null)
+      }
       setAuthChecked(true)
     })
   }, [router])
 
-  // Redirect if current page is forbidden for this sub_role
+  // Redirect if current page is forbidden for this sub_role / rôle personnalisé
   React.useEffect(() => {
     if (!authChecked) return
-    if (!canAccess(subRole, pathname)) {
-      const fallback = ROLE_ACCESS[subRole ?? '']?.[0] ?? '/admin/overview'
+    if (!canAccess(subRole, pathname, permissionRoutes)) {
+      const fallback = permissionRoutes ? (Array.from(permissionRoutes)[0] ?? '/admin/overview') : (ROLE_ACCESS[subRole ?? '']?.[0] ?? '/admin/overview')
       router.replace(fallback)
     }
-  }, [authChecked, subRole, pathname, router])
+  }, [authChecked, subRole, permissionRoutes, pathname, router])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -278,7 +330,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {navItems.filter(item => item.roles === null || canAccess(subRole, item.href)).map((item) => {
+          {navItems.filter(item => item.href === '/admin/staff-roles' ? isSuperAdmin : (item.roles === null || canAccess(subRole, item.href, permissionRoutes))).map((item) => {
             const isActive = pathname.startsWith(item.href)
             return (
               <Link
