@@ -53,8 +53,13 @@ interface TeamMember {
   full_name: string
   email: string | null
   sub_role: string | null
+  admin_role_id: string | null
   status: string
   created_at: string
+}
+
+function isSuperAdmin(m: Pick<TeamMember, 'sub_role' | 'admin_role_id'>): boolean {
+  return !m.sub_role && !m.admin_role_id
 }
 
 export default function CollaboratorsPage() {
@@ -68,10 +73,14 @@ export default function CollaboratorsPage() {
   const [editRole, setEditRole] = useState('')
   const [confirmDelete, setConfirmDelete] = useState<TeamMember | null>(null)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [viewerIsSuperAdmin, setViewerIsSuperAdmin] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) setCurrentUserId(user.id)
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return
+      setCurrentUserId(user.id)
+      const { data } = await supabase.from('users').select('sub_role, admin_role_id').eq('id', user.id).single()
+      if (data) setViewerIsSuperAdmin(isSuperAdmin(data))
     })
   }, [])
 
@@ -82,7 +91,7 @@ export default function CollaboratorsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('users')
-        .select('id, full_name, email, sub_role, status, created_at')
+        .select('id, full_name, email, sub_role, admin_role_id, status, created_at')
         .eq('role', 'admin')
         .order('created_at', { ascending: true })
       if (error) throw error
@@ -348,7 +357,7 @@ export default function CollaboratorsPage() {
               <p className="text-xs text-[#6f787e]">Votre compte apparaîtra ici une fois que la table <code>public.users</code> contient bien votre entrée avec <code>role = &apos;admin&apos;</code>.</p>
               {currentUserId && (
                 <button
-                  onClick={() => setEditingMember({ id: currentUserId, full_name: 'Moi (admin)', email: null, sub_role: 'admin', status: 'active', created_at: new Date().toISOString() })}
+                  onClick={() => setEditingMember({ id: currentUserId, full_name: 'Moi (admin)', email: null, sub_role: 'admin', admin_role_id: null, status: 'active', created_at: new Date().toISOString() })}
                   className="mx-auto flex items-center gap-2 px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-semibold rounded-xl hover:shadow-md transition"
                 >
                   Modifier mon rôle
@@ -357,7 +366,18 @@ export default function CollaboratorsPage() {
             </div>
           ) : (
             <div className="divide-y divide-slate-100">
-              {team.map(member => (
+              {team.map(member => {
+                const isSelf = member.id === currentUserId
+                const targetIsSuper = isSuperAdmin(member)
+                // Only a true super admin may act on a fellow admin account; never on yourself
+                // (prevents accidental self-lockout) — backstopped by a DB trigger regardless.
+                const canManage = viewerIsSuperAdmin && !isSelf
+                const guardTitle = isSelf
+                  ? 'Vous ne pouvez pas effectuer cette action sur votre propre compte'
+                  : !viewerIsSuperAdmin
+                    ? 'Seul un administrateur général peut gérer un compte administrateur'
+                    : undefined
+                return (
                 <div key={member.id} className="flex items-center gap-3 px-6 py-4 hover:bg-slate-50/50 transition-colors">
                   <div className="w-10 h-10 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-sm font-bold flex-shrink-0">
                     {initials(member.full_name)}
@@ -368,6 +388,9 @@ export default function CollaboratorsPage() {
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ROLE_BADGE[member.sub_role ?? 'admin'] ?? 'bg-slate-100 text-slate-600'}`}>
                         {roleLabel(member.sub_role ?? 'admin')}
                       </span>
+                      {targetIsSuper && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">Administrateur général</span>
+                      )}
                       {member.status === 'suspended' && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">Suspendu</span>
                       )}
@@ -377,28 +400,34 @@ export default function CollaboratorsPage() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => { setEditingMember(member); setEditRole(member.sub_role ?? 'admin') }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#82d8ff] text-[#82d8ff] text-xs font-semibold hover:bg-[#82d8ff] hover:text-[#0b1c30] transition-colors"
+                      disabled={!canManage}
+                      title={guardTitle}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#82d8ff] text-[#82d8ff] text-xs font-semibold hover:bg-[#82d8ff] hover:text-[#0b1c30] transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#82d8ff]"
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>edit</span>
                       Modifier rôle
                     </button>
                     <button
                       onClick={() => suspendMutation.mutate({ id: member.id, suspend: member.status === 'active', member })}
-                      disabled={suspendMutation.isPending}
-                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors disabled:opacity-50"
+                      disabled={!canManage || suspendMutation.isPending}
+                      title={guardTitle}
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors disabled:opacity-40"
                       style={{ borderColor: member.status === 'suspended' ? '#1d7a3a' : '#705d00', color: member.status === 'suspended' ? '#1d7a3a' : '#705d00' }}
                     >
                       {member.status === 'suspended' ? 'Réactiver' : 'Suspendre'}
                     </button>
                     <button
                       onClick={() => setConfirmDelete(member)}
-                      className="p-1.5 rounded-lg hover:bg-red-50 transition-colors text-[#6f787e] hover:text-[#ba1a1a]"
+                      disabled={!canManage}
+                      title={guardTitle}
+                      className="p-1.5 rounded-lg hover:bg-red-50 transition-colors text-[#6f787e] hover:text-[#ba1a1a] disabled:opacity-40 disabled:hover:bg-transparent"
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
                     </button>
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
