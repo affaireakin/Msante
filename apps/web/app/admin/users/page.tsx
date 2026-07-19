@@ -1,6 +1,7 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState, useRef } from 'react'
+import { useState, useRef, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
 type Role = 'all' | 'patient' | 'practitioner' | 'admin'
@@ -849,7 +850,19 @@ function UserProfilePanel({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function UsersPage() {
-  const [role, setRole] = useState<Role>('all')
+  return (
+    <Suspense fallback={null}>
+      <UsersPageInner />
+    </Suspense>
+  )
+}
+
+function UsersPageInner() {
+  const searchParams = useSearchParams()
+  const [role, setRole] = useState<Role>(() => {
+    const fromUrl = searchParams.get('role') as Role | null
+    return fromUrl && ['patient', 'practitioner', 'admin'].includes(fromUrl) ? fromUrl : 'all'
+  })
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [page, setPage] = useState(0)
