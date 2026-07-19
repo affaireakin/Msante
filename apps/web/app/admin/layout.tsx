@@ -240,19 +240,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   React.useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { router.replace('/auth/login'); return }
-      const { data } = await supabase.from('users').select('status, role, sub_role, admin_role_id').eq('id', user.id).single()
+      const { data } = await supabase.from('users').select('status, role, sub_role').eq('id', user.id).single()
       if (!data || data.role !== 'admin') { router.replace('/auth/login'); return }
       if (data.status === 'suspended') { setSuspended(true); return }
       const sr = (data.sub_role as SubRole) ?? null
       setSubRole(sr)
       setUserId(user.id)
-      setIsSuperAdmin(!sr && !data.admin_role_id)
 
-      if (data.admin_role_id) {
+      // A collaborator can hold several granular roles at once — union the
+      // permissions/routes across all of them rather than a single role.
+      const { data: userRoles } = await supabase.from('user_admin_roles').select('role_id').eq('user_id', user.id)
+      const roleIds = (userRoles ?? []).map(r => r.role_id)
+      setIsSuperAdmin(!sr && roleIds.length === 0)
+
+      if (roleIds.length > 0) {
         const { data: perms } = await supabase
           .from('admin_role_permissions')
           .select('admin_permissions(key)')
-          .eq('role_id', data.admin_role_id)
+          .in('role_id', roleIds)
         const routes = new Set<string>()
         for (const p of (perms ?? []) as unknown as { admin_permissions: { key: string } | null }[]) {
           const key = p.admin_permissions?.key

@@ -41,8 +41,8 @@ export default function StaffRolesPage() {
     return Array.from(map.entries())
   }, [permissionsData])
 
-  const members = (teamMembers.data ?? []).filter(m => m.admin_role_id === selectedRoleId)
-  const unassignedOrOther = (teamMembers.data ?? []).filter(m => m.admin_role_id !== selectedRoleId)
+  const members = (teamMembers.data ?? []).filter(m => selectedRoleId && m.roleIds.includes(selectedRoleId))
+  const nonMembers = (teamMembers.data ?? []).filter(m => !selectedRoleId || !m.roleIds.includes(selectedRoleId))
 
   const togglePerm = (id: string) => {
     setChecked(prev => {
@@ -149,7 +149,7 @@ export default function StaffRolesPage() {
                       </div>
                       <span className="text-sm text-[#0b1c30]">{m.full_name}</span>
                     </div>
-                    <button onClick={() => assignMember.mutate({ userId: m.id, roleId: null })}
+                    <button onClick={() => assignMember.mutate({ userId: m.id, roleId: selectedRole.id, assign: false })}
                       className="text-xs font-semibold text-[#ba1a1a] hover:underline">
                       Retirer
                     </button>
@@ -161,12 +161,12 @@ export default function StaffRolesPage() {
                 <select value={addMemberId} onChange={e => setAddMemberId(e.target.value)}
                   className="flex-1 px-3 py-2 rounded-xl text-sm border border-slate-200 text-[#0b1c30]">
                   <option value="">Choisir un membre de l&apos;équipe...</option>
-                  {unassignedOrOther.map(m => (
-                    <option key={m.id} value={m.id}>{m.full_name}{m.admin_role_id ? ' (déjà assigné à un autre rôle)' : ''}</option>
+                  {nonMembers.map(m => (
+                    <option key={m.id} value={m.id}>{m.full_name}{m.roleIds.length > 0 ? ` (${m.roleIds.length} autre${m.roleIds.length > 1 ? 's' : ''} rôle${m.roleIds.length > 1 ? 's' : ''})` : ''}</option>
                   ))}
                 </select>
                 <button
-                  onClick={() => { if (addMemberId) { assignMember.mutate({ userId: addMemberId, roleId: selectedRole.id }); setAddMemberId('') } }}
+                  onClick={() => { if (addMemberId) { assignMember.mutate({ userId: addMemberId, roleId: selectedRole.id, assign: true }); setAddMemberId('') } }}
                   disabled={!addMemberId}
                   className="px-4 py-2 rounded-xl text-sm font-bold text-[#0b1c30] disabled:opacity-50"
                   style={{ backgroundColor: '#82d8ff' }}>

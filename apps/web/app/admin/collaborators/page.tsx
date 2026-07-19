@@ -67,7 +67,7 @@ export default function CollaboratorsPage() {
   const [tab, setTab] = useState<Tab>('team')
   const [showModal, setShowModal] = useState(false)
   const [email, setEmail] = useState('')
-  const [role, setRole] = useState('moderator')
+  const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([])
   const [inviteError, setInviteError] = useState<string | null>(null)
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null)
   const [editRole, setEditRole] = useState('')
@@ -159,6 +159,17 @@ export default function CollaboratorsPage() {
     },
   })
 
+  // ── Rôles granulaires disponibles à l'invitation ───────────────────────────
+  const { data: availableRoles = [] } = useQuery<{ id: string; name: string; description: string | null }[]>({
+    queryKey: ['admin-roles-for-invite'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('admin_roles').select('id, name, description').order('name')
+      if (error) throw error
+      return data ?? []
+    },
+  })
+  const roleNameById = new Map(availableRoles.map(r => [r.id, r.name]))
+
   // ── Invitations ───────────────────────────────────────────────────────────
   const { data: invitations = [], isLoading: loadingInv } = useQuery({
     queryKey: ['admin-invitations'],
@@ -166,7 +177,7 @@ export default function CollaboratorsPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from('invitations')
-        .select('id, email, role, status, created_at, expires_at')
+        .select('id, email, role, role_ids, status, created_at, expires_at')
         .order('created_at', { ascending: false })
       return data ?? []
     },
@@ -279,25 +290,25 @@ export default function CollaboratorsPage() {
 
   // ── Invite mutation ───────────────────────────────────────────────────────
   const invite = useMutation({
-    mutationFn: async ({ email, role }: { email: string; role: string }) => {
+    mutationFn: async ({ email, roleIds }: { email: string; roleIds: string[] }) => {
       const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/invite-collaborator`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
-          body: JSON.stringify({ email, role }),
+          body: JSON.stringify({ email, role_ids: roleIds }),
         }
       )
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
         throw new Error((body as { error?: string }).error ?? "Erreur lors de l'invitation")
       }
-      await logAudit('collaborator.invited', 'invitation', email, null, { email, role })
+      await logAudit('collaborator.invited', 'invitation', email, null, { email, role_ids: roleIds })
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-invitations'] })
-      setShowModal(false); setEmail(''); setRole('moderator'); setInviteError(null)
+      setShowModal(false); setEmail(''); setSelectedRoleIds([]); setInviteError(null)
     },
     onError: (e: Error) => setInviteError(e.message),
   })
@@ -450,13 +461,23 @@ export default function CollaboratorsPage() {
                 ))}</tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {(invitations as { id: string; email: string; role: string; status: string; created_at: string; expires_at: string }[]).map(inv => (
+                {(invitations as { id: string; email: string; role: string; role_ids: string[] | null; status: string; created_at: string; expires_at: string }[]).map(inv => (
                   <tr key={inv.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4 text-sm text-[#0b1c30] font-medium">{inv.email}</td>
                     <td className="px-6 py-4">
-                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${ROLE_BADGE[inv.role] ?? 'bg-slate-100 text-slate-600'}`}>
-                        {COLLAB_ROLES.find(r => r.value === inv.role)?.label ?? inv.role}
-                      </span>
+                      {inv.role_ids?.length ? (
+                        <div className="flex flex-wrap gap-1">
+                          {inv.role_ids.map(id => (
+                            <span key={id} className="text-xs font-bold px-2.5 py-1 rounded-full bg-sky-100 text-sky-700">
+                              {roleNameById.get(id) ?? '—'}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${ROLE_BADGE[inv.role] ?? 'bg-slate-100 text-slate-600'}`}>
+                          {inv.role}
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${STATUS_BADGE[inv.status] ?? 'bg-slate-100 text-slate-500'}`}>
@@ -675,17 +696,23 @@ export default function CollaboratorsPage() {
                   placeholder="collaborateur@email.com" />
               </div>
               <div>
-                <label className="text-sm font-semibold text-[#0b1c30] mb-2 block">Rôle & permissions</label>
+                <label className="text-sm font-semibold text-[#0b1c30] mb-2 block">Rôle(s) & permissions</label>
+                <p className="text-xs text-[#6f787e] mb-2">Un collaborateur peut recevoir plusieurs rôles — sélectionnez-en un ou plusieurs.</p>
                 <div className="space-y-2">
-                  {COLLAB_ROLES.map(r => (
-                    <label key={r.value} className={`flex items-start gap-3 cursor-pointer p-3 rounded-xl border transition-all ${role === r.value ? 'border-[#82d8ff] bg-[#e5eeff]' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}>
-                      <input type="radio" name="role" value={r.value} checked={role === r.value} onChange={() => setRole(r.value)} className="accent-[#82d8ff] mt-0.5 flex-shrink-0" />
-                      <div>
-                        <span className="text-sm font-semibold text-[#0b1c30] block">{r.label}</span>
-                        <span className="text-xs text-[#6f787e] leading-relaxed">{r.description}</span>
-                      </div>
-                    </label>
-                  ))}
+                  {availableRoles.map(r => {
+                    const checked = selectedRoleIds.includes(r.id)
+                    return (
+                      <label key={r.id} className={`flex items-start gap-3 cursor-pointer p-3 rounded-xl border transition-all ${checked ? 'border-[#82d8ff] bg-[#e5eeff]' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}>
+                        <input type="checkbox" checked={checked}
+                          onChange={() => setSelectedRoleIds(ids => checked ? ids.filter(id => id !== r.id) : [...ids, r.id])}
+                          className="accent-[#82d8ff] mt-0.5 flex-shrink-0" />
+                        <div>
+                          <span className="text-sm font-semibold text-[#0b1c30] block">{r.name}</span>
+                          {r.description && <span className="text-xs text-[#6f787e] leading-relaxed">{r.description}</span>}
+                        </div>
+                      </label>
+                    )
+                  })}
                 </div>
               </div>
               {inviteError && <p className="text-red-500 text-sm">{inviteError}</p>}
@@ -695,7 +722,7 @@ export default function CollaboratorsPage() {
                 className="flex-1 border border-[#bec8ce] text-[#6f787e] rounded-xl py-2.5 text-sm font-semibold hover:bg-slate-50 transition">
                 Annuler
               </button>
-              <button onClick={() => invite.mutate({ email, role })} disabled={!email || invite.isPending}
+              <button onClick={() => invite.mutate({ email, roleIds: selectedRoleIds })} disabled={!email || selectedRoleIds.length === 0 || invite.isPending}
                 className="flex-1 bg-[#82d8ff] text-[#0b1c30] rounded-xl py-2.5 text-sm font-semibold hover:shadow-lg hover:shadow-[#82d8ff]/20 transition disabled:opacity-50">
                 {invite.isPending ? 'Envoi...' : "Envoyer l'invitation"}
               </button>

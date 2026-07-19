@@ -20,7 +20,7 @@ export interface AdminTeamMember {
   id: string
   full_name: string
   sub_role: string | null
-  admin_role_id: string | null
+  roleIds: string[]
 }
 
 export function useStaffRoles() {
@@ -47,9 +47,18 @@ export function useStaffRoles() {
   const teamMembers = useQuery<AdminTeamMember[]>({
     queryKey: ['admin-team-members-full'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('users').select('id, full_name, sub_role, admin_role_id').eq('role', 'admin').order('full_name')
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, full_name, sub_role, user_admin_roles(role_id)')
+        .eq('role', 'admin')
+        .order('full_name')
       if (error) throw error
-      return data ?? []
+      return (data ?? []).map(u => ({
+        id: u.id,
+        full_name: u.full_name,
+        sub_role: u.sub_role,
+        roleIds: ((u.user_admin_roles ?? []) as { role_id: string }[]).map(r => r.role_id),
+      }))
     },
   })
 
@@ -86,10 +95,17 @@ export function useStaffRoles() {
     onSuccess: (_, vars) => void qc.invalidateQueries({ queryKey: ['admin-role-permissions', vars.roleId] }),
   })
 
+  // A collaborator can hold several roles at once — assigning/unassigning
+  // one role no longer touches any other role they already have.
   const assignMember = useMutation({
-    mutationFn: async ({ userId, roleId }: { userId: string; roleId: string | null }) => {
-      const { error } = await supabase.from('users').update({ admin_role_id: roleId }).eq('id', userId)
-      if (error) throw error
+    mutationFn: async ({ userId, roleId, assign }: { userId: string; roleId: string; assign: boolean }) => {
+      if (assign) {
+        const { error } = await supabase.from('user_admin_roles').insert({ user_id: userId, role_id: roleId })
+        if (error) throw error
+      } else {
+        const { error } = await supabase.from('user_admin_roles').delete().eq('user_id', userId).eq('role_id', roleId)
+        if (error) throw error
+      }
     },
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['admin-team-members-full'] }),
   })

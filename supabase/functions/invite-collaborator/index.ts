@@ -28,15 +28,25 @@ Deno.serve(async (req) => {
     .from('users').select('role').eq('id', user.id).single()
   if (caller?.role !== 'admin') return new Response('Forbidden', { status: 403 })
 
-  const { email, role } = await req.json()
-  if (!email || !role) return new Response('Missing email or role', { status: 400 })
+  const { email, role_ids: roleIds } = await req.json() as { email?: string; role_ids?: string[] }
+  if (!email || !roleIds || roleIds.length === 0) {
+    return new Response('email and at least one role_id are required', { status: 400 })
+  }
 
-  const validRoles = ['admin', 'moderator', 'accountant', 'practitioner']
-  if (!validRoles.includes(role)) return new Response('Invalid role', { status: 400 })
+  // Section 12: collaborators are invited straight into the granular
+  // permission system — no more "Inviter un administrateur" vs "Inviter un
+  // collaborateur" distinction, and no more legacy sub_role at invite time.
+  const { data: roles, error: rolesError } = await supabase
+    .from('admin_roles')
+    .select('id, name')
+    .in('id', roleIds)
+  if (rolesError || !roles || roles.length !== roleIds.length) {
+    return new Response('One or more role_ids are invalid', { status: 400 })
+  }
 
   const { data: invitation, error } = await supabase
     .from('invitations')
-    .insert({ email, role, invited_by: user.id })
+    .insert({ email, role: 'admin', role_ids: roleIds, invited_by: user.id })
     .select('token')
     .single()
 
@@ -47,13 +57,7 @@ Deno.serve(async (req) => {
   const baseUrl = Deno.env.get('APP_URL') ?? 'https://app.msante.sn'
   const inviteLink = `${baseUrl}/invite?token=${invitation.token}`
   const resendKey = Deno.env.get('RESEND_API_KEY') ?? ''
-
-  const roleLabels: Record<string, string> = {
-    admin: 'Administrateur',
-    moderator: 'Modérateur',
-    accountant: 'Comptable',
-    practitioner: 'Praticien',
-  }
+  const roleNames = roles.map(r => r.name).join(', ')
 
   const emailRes = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -61,7 +65,7 @@ Deno.serve(async (req) => {
     body: JSON.stringify({
       from: 'M-Santé <noreply@m-sante.com>',
       to: [email],
-      subject: `Invitation M-Santé — ${roleLabels[role] ?? role}`,
+      subject: `Invitation M-Santé — ${roleNames}`,
       html: `
         <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;">
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
@@ -74,7 +78,7 @@ Deno.serve(async (req) => {
             </div>
           </div>
           <h2 style="color:#006685;margin-bottom:8px;">Vous êtes invité sur M-Santé</h2>
-          <p style="color:#3f484d;">Vous avez été invité en tant que <strong>${roleLabels[role] ?? role}</strong>.</p>
+          <p style="color:#3f484d;">Vous avez été invité en tant que <strong>${roleNames}</strong>.</p>
           <p style="color:#3f484d;">Cliquez sur le lien ci-dessous pour créer votre compte. Ce lien expire dans <strong>48 heures</strong>.</p>
           <a href="${inviteLink}"
             style="display:inline-block;margin:20px 0;padding:14px 28px;background:#006685;color:#fff;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;">

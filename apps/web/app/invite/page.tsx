@@ -21,6 +21,7 @@ interface Invitation {
   role: string
   status: string
   expires_at: string
+  role_ids: string[] | null
 }
 
 const ROLE_LABELS: Record<string, string> = {
@@ -43,11 +44,12 @@ function InviteForm() {
   const [submitting, setSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [roleNames, setRoleNames] = useState<string[]>([])
 
   useEffect(() => {
     if (!token) { setError('Token manquant'); setLoading(false); return }
     supabase.from('invitations')
-      .select('id, email, role, status, expires_at')
+      .select('id, email, role, status, expires_at, role_ids')
       .eq('token', token)
       .single()
       .then(({ data, error: e }) => {
@@ -56,6 +58,11 @@ function InviteForm() {
         if (data.status !== 'pending') { setError('Cette invitation a déjà été utilisée'); return }
         if (new Date(data.expires_at) < new Date()) { setError('Cette invitation a expiré'); return }
         setInvitation(data)
+        if (data.role_ids?.length) {
+          supabase.from('admin_roles').select('name').in('id', data.role_ids).then(({ data: roles }) => {
+            if (roles) setRoleNames(roles.map(r => r.name))
+          })
+        }
       })
   }, [token])
 
@@ -77,7 +84,7 @@ function InviteForm() {
     setError(null)
 
     const userRole = invitation.role === 'practitioner' ? 'practitioner' : 'admin'
-    const { error: authErr } = await supabase.auth.signUp({
+    const { data: signUpData, error: authErr } = await supabase.auth.signUp({
       email: invitation.email,
       password,
       options: { data: { role: userRole, full_name: '' } },
@@ -88,9 +95,23 @@ function InviteForm() {
       return
     }
 
-    await supabase.from('invitations')
-      .update({ status: 'accepted', accepted_at: new Date().toISOString() })
-      .eq('token', token!)
+    if (invitation.role_ids?.length && signUpData.user) {
+      // No confirmed session yet at this point (OTP verification is still
+      // pending) — auth.uid() would be null, so this has to happen via a
+      // service-role function rather than a direct client-side write.
+      const { error: acceptErr } = await supabase.functions.invoke('accept-admin-invitation', {
+        body: { token, user_id: signUpData.user.id },
+      })
+      if (acceptErr) {
+        setError("Compte créé, mais l'attribution des rôles a échoué — contactez un administrateur général.")
+        setSubmitting(false)
+        return
+      }
+    } else {
+      await supabase.from('invitations')
+        .update({ status: 'accepted', accepted_at: new Date().toISOString() })
+        .eq('token', token!)
+    }
 
     setSubmitting(false)
     router.push(`/auth/verify-otp?email=${encodeURIComponent(invitation.email)}&role=${userRole}`)
@@ -124,9 +145,15 @@ function InviteForm() {
         </div>
         <div className="glass-card rounded-xl p-8 space-y-6">
           <div>
-            <span className="inline-block bg-sky-100 text-sky-700 text-xs font-bold px-3 py-1 rounded-full mb-3">
-              {ROLE_LABELS[invitation?.role ?? ''] ?? invitation?.role}
-            </span>
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {roleNames.length > 0 ? roleNames.map(name => (
+                <span key={name} className="inline-block bg-sky-100 text-sky-700 text-xs font-bold px-3 py-1 rounded-full">{name}</span>
+              )) : (
+                <span className="inline-block bg-sky-100 text-sky-700 text-xs font-bold px-3 py-1 rounded-full">
+                  {ROLE_LABELS[invitation?.role ?? ''] ?? invitation?.role}
+                </span>
+              )}
+            </div>
             <h2 className="text-2xl font-extrabold text-slate-900">Créer votre compte</h2>
             <p className="text-slate-500 text-sm mt-1">{invitation?.email}</p>
           </div>
