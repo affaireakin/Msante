@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { logIncident } from '../../../packages/backend/incidents.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -116,6 +117,13 @@ Deno.serve(async (req) => {
 
   } catch (e) {
     console.error('paydunya-webhook error:', e)
+    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
+    await logIncident(supabase, {
+      title: 'Erreur webhook paiement PayDunya',
+      description: (e as Error).message,
+      priority: 'urgent',
+      source: 'payment_webhook',
+    })
     // Always return 200 to PayDunya to avoid infinite retries
     return new Response(JSON.stringify({ ok: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

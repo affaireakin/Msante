@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import type { Ticket, TicketType, TicketPriority, TicketComment, TicketAttachment, TicketHistoryEntry } from './types'
 
 const TICKET_SELECT = `
-  id, title, description, type, priority, status, assignee_id, due_date, created_by, created_at, updated_at,
+  id, title, description, type, priority, status, assignee_id, due_date, created_by, source, created_at, updated_at,
   assignee:users!tickets_assignee_id_fkey(full_name),
   creator:users!tickets_created_by_fkey(full_name)
 `

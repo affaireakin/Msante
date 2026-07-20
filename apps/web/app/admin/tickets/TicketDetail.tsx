@@ -53,7 +53,13 @@ export function TicketDetail({
         <div className="p-5 space-y-4 border-b border-slate-100">
           <h3 className="font-bold text-[#0b1c30] text-lg leading-snug">{ticket.title}</h3>
           {ticket.description && <p className="text-sm text-[#3f484d] leading-relaxed">{ticket.description}</p>}
-          <p className="text-xs text-[#6f787e]">Créé par {ticket.creator?.full_name ?? '—'} le {fmtDateTime(ticket.created_at)}</p>
+          {ticket.source ? (
+            <p className="text-xs text-[#705d00] bg-[#fff8e1] rounded-lg px-2.5 py-1.5 inline-block">
+              Détecté automatiquement ({ticket.source}) le {fmtDateTime(ticket.created_at)}
+            </p>
+          ) : (
+            <p className="text-xs text-[#6f787e]">Créé par {ticket.creator?.full_name ?? '—'} le {fmtDateTime(ticket.created_at)}</p>
+          )}
         </div>
 
         {/* Edit fields */}
