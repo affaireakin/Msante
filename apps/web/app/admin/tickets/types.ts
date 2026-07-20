@@ -1,4 +1,4 @@
-export type TicketType = 'bug' | 'evolution' | 'support' | 'incident' | 'tache'
+export type TicketType = 'bug' | 'evolution' | 'support' | 'incident' | 'tache' | 'litige'
 export type TicketStatus = 'a_faire' | 'en_cours' | 'en_test' | 'corrige' | 'valide' | 'deploye'
 export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent'
 
@@ -62,6 +62,48 @@ export const TYPE_META: Record<TicketType, { label: string; icon: string; color:
   support:   { label: 'Support',   icon: 'support_agent',  color: '#1d7a3a', bg: '#e8f5e9' },
   incident:  { label: 'Incident',  icon: 'warning',        color: '#705d00', bg: '#fff8e1' },
   tache:     { label: 'Tâche',     icon: 'task_alt',       color: '#5c5f61', bg: '#e0e3e5' },
+  litige:    { label: 'Litige',    icon: 'gavel',          color: '#ba1a1a', bg: '#ffdad6' },
+}
+
+// Sections 15-16 : les litiges (table `disputes`, toujours créés côté
+// patient/praticien exactement comme avant) sont affichés dans le même
+// board que les tickets côté admin — ces mappings traduisent leur statut
+// à 4 valeurs vers les 6 colonnes du kanban, sans jamais toucher aux pages
+// patient/praticien ni au vocabulaire de statut des litiges en base.
+export type DisputeStatus = 'open' | 'under_review' | 'resolved' | 'closed'
+export type DisputePriority = 'normal' | 'urgent'
+
+export interface Dispute {
+  id: string
+  case_number: string
+  status: DisputeStatus
+  priority: DisputePriority
+  reason: string
+  description: string | null
+  resolution_notes: string | null
+  patient_id: string
+  practitioner_id: string
+  created_at: string
+  updated_at: string
+  patient: { full_name: string; account_status: string } | null
+  practitioner: { full_name: string } | null
+}
+
+export interface DisputeEvent {
+  id: string
+  dispute_id: string
+  type: string
+  actor_role: string
+  content: string
+  created_at: string
+  metadata: Record<string, unknown>
+}
+
+export const DISPUTE_STATUS_TO_KANBAN: Record<DisputeStatus, TicketStatus> = {
+  open: 'a_faire', under_review: 'en_cours', resolved: 'valide', closed: 'deploye',
+}
+export const KANBAN_TO_DISPUTE_STATUS: Record<TicketStatus, DisputeStatus> = {
+  a_faire: 'open', en_cours: 'under_review', en_test: 'under_review', corrige: 'under_review', valide: 'resolved', deploye: 'closed',
 }
 
 export const PRIORITY_META: Record<TicketPriority, { label: string; color: string; bg: string }> = {

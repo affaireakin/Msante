@@ -1,7 +1,7 @@
 'use client'
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
-import type { Ticket } from './types'
+import type { TicketType, TicketPriority, TicketStatus } from './types'
 import { TYPE_META, PRIORITY_META } from './types'
 
 function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
@@ -12,11 +12,21 @@ function initials(name: string) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-export function TicketCard({ ticket, onOpen }: { ticket: Ticket; onOpen: () => void }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: ticket.id })
-  const type = TYPE_META[ticket.type]
-  const priority = PRIORITY_META[ticket.priority]
-  const overdue = ticket.due_date ? new Date(ticket.due_date) < new Date() && ticket.status !== 'deploye' : false
+export interface IncidentCardData {
+  id: string
+  title: string
+  type: TicketType
+  priority: TicketPriority
+  status: TicketStatus
+  assigneeName: string | null
+  dueDate: string | null
+}
+
+export function TicketCard({ card, onOpen }: { card: IncidentCardData; onOpen: () => void }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: card.id })
+  const type = TYPE_META[card.type]
+  const priority = PRIORITY_META[card.priority]
+  const overdue = card.dueDate ? new Date(card.dueDate) < new Date() && card.status !== 'deploye' : false
 
   return (
     <div
@@ -40,21 +50,21 @@ export function TicketCard({ ticket, onOpen }: { ticket: Ticket; onOpen: () => v
           {priority.label}
         </span>
       </div>
-      <p className="text-sm font-semibold text-[#0b1c30] leading-snug">{ticket.title}</p>
+      <p className="text-sm font-semibold text-[#0b1c30] leading-snug">{card.title}</p>
       <div className="flex items-center justify-between pt-1">
-        {ticket.assignee ? (
+        {card.assigneeName ? (
           <div className="flex items-center gap-1.5">
             <div className="w-5 h-5 rounded-full bg-[#82d8ff] flex items-center justify-center text-[8px] font-bold text-[#0b1c30]">
-              {initials(ticket.assignee.full_name)}
+              {initials(card.assigneeName)}
             </div>
-            <span className="text-[10px] text-[#6f787e] truncate max-w-[80px]">{ticket.assignee.full_name}</span>
+            <span className="text-[10px] text-[#6f787e] truncate max-w-[80px]">{card.assigneeName}</span>
           </div>
         ) : (
           <span className="text-[10px] text-[#bec8ce] italic">Non assigné</span>
         )}
-        {ticket.due_date && (
+        {card.dueDate && (
           <span className={`text-[10px] font-semibold ${overdue ? 'text-[#ba1a1a]' : 'text-[#6f787e]'}`}>
-            {new Date(ticket.due_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+            {new Date(card.dueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
           </span>
         )}
       </div>

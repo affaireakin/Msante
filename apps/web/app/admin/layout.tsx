@@ -20,7 +20,7 @@ const ROLE_ACCESS: Record<string, string[]> = {
 // réellement accordées à son rôle, pas d'une liste figée par sub_role.
 const PERMISSION_ROUTES: Record<string, string[]> = {
   'tickets.manage':          ['/admin/tickets'],
-  'disputes.manage':         ['/admin/disputes'],
+  'disputes.manage':         ['/admin/tickets'],
   'appeals.manage':          ['/admin/appeals'],
   'practitioners.validate':  ['/admin/practitioners'],
   'organizations.validate':  ['/admin/organizations'],
@@ -87,18 +87,8 @@ const navItems = [
     ),
   },
   {
-    href: '/admin/disputes',
-    label: 'Litiges',
-    roles: ['admin', 'moderator'],
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-      </svg>
-    ),
-  },
-  {
     href: '/admin/tickets',
-    label: 'Tickets',
+    label: 'Gestion des incidents',
     roles: null,
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>

@@ -20,14 +20,14 @@ export function UrgentItemsPanel() {
 
   const cards: UrgentCard[] = data ? [
     { key: 'suspended', label: 'Comptes suspendus', count: data.suspendedUsers, href: '/admin/users', icon: 'block', urgent: data.suspendedUsers > 0 },
-    { key: 'urgent-disputes', label: 'Litiges urgents', count: data.urgentDisputes, href: '/admin/disputes', icon: 'gavel', urgent: data.urgentDisputes > 0 },
+    { key: 'urgent-disputes', label: 'Litiges urgents', count: data.urgentDisputes, href: '/admin/tickets', icon: 'gavel', urgent: data.urgentDisputes > 0 },
     { key: 'appeals', label: 'Appels à traiter', count: data.pendingAppeals, href: '/admin/appeals', icon: 'campaign', urgent: data.pendingAppeals > 0 },
-    { key: 'disputes', label: 'Litiges ouverts', count: data.openDisputes, href: '/admin/disputes', icon: 'balance', urgent: false },
+    { key: 'disputes', label: 'Litiges ouverts', count: data.openDisputes, href: '/admin/tickets', icon: 'balance', urgent: false },
     { key: 'practitioners', label: 'Praticiens à valider', count: data.pendingPractitioners, href: '/admin/practitioners', icon: 'medical_services', urgent: false },
     { key: 'organizations', label: 'Organisations à valider', count: data.pendingOrganizations, href: '/admin/organizations', icon: 'storefront', urgent: false },
     { key: 'collaborators', label: 'Collaborateurs à valider', count: data.pendingCollaborators, href: '/admin/collaborators', icon: 'group_add', urgent: false },
     { key: 'no-show', label: 'RDV manqués (7j)', count: data.recentNoShows, href: '/admin/analytics', icon: 'event_busy', urgent: false },
-    { key: 'tickets', label: 'Tickets ouverts', count: data.openTickets, href: '/admin/tickets', icon: 'confirmation_number', urgent: false },
+    { key: 'tickets', label: 'Incidents ouverts', count: data.openTickets, href: '/admin/tickets', icon: 'confirmation_number', urgent: false },
   ] : []
 
   const totalUrgent = cards.reduce((sum, c) => sum + c.count, 0)

@@ -2,11 +2,14 @@
 import { useMemo, useState } from 'react'
 import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useTickets } from './useTickets'
-import { STATUS_COLUMNS, TYPE_META } from './types'
-import type { Ticket, TicketStatus, TicketType } from './types'
+import { useDisputesBoard } from './useDisputesBoard'
+import { STATUS_COLUMNS, TYPE_META, DISPUTE_STATUS_TO_KANBAN, KANBAN_TO_DISPUTE_STATUS } from './types'
+import type { Ticket, TicketStatus, TicketType, Dispute } from './types'
 import { KanbanColumn } from './KanbanColumn'
+import type { IncidentCardData } from './TicketCard'
 import { CreateTicketModal } from './CreateTicketModal'
 import { TicketDetail } from './TicketDetail'
+import { DisputeDetail } from './DisputeDetail'
 
 function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
   return <span className="material-symbols-outlined" style={style}>{name}</span>
@@ -14,46 +17,71 @@ function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
 
 export default function TicketsPage() {
   const { tickets, adminUsers, createTicket, updateTicket } = useTickets()
+  const { disputes, updateDisputeStatus } = useDisputesBoard()
   const [showCreate, setShowCreate] = useState(false)
-  const [selected, setSelected] = useState<Ticket | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [typeFilter, setTypeFilter] = useState<TicketType | 'all'>('all')
   const [assigneeFilter, setAssigneeFilter] = useState<string>('all')
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }))
 
-  const filtered = useMemo(() => {
+  const filteredTickets = useMemo(() => {
     return (tickets.data ?? []).filter(t =>
       (typeFilter === 'all' || t.type === typeFilter) &&
       (assigneeFilter === 'all' || t.assignee_id === assigneeFilter || (assigneeFilter === 'none' && !t.assignee_id))
     )
   }, [tickets.data, typeFilter, assigneeFilter])
 
+  const filteredDisputes = useMemo(() => {
+    if (typeFilter !== 'all' && typeFilter !== 'litige') return []
+    if (assigneeFilter !== 'all') return [] // disputes have no assignee workflow today
+    return disputes.data ?? []
+  }, [disputes.data, typeFilter, assigneeFilter])
+
   const byStatus = useMemo(() => {
-    const map: Record<TicketStatus, Ticket[]> = { a_faire: [], en_cours: [], en_test: [], corrige: [], valide: [], deploye: [] }
-    for (const t of filtered) map[t.status].push(t)
+    const map: Record<TicketStatus, IncidentCardData[]> = { a_faire: [], en_cours: [], en_test: [], corrige: [], valide: [], deploye: [] }
+    for (const t of filteredTickets) {
+      map[t.status].push({
+        id: t.id, title: t.title, type: t.type, priority: t.priority, status: t.status,
+        assigneeName: t.assignee?.full_name ?? null, dueDate: t.due_date,
+      })
+    }
+    for (const d of filteredDisputes) {
+      const status = DISPUTE_STATUS_TO_KANBAN[d.status]
+      map[status].push({
+        id: d.id, title: `${d.case_number} — ${d.reason}`, type: 'litige',
+        priority: d.priority === 'urgent' ? 'urgent' : 'medium', status,
+        assigneeName: d.patient?.full_name ?? null, dueDate: null,
+      })
+    }
     return map
-  }, [filtered])
+  }, [filteredTickets, filteredDisputes])
+
+  const selectedTicket: Ticket | null = selectedId ? (tickets.data ?? []).find(t => t.id === selectedId) ?? null : null
+  const selectedDispute: Dispute | null = selectedId && !selectedTicket ? (disputes.data ?? []).find(d => d.id === selectedId) ?? null : null
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (!over) return
     const newStatus = over.id as TicketStatus
     const ticket = (tickets.data ?? []).find(t => t.id === active.id)
-    if (ticket && ticket.status !== newStatus) {
-      updateTicket.mutate({ id: ticket.id, status: newStatus })
-      setSelected(sel => sel && sel.id === ticket.id ? { ...sel, status: newStatus } : sel)
+    if (ticket) {
+      if (ticket.status !== newStatus) updateTicket.mutate({ id: ticket.id, status: newStatus })
+      return
+    }
+    const dispute = (disputes.data ?? []).find(d => d.id === active.id)
+    if (dispute) {
+      const newDisputeStatus = KANBAN_TO_DISPUTE_STATUS[newStatus]
+      if (dispute.status !== newDisputeStatus) updateDisputeStatus.mutate({ id: dispute.id, status: newDisputeStatus })
     }
   }
-
-  // Keep the open detail panel's fields in sync with live updates from other admins.
-  const selectedLive = selected ? (tickets.data ?? []).find(t => t.id === selected.id) ?? selected : null
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#0b1c30]">Tickets</h1>
-          <p className="text-sm text-[#6f787e] mt-0.5">Bugs, évolutions, support, incidents — suivi de l&apos;équipe</p>
+          <h1 className="text-2xl font-bold text-[#0b1c30]">Gestion des incidents</h1>
+          <p className="text-sm text-[#6f787e] mt-0.5">Bugs, évolutions, support, litiges — un seul espace de suivi</p>
         </div>
         <button onClick={() => setShowCreate(true)}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-[#0b1c30] hover:shadow-lg transition-all"
@@ -75,9 +103,12 @@ export default function TicketsPage() {
           <option value="none">Non assigné</option>
           {(adminUsers.data ?? []).map(u => <option key={u.id} value={u.id}>{u.full_name}</option>)}
         </select>
+        {assigneeFilter !== 'all' && (
+          <span className="text-xs text-[#bec8ce] italic">Les litiges n&apos;ont pas encore de responsable assigné</span>
+        )}
       </div>
 
-      {tickets.isLoading ? (
+      {(tickets.isLoading || disputes.isLoading) ? (
         <div className="flex gap-4 overflow-x-auto pb-2">
           {STATUS_COLUMNS.map(s => <div key={s.key} className="w-72 h-64 rounded-2xl bg-white/40 animate-pulse flex-shrink-0" />)}
         </div>
@@ -85,7 +116,7 @@ export default function TicketsPage() {
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <div className="flex gap-4 overflow-x-auto pb-2">
             {STATUS_COLUMNS.map(col => (
-              <KanbanColumn key={col.key} status={col.key} label={col.label} tickets={byStatus[col.key]} onOpen={setSelected} />
+              <KanbanColumn key={col.key} status={col.key} label={col.label} cards={byStatus[col.key]} onOpen={setSelectedId} />
             ))}
           </div>
         </DndContext>
@@ -100,13 +131,17 @@ export default function TicketsPage() {
         />
       )}
 
-      {selectedLive && (
+      {selectedTicket && (
         <TicketDetail
-          ticket={selectedLive}
+          ticket={selectedTicket}
           adminUsers={adminUsers.data ?? []}
-          onClose={() => setSelected(null)}
+          onClose={() => setSelectedId(null)}
           onUpdate={patch => updateTicket.mutate(patch)}
         />
+      )}
+
+      {selectedDispute && (
+        <DisputeDetail dispute={selectedDispute} onClose={() => setSelectedId(null)} />
       )}
     </div>
   )
