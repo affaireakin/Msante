@@ -527,8 +527,8 @@ export default function PractitionerProfilePage() {
                 { type: 'professional_insurance' as const, label: 'Assurance RC professionnelle', icon: 'security', ref: insuranceRef },
               ].map(({ type, label, icon, ref }) => (
                 <div key={type}>
-                  <div onClick={() => ref.current?.click()}
-                    className="flex items-center gap-3 p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all hover:border-[#82d8ff] hover:bg-[#e5eeff]/20"
+                  <button type="button" onClick={() => ref.current?.click()}
+                    className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all hover:border-[#82d8ff] hover:bg-[#e5eeff]/20 text-left"
                     style={{ borderColor: uploading === type ? '#82d8ff' : '#bec8ce' }}>
                     <div className="w-10 h-10 rounded-xl bg-[#e5eeff] flex items-center justify-center flex-shrink-0">
                       {uploading === type
@@ -540,7 +540,7 @@ export default function PractitionerProfilePage() {
                       <p className="text-xs text-[#6f787e]">PDF, JPG, PNG — max 10 Mo</p>
                     </div>
                     <Icon name="upload" color="#6f787e" size={18} />
-                  </div>
+                  </button>
                   <input ref={ref} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden"
                     onChange={e => { const f = e.target.files?.[0]; if (f) uploadDoc(f, type) }} />
                 </div>

@@ -96,7 +96,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-label="Inviter un praticien" className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
         {sent ? (
           <div className="text-center space-y-4">
             <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
@@ -113,14 +113,14 @@ function InviteModal({ onClose }: { onClose: () => void }) {
             <h3 className="text-lg font-bold text-[#0b1c30] mb-4">Inviter un praticien</h3>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <input value={firstname} onChange={e => setFirstname(e.target.value)} placeholder="Prénom"
+                <input aria-label="Prénom" value={firstname} onChange={e => setFirstname(e.target.value)} placeholder="Prénom"
                   className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
-                <input value={lastname} onChange={e => setLastname(e.target.value)} placeholder="Nom"
+                <input aria-label="Nom" value={lastname} onChange={e => setLastname(e.target.value)} placeholder="Nom"
                   className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
               </div>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email"
+              <input aria-label="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email"
                 className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
-              <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Téléphone (optionnel)"
+              <input aria-label="Téléphone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Téléphone (optionnel)"
                 className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
             </div>
             {invite.isError && <p className="text-sm text-red-500 mt-3">{(invite.error as Error).message}</p>}
@@ -161,6 +161,9 @@ export default function OrganizationPractitionersPage() {
   const { data: organizationId } = useMyOrgId()
   const queryClient = useQueryClient()
   const [showInvite, setShowInvite] = useState(false)
+  const [validateError, setValidateError] = useState<string | null>(null)
+  const [assignRoleError, setAssignRoleError] = useState<string | null>(null)
+  const [detachError, setDetachError] = useState<string | null>(null)
 
   const userIds = (practitioners ?? []).map(p => p.user_id)
   const { data: roleData } = useOrgRoleAssignments(userIds, organizationId ?? null)
@@ -173,6 +176,7 @@ export default function OrganizationPractitionersPage() {
       if (fnError) throw fnError
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['org-practitioners'] }),
+    onError: (e: Error) => setValidateError(e.message),
   })
 
   const assignRole = useMutation({
@@ -186,6 +190,20 @@ export default function OrganizationPractitionersPage() {
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['org-role-assignments'] }),
+    onError: (e: Error) => setAssignRoleError(e.message),
+  })
+
+  const detach = useMutation({
+    mutationFn: async (practitionerId: string) => {
+      const { data: { session } } = await supabase.auth.getSession()
+      const { error } = await supabase.functions.invoke('detach-org-practitioner', {
+        headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
+        body: { practitioner_id: practitionerId },
+      })
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['org-practitioners'] }),
+    onError: (e: Error) => setDetachError(e.message),
   })
 
   return (
@@ -205,6 +223,21 @@ export default function OrganizationPractitionersPage() {
       {error && (
         <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-100 text-sm text-red-700">
           Erreur de chargement : {(error as Error).message}
+        </div>
+      )}
+      {validateError && (
+        <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-100 text-sm text-red-700">
+          Impossible de valider : {validateError}
+        </div>
+      )}
+      {assignRoleError && (
+        <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-100 text-sm text-red-700">
+          Impossible de changer le rôle : {assignRoleError}
+        </div>
+      )}
+      {detachError && (
+        <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-100 text-sm text-red-700">
+          Impossible de retirer ce praticien : {detachError}
         </div>
       )}
 
@@ -240,7 +273,14 @@ export default function OrganizationPractitionersPage() {
                 {roleData?.roles && roleData.roles.length > 0 && (
                   <select
                     value={roleData.assignments[p.user_id] ?? ''}
-                    onChange={e => assignRole.mutate({ userId: p.user_id, roleId: e.target.value })}
+                    onChange={e => {
+                      const nextRoleId = e.target.value
+                      const nextName = roleData.roles.find(r => r.id === nextRoleId)?.name ?? 'Aucun rôle'
+                      if (window.confirm(`Confirmer le changement de rôle vers "${nextName}" pour ${p.users?.full_name ?? 'ce praticien'} ?`)) {
+                        setAssignRoleError(null)
+                        assignRole.mutate({ userId: p.user_id, roleId: nextRoleId })
+                      }
+                    }}
                     disabled={assignRole.isPending}
                     className="text-xs border border-slate-200 rounded-full px-3 py-1.5 bg-white/60 text-[#0b1c30] outline-none focus:border-[#82d8ff]"
                   >
@@ -248,6 +288,18 @@ export default function OrganizationPractitionersPage() {
                     {roleData.roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                   </select>
                 )}
+                <button
+                  onClick={() => {
+                    if (window.confirm(`Retirer ${p.users?.full_name ?? 'ce praticien'} de votre organisation ? Il/elle exercera ensuite en indépendant.`)) {
+                      setDetachError(null)
+                      detach.mutate(p.id)
+                    }
+                  }}
+                  disabled={detach.isPending}
+                  className="text-xs font-semibold text-red-600 hover:text-red-800 disabled:opacity-50"
+                >
+                  Retirer de l&apos;organisation
+                </button>
                 {!p.org_validated_at && (
                   <button
                     onClick={() => validate.mutate(p.id)}

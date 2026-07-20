@@ -17,6 +17,7 @@
     }
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "supabase": "^2.109.1"
   }
 }

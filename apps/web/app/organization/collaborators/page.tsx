@@ -40,6 +40,26 @@ function useCollaborators(organizationId: string | null) {
   })
 }
 
+interface PendingInvitation { id: string; firstname: string; lastname: string; email: string; expires_at: string; created_at: string }
+
+function usePendingInvitations(organizationId: string | null) {
+  return useQuery<PendingInvitation[]>({
+    queryKey: ['org-pending-collaborator-invitations', organizationId],
+    enabled: !!organizationId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('practitioner_invitations')
+        .select('id, firstname, lastname, email, expires_at, created_at')
+        .eq('organization_id', organizationId as string)
+        .eq('account_type', 'collaborator')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return (data ?? []) as PendingInvitation[]
+    },
+  })
+}
+
 function useOrgRoleAssignments(userIds: string[], organizationId: string | null) {
   return useQuery<{ roles: OrgRole[]; assignments: Record<string, string> }>({
     queryKey: ['org-role-assignments', organizationId, userIds],
@@ -89,7 +109,7 @@ function InviteModal({ organizationId, onClose }: { organizationId: string; onCl
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-label="Inviter un collaborateur" className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
         {sent ? (
           <div className="text-center space-y-4">
             <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
@@ -106,14 +126,14 @@ function InviteModal({ organizationId, onClose }: { organizationId: string; onCl
             <h3 className="text-lg font-bold text-[#0b1c30] mb-4">Inviter un collaborateur</h3>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <input value={firstname} onChange={e => setFirstname(e.target.value)} placeholder="Prénom"
+                <input aria-label="Prénom" value={firstname} onChange={e => setFirstname(e.target.value)} placeholder="Prénom"
                   className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
-                <input value={lastname} onChange={e => setLastname(e.target.value)} placeholder="Nom"
+                <input aria-label="Nom" value={lastname} onChange={e => setLastname(e.target.value)} placeholder="Nom"
                   className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
               </div>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email"
+              <input aria-label="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email"
                 className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
-              <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Téléphone (optionnel)"
+              <input aria-label="Téléphone" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Téléphone (optionnel)"
                 className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#82d8ff]" />
               <div>
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Rôle (optionnel)</label>
@@ -147,8 +167,11 @@ function InviteModal({ organizationId, onClose }: { organizationId: string; onCl
 export default function OrganizationCollaboratorsPage() {
   const { data: organizationId } = useMyOrgId()
   const { data: collaborators, isLoading, error } = useCollaborators(organizationId ?? null)
+  const { data: pendingInvitations } = usePendingInvitations(organizationId ?? null)
   const queryClient = useQueryClient()
   const [showInvite, setShowInvite] = useState(false)
+  const [assignRoleError, setAssignRoleError] = useState<string | null>(null)
+  const [revokeError, setRevokeError] = useState<string | null>(null)
 
   const userIds = (collaborators ?? []).map(c => c.id)
   const { data: roleData } = useOrgRoleAssignments(userIds, organizationId ?? null)
@@ -167,9 +190,35 @@ export default function OrganizationCollaboratorsPage() {
       // Keep the dedicated dashboard routing (users.role) in sync with the
       // RBAC role assignment — a collaborator moved to/from "Secrétaire" must
       // land on the right dashboard next time they log in.
-      await supabase.from('users').update({ role: roleName === 'Secrétaire' ? 'secretary' : 'organization_member' }).eq('id', userId)
+      const { error: syncError } = await supabase.from('users').update({ role: roleName === 'Secrétaire' ? 'secretary' : 'organization_member' }).eq('id', userId)
+      if (syncError) throw syncError
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['org-role-assignments'] }),
+    onError: (e: Error) => setAssignRoleError(e.message),
+  })
+
+  const revoke = useMutation({
+    mutationFn: async (userId: string) => {
+      const { data: { session } } = await supabase.auth.getSession()
+      const { error } = await supabase.functions.invoke('revoke-collaborator', {
+        headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
+        body: { target_user_id: userId },
+      })
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['org-collaborators'] })
+      queryClient.invalidateQueries({ queryKey: ['org-role-assignments'] })
+    },
+    onError: (e: Error) => setRevokeError(e.message),
+  })
+
+  const cancelInvitation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('practitioner_invitations').update({ status: 'cancelled' }).eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['org-pending-collaborator-invitations'] }),
   })
 
   return (
@@ -189,6 +238,34 @@ export default function OrganizationCollaboratorsPage() {
       {error && (
         <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-100 text-sm text-red-700">
           Erreur de chargement : {(error as Error).message}
+        </div>
+      )}
+      {assignRoleError && (
+        <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-100 text-sm text-red-700">
+          Impossible de changer le rôle : {assignRoleError}
+        </div>
+      )}
+      {revokeError && (
+        <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-100 text-sm text-red-700">
+          Impossible de révoquer l&apos;accès : {revokeError}
+        </div>
+      )}
+
+      {pendingInvitations && pendingInvitations.length > 0 && (
+        <div className="rounded-2xl p-5 space-y-3" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
+          <h2 className="text-sm font-bold text-[#0b1c30]">Invitations en attente</h2>
+          {pendingInvitations.map(inv => (
+            <div key={inv.id} className="flex items-center justify-between gap-3 flex-wrap text-sm">
+              <div>
+                <p className="font-semibold text-[#0b1c30]">{inv.firstname} {inv.lastname}</p>
+                <p className="text-[#6f787e]">{inv.email} · expire le {new Date(inv.expires_at).toLocaleDateString('fr-FR')}</p>
+              </div>
+              <button onClick={() => cancelInvitation.mutate(inv.id)} disabled={cancelInvitation.isPending}
+                className="text-xs font-semibold text-red-600 hover:text-red-800 disabled:opacity-50">
+                Annuler
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
@@ -217,7 +294,14 @@ export default function OrganizationCollaboratorsPage() {
               {roleData?.roles && roleData.roles.length > 0 && (
                 <select
                   value={roleData.assignments[c.id] ?? ''}
-                  onChange={e => assignRole.mutate({ userId: c.id, roleId: e.target.value })}
+                  onChange={e => {
+                    const nextRoleId = e.target.value
+                    const nextName = roleData.roles.find(r => r.id === nextRoleId)?.name ?? 'Aucun rôle'
+                    if (window.confirm(`Confirmer le changement de rôle vers "${nextName}" pour ${c.full_name ?? 'ce collaborateur'} ?`)) {
+                      setAssignRoleError(null)
+                      assignRole.mutate({ userId: c.id, roleId: nextRoleId })
+                    }
+                  }}
                   disabled={assignRole.isPending}
                   className="text-xs border border-slate-200 rounded-full px-3 py-1.5 bg-white/60 text-[#0b1c30] outline-none focus:border-[#82d8ff]"
                 >
@@ -225,6 +309,18 @@ export default function OrganizationCollaboratorsPage() {
                   {roleData.roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                 </select>
               )}
+              <button
+                onClick={() => {
+                  if (window.confirm(`Révoquer l'accès de ${c.full_name ?? 'ce collaborateur'} ? Cette personne perdra tout accès à l'organisation.`)) {
+                    setRevokeError(null)
+                    revoke.mutate(c.id)
+                  }
+                }}
+                disabled={revoke.isPending}
+                className="text-xs font-semibold text-red-600 hover:text-red-800 disabled:opacity-50"
+              >
+                Révoquer l&apos;accès
+              </button>
             </div>
           ))}
         </div>

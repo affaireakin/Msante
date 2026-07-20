@@ -1,8 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { reportIncident } from '@/lib/reportIncident'
 
 function Icon({ name, size = 18, color }: { name: string; size?: number; color?: string }) {
   return <span className="material-symbols-outlined" style={{ fontSize: `${size}px`, color, lineHeight: 1, userSelect: 'none' }}>{name}</span>
@@ -278,6 +279,10 @@ export default function MonEquipePage() {
   const { data: allPract = [], isLoading: practLoading, error: practError } = useAllPractitioners()
   const remove = useRemove()
 
+  useEffect(() => {
+    if (practError) reportIncident(practError as Error, 'patient/mon-equipe:list_practitioners')
+  }, [practError])
+
   const [modalPract, setModalPract] = useState<PractRow | TeamMember | null>(null)
   const [editingId, setEditingId] = useState<string | undefined>()
   const [specialityFilter, setSpecialityFilter] = useState('tous')
@@ -399,9 +404,8 @@ export default function MonEquipePage() {
           </div>
         ) : practError ? (
           <div className="bg-red-50 border border-red-200 rounded-xl p-4 space-y-2">
-            <p className="text-xs font-bold text-red-700">Erreur — fonctions SQL manquantes</p>
-            <p className="text-xs text-red-600 font-mono break-all">{(practError as Error).message}</p>
-            <p className="text-xs text-red-500 mt-2">Exécutez les fonctions <code className="bg-red-100 px-1 rounded">list_practitioners()</code> et <code className="bg-red-100 px-1 rounded">get_patient_team()</code> dans l'éditeur SQL Supabase.</p>
+            <p className="text-xs font-bold text-red-700">Service temporairement indisponible</p>
+            <p className="text-xs text-red-600">Impossible d&apos;afficher votre équipe pour le moment. Réessayez dans quelques instants.</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl p-8 text-center">

@@ -152,7 +152,7 @@ export function CreateWorkflowModal({ onClose }: CreateWorkflowModalProps) {
               {step === 'template' ? 'Choisissez un type de déclencheur' : 'Nommez et décrivez votre workflow'}
             </p>
           </div>
-          <button onClick={onClose} className="text-[#6f787e] hover:text-[#0b1c30] transition-colors p-1">
+          <button onClick={onClose} aria-label="Fermer" className="text-[#6f787e] hover:text-[#0b1c30] transition-colors p-1">
             <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
           </button>
         </div>

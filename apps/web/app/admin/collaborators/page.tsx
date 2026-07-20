@@ -684,7 +684,7 @@ export default function CollaboratorsPage() {
           <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto space-y-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-[#0b1c30]">Inviter un collaborateur</h3>
-              <button onClick={() => { setShowModal(false); setInviteError(null) }} className="text-[#6f787e] hover:text-[#0b1c30] transition-colors">
+              <button onClick={() => { setShowModal(false); setInviteError(null) }} aria-label="Fermer" className="text-[#6f787e] hover:text-[#0b1c30] transition-colors">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>

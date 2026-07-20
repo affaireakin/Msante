@@ -90,6 +90,7 @@ export default function ServicesPage() {
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
   const [formError, setFormError] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const toggleType = (type: SessionType) => {
     setForm(f => ({
@@ -125,6 +126,17 @@ export default function ServicesPage() {
 
   return (
     <div className="space-y-6">
+      {/* QA finding: this page manages practitioner_services, a table the
+          booking flow (patient/book) no longer reads — patients only ever see
+          consultation_types, configured from Disponibilités. Kept for now
+          (other pages still read its duration_min for display), but flagged
+          so practitioners aren't misled about where prices/durations actually
+          come from for booking. */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+        Cette page ne détermine plus ce que vos patients peuvent réserver. Configurez vos tarifs et durées de
+        consultation réservables dans <a href="/practitioner/availability" className="font-semibold underline">Disponibilités → Types de consultation</a>.
+      </div>
+
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900">Prestations</h1>
@@ -139,6 +151,10 @@ export default function ServicesPage() {
         </button>
       </div>
 
+      {deleteError && (
+        <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-700">{deleteError}</div>
+      )}
+
       {services.isLoading ? (
         <div className="flex justify-center py-16">
           <div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
@@ -150,7 +166,12 @@ export default function ServicesPage() {
               <div className="flex items-start justify-between">
                 <h3 className="font-bold text-slate-900">{service.name}</h3>
                 <button
-                  onClick={() => deleteService.mutate(service.id)}
+                  onClick={() => {
+                    setDeleteError(null)
+                    deleteService.mutate(service.id, {
+                      onError: (err) => setDeleteError((err as { message?: string } | null)?.message || 'Erreur lors de la suppression'),
+                    })
+                  }}
                   className="text-slate-300 hover:text-red-400 transition-colors"
                 >
                   <span className="material-symbols-outlined text-[18px]">delete</span>
@@ -195,7 +216,7 @@ export default function ServicesPage() {
           <div className="bg-white rounded-2xl p-7 w-full max-w-md space-y-6 shadow-2xl">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-bold text-[#0b1c30]">Nouvelle prestation</h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-700 transition-colors">
+              <button onClick={() => setShowModal(false)} aria-label="Fermer" className="text-slate-400 hover:text-slate-700 transition-colors">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>

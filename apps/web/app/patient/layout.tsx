@@ -34,6 +34,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   const [unreadMessages, setUnreadMessages] = useState(0)
   const [accountStatus, setAccountStatus] = useState<'active' | 'suspended' | 'blocked' | null>(null)
   const [statusReason, setStatusReason] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -194,14 +195,23 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
               </svg>
             </button>
-            <div className="hidden md:flex items-center gap-3 bg-white/60 rounded-full px-4 py-2 border border-slate-200/50">
+            <form
+              className="hidden md:flex items-center gap-3 bg-white/60 rounded-full px-4 py-2 border border-slate-200/50"
+              onSubmit={e => {
+                e.preventDefault()
+                if (searchQuery.trim()) router.push(`/patient/practitioners?search=${encodeURIComponent(searchQuery.trim())}`)
+              }}
+            >
               <Icon name="search" />
               <input
                 type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Rechercher un praticien..."
+                aria-label="Rechercher un praticien"
                 className="bg-transparent text-sm text-[#0b1c30] placeholder-[#6f787e] outline-none w-48"
               />
-            </div>
+            </form>
             {/* Logo mobile (visible dans header quand sidebar fermée) */}
             <span className="md:hidden text-base font-black tracking-tighter text-[#0b1c30]">M-Santé</span>
           </div>

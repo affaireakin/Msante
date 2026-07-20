@@ -1,6 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
@@ -49,8 +50,17 @@ function usePractitioners(speciality: string, search: string) {
 }
 
 export default function PractitionersPage() {
+  return (
+    <Suspense fallback={null}>
+      <PractitionersContent />
+    </Suspense>
+  )
+}
+
+function PractitionersContent() {
+  const searchParams = useSearchParams()
   const [speciality, setSpeciality] = useState('Tous')
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState(searchParams.get('search') ?? '')
   const [profileOf, setProfileOf] = useState<Practitioner | null>(null)
   const { data = [], isLoading } = usePractitioners(speciality, search)
 

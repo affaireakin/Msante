@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useParams, useSearchParams, useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import {
   LiveKitRoom,
   GridLayout,
@@ -164,13 +164,26 @@ function VideoArea({
 
 export default function PatientSessionPage() {
   const params = useParams()
-  const searchParams = useSearchParams()
   const router = useRouter()
 
   const appointmentId = params.appointmentId as string
-  const token = searchParams.get('token') ?? ''
-  const roomUrl = searchParams.get('roomUrl') ?? ''
-  const consultationId = searchParams.get('consultationId') ?? ''
+
+  // QA finding: these used to come from the URL query string (token in
+  // browser history/server logs). Relayed via sessionStorage from the
+  // waiting page instead — tab-scoped, never persisted.
+  const [liveSession, setLiveSession] = useState<{ token: string; roomUrl: string; consultationId: string } | null>(null)
+  useEffect(() => {
+    const raw = sessionStorage.getItem(`livekit-session:${appointmentId}`)
+    if (raw) {
+      setLiveSession(JSON.parse(raw))
+    } else {
+      router.replace(`/patient/consultation/${appointmentId}/waiting`)
+    }
+  }, [appointmentId, router])
+
+  const token = liveSession?.token ?? ''
+  const roomUrl = liveSession?.roomUrl ?? ''
+  const consultationId = liveSession?.consultationId ?? ''
 
   const channelRef = useRef<RealtimeChannel | null>(null)
 

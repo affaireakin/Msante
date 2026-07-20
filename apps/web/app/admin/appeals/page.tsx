@@ -158,6 +158,7 @@ export default function AppealsPage() {
               <h3 className="text-lg font-bold text-slate-900">Répondre à l'appel</h3>
               <button
                 onClick={() => { setSelectedAppeal(null); setActionError(null) }}
+                aria-label="Fermer"
                 className="text-slate-400 hover:text-slate-600"
               >
                 <span className="material-symbols-outlined">close</span>

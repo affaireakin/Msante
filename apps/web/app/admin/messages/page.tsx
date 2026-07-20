@@ -203,7 +203,7 @@ function SupervisionTab() {
                     {selected.closed_at && ` · Clôturée le ${fmtDate(selected.closed_at)}`}
                   </p>
                 </div>
-                <button onClick={() => setSelected(null)} className="text-[#6f787e] hover:text-[#0b1c30]">
+                <button onClick={() => setSelected(null)} aria-label="Fermer" className="text-[#6f787e] hover:text-[#0b1c30]">
                   <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>close</span>
                 </button>
               </div>

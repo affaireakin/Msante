@@ -1,4 +1,10 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Plan du site | M-Santé',
+  description: 'Toutes les pages de M-Santé — praticiens, organisations, compte, ressources et informations légales.',
+}
 
 const SECTIONS: { title: string; links: { label: string; href: string }[] }[] = [
   {

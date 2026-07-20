@@ -157,7 +157,7 @@ export default function PatientDashboard() {
             { href: '/patient/practitioners', icon: 'search', label: 'Trouver un praticien', color: '#82d8ff', bg: '#e5eeff' },
             { href: '/patient/appointments', icon: 'calendar_today', label: 'Mes rendez-vous', color: '#705d00', bg: '#fff8e1' },
             { href: '/patient/wellness', icon: 'self_improvement', label: 'Bien-être', color: '#1d7a3a', bg: '#e8f5e9' },
-            { href: '/patient/book', icon: 'add_circle', label: 'Nouveau RDV', color: '#82d8ff', bg: '#e5eeff' },
+            { href: '/patient/practitioners', icon: 'add_circle', label: 'Nouveau RDV', color: '#82d8ff', bg: '#e5eeff' },
           ].map(action => (
             <Link key={action.href} href={action.href} className="rounded-2xl p-5 flex flex-col items-center gap-3 text-center hover:-translate-y-1 hover:shadow-lg transition-all" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
               <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: action.bg }}>

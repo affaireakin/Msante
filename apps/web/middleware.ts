@@ -62,10 +62,39 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // QA finding: these three role-gated spaces relied only on a client-side
+  // useEffect check, so the server sent the full page shell to any
+  // authenticated user before the redirect ran. Mirrors each page's own
+  // client-side check (redirect target: /auth/login, no cross-role bounce).
+  if (pathname.startsWith('/organization') && !pathname.startsWith('/organization-member')) {
+    if (!profile || profile.role !== 'organization_admin') {
+      return NextResponse.redirect(new URL('/auth/login', request.url))
+    }
+  }
+
+  if (pathname.startsWith('/organization-member')) {
+    if (!profile || profile.role !== 'organization_member') {
+      return NextResponse.redirect(new URL('/auth/login', request.url))
+    }
+  }
+
+  if (pathname.startsWith('/secretary')) {
+    if (!profile || profile.role !== 'secretary') {
+      return NextResponse.redirect(new URL('/auth/login', request.url))
+    }
+  }
+
   // IMPORTANT: return supabaseResponse (not a new response) so refreshed cookies are forwarded
   return supabaseResponse
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/practitioner/:path*', '/patient/:path*'],
+  matcher: [
+    '/admin/:path*',
+    '/practitioner/:path*',
+    '/patient/:path*',
+    '/organization/:path*',
+    '/organization-member/:path*',
+    '/secretary/:path*',
+  ],
 }

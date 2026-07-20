@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import InternalMessaging from '@/app/admin/messages/InternalMessaging'
 
 type AptStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
 type Filter = 'today' | 'upcoming' | 'past'
@@ -273,6 +274,11 @@ export default function SecretaryPage() {
             {(appointments ?? []).map(apt => <AppointmentRow key={apt.id} apt={apt} />)}
           </div>
         )}
+
+        <div className="mt-10">
+          <h2 className="text-sm font-bold text-[#0b1c30] mb-3">Messages</h2>
+          <InternalMessaging />
+        </div>
       </div>
     </div>
   )

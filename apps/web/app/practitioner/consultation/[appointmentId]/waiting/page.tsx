@@ -159,9 +159,14 @@ export default function PractitionerWaitingRoom() {
         consultationId: string
       }
 
-      router.push(
-        `/practitioner/consultation/${appointmentId}/session?token=${joinData.practitionerToken}&roomUrl=${encodeURIComponent(joinData.roomUrl)}&consultationId=${joinData.consultationId}`
+      // QA finding: the LiveKit access token used to travel in the URL query
+      // string (browser history, server access logs, Referer header) — kept
+      // in sessionStorage instead, scoped to this tab and never persisted.
+      sessionStorage.setItem(
+        `livekit-session:${appointmentId}`,
+        JSON.stringify({ token: joinData.practitionerToken, roomUrl: joinData.roomUrl, consultationId: joinData.consultationId })
       )
+      router.push(`/practitioner/consultation/${appointmentId}/session`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue.')
       setIsStarting(false)

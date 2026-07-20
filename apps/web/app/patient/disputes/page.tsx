@@ -102,9 +102,14 @@ export default function PatientDisputesPage() {
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle()
+      // QA finding: falling back to the patient's own id produced a dispute
+      // where the patient is listed as the practitioner being disputed.
+      // Without an appointment history there's no one to open a dispute
+      // against, so refuse instead of inserting inconsistent data.
+      if (!pract?.practitioner_id) throw new Error('Vous devez avoir eu au moins un rendez-vous pour ouvrir un litige.')
       const { error } = await supabase.from('disputes').insert({
         patient_id: myId,
-        practitioner_id: pract?.practitioner_id ?? myId,
+        practitioner_id: pract.practitioner_id,
         reason,
         description: description || null,
         case_number: '',
@@ -204,7 +209,7 @@ export default function PatientDisputesPage() {
                 <p className="text-xs font-mono text-[#6f787e]">{selected.case_number}</p>
                 <p className="text-sm font-bold text-[#0b1c30] mt-0.5">{selected.reason}</p>
               </div>
-              <button onClick={() => setSelected(null)} className="text-[#6f787e] hover:text-[#0b1c30]">
+              <button onClick={() => setSelected(null)} aria-label="Fermer" className="text-[#6f787e] hover:text-[#0b1c30]">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
@@ -251,7 +256,7 @@ export default function PatientDisputesPage() {
           <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-[#0b1c30]">Ouvrir un litige</h3>
-              <button onClick={() => { setShowNew(false); setError(null) }} className="text-[#6f787e] hover:text-[#0b1c30]">
+              <button onClick={() => { setShowNew(false); setError(null) }} aria-label="Fermer" className="text-[#6f787e] hover:text-[#0b1c30]">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>

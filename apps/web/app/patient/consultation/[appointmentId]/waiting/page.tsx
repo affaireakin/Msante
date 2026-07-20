@@ -114,9 +114,14 @@ export default function PatientWaitingRoom() {
         consultationId: string
       }
 
-      router.push(
-        `/patient/consultation/${appointmentId}/session?token=${body.patientToken}&roomUrl=${encodeURIComponent(body.roomUrl)}&consultationId=${body.consultationId}`
+      // QA finding: the LiveKit access token used to travel in the URL query
+      // string (browser history, server access logs, Referer header) — kept
+      // in sessionStorage instead, scoped to this tab and never persisted.
+      sessionStorage.setItem(
+        `livekit-session:${appointmentId}`,
+        JSON.stringify({ token: body.patientToken, roomUrl: body.roomUrl, consultationId: body.consultationId })
       )
+      router.push(`/patient/consultation/${appointmentId}/session`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Une erreur est survenue.')
       setIsJoining(false)

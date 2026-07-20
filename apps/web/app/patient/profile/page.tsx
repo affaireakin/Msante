@@ -200,9 +200,16 @@ export default function PatientProfilePage() {
   const handleDeleteAccount = async () => {
     if (deleteConfirm !== 'SUPPRIMER') { setDeleteError('Tapez SUPPRIMER pour confirmer'); return }
     setDeleteLoading(true); setDeleteError(null)
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setDeleteLoading(false); return }
-    await supabase.from('users').update({ status: 'suspended' } as never).eq('id', user.id)
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) { setDeleteLoading(false); return }
+    const { error } = await supabase.functions.invoke('delete-account', {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+    if (error) {
+      setDeleteError('Une erreur est survenue. Réessayez ou contactez privacy@m-sante.com.')
+      setDeleteLoading(false)
+      return
+    }
     await supabase.auth.signOut()
     window.location.href = '/auth/login?deleted=1'
   }

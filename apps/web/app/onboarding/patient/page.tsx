@@ -30,6 +30,7 @@ export default function PatientOnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(0)
   const [saving, setSaving] = useState(false)
+  const [completeError, setCompleteError] = useState<string | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
   const [fullName, setFullName] = useState('')
 
@@ -91,10 +92,15 @@ export default function PatientOnboardingPage() {
   const handleComplete = async () => {
     if (!userId) return
     setSaving(true)
+    setCompleteError(null)
 
-    await supabase.from('users').update({ phone: phone || null, country, onboarding_completed: true }).eq('id', userId)
+    const { error: userError } = await supabase.from('users').update({ phone: phone || null, country, onboarding_completed: true }).eq('id', userId)
+    if (userError) { setCompleteError('Une erreur est survenue lors de l\'enregistrement de votre profil. Réessayez.'); setSaving(false); return }
 
-    await supabase.from('patient_medical_profiles').upsert({
+    // QA finding: allergies/contact d'urgence are emergency-relevant medical
+    // data — a silent write failure here previously still redirected to the
+    // dashboard as if everything had been saved.
+    const { error: medError } = await supabase.from('patient_medical_profiles').upsert({
       patient_id: userId,
       blood_type: bloodType || null,
       allergies,
@@ -105,6 +111,7 @@ export default function PatientOnboardingPage() {
       height_cm: heightCm ? parseInt(heightCm) : null,
       weight_kg: weightKg ? parseFloat(weightKg) : null,
     }, { onConflict: 'patient_id' })
+    if (medError) { setCompleteError('Une erreur est survenue lors de l\'enregistrement de vos informations médicales. Réessayez.'); setSaving(false); return }
 
     router.push('/patient')
   }
@@ -365,6 +372,10 @@ export default function PatientOnboardingPage() {
           )}
 
           {/* Navigation */}
+          {completeError && (
+            <p className="text-xs text-[#ba1a1a] mt-4 text-center">{completeError}</p>
+          )}
+
           <div className="flex items-center justify-between mt-8">
             <button type="button" onClick={() => step > 0 ? setStep(step - 1) : router.push('/')}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-[#6f787e] hover:bg-slate-100 transition-all">

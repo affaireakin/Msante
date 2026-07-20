@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import InternalMessaging from '@/app/admin/messages/InternalMessaging'
 
 function Icon({ name, size = 20, color }: { name: string; size?: number; color?: string }) {
   return <span className="material-symbols-outlined" style={{ fontSize: `${size}px`, color }}>{name}</span>
@@ -47,8 +48,8 @@ export default function OrganizationMemberPage() {
   )
 
   return (
-    <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
-      <div className="bg-white rounded-2xl p-10 max-w-md w-full text-center space-y-5 shadow-xl">
+    <div className="min-h-screen bg-[#f8f9ff] p-6 space-y-6 max-w-3xl mx-auto">
+      <div className="bg-white rounded-2xl p-8 text-center space-y-3 shadow-xl">
         <div className="w-16 h-16 rounded-full bg-[#e5eeff] flex items-center justify-center mx-auto">
           <Icon name="badge" size={32} color="#005e7a" />
         </div>
@@ -59,13 +60,14 @@ export default function OrganizationMemberPage() {
             {roleName ? <> avec le rôle <strong>{roleName}</strong></> : ''}.
           </p>
         </div>
-        <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-amber-700">
-          L&apos;espace dédié aux collaborateurs est en cours de développement. Votre administrateur peut vous
-          communiquer les accès nécessaires en attendant.
-        </div>
-        <button onClick={handleLogout} className="w-full py-3 rounded-xl bg-[#82d8ff] text-[#0b1c30] font-bold text-sm">
+        <button onClick={handleLogout} className="text-sm text-[#6f787e] font-semibold hover:text-[#0b1c30]">
           Se déconnecter
         </button>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-bold text-[#0b1c30] mb-3">Messages</h3>
+        <InternalMessaging />
       </div>
     </div>
   )

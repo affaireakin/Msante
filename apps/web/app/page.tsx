@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import AuthRedirect from '@/components/AuthRedirect'
 import FeaturedOrganizations from '@/components/FeaturedOrganizations'
+import FeaturedPractitioners from '@/components/FeaturedPractitioners'
 import SiteLogo from '@/components/SiteLogo'
 import SiteSocialLinks from '@/components/SiteSocialLinks'
 import SiteContactLine from '@/components/SiteContactLine'
@@ -78,7 +79,7 @@ export default function LandingPage() {
             </div>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
-            <a className="text-[#82d8ff] font-bold border-b-2 border-[#82d8ff] py-1 text-sm" href="#">Accueil</a>
+            <Link className="text-[#82d8ff] font-bold border-b-2 border-[#82d8ff] py-1 text-sm" href="/">Accueil</Link>
             <a className="text-[#6f787e] hover:text-[#82d8ff] transition-colors text-sm font-medium" href="#features">Bien-être</a>
             <a className="text-[#6f787e] hover:text-[#82d8ff] transition-colors text-sm font-medium" href="#praticiens">Praticiens</a>
           </nav>
@@ -294,43 +295,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── Praticiens ── */}
-        <section id="praticiens" className="py-24 max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-[#0b1c30] mb-4">Nos praticiens certifiés</h2>
-            <p className="text-[#6f787e]">Sélectionnés pour leur expertise et leur bienveillance</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { name: 'Dr. Aminata Diallo', spec: 'Psychologue Clinicienne', rating: 4.9, sessions: 142, initials: 'AD', color: '#82d8ff' },
-              { name: 'Dr. Moussa Sow', spec: 'Psychiatre', rating: 4.8, sessions: 98, initials: 'MS', color: '#705d00' },
-              { name: 'Dr. Fatou Ndiaye', spec: 'Coach de vie certifiée', rating: 5.0, sessions: 203, initials: 'FN', color: '#1d7a3a' },
-            ].map(p => (
-              <div key={p.name} className="rounded-2xl p-6 hover:shadow-xl hover:-translate-y-1 transition-all" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-14 h-14 rounded-full flex items-center justify-center text-white font-black text-lg flex-shrink-0" style={{ backgroundColor: p.color }}>
-                    {p.initials}
-                  </div>
-                  <div>
-                    <p className="font-bold text-[#0b1c30]">{p.name}</p>
-                    <p className="text-sm text-[#6f787e]">{p.spec}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1 mb-3">
-                  {[1,2,3,4,5].map(i => (
-                    <Icon key={i} name="star" style={{ fontSize: '14px', color: '#ffde5c' }} />
-                  ))}
-                  <span className="text-xs text-[#6f787e] ml-1">{p.rating} · {p.sessions} sessions</span>
-                </div>
-                <div className="flex items-center justify-end mt-4">
-                  <Link href="/auth/signup" className="px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#82d8ff]/20 transition-all">
-                    Réserver
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        <FeaturedPractitioners />
 
         <FeaturedOrganizations />
 
@@ -366,7 +331,6 @@ export default function LandingPage() {
           <p className="text-center text-xs font-bold text-[#6f787e] mb-8 uppercase tracking-widest opacity-60">NOS PARTENAIRES DE CONFIANCE</p>
           <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
             {[
-              { icon: 'account_balance', label: 'Ministère de la Santé' },
               { icon: 'waves', label: 'Wave' },
               { icon: 'cell_tower', label: 'Orange Money' },
               { icon: 'shield', label: 'Santevie' },

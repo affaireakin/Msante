@@ -171,7 +171,7 @@ export default function PractitionerDisputesPage() {
                 <p className="text-xs font-mono text-[#6f787e]">{selected.case_number}</p>
                 <p className="text-sm font-bold text-[#0b1c30] mt-0.5">{selected.reason}</p>
               </div>
-              <button onClick={() => setSelected(null)} className="text-[#6f787e] hover:text-[#0b1c30]">
+              <button onClick={() => setSelected(null)} aria-label="Fermer" className="text-[#6f787e] hover:text-[#0b1c30]">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
