@@ -21,8 +21,8 @@ function relativeTime(iso: string) {
   return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
 }
 
-export function DisputeDetail({ dispute, onClose }: { dispute: Dispute; onClose: () => void }) {
-  const { events, updateStatus, suspendAccount, issueWarning, addComment } = useDisputeDetail(dispute.id)
+export function DisputeDetail({ dispute, adminUsers, onClose }: { dispute: Dispute; adminUsers: { id: string; full_name: string }[]; onClose: () => void }) {
+  const { events, updateStatus, suspendAccount, issueWarning, addComment, assignTo } = useDisputeDetail(dispute.id)
   const [comment, setComment] = useState('')
   const isDone = dispute.status === 'resolved' || dispute.status === 'closed'
 
@@ -58,6 +58,20 @@ export function DisputeDetail({ dispute, onClose }: { dispute: Dispute; onClose:
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="px-5 py-4 border-b border-slate-100">
+          <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Responsable</label>
+          <select value={dispute.assigned_to ?? ''}
+            onChange={e => {
+              const userId = e.target.value || null
+              const userName = userId ? (adminUsers.find(u => u.id === userId)?.full_name ?? null) : null
+              assignTo.mutate({ userId, userName })
+            }}
+            className="w-full mt-1 rounded-xl border-2 border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]">
+            <option value="">Non assigné</option>
+            {adminUsers.map(u => <option key={u.id} value={u.id}>{u.full_name}</option>)}
+          </select>
         </div>
 
         {dispute.resolution_notes && (

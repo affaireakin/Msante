@@ -83,10 +83,12 @@ export interface Dispute {
   resolution_notes: string | null
   patient_id: string
   practitioner_id: string
+  assigned_to: string | null
   created_at: string
   updated_at: string
   patient: { full_name: string; account_status: string } | null
   practitioner: { full_name: string } | null
+  assignee: { full_name: string } | null
 }
 
 export interface DisputeEvent {

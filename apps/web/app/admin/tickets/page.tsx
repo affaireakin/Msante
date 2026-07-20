@@ -34,8 +34,9 @@ export default function TicketsPage() {
 
   const filteredDisputes = useMemo(() => {
     if (typeFilter !== 'all' && typeFilter !== 'litige') return []
-    if (assigneeFilter !== 'all') return [] // disputes have no assignee workflow today
-    return disputes.data ?? []
+    return (disputes.data ?? []).filter(d =>
+      assigneeFilter === 'all' || d.assigned_to === assigneeFilter || (assigneeFilter === 'none' && !d.assigned_to)
+    )
   }, [disputes.data, typeFilter, assigneeFilter])
 
   const byStatus = useMemo(() => {
@@ -51,7 +52,7 @@ export default function TicketsPage() {
       map[status].push({
         id: d.id, title: `${d.case_number} — ${d.reason}`, type: 'litige',
         priority: d.priority === 'urgent' ? 'urgent' : 'medium', status,
-        assigneeName: d.patient?.full_name ?? null, dueDate: null,
+        assigneeName: d.assignee?.full_name ?? null, dueDate: null,
       })
     }
     return map
@@ -103,9 +104,6 @@ export default function TicketsPage() {
           <option value="none">Non assigné</option>
           {(adminUsers.data ?? []).map(u => <option key={u.id} value={u.id}>{u.full_name}</option>)}
         </select>
-        {assigneeFilter !== 'all' && (
-          <span className="text-xs text-[#bec8ce] italic">Les litiges n&apos;ont pas encore de responsable assigné</span>
-        )}
       </div>
 
       {(tickets.isLoading || disputes.isLoading) ? (
@@ -141,7 +139,7 @@ export default function TicketsPage() {
       )}
 
       {selectedDispute && (
-        <DisputeDetail dispute={selectedDispute} onClose={() => setSelectedId(null)} />
+        <DisputeDetail dispute={selectedDispute} adminUsers={adminUsers.data ?? []} onClose={() => setSelectedId(null)} />
       )}
     </div>
   )

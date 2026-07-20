@@ -43,8 +43,14 @@ export function useTickets() {
     mutationFn: async (input: { title: string; description: string; type: TicketType; priority: TicketPriority; assignee_id: string | null; due_date: string | null }) => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Non connecté')
-      const { error } = await supabase.from('tickets').insert({ ...input, created_by: user.id })
+      const { data: ticket, error } = await supabase.from('tickets').insert({ ...input, created_by: user.id }).select('id').single()
       if (error) throw error
+      if (input.assignee_id) {
+        await supabase.from('notifications').insert({
+          user_id: input.assignee_id, type: 'ticket_assigned', title: 'Ticket assigné',
+          body: 'Un nouveau ticket vous a été assigné.', channel: 'push', data: { ticket_id: ticket.id },
+        })
+      }
     },
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['admin-tickets'] }),
   })
@@ -53,6 +59,14 @@ export function useTickets() {
     mutationFn: async ({ id, ...patch }: { id: string } & Partial<Pick<Ticket, 'status' | 'assignee_id' | 'priority' | 'due_date' | 'title' | 'description'>>) => {
       const { error } = await supabase.from('tickets').update(patch).eq('id', id)
       if (error) throw error
+      // Section 17 : notifier le responsable dès qu'un ticket lui est assigné,
+      // au lieu de le laisser découvrir la charge de travail en ouvrant la page.
+      if ('assignee_id' in patch && patch.assignee_id) {
+        await supabase.from('notifications').insert({
+          user_id: patch.assignee_id, type: 'ticket_assigned', title: 'Ticket assigné',
+          body: 'Un ticket vous a été assigné.', channel: 'push', data: { ticket_id: id },
+        })
+      }
     },
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['admin-tickets'] }),
   })
