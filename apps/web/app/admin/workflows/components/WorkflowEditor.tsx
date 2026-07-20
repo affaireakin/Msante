@@ -460,9 +460,10 @@ function EditorInner({ initialNodes, initialEdges, onSave, isSaving }: EditorInn
 
   return (
     <div className="flex flex-col gap-3">
+      <div className="rounded-2xl overflow-x-auto" style={{ border: '1px solid rgba(190,200,206,0.40)' }}>
       <div
-        className="flex rounded-2xl overflow-hidden"
-        style={{ height: 420, border: '1px solid rgba(190,200,206,0.40)' }}
+        className="flex min-w-[700px]"
+        style={{ height: 420 }}
       >
         {/* Palette sidebar */}
         <div
@@ -518,6 +519,7 @@ function EditorInner({ initialNodes, initialEdges, onSave, isSaving }: EditorInn
             onClose={() => setSelectedNode(null)}
           />
         )}
+      </div>
       </div>
 
       {/* Save bar */}

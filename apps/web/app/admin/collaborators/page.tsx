@@ -681,7 +681,7 @@ export default function CollaboratorsPage() {
       {/* ── Modal Inviter ── */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-5 shadow-2xl">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto space-y-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-[#0b1c30]">Inviter un collaborateur</h3>
               <button onClick={() => { setShowModal(false); setInviteError(null) }} className="text-[#6f787e] hover:text-[#0b1c30] transition-colors">
@@ -734,7 +734,7 @@ export default function CollaboratorsPage() {
       {/* ── Modal Modifier rôle ── */}
       {editingMember && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm space-y-5 shadow-2xl">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto space-y-5 shadow-2xl">
             <h3 className="text-lg font-bold text-[#0b1c30]">Modifier le rôle</h3>
             <p className="text-sm text-[#6f787e]">{editingMember.full_name || editingMember.email}</p>
             <div className="space-y-2">
@@ -766,7 +766,7 @@ export default function CollaboratorsPage() {
       {/* ── Modal Confirmer suppression ── */}
       {confirmDelete && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl">
             <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto">
               <span className="material-symbols-outlined text-red-600">warning</span>
             </div>

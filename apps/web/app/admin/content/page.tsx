@@ -177,7 +177,7 @@ function PagesTab() {
 
       {showNew && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowNew(false)}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto space-y-4 shadow-2xl" onClick={e => e.stopPropagation()}>
             <h3 className="text-xl font-bold text-[#0b1c30]">Nouvelle page</h3>
             <form onSubmit={handleCreate} className="space-y-4">
               <div>

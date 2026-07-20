@@ -81,7 +81,7 @@ function PrefixModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
       <div
-        className="relative w-full max-w-md rounded-2xl p-7 flex flex-col gap-5"
+        className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-7 flex flex-col gap-5"
         style={{ backgroundColor: 'rgba(255,255,255,0.97)', boxShadow: '0 20px 60px rgba(0,102,133,0.15)' }}
       >
         <div className="flex items-center justify-between">
@@ -414,7 +414,7 @@ export default function AdminPrefixesPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
           <div
-            className="relative w-full max-w-sm rounded-2xl p-7 flex flex-col gap-5 text-center"
+            className="relative w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-2xl p-7 flex flex-col gap-5 text-center"
             style={{ backgroundColor: 'rgba(255,255,255,0.97)', boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}
           >
             <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-2xl mx-auto">🗑️</div>

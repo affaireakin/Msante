@@ -252,7 +252,7 @@ export default function OrganizationsPage() {
       {rejectDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setRejectDialog(null)} />
-          <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+          <div className="relative bg-white rounded-2xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl mx-4">
             <h3 className="text-lg font-bold text-[#0b1c30] mb-4">Motif de refus</h3>
             <p className="text-sm text-[#6f787e] mb-4">Envoyé par email au demandeur.</p>
             <textarea value={rejectReason} onChange={(e) => setRejectReason(e.target.value)}
@@ -275,7 +275,7 @@ export default function OrganizationsPage() {
       {infoDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setInfoDialog(null)} />
-          <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+          <div className="relative bg-white rounded-2xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl mx-4">
             <h3 className="text-lg font-bold text-[#0b1c30] mb-4">Informations complémentaires</h3>
             <p className="text-sm text-[#6f787e] mb-4">Envoyé par email et notification au demandeur. Le statut reste « En attente ».</p>
             <textarea value={infoNote} onChange={(e) => setInfoNote(e.target.value)}
@@ -298,7 +298,7 @@ export default function OrganizationsPage() {
       {statusDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setStatusDialog(null)} />
-          <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
+          <div className="relative bg-white rounded-2xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl mx-4">
             <h3 className="text-lg font-bold text-[#0b1c30] mb-2">
               {statusDialog.action === 'suspend' ? 'Suspendre l\'organisation' : statusDialog.action === 'archive' ? 'Archiver l\'organisation' : 'Réactiver l\'organisation'}
             </h3>
