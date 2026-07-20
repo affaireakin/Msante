@@ -148,6 +148,8 @@ export default function CollaboratorsPage() {
     })
   }
 
+  const [actionError, setActionError] = useState<string | null>(null)
+
   const suspendMutation = useMutation({
     mutationFn: async ({ id, suspend, member }: { id: string; suspend: boolean; member: TeamMember }) => {
       const { error } = await supabase
@@ -162,7 +164,8 @@ export default function CollaboratorsPage() {
         { status: suspend ? 'suspended' : 'active' },
       )
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-team'] }),
+    onSuccess: () => { setActionError(null); qc.invalidateQueries({ queryKey: ['admin-team'] }) },
+    onError: (e: Error) => setActionError(e.message),
   })
 
   const changeRoleMutation = useMutation({
@@ -181,13 +184,16 @@ export default function CollaboratorsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (member: TeamMember) => {
-      await supabase.from('users').delete().eq('id', member.id)
+      const { error } = await supabase.from('users').delete().eq('id', member.id)
+      if (error) throw error
       await logAudit('collaborator.deleted', 'user', member.id, { email: member.email, sub_role: member.sub_role }, null)
     },
     onSuccess: () => {
+      setActionError(null)
       qc.invalidateQueries({ queryKey: ['admin-team'] })
       setConfirmDelete(null)
     },
+    onError: (e: Error) => setActionError(e.message),
   })
 
   // ── Rôles granulaires disponibles à l'invitation ───────────────────────────
@@ -391,6 +397,9 @@ export default function CollaboratorsPage() {
             <h2 className="font-semibold text-[#0b1c30]">Membres de l&apos;équipe</h2>
             <span className="text-xs text-[#6f787e]">{team.length} membre{team.length > 1 ? 's' : ''}</span>
           </div>
+          {actionError && (
+            <div className="px-6 py-3 bg-red-50 border-b border-red-100 text-sm text-red-700">{actionError}</div>
+          )}
           {loadingTeam ? (
             <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" /></div>
           ) : team.length === 0 ? (
@@ -791,6 +800,9 @@ export default function CollaboratorsPage() {
                 {changeRoleMutation.isPending ? 'Enregistrement...' : 'Enregistrer'}
               </button>
             </div>
+            {changeRoleMutation.isError && (
+              <p className="text-sm text-red-500">{(changeRoleMutation.error as Error).message}</p>
+            )}
           </div>
         </div>
       )}
