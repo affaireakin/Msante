@@ -53,13 +53,17 @@ interface TeamMember {
   full_name: string
   email: string | null
   sub_role: string | null
-  admin_role_id: string | null
   status: string
   created_at: string
 }
 
-function isSuperAdmin(m: Pick<TeamMember, 'sub_role' | 'admin_role_id'>): boolean {
-  return !m.sub_role && !m.admin_role_id
+// QA finding: admin_role_id was dropped from public.users (superseded by the
+// user_admin_roles many-to-many table) but this page still selected it,
+// silently failing every query here and showing "Aucun membre trouvé" for
+// real super admins — whose only escape hatch then wrote sub_role='admin'
+// on save, looking exactly like an unwanted demotion.
+function isSuperAdmin(m: Pick<TeamMember, 'sub_role'>, hasGranularRole: boolean): boolean {
+  return !m.sub_role && !hasGranularRole
 }
 
 export default function CollaboratorsPage() {
@@ -79,8 +83,11 @@ export default function CollaboratorsPage() {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return
       setCurrentUserId(user.id)
-      const { data } = await supabase.from('users').select('sub_role, admin_role_id').eq('id', user.id).single()
-      if (data) setViewerIsSuperAdmin(isSuperAdmin(data))
+      const [{ data }, { count }] = await Promise.all([
+        supabase.from('users').select('sub_role').eq('id', user.id).single(),
+        supabase.from('user_admin_roles').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+      ])
+      if (data) setViewerIsSuperAdmin(isSuperAdmin(data, (count ?? 0) > 0))
     })
   }, [])
 
@@ -91,11 +98,21 @@ export default function CollaboratorsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('users')
-        .select('id, full_name, email, sub_role, admin_role_id, status, created_at')
+        .select('id, full_name, email, sub_role, status, created_at')
         .eq('role', 'admin')
         .order('created_at', { ascending: true })
       if (error) throw error
       return (data ?? []) as TeamMember[]
+    },
+  })
+
+  const { data: granularRoleUserIds = new Set<string>() } = useQuery<Set<string>>({
+    queryKey: ['admin-team-granular-roles', team.map(t => t.id).join(',')],
+    enabled: tab === 'team' && team.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase.from('user_admin_roles').select('user_id').in('user_id', team.map(t => t.id))
+      if (error) throw error
+      return new Set((data ?? []).map(r => r.user_id))
     },
   })
 
@@ -368,7 +385,7 @@ export default function CollaboratorsPage() {
               <p className="text-xs text-[#6f787e]">Votre compte apparaîtra ici une fois que la table <code>public.users</code> contient bien votre entrée avec <code>role = &apos;admin&apos;</code>.</p>
               {currentUserId && (
                 <button
-                  onClick={() => setEditingMember({ id: currentUserId, full_name: 'Moi (admin)', email: null, sub_role: 'admin', admin_role_id: null, status: 'active', created_at: new Date().toISOString() })}
+                  onClick={() => { setEditingMember({ id: currentUserId, full_name: 'Moi (admin)', email: null, sub_role: null, status: 'active', created_at: new Date().toISOString() }); setEditRole('admin') }}
                   className="mx-auto flex items-center gap-2 px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-semibold rounded-xl hover:shadow-md transition"
                 >
                   Modifier mon rôle
@@ -379,7 +396,7 @@ export default function CollaboratorsPage() {
             <div className="divide-y divide-slate-100">
               {team.map(member => {
                 const isSelf = member.id === currentUserId
-                const targetIsSuper = isSuperAdmin(member)
+                const targetIsSuper = isSuperAdmin(member, granularRoleUserIds.has(member.id))
                 // Only a true super admin may act on a fellow admin account; never on yourself
                 // (prevents accidental self-lockout) — backstopped by a DB trigger regardless.
                 const canManage = viewerIsSuperAdmin && !isSelf
