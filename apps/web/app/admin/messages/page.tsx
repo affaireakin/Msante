@@ -2,6 +2,7 @@
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import InternalMessaging from './InternalMessaging'
 
 interface UserInfo { full_name: string; role: string }
 
@@ -34,7 +35,7 @@ function pairKey(a: string, b: string) {
   return a < b ? `${a}_${b}` : `${b}_${a}`
 }
 
-export default function AdminMessagesPage() {
+function SupervisionTab() {
   const [selected, setSelected] = useState<Thread | null>(null)
   const [search, setSearch] = useState('')
 
@@ -126,15 +127,12 @@ export default function AdminMessagesPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-6xl" style={{ fontFamily: 'Manrope' }}>
-      <div>
-        <h1 className="text-2xl font-black text-[#0b1c30]">Messages</h1>
-        <p className="text-sm text-[#6f787e] mt-1">
-          Accès lecture aux conversations patient ↔ praticien pour instruction des litiges
-        </p>
-      </div>
+    <div style={{ fontFamily: 'Manrope' }}>
+      <p className="text-sm text-[#6f787e] mb-4">
+        Accès lecture aux conversations patient ↔ praticien pour instruction des litiges
+      </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4" style={{ minHeight: '70vh' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4" style={{ minHeight: '65vh' }}>
         {/* Liste threads */}
         <div className="lg:col-span-2 space-y-2">
           {/* Recherche */}
@@ -247,6 +245,31 @@ export default function AdminMessagesPage() {
           )}
         </div>
       </div>
+    </div>
+  )
+}
+
+export default function AdminMessagesPage() {
+  const [tab, setTab] = useState<'internal' | 'supervision'>('internal')
+
+  return (
+    <div className="space-y-6 max-w-6xl" style={{ fontFamily: 'Manrope' }}>
+      <div>
+        <h1 className="text-2xl font-black text-[#0b1c30]">Messages</h1>
+        <p className="text-sm text-[#6f787e] mt-1">Messagerie interne de l&apos;équipe et supervision des échanges patient ↔ praticien</p>
+      </div>
+
+      <div className="flex gap-1 p-1 rounded-xl bg-white/60 w-fit" style={{ border: '1px solid rgba(255,255,255,0.80)' }}>
+        {(['internal', 'supervision'] as const).map(t => (
+          <button key={t} onClick={() => setTab(t)}
+            className="px-4 py-2 rounded-lg text-sm font-bold transition-all"
+            style={{ backgroundColor: tab === t ? '#82d8ff' : 'transparent', color: tab === t ? '#fff' : '#6f787e' }}>
+            {t === 'internal' ? 'Messagerie interne' : 'Supervision patients/praticiens'}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'internal' ? <InternalMessaging /> : <SupervisionTab />}
     </div>
   )
 }
