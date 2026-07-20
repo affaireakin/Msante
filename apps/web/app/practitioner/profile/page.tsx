@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { getSignedDocumentUrl } from '@/lib/signedDocumentUrl'
 
 function Icon({ name, size = 20, color }: { name: string; size?: number; color?: string }) {
   return <span className="material-symbols-outlined" style={{ fontSize: `${size}px`, color }}>{name}</span>
@@ -227,8 +228,7 @@ export default function PractitionerProfilePage() {
       const path = `${userId}/${type}_${Date.now()}.${ext}`
       const { error: uploadError } = await supabase.storage.from('documents').upload(path, file, { upsert: true })
       if (uploadError) throw uploadError
-      const { data: { publicUrl } } = supabase.storage.from('documents').getPublicUrl(path)
-      await supabase.from('verification_documents').insert({ practitioner_id: practId, document_type: type, file_url: publicUrl, status: 'pending' })
+      await supabase.from('verification_documents').insert({ practitioner_id: practId, document_type: type, file_url: path, status: 'pending' })
 
       // Best-effort: notify admins and, if this practitioner was already
       // approved, send them back through review — a new/changed document
@@ -501,9 +501,16 @@ export default function PractitionerProfilePage() {
                         <Icon name={docStatus.icon} size={12} color={docStatus.color} />
                         {docStatus.label}
                       </span>
-                      <a href={doc.file_url} target="_blank" rel="noopener noreferrer" className="text-[#6f787e] hover:text-[#82d8ff] transition-colors">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const url = await getSignedDocumentUrl(doc.file_url)
+                          if (url) window.open(url, '_blank', 'noopener,noreferrer')
+                        }}
+                        className="text-[#6f787e] hover:text-[#82d8ff] transition-colors"
+                      >
                         <Icon name="open_in_new" size={16} />
-                      </a>
+                      </button>
                     </div>
                   )
                 })}

@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { getSignedDocumentUrl } from '@/lib/signedDocumentUrl'
 
 type Role = 'all' | 'patient' | 'practitioner' | 'admin'
 type AccountStatus = 'active' | 'suspended' | 'blocked'
@@ -558,15 +559,17 @@ function PractitionerSection({ userId }: { userId: string }) {
                       </button>
                     </>
                   )}
-                  <a
-                    href={doc.file_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const url = await getSignedDocumentUrl(doc.file_url)
+                      if (url) window.open(url, '_blank', 'noopener,noreferrer')
+                    }}
                     className="text-[#82d8ff] hover:text-[#004d65] transition-colors"
                     title="Ouvrir le document"
                   >
                     <span className="material-symbols-outlined text-sm">open_in_new</span>
-                  </a>
+                  </button>
                 </div>
               </div>
             ))}

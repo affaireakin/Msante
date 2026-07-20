@@ -100,9 +100,8 @@ export default function PractitionerOnboardingPage() {
     const path = `${userId}/${type}_${Date.now()}.${ext}`
     const { error } = await supabase.storage.from('documents').upload(path, docState.file, { upsert: true })
     if (error) { setDoc({ ...docState, uploading: false }); throw error }
-    const { data: { publicUrl } } = supabase.storage.from('documents').getPublicUrl(path)
-    setDoc({ ...docState, url: publicUrl, uploading: false, uploaded: true })
-    return publicUrl
+    setDoc({ ...docState, url: path, uploading: false, uploaded: true })
+    return path
   }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, setDoc: (d: DocFile) => void) => {

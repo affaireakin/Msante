@@ -157,11 +157,10 @@ export default function OrganizationOnboardingPage() {
         const path = `${userId}/org_${doc.type}_${Date.now()}.${ext}`
         const { error: uploadError } = await supabase.storage.from('documents').upload(path, doc.file, { upsert: true })
         if (uploadError) continue
-        const { data: { publicUrl } } = supabase.storage.from('documents').getPublicUrl(path)
         await supabase.from('organization_documents').insert({
           organization_id: org.id,
           document_type: doc.type,
-          file_url: publicUrl,
+          file_url: path,
         })
       }
 

@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { getSignedDocumentUrl } from '@/lib/signedDocumentUrl'
 
 type OrgStatus = 'pending' | 'active' | 'suspended' | 'rejected' | 'archived'
 
@@ -182,10 +183,16 @@ export default function OrganizationsPage() {
                     {org.organization_documents.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {org.organization_documents.map(doc => (
-                          <a key={doc.id} href={doc.file_url} target="_blank" rel="noreferrer"
+                          <button
+                            key={doc.id}
+                            type="button"
+                            onClick={async () => {
+                              const url = await getSignedDocumentUrl(doc.file_url)
+                              if (url) window.open(url, '_blank', 'noopener,noreferrer')
+                            }}
                             className="text-xs font-bold text-[#005e7a] bg-[#e5eeff] px-2 py-0.5 rounded-full hover:bg-[#d3e4fe] transition-colors">
                             {doc.document_type}
-                          </a>
+                          </button>
                         ))}
                       </div>
                     )}

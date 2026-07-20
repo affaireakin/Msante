@@ -159,6 +159,16 @@ Deno.serve(async (req) => {
       return json({ error: 'firstname, lastname and email are required' }, 400)
     }
 
+    // QA finding: users.manage alone let any collaborator-inviter assign ANY
+    // org_roles row to the invitee, including a role with more permissions
+    // than the inviter's own (e.g. a full "Administrateur" role). Assigning a
+    // role is a roles.manage-level action, so require it explicitly whenever
+    // a role_id is actually being granted.
+    if (accountType === 'collaborator' && roleId) {
+      const { data: canManageRoles } = await userClient.rpc('user_has_permission', { perm_code: 'roles.manage' })
+      if (!canManageRoles) return json({ error: 'Forbidden: roles.manage required to assign a role' }, 403)
+    }
+
     const { data: org } = await supabase.from('organizations').select('id, name, status').eq('id', organizationId).single()
     if (!org) return json({ error: 'Organization not found' }, 404)
     if (org.status !== 'active') return json({ error: 'Organization is not active' }, 400)
