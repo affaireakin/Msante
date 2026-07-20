@@ -12,6 +12,19 @@ const COLLAB_ROLES = [
   { value: 'readonly',   label: 'Lecture seule',  description: 'Consultation du tableau de bord et des statistiques uniquement. Aucune action.' },
 ]
 
+// QA finding: the edit-role modal only ever offered these 4 sub_role values —
+// there was no way to (re)grant true super-admin status (sub_role = NULL),
+// so any super admin whose sub_role got set to 'admin' by mistake could never
+// be restored back through the UI, only by direct SQL. This sentinel is
+// handled specially in the mutation (maps to sub_role: null) and is only
+// ever shown to viewers who are already super admins themselves.
+const SUPER_ADMIN_VALUE = '__super_admin__'
+const SUPER_ADMIN_OPTION = {
+  value: SUPER_ADMIN_VALUE,
+  label: 'Administrateur général',
+  description: 'Accès complet sans restriction, y compris la gestion des autres comptes administrateurs.',
+}
+
 const ROLE_BADGE: Record<string, string> = {
   admin:      'bg-purple-100 text-purple-700',
   moderator:  'bg-sky-100 text-sky-700',
@@ -153,7 +166,7 @@ export default function CollaboratorsPage() {
   })
 
   const changeRoleMutation = useMutation({
-    mutationFn: async ({ id, sub_role }: { id: string; sub_role: string }) => {
+    mutationFn: async ({ id, sub_role }: { id: string; sub_role: string | null }) => {
       const prev = editingMember?.sub_role ?? null
       const { error } = await supabase.from('users').update({ sub_role }).eq('id', id)
       if (error) throw error
@@ -161,6 +174,7 @@ export default function CollaboratorsPage() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-team'] })
+      qc.invalidateQueries({ queryKey: ['admin-team-granular-roles'] })
       setEditingMember(null)
     },
   })
@@ -385,7 +399,7 @@ export default function CollaboratorsPage() {
               <p className="text-xs text-[#6f787e]">Votre compte apparaîtra ici une fois que la table <code>public.users</code> contient bien votre entrée avec <code>role = &apos;admin&apos;</code>.</p>
               {currentUserId && (
                 <button
-                  onClick={() => { setEditingMember({ id: currentUserId, full_name: 'Moi (admin)', email: null, sub_role: null, status: 'active', created_at: new Date().toISOString() }); setEditRole('admin') }}
+                  onClick={() => { setEditingMember({ id: currentUserId, full_name: 'Moi (admin)', email: null, sub_role: null, status: 'active', created_at: new Date().toISOString() }); setEditRole(SUPER_ADMIN_VALUE) }}
                   className="mx-auto flex items-center gap-2 px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-semibold rounded-xl hover:shadow-md transition"
                 >
                   Modifier mon rôle
@@ -413,11 +427,12 @@ export default function CollaboratorsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-semibold text-[#0b1c30] truncate">{member.full_name || '—'}</p>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ROLE_BADGE[member.sub_role ?? 'admin'] ?? 'bg-slate-100 text-slate-600'}`}>
-                        {roleLabel(member.sub_role ?? 'admin')}
-                      </span>
-                      {targetIsSuper && (
+                      {targetIsSuper ? (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">Administrateur général</span>
+                      ) : (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ROLE_BADGE[member.sub_role ?? 'admin'] ?? 'bg-slate-100 text-slate-600'}`}>
+                          {roleLabel(member.sub_role ?? 'admin')}
+                        </span>
                       )}
                       {member.status === 'suspended' && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">Suspendu</span>
@@ -427,7 +442,7 @@ export default function CollaboratorsPage() {
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
-                      onClick={() => { setEditingMember(member); setEditRole(member.sub_role ?? 'admin') }}
+                      onClick={() => { setEditingMember(member); setEditRole(targetIsSuper ? SUPER_ADMIN_VALUE : (member.sub_role ?? 'admin')) }}
                       disabled={!canManage}
                       title={guardTitle}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#82d8ff] text-[#82d8ff] text-xs font-semibold hover:bg-[#82d8ff] hover:text-[#0b1c30] transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#82d8ff]"
@@ -755,7 +770,7 @@ export default function CollaboratorsPage() {
             <h3 className="text-lg font-bold text-[#0b1c30]">Modifier le rôle</h3>
             <p className="text-sm text-[#6f787e]">{editingMember.full_name || editingMember.email}</p>
             <div className="space-y-2">
-              {COLLAB_ROLES.map(r => (
+              {(viewerIsSuperAdmin ? [SUPER_ADMIN_OPTION, ...COLLAB_ROLES] : COLLAB_ROLES).map(r => (
                 <label key={r.value} className={`flex items-start gap-3 cursor-pointer p-3 rounded-xl border transition-all ${editRole === r.value ? 'border-[#82d8ff] bg-[#e5eeff]' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}>
                   <input type="radio" name="edit-role" value={r.value} checked={editRole === r.value} onChange={() => setEditRole(r.value)} className="accent-[#82d8ff] mt-0.5 flex-shrink-0" />
                   <div>
@@ -770,7 +785,7 @@ export default function CollaboratorsPage() {
                 className="flex-1 border border-[#bec8ce] text-[#6f787e] rounded-xl py-2.5 text-sm font-semibold hover:bg-slate-50 transition">
                 Annuler
               </button>
-              <button onClick={() => changeRoleMutation.mutate({ id: editingMember.id, sub_role: editRole })}
+              <button onClick={() => changeRoleMutation.mutate({ id: editingMember.id, sub_role: editRole === SUPER_ADMIN_VALUE ? null : editRole })}
                 disabled={changeRoleMutation.isPending}
                 className="flex-1 bg-[#82d8ff] text-[#0b1c30] rounded-xl py-2.5 text-sm font-semibold disabled:opacity-50 transition">
                 {changeRoleMutation.isPending ? 'Enregistrement...' : 'Enregistrer'}
