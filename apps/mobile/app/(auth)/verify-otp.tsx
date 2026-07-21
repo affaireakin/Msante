@@ -50,25 +50,34 @@ export default function VerifyOtpScreen() {
   async function submitOtp(code = otp) {
     if (code.length < OTP_LENGTH) return
     setLoading(true)
-    const result = await authService.verifyEmailOtp(email ?? '', code)
-    setLoading(false)
-    if (result.error) {
-      Alert.alert('Code incorrect', 'Le code saisi est invalide ou expiré. Réessayez.')
-      setOtp('')
-      inputRef.current?.focus()
+    try {
+      const result = await authService.verifyEmailOtp(email ?? '', code)
+      if (result.error) {
+        Alert.alert('Code incorrect', 'Le code saisi est invalide ou expiré. Réessayez.')
+        setOtp('')
+        inputRef.current?.focus()
+      }
+      // On success _layout.tsx onAuthStateChange handles navigation automatically
+    } catch {
+      Alert.alert('Erreur', 'Une erreur réseau est survenue. Réessayez.')
+    } finally {
+      setLoading(false)
     }
-    // On success _layout.tsx onAuthStateChange handles navigation automatically
   }
 
   async function handleResend() {
     if (cooldown > 0) return
-    const { error } = await authService.resendEmailOtp(email ?? '')
-    if (error) {
-      Alert.alert('Erreur', error)
-      return
+    try {
+      const { error } = await authService.resendEmailOtp(email ?? '')
+      if (error) {
+        Alert.alert('Erreur', error)
+        return
+      }
+      Alert.alert('Code renvoyé', 'Un nouveau code a été envoyé à votre email.')
+      startCooldown()
+    } catch {
+      Alert.alert('Erreur', 'Une erreur réseau est survenue. Réessayez.')
     }
-    Alert.alert('Code renvoyé', 'Un nouveau code a été envoyé à votre email.')
-    startCooldown()
   }
 
   const maskedEmail = email

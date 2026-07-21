@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, Linking } from 'react-native'
 import { useRouter } from 'expo-router'
 
 interface Props {
@@ -63,7 +63,10 @@ export function ActionCards({ showCrisis = false }: Props) {
               <Text className="text-base font-semibold text-on-surface font-manrope leading-tight mb-1">Ligne de crise 24h/24</Text>
               <Text className="text-xs text-outline font-manrope">SOS Amitié Sénégal</Text>
             </View>
-            <TouchableOpacity className="bg-error py-2 rounded-lg items-center">
+            <TouchableOpacity
+              onPress={() => Linking.openURL('tel:+221338238020')}
+              className="bg-error py-2 rounded-lg items-center"
+            >
               <Text className="text-white text-xs font-semibold font-manrope uppercase tracking-wider">+221 33 823 8020</Text>
             </TouchableOpacity>
           </View>

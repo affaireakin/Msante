@@ -26,13 +26,18 @@ export default function SignupPatientScreen() {
       return
     }
     setLoading(true)
-    const result = await authService.signUpWithEmail(data.email, data.password, 'patient', data.full_name)
-    setLoading(false)
-    if (result.error) {
-      Alert.alert('Erreur', result.error)
-      return
+    try {
+      const result = await authService.signUpWithEmail(data.email, data.password, 'patient', data.full_name)
+      if (result.error) {
+        Alert.alert('Erreur', result.error)
+        return
+      }
+      router.push(`/(auth)/verify-otp?email=${encodeURIComponent(data.email)}` as never)
+    } catch {
+      Alert.alert('Erreur', 'Une erreur réseau est survenue. Réessayez.')
+    } finally {
+      setLoading(false)
     }
-    router.push(`/(auth)/verify-otp?email=${encodeURIComponent(data.email)}` as never)
   }
 
   return (

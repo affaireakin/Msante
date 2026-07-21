@@ -21,15 +21,25 @@ export default function LoginScreen() {
 
   const onSubmit = async (data: LoginFormData) => {
     setLoading(true)
-    const result = await authService.signInWithEmail(data.email, data.password)
-    setLoading(false)
-    if (result.error) Alert.alert('Erreur de connexion', result.error)
+    try {
+      const result = await authService.signInWithEmail(data.email, data.password)
+      if (result.error) Alert.alert('Erreur de connexion', result.error)
+    } catch {
+      Alert.alert('Erreur de connexion', 'Une erreur réseau est survenue. Réessayez.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleGoogle = async () => {
     setGoogleLoading(true)
-    await authService.signInWithGoogle()
-    setGoogleLoading(false)
+    try {
+      await authService.signInWithGoogle()
+    } catch {
+      Alert.alert('Erreur de connexion', 'Une erreur réseau est survenue. Réessayez.')
+    } finally {
+      setGoogleLoading(false)
+    }
   }
 
   return (

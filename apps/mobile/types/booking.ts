@@ -3,6 +3,18 @@ export type SessionType = 'video' | 'audio' | 'presentiel' | 'suivi' | 'urgence'
 export type PaymentProvider = 'wave' | 'orange_money' | 'card'
 export type PaymentStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'refunded'
 
+// QA finding: patient/appointments and secretary/index each hardcoded their own
+// status color map with different shades for the same statuses, and the
+// patient-side "completed" badge used near-identical light-blue text on a
+// light-blue background (barely legible). Single shared source of truth.
+export const APPOINTMENT_STATUS_STYLES: Record<AppointmentStatus, { label: string; bg: string; text: string }> = {
+  pending:   { label: 'En attente', bg: '#fff8e1', text: '#705d00' },
+  confirmed: { label: 'Confirmé',   bg: '#e8f5e9', text: '#1d7a3a' },
+  cancelled: { label: 'Annulé',     bg: '#fce4ec', text: '#ba1a1a' },
+  completed: { label: 'Terminé',    bg: '#e5eeff', text: '#005e7a' },
+  no_show:   { label: 'Absent',     bg: '#f5f5f5', text: '#6f787e' },
+}
+
 export interface Availability {
   id: string
   practitioner_id: string

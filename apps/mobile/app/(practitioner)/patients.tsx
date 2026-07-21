@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
-import { ScrollView, View, Text, TouchableOpacity, TextInput, StatusBar, Alert } from 'react-native'
+import { ScrollView, View, Text, TouchableOpacity, TextInput, StatusBar, Alert, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { usePatients, type PatientItem } from '@/features/practitioner/hooks/usePatients'
@@ -24,12 +25,16 @@ function PatientCard({
   isBlocked,
   onBlock,
   onUnblock,
+  onDossier,
+  onMessage,
 }: {
   patient: PatientItem
   noShowCount: number
   isBlocked: boolean
   onBlock: () => void
   onUnblock: () => void
+  onDossier: () => void
+  onMessage: () => void
 }) {
   const colorIndex = patient.shortId.charCodeAt(patient.shortId.length - 1) % AVATAR_COLORS.length
   const avatarColor = AVATAR_COLORS[colorIndex]
@@ -141,6 +146,7 @@ function PatientCard({
       {/* Actions */}
       <View style={{ flexDirection: 'row', gap: 12 }}>
         <TouchableOpacity
+          onPress={onDossier}
           style={{
             flex: 1,
             paddingVertical: 10,
@@ -160,6 +166,7 @@ function PatientCard({
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={onMessage}
           style={{
             flex: 1,
             paddingVertical: 10,
@@ -308,8 +315,9 @@ function BlockedCard({ block, onUnblock }: { block: PatientBlock; onUnblock: () 
 }
 
 export default function PatientsScreen() {
+  const router = useRouter()
   const { practitioner } = useAuth()
-  const { data: patients, isLoading } = usePatients(practitioner?.id ?? '')
+  const { data: patients, isLoading, isError, refetch, isRefetching } = usePatients(practitioner?.id ?? '')
   const { noShowPatients, blocks, blockPatient, unblockPatient } = usePatientBlocks()
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState<FilterTab>('all')
@@ -474,8 +482,21 @@ export default function PatientsScreen() {
         style={{ flex: 1 }}
         contentContainerStyle={{ padding: 24, gap: 16 }}
         showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
       >
-        {activeTab === 'blocked' ? (
+        {isError ? (
+          <View style={{ paddingVertical: 64, alignItems: 'center', gap: 12 }}>
+            <Text style={{ fontFamily: 'Manrope', fontSize: 16, fontWeight: '600', color: '#6f787e' }}>
+              Une erreur est survenue
+            </Text>
+            <TouchableOpacity
+              onPress={() => refetch()}
+              style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 999, backgroundColor: '#82d8ff' }}
+            >
+              <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#0b1c30' }}>Réessayer</Text>
+            </TouchableOpacity>
+          </View>
+        ) : activeTab === 'blocked' ? (
           (blocks.data ?? []).length === 0 ? (
             <View style={{ paddingVertical: 64, alignItems: 'center' }}>
               <Text style={{ fontFamily: 'Manrope', fontSize: 16, fontWeight: '600', color: '#6f787e' }}>
@@ -515,6 +536,8 @@ export default function PatientsScreen() {
               isBlocked={blockedIds.has(patient.patientId)}
               onBlock={() => handleBlock(patient.patientId, patient.patientName)}
               onUnblock={() => handleUnblock(patient.patientId, patient.patientName)}
+              onDossier={() => router.push({ pathname: '/(practitioner)/patient-notes/[patientId]', params: { patientId: patient.patientId, patientName: patient.patientName } })}
+              onMessage={() => router.push({ pathname: '/(practitioner)/messages/[id]', params: { id: patient.patientId, name: patient.patientName } })}
             />
           ))
         )}

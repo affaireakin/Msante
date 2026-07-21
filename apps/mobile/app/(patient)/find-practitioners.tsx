@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, FlatList, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { View, Text, FlatList, TextInput, ActivityIndicator, TouchableOpacity, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -17,7 +17,7 @@ export default function FindPractitionersScreen() {
   const [language, setLanguage] = useState<string | null>(null)
   const [acceptingNewOnly, setAcceptingNewOnly] = useState(false)
 
-  const { data: practitioners, isLoading, error } = usePractitioners({
+  const { data: practitioners, isLoading, error, refetch, isRefetching } = usePractitioners({
     speciality: speciality ?? undefined,
     language: language ?? undefined,
     acceptingNewPatients: acceptingNewOnly || undefined,
@@ -128,12 +128,16 @@ export default function FindPractitionersScreen() {
           <Text style={{ color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center', fontSize: fs.sm, marginTop: 6 }}>
             Vérifiez votre connexion et réessayez.
           </Text>
+          <TouchableOpacity onPress={() => refetch()} style={{ marginTop: scale(16), paddingHorizontal: 20, paddingVertical: 10, borderRadius: 999, backgroundColor: '#82d8ff' }}>
+            <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#0b1c30' }}>Réessayer</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
           data={filtered}
           keyExtractor={item => item.id}
           contentContainerStyle={{ paddingHorizontal: px, paddingBottom: 100, gap: scale(12), paddingTop: scale(4) }}
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
           renderItem={({ item }) => (
             <PractitionerCard practitioner={item} onPress={() => handleSelect(item)} />
           )}

@@ -9,7 +9,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { supabase } from '@/services/supabase'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useResponsive } from '@/hooks/useResponsive'
-import type { AppointmentStatus, SessionType } from '@/types/booking'
+import { APPOINTMENT_STATUS_STYLES, type AppointmentStatus, type SessionType } from '@/types/booking'
 
 interface AppointmentRow {
   id: string
@@ -27,15 +27,19 @@ interface AppointmentRow {
   } | null
 }
 
+const STATUS_ICON: Record<AppointmentStatus, React.ComponentProps<typeof MaterialIcons>['name']> = {
+  pending: 'schedule', confirmed: 'check-circle', cancelled: 'cancel', completed: 'task-alt', no_show: 'person-off',
+}
+
 const STATUS_CONFIG: Record<AppointmentStatus, {
   label: string; bg: string; text: string
   icon: React.ComponentProps<typeof MaterialIcons>['name']
 }> = {
-  pending:   { label: 'En attente', bg: '#fff8e1', text: '#705d00', icon: 'schedule' },
-  confirmed: { label: 'Confirmé',   bg: '#e8f5e9', text: '#1d7a3a', icon: 'check-circle' },
-  cancelled: { label: 'Annulé',     bg: '#fce4ec', text: '#ba1a1a', icon: 'cancel' },
-  completed: { label: 'Terminé',    bg: '#e5eeff', text: '#82d8ff', icon: 'task-alt' },
-  no_show:   { label: 'Absent',     bg: '#f5f5f5', text: '#6f787e', icon: 'person-off' },
+  pending:   { ...APPOINTMENT_STATUS_STYLES.pending,   icon: STATUS_ICON.pending },
+  confirmed: { ...APPOINTMENT_STATUS_STYLES.confirmed, icon: STATUS_ICON.confirmed },
+  cancelled: { ...APPOINTMENT_STATUS_STYLES.cancelled, icon: STATUS_ICON.cancelled },
+  completed: { ...APPOINTMENT_STATUS_STYLES.completed, icon: STATUS_ICON.completed },
+  no_show:   { ...APPOINTMENT_STATUS_STYLES.no_show,   icon: STATUS_ICON.no_show },
 }
 
 const TYPE_ICON: Record<string, React.ComponentProps<typeof MaterialIcons>['name']> = {

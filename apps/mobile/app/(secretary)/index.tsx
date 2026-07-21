@@ -7,19 +7,9 @@ import { useSecretaryAppointments, type SecretaryAppointment } from '@/features/
 import { approveAppointment, declineAppointment } from '@/features/practitioner/services/appointmentActions'
 import { supabase } from '@/services/supabase'
 import { useResponsive } from '@/hooks/useResponsive'
+import { APPOINTMENT_STATUS_STYLES } from '@/types/booking'
 
 type Filter = 'today' | 'upcoming' | 'past'
-
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'En attente', confirmed: 'Confirmé', cancelled: 'Annulé', completed: 'Terminé', no_show: 'Absent',
-}
-const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  pending: { bg: '#fef3c7', text: '#92400e' },
-  confirmed: { bg: '#dcfce7', text: '#065f46' },
-  cancelled: { bg: '#f1f5f9', text: '#64748b' },
-  completed: { bg: '#e5eeff', text: '#1e40af' },
-  no_show: { bg: '#fee2e2', text: '#991b1b' },
-}
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString('fr-FR', {
@@ -31,7 +21,7 @@ function formatDateTime(iso: string) {
 function AppointmentCard({ appt }: { appt: SecretaryAppointment }) {
   const { fs, scale } = useResponsive()
   const queryClient = useQueryClient()
-  const statusStyle = STATUS_COLORS[appt.status] ?? STATUS_COLORS.pending
+  const statusStyle = APPOINTMENT_STATUS_STYLES[appt.status as keyof typeof APPOINTMENT_STATUS_STYLES] ?? APPOINTMENT_STATUS_STYLES.pending
 
   const approve = useMutation({
     mutationFn: () => approveAppointment(appt.id, appt.patientId),
@@ -72,7 +62,7 @@ function AppointmentCard({ appt }: { appt: SecretaryAppointment }) {
         </View>
         <View style={{ backgroundColor: statusStyle.bg, borderRadius: scale(20), paddingHorizontal: scale(10), paddingVertical: scale(4) }}>
           <Text style={{ fontSize: scale(10), fontWeight: '700', color: statusStyle.text, fontFamily: 'Manrope' }}>
-            {STATUS_LABELS[appt.status] ?? appt.status}
+            {statusStyle.label}
           </Text>
         </View>
       </View>

@@ -112,7 +112,11 @@ function AppointmentCard({
           </Text>
         ) : null}
 
-        {/* Action buttons: Approuver · Reprogrammer · Refuser */}
+        {/* Action buttons: Approuver · Refuser
+            QA finding: "Reporter" had no onPress and no reschedule feature exists
+            yet in appointmentActions.ts — removed rather than left as a dead
+            button until a real reschedule flow (slot picker + patient
+            re-confirmation) is built. */}
         <View style={{ flexDirection: 'row', gap: scale(8) }}>
           <TouchableOpacity
             onPress={onApprove}
@@ -120,12 +124,6 @@ function AppointmentCard({
             style={{ flex: 2, paddingVertical: scale(11), borderRadius: 9999, alignItems: 'center', backgroundColor: '#82d8ff', opacity: isWorking ? 0.5 : 1 }}
           >
             <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '800', color: '#0b1c30' }}>Approuver</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            disabled={isWorking}
-            style={{ flex: 2, paddingVertical: scale(11), borderRadius: 9999, alignItems: 'center', borderWidth: 1, borderColor: '#bec8ce', backgroundColor: 'rgba(255,255,255,0.6)' }}
-          >
-            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#005e7a' }}>Reporter</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={onDecline}

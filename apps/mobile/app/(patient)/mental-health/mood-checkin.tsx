@@ -23,7 +23,12 @@ export default function MoodCheckin() {
 
   const handleSave = async () => {
     if (!profile?.id) return
-    await addMood.mutateAsync({ patientId: profile.id, score, emotions, note: note.trim() || undefined })
+    try {
+      await addMood.mutateAsync({ patientId: profile.id, score, emotions, note: note.trim() || undefined })
+    } catch {
+      Alert.alert('Erreur', "L'enregistrement a échoué. Réessayez.")
+      return
+    }
     if (score < 3) {
       Alert.alert(
         'Prendre soin de soi',

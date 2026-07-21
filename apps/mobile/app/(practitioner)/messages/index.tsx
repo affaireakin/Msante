@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -33,7 +33,7 @@ export default function PractitionerMessagesScreen() {
   const router = useRouter()
   const { profile } = useAuthStore()
 
-  const { data: conversations = [], isLoading } = useQuery<ConversationPreview[]>({
+  const { data: conversations = [], isLoading, isError, refetch, isRefetching } = useQuery<ConversationPreview[]>({
     queryKey: ['practitioner-conversations', profile?.id],
     enabled: !!profile?.id,
     refetchInterval: 15_000,
@@ -88,6 +88,13 @@ export default function PractitionerMessagesScreen() {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator color="#82d8ff" size="large" />
         </View>
+      ) : isError ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+          <Text style={{ fontSize: 15, color: '#6f787e', fontFamily: 'Manrope' }}>Une erreur est survenue</Text>
+          <TouchableOpacity onPress={() => refetch()} style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 999, backgroundColor: '#82d8ff' }}>
+            <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#0b1c30' }}>Réessayer</Text>
+          </TouchableOpacity>
+        </View>
       ) : conversations.length === 0 ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingHorizontal: 40 }}>
           <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
@@ -104,6 +111,7 @@ export default function PractitionerMessagesScreen() {
         <FlatList
           data={conversations}
           keyExtractor={(c) => c.partnerId}
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
           ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: 'rgba(226,232,240,0.5)', marginLeft: 76 }} />}
           renderItem={({ item }) => (
             <TouchableOpacity

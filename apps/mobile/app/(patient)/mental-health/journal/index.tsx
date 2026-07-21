@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity } from 'react-native'
+import { View, Text, FlatList, TouchableOpacity, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -9,7 +9,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth'
 export default function JournalList() {
   const router = useRouter()
   const { profile } = useAuth()
-  const { data: entries = [] } = useJournalEntries(profile?.id ?? '')
+  const { data: entries = [], isError, refetch, isRefetching } = useJournalEntries(profile?.id ?? '')
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
@@ -26,6 +26,7 @@ export default function JournalList() {
         data={entries}
         keyExtractor={e => e.id}
         contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100, gap: 8 }}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
         renderItem={({ item }) => (
           <JournalCard
             entry={item}
@@ -33,12 +34,21 @@ export default function JournalList() {
           />
         )}
         ListEmptyComponent={
-          <View style={{ alignItems: 'center', paddingVertical: 64, gap: 12 }}>
-            <MaterialIcons name="book" size={40} color="#bec8ce" />
-            <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center' }}>
-              Votre journal est vide.{'\n'}Commencez à écrire.
-            </Text>
-          </View>
+          isError ? (
+            <View style={{ alignItems: 'center', paddingVertical: 64, gap: 12 }}>
+              <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>Une erreur est survenue</Text>
+              <TouchableOpacity onPress={() => refetch()} style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 999, backgroundColor: '#82d8ff' }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#0b1c30' }}>Réessayer</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={{ alignItems: 'center', paddingVertical: 64, gap: 12 }}>
+              <MaterialIcons name="book" size={40} color="#bec8ce" />
+              <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center' }}>
+                Votre journal est vide.{'\n'}Commencez à écrire.
+              </Text>
+            </View>
+          )
         }
       />
       <TouchableOpacity

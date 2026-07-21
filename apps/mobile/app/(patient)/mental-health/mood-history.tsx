@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -10,7 +10,7 @@ const DAYS = ['D', 'L', 'M', 'M', 'J', 'V', 'S']
 export default function MoodHistory() {
   const router = useRouter()
   const { profile } = useAuth()
-  const { data: entries = [] } = useMoodEntries(profile?.id ?? '')
+  const { data: entries = [], isError, refetch, isRefetching } = useMoodEntries(profile?.id ?? '')
 
   const last7 = Array.from({ length: 7 }, (_, i) => {
     const d = new Date()
@@ -24,13 +24,25 @@ export default function MoodHistory() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
-      <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView
+        style={{ flex: 1, paddingHorizontal: 24 }}
+        contentContainerStyle={{ paddingBottom: 40 }}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+      >
         <View style={{ paddingTop: 32, paddingBottom: 24, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <TouchableOpacity onPress={() => router.back()}>
             <MaterialIcons name="arrow-back" size={24} color="#82d8ff" />
           </TouchableOpacity>
           <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Historique humeur</Text>
         </View>
+        {isError && (
+          <View style={{ alignItems: 'center', gap: 8, paddingVertical: 24 }}>
+            <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>Une erreur est survenue</Text>
+            <TouchableOpacity onPress={() => refetch()} style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 999, backgroundColor: '#82d8ff' }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '700', color: '#0b1c30' }}>Réessayer</Text>
+            </TouchableOpacity>
+          </View>
+        )}
         <View style={{
           backgroundColor: 'rgba(255,255,255,0.6)',
           borderRadius: 24,
