@@ -862,10 +862,17 @@ export default function UsersPage() {
 
 function UsersPageInner() {
   const searchParams = useSearchParams()
-  const [role, setRole] = useState<Role>(() => {
+  // QA finding (section 21.2) : arriver ici via le lien "Patients" de la barre
+  // latérale affichait quand même les onglets Praticiens/Admins — redondant
+  // avec leurs propres pages dédiées (/admin/practitioners, /admin/collaborators)
+  // et source de confusion. Un rôle précisé dans l'URL verrouille la vue sur
+  // ce rôle sans proposer de bascule ; seule "Vue d'ensemble" (sans paramètre)
+  // garde les onglets, qui ont un sens pour une vue combinée.
+  const lockedRole = (() => {
     const fromUrl = searchParams.get('role') as Role | null
-    return fromUrl && ['patient', 'practitioner', 'admin'].includes(fromUrl) ? fromUrl : 'all'
-  })
+    return fromUrl && ['patient', 'practitioner', 'admin'].includes(fromUrl) ? fromUrl : null
+  })()
+  const [role, setRole] = useState<Role>(lockedRole ?? 'all')
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [page, setPage] = useState(0)
@@ -890,13 +897,15 @@ function UsersPageInner() {
     { label: 'Admins', value: 'admin' },
   ]
 
+  const pageTitle = lockedRole ? (filters.find(f => f.value === lockedRole)?.label ?? 'Utilisateurs') : 'Utilisateurs'
+
   return (
     <div className="space-y-6" style={{ fontFamily: 'Manrope' }}>
       {/* Page header */}
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-[#0b1c30]">Utilisateurs</h1>
+            <h1 className="text-2xl font-bold text-[#0b1c30]">{pageTitle}</h1>
             {(suspendedCount ?? 0) > 0 && (
               <span
                 className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full"
@@ -924,22 +933,24 @@ function UsersPageInner() {
 
       {/* Filters + Search */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none w-full sm:w-auto">
-          {filters.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => { setRole(f.value); setPage(0) }}
-              className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all"
-              style={
-                role === f.value
-                  ? { backgroundColor: '#82d8ff', color: '#ffffff' }
-                  : { backgroundColor: 'rgba(255,255,255,0.60)', color: '#3f484d', border: '1px solid rgba(203,216,254,0.50)' }
-              }
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
+        {!lockedRole && (
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none w-full sm:w-auto">
+            {filters.map((f) => (
+              <button
+                key={f.value}
+                onClick={() => { setRole(f.value); setPage(0) }}
+                className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all"
+                style={
+                  role === f.value
+                    ? { backgroundColor: '#82d8ff', color: '#ffffff' }
+                    : { backgroundColor: 'rgba(255,255,255,0.60)', color: '#3f484d', border: '1px solid rgba(203,216,254,0.50)' }
+                }
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        )}
         <input
           type="text"
           value={search}
