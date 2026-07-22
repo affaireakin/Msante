@@ -1,6 +1,7 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { getSignedDocumentUrl } from '@/lib/signedDocumentUrl'
 
@@ -174,7 +175,9 @@ export default function OrganizationsPage() {
                     {org.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-semibold text-[#0b1c30]">{org.name}</p>
+                    <Link href={`/admin/organizations/${org.id}`} className="font-semibold text-[#0b1c30] hover:text-[#82d8ff] transition-colors hover:underline">
+                      {org.name}
+                    </Link>
                     <p className="text-sm text-[#6f787e]">{org.city ?? '—'} · {org.email}</p>
                     <p className="text-xs text-[#6f787e] mt-0.5">
                       Demandé par {org.users?.full_name ?? '—'} le {new Date(org.created_at).toLocaleDateString('fr-FR')}
