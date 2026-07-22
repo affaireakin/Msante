@@ -1,6 +1,6 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState, useRef, Suspense } from 'react'
+import { useState, useRef, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
@@ -814,6 +814,15 @@ function UsersPageInner() {
     return fromUrl && ['patient', 'practitioner', 'admin'].includes(fromUrl) ? fromUrl : null
   })()
   const [role, setRole] = useState<Role>(lockedRole ?? 'all')
+  // "Vue d'ensemble" et "Patients" pointent vers la même route
+  // (/admin/users vs /admin/users?role=patient) — Next.js ne remonte donc
+  // pas le composant en cliquant de l'un à l'autre, seul le paramètre d'URL
+  // change. Sans cet effet, `role` restait figé sur sa valeur initiale : le
+  // titre/les onglets suivaient bien l'URL mais la liste affichée non,
+  // donnant l'impression que les deux écrans étaient mélangés.
+  useEffect(() => {
+    setRole(lockedRole ?? 'all')
+  }, [lockedRole])
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [page, setPage] = useState(0)
