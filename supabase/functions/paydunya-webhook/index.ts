@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
     // Find payment by PayDunya token (stored in provider_ref)
     const { data: payment, error: pErr } = await supabase
       .from('payments')
-      .select('id, appointment_id, status')
+      .select('id, appointment_id, status, patient_id')
       .eq('provider_ref', token)
       .single()
 
@@ -103,6 +103,9 @@ Deno.serve(async (req) => {
         resource_type: 'payment',
         resource_id: payment.id,
         new_values: { provider_ref: token, via: 'paydunya_webhook' },
+        module: 'payments',
+        target_user_id: payment.patient_id,
+        target_role: 'patient',
       })
     } else {
       await supabase

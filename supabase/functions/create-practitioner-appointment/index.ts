@@ -12,6 +12,10 @@ function json(body: unknown, status = 200) {
   })
 }
 
+function clientIp(req: Request): string | null {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+}
+
 // Unlike create-appointment (patient self-booking, patient_id = caller),
 // this lets a practitioner — or a secretary they've delegated appointment
 // management to — schedule a RDV directly for one of their patients, e.g.
@@ -121,6 +125,11 @@ Deno.serve(async (req) => {
       resource_type: 'appointment',
       resource_id: appointment.id,
       new_values: { practitioner_id, patient_id, scheduled_at },
+      module: 'appointments',
+      target_user_id: patient_id,
+      target_role: 'patient',
+      ip_address: clientIp(req),
+      user_agent: req.headers.get('user-agent'),
     })
 
     // Notify the patient (fire-and-forget) — best-effort, matches the pattern

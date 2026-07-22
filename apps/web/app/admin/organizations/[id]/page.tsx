@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { getSignedDocumentUrl } from '@/lib/signedDocumentUrl'
+import { MODULE_LABELS } from '@/lib/modules'
 
 function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
   return <span className="material-symbols-outlined" style={style}>{name}</span>
@@ -38,7 +39,9 @@ interface OrgRolePerm { id: string; name: string; description: string | null; me
 interface AuditLogRow {
   id: string; action: string; created_at: string
   old_values: unknown; new_values: unknown
+  module: string | null; target_role: string | null; reason: string | null
   actor: { full_name: string } | null
+  target: { full_name: string } | null
 }
 
 function useOrganizationDetail(orgId: string) {
@@ -66,7 +69,7 @@ function useOrganizationDetail(orgId: string) {
         supabase.from('org_roles').select('id, name, description').eq('organization_id', orgId),
         supabase.from('user_roles').select('role_id').eq('organization_id', orgId),
         supabase.from('audit_logs')
-          .select('id, action, created_at, old_values, new_values, actor:users!actor_id(full_name)')
+          .select('id, action, created_at, old_values, new_values, module, target_role, reason, actor:users!actor_id(full_name), target:users!target_user_id(full_name)')
           .eq('resource_type', 'organization').eq('resource_id', orgId)
           .order('created_at', { ascending: false }).limit(20),
       ])
@@ -81,7 +84,7 @@ function useOrganizationDetail(orgId: string) {
         supabase.from('payments').select('amount').eq('organization_id', orgId).eq('status', 'completed'),
         memberIds.length > 0
           ? supabase.from('audit_logs')
-              .select('id, action, created_at, old_values, new_values, actor:users!actor_id(full_name)')
+              .select('id, action, created_at, old_values, new_values, module, target_role, reason, actor:users!actor_id(full_name), target:users!target_user_id(full_name)')
               .in('actor_id', memberIds)
               .order('created_at', { ascending: false }).limit(30)
           : Promise.resolve({ data: [] as AuditLogRow[] }),
@@ -156,6 +159,7 @@ function describeLogChange(row: AuditLogRow): string | null {
   const oldV = row.old_values as { status?: string; reason?: string; note?: string } | null
   const newV = row.new_values as { status?: string; reason?: string; note?: string } | null
   if (newV?.status && oldV?.status) return `${STATUS_LABELS[oldV.status] ?? oldV.status} → ${STATUS_LABELS[newV.status] ?? newV.status}`
+  if (row.reason) return `Motif : ${row.reason}`
   if (newV?.reason) return `Motif : ${newV.reason}`
   if (newV?.note) return `Note : ${newV.note}`
   return null
@@ -367,7 +371,9 @@ export default function OrganizationDetailPage() {
                 <p className="text-sm font-semibold text-[#0b1c30]">{ACTION_LABELS[h.action] ?? h.action}</p>
                 <p className="text-xs text-[#6f787e]">
                   {new Date(h.created_at).toLocaleString('fr-FR')}{h.actor?.full_name ? ` · ${h.actor.full_name}` : ''}
+                  {h.module ? ` · ${MODULE_LABELS[h.module] ?? h.module}` : ''}
                 </p>
+                {h.target?.full_name && <p className="text-xs text-[#6f787e]">Concerné : {h.target.full_name}{h.target_role ? ` (${h.target_role})` : ''}</p>}
                 {describeLogChange(h) && <p className="text-xs text-[#3f484d] mt-0.5">{describeLogChange(h)}</p>}
               </div>
             ))}
@@ -383,10 +389,13 @@ export default function OrganizationDetailPage() {
           <div className="space-y-3 border-l-2 border-slate-100 pl-4 max-h-96 overflow-y-auto">
             {activityLog.map(a => (
               <div key={a.id}>
-                <p className="text-sm font-semibold text-[#0b1c30]">{a.action}</p>
+                <p className="text-sm font-semibold text-[#0b1c30]">{ACTION_LABELS[a.action] ?? a.action}</p>
                 <p className="text-xs text-[#6f787e]">
                   {new Date(a.created_at).toLocaleString('fr-FR')}{a.actor?.full_name ? ` · ${a.actor.full_name}` : ''}
+                  {a.module ? ` · ${MODULE_LABELS[a.module] ?? a.module}` : ''}
                 </p>
+                {a.target?.full_name && <p className="text-xs text-[#6f787e]">Concerné : {a.target.full_name}{a.target_role ? ` (${a.target_role})` : ''}</p>}
+                {describeLogChange(a) && <p className="text-xs text-[#3f484d] mt-0.5">{describeLogChange(a)}</p>}
               </div>
             ))}
           </div>

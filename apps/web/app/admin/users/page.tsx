@@ -242,11 +242,17 @@ function PractitionerSection({ userId }: { userId: string }) {
     },
     onSuccess: async (practitionerId: string) => {
       try {
+        // Missing actor_id used to mean these two logs had no "auteur" at all.
+        const { data: { user: actor } } = await supabase.auth.getUser()
         await supabase.from('audit_logs').insert({
+          actor_id: actor?.id ?? null,
           action: 'practitioner.approved',
           resource_type: 'practitioner',
           resource_id: practitionerId,
           new_values: { verification_status: 'approved', is_verified: true },
+          module: 'practitioner',
+          target_user_id: userId,
+          target_role: 'practitioner',
         })
       } catch {
         // audit log failure is non-blocking
@@ -267,11 +273,16 @@ function PractitionerSection({ userId }: { userId: string }) {
     },
     onSuccess: async (practitionerId: string) => {
       try {
+        const { data: { user: actor } } = await supabase.auth.getUser()
         await supabase.from('audit_logs').insert({
+          actor_id: actor?.id ?? null,
           action: 'practitioner.rejected',
           resource_type: 'practitioner',
           resource_id: practitionerId,
           new_values: { verification_status: 'rejected' },
+          module: 'practitioner',
+          target_user_id: userId,
+          target_role: 'practitioner',
         })
       } catch {
         // audit log failure is non-blocking

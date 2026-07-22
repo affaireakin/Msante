@@ -12,6 +12,10 @@ function json(body: unknown, status = 200) {
   })
 }
 
+function clientIp(req: Request): string | null {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+}
+
 // Suspending/blocking a user from the admin console only ever updated the
 // users.account_status column — nothing in the app actually reads that column
 // to gate access, so the account kept working exactly as before. The real,
@@ -74,6 +78,12 @@ Deno.serve(async (req) => {
       resource_type: 'user',
       resource_id: targetUserId,
       new_values: { account_status: newStatus, reason: statusReason },
+      module: 'admin',
+      target_user_id: targetUserId,
+      target_role: target.role,
+      reason: statusReason,
+      ip_address: clientIp(req),
+      user_agent: req.headers.get('user-agent'),
     })
 
     // Suspending/blocking a user used to send no notification at all — the

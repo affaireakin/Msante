@@ -12,6 +12,10 @@ function json(body: unknown, status = 200) {
   })
 }
 
+function clientIp(req: Request): string | null {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+}
+
 async function sendEmail(apiKey: string, from: string, to: string, orgName: string, action: 'approved' | 'rejected' | 'info_requested', note?: string): Promise<void> {
   const titles: Record<string, string> = {
     approved: 'Votre organisation est validée 🎉',
@@ -98,6 +102,12 @@ Deno.serve(async (req) => {
         resource_type: 'organization',
         resource_id: organization_id,
         new_values: { note },
+        module: 'organization',
+        target_user_id: org.created_by,
+        target_role: 'organization_admin',
+        reason: note ?? null,
+        ip_address: clientIp(req),
+        user_agent: req.headers.get('user-agent'),
       })
       return json({ success: true, status: org.status })
     }
@@ -160,6 +170,12 @@ Deno.serve(async (req) => {
       resource_id: organization_id,
       old_values: { status: org.status },
       new_values: { status: newStatus, note },
+      module: 'organization',
+      target_user_id: org.created_by,
+      target_role: 'organization_admin',
+      reason: note ?? null,
+      ip_address: clientIp(req),
+      user_agent: req.headers.get('user-agent'),
     })
 
     return json({ success: true, status: newStatus })

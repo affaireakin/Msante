@@ -12,6 +12,10 @@ function json(body: unknown, status = 200) {
   })
 }
 
+function clientIp(req: Request): string | null {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+}
+
 // QA finding: "Supprimer mon compte" only ran users.update({status:'suspended'})
 // on a column nothing reads (access control reads account_status), so the
 // account kept working normally after "deletion". Real, enforceable lockout
@@ -62,6 +66,12 @@ Deno.serve(async (req) => {
       resource_type: 'user',
       resource_id: user.id,
       new_values: { account_status: 'suspended', reason },
+      module: 'auth',
+      target_user_id: user.id,
+      target_role: caller?.role ?? null,
+      reason,
+      ip_address: clientIp(req),
+      user_agent: req.headers.get('user-agent'),
     })
 
     return json({ success: true })

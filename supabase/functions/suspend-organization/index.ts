@@ -12,6 +12,10 @@ function json(body: unknown, status = 200) {
   })
 }
 
+function clientIp(req: Request): string | null {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
@@ -44,7 +48,7 @@ Deno.serve(async (req) => {
 
     const { data: org } = await supabase
       .from('organizations')
-      .select('id, name, status')
+      .select('id, name, status, created_by')
       .eq('id', organization_id)
       .single()
     if (!org) return json({ error: 'Organization not found' }, 404)
@@ -91,6 +95,12 @@ Deno.serve(async (req) => {
       resource_id: organization_id,
       old_values: { status: org.status },
       new_values: { status: newStatus, reason },
+      module: 'organization',
+      target_user_id: org.created_by,
+      target_role: 'organization_admin',
+      reason,
+      ip_address: clientIp(req),
+      user_agent: req.headers.get('user-agent'),
     })
 
     return json({ success: true, status: newStatus, notified: members?.length ?? 0 })

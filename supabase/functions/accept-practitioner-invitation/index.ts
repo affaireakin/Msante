@@ -12,6 +12,10 @@ function json(body: unknown, status = 200) {
   })
 }
 
+function clientIp(req: Request): string | null {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
@@ -78,6 +82,11 @@ Deno.serve(async (req) => {
         resource_type: 'practitioner_invitation',
         resource_id: invitation.id,
         new_values: { invited_by_practitioner_id: invitation.invited_by_practitioner_id },
+        module: 'practitioner',
+        target_user_id: user.id,
+        target_role: 'secretary',
+        ip_address: clientIp(req),
+        user_agent: req.headers.get('user-agent'),
       })
 
       try {
@@ -163,6 +172,11 @@ Deno.serve(async (req) => {
       resource_type: 'practitioner_invitation',
       resource_id: invitation.id,
       new_values: { organization_id: invitation.organization_id },
+      module: 'organization',
+      target_user_id: user.id,
+      target_role: finalRole,
+      ip_address: clientIp(req),
+      user_agent: req.headers.get('user-agent'),
     })
 
     return json({ success: true, organization_id: invitation.organization_id, account_type: invitation.account_type, role: finalRole })

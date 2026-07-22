@@ -12,6 +12,10 @@ function json(body: unknown, status = 200) {
   })
 }
 
+function clientIp(req: Request): string | null {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+}
+
 // QA finding: there was no way to revoke a collaborator's access — setting
 // their org_roles assignment to "Aucun rôle" only cleared RBAC permissions,
 // they stayed attached to the organization (organization_id unchanged) and
@@ -74,6 +78,11 @@ Deno.serve(async (req) => {
       resource_type: 'user',
       resource_id: targetUserId,
       old_values: { organization_id: caller.organization_id, role: target.role },
+      module: 'organization',
+      target_user_id: targetUserId,
+      target_role: target.role,
+      ip_address: clientIp(req),
+      user_agent: req.headers.get('user-agent'),
     })
 
     return json({ success: true })

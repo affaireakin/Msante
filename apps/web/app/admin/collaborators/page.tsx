@@ -135,6 +135,7 @@ export default function CollaboratorsPage() {
     resource_id: string,
     old_values?: Record<string, unknown> | null,
     new_values?: Record<string, unknown> | null,
+    extra?: { module?: string; targetUserId?: string | null; targetRole?: string | null; reason?: string | null },
   ) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
@@ -145,6 +146,10 @@ export default function CollaboratorsPage() {
       resource_id,
       old_values: old_values ?? null,
       new_values: new_values ?? null,
+      module: extra?.module ?? null,
+      target_user_id: extra?.targetUserId ?? null,
+      target_role: extra?.targetRole ?? null,
+      reason: extra?.reason ?? null,
     })
   }
 
@@ -162,6 +167,7 @@ export default function CollaboratorsPage() {
         'user', id,
         { status: member.status },
         { status: suspend ? 'suspended' : 'active' },
+        { module: 'admin', targetUserId: id, targetRole: 'admin' },
       )
     },
     onSuccess: () => { setActionError(null); qc.invalidateQueries({ queryKey: ['admin-team'] }) },
@@ -173,7 +179,8 @@ export default function CollaboratorsPage() {
       const prev = editingMember?.sub_role ?? null
       const { error } = await supabase.from('users').update({ sub_role }).eq('id', id)
       if (error) throw error
-      await logAudit('collaborator.role_changed', 'user', id, { sub_role: prev }, { sub_role })
+      await logAudit('collaborator.role_changed', 'user', id, { sub_role: prev }, { sub_role },
+        { module: 'admin', targetUserId: id, targetRole: 'admin' })
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-team'] })
@@ -186,7 +193,8 @@ export default function CollaboratorsPage() {
     mutationFn: async (member: TeamMember) => {
       const { error } = await supabase.from('users').delete().eq('id', member.id)
       if (error) throw error
-      await logAudit('collaborator.deleted', 'user', member.id, { email: member.email, sub_role: member.sub_role }, null)
+      await logAudit('collaborator.deleted', 'user', member.id, { email: member.email, sub_role: member.sub_role }, null,
+        { module: 'admin', targetUserId: member.id, targetRole: 'admin' })
     },
     onSuccess: () => {
       setActionError(null)
@@ -299,6 +307,7 @@ export default function CollaboratorsPage() {
         newStatus === 'revoked' ? 'secretary.revoked' : 'secretary.reactivated',
         'practitioner_secretary', sec.id,
         { status: sec.status }, { status: newStatus },
+        { module: 'practitioner', targetUserId: sec.user_id, targetRole: 'secretary' },
       )
       await notifySecretary(sec,
         newStatus === 'revoked' ? 'Accès révoqué' : 'Accès réactivé',
@@ -315,6 +324,7 @@ export default function CollaboratorsPage() {
         decision === 'active' ? 'secretary.approved' : 'secretary.rejected',
         'practitioner_secretary', sec.id,
         { status: 'pending' }, { status: decision },
+        { module: 'practitioner', targetUserId: sec.user_id, targetRole: 'secretary' },
       )
       await notifySecretary(sec,
         decision === 'active' ? 'Compte secrétaire validé ✓' : 'Demande de secrétaire refusée',
@@ -341,7 +351,8 @@ export default function CollaboratorsPage() {
         const body = await res.json().catch(() => ({}))
         throw new Error((body as { error?: string }).error ?? "Erreur lors de l'invitation")
       }
-      await logAudit('collaborator.invited', 'invitation', email, null, { email, role_ids: roleIds })
+      await logAudit('collaborator.invited', 'invitation', email, null, { email, role_ids: roleIds },
+        { module: 'admin', targetRole: 'admin' })
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-invitations'] })

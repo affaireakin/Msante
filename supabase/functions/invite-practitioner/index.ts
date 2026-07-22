@@ -12,6 +12,10 @@ function json(body: unknown, status = 200) {
   })
 }
 
+function clientIp(req: Request): string | null {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+}
+
 function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString() // 6 digits
 }
@@ -131,6 +135,10 @@ Deno.serve(async (req) => {
         resource_type: 'practitioner_invitation',
         resource_id: invitation.id,
         new_values: { invited_by_practitioner_id: practitioner.id, email: email.trim(), account_type: 'secretary' },
+        module: 'practitioner',
+        target_role: 'secretary',
+        ip_address: clientIp(req),
+        user_agent: req.headers.get('user-agent'),
       })
 
       return json({ success: true, invitation_id: invitation.id })
@@ -216,6 +224,10 @@ Deno.serve(async (req) => {
       resource_type: 'practitioner_invitation',
       resource_id: invitation.id,
       new_values: { organization_id: organizationId, email: email.trim(), account_type: accountType, role_id: roleId ?? null },
+      module: 'organization',
+      target_role: accountType === 'practitioner' ? 'practitioner' : (roleName ?? accountType),
+      ip_address: clientIp(req),
+      user_agent: req.headers.get('user-agent'),
     })
 
     return json({ success: true, invitation_id: invitation.id })

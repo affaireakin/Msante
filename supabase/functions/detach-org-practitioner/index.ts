@@ -12,6 +12,10 @@ function json(body: unknown, status = 200) {
   })
 }
 
+function clientIp(req: Request): string | null {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+}
+
 // QA finding: there was no way for an organization to detach a practitioner
 // once affiliated — mirrors validate-org-practitioner's permission checks,
 // since practitioners has no org-admin UPDATE policy (only SELECT), a
@@ -85,6 +89,11 @@ Deno.serve(async (req) => {
       resource_type: 'practitioner',
       resource_id: practitioner_id,
       old_values: { organization_id: practitioner.organization_id },
+      module: 'organization',
+      target_user_id: practitioner.user_id,
+      target_role: 'practitioner',
+      ip_address: clientIp(req),
+      user_agent: req.headers.get('user-agent'),
     })
 
     return json({ success: true })

@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
     // 1. Récupère la consultation
     const { data: consultation, error: cErr } = await supabase
       .from('consultations')
-      .select('id, started_at, status, room_name, appointment_id')
+      .select('id, started_at, status, room_name, appointment_id, appointments!appointment_id(patient_id)')
       .eq('id', consultationId)
       .single()
 
@@ -133,12 +133,18 @@ Deno.serve(async (req) => {
     }
 
     // 6. Audit log
+    const patientId = (consultation.appointments as unknown as { patient_id: string } | null)?.patient_id ?? null
     await supabase.from('audit_logs').insert({
       actor_id: user.id,
       action: 'consultation.ended',
       resource_type: 'consultation',
       resource_id: consultationId,
       new_values: { duration_actual_min: durationMin },
+      module: 'appointments',
+      target_user_id: patientId,
+      target_role: 'patient',
+      ip_address: req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null,
+      user_agent: req.headers.get('user-agent'),
     })
 
     return new Response(JSON.stringify({ aiSummary, durationMin }), {

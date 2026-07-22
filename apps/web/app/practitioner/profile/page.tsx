@@ -166,6 +166,9 @@ export default function PractitionerProfilePage() {
           resource_id: practId,
           old_values: { speciality: originalSpeciality },
           new_values: { speciality },
+          module: 'practitioner',
+          target_user_id: userId,
+          target_role: 'practitioner',
         })
       }
     },

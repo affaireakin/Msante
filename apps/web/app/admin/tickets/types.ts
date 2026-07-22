@@ -22,19 +22,7 @@ export interface Ticket {
   related_user: { full_name: string } | null
 }
 
-export const MODULE_OPTIONS: { value: string; label: string }[] = [
-  { value: 'patient', label: 'Espace patient' },
-  { value: 'practitioner', label: 'Espace praticien' },
-  { value: 'organization', label: 'Espace organisation' },
-  { value: 'admin', label: 'Console admin' },
-  { value: 'appointments', label: 'Rendez-vous' },
-  { value: 'payments', label: 'Paiements' },
-  { value: 'messaging', label: 'Messagerie' },
-  { value: 'mobile', label: 'Application mobile' },
-  { value: 'auth', label: 'Authentification' },
-  { value: 'other', label: 'Autre' },
-]
-export const MODULE_LABELS: Record<string, string> = Object.fromEntries(MODULE_OPTIONS.map(m => [m.value, m.label]))
+export { MODULE_OPTIONS, MODULE_LABELS } from '@/lib/modules'
 
 export interface TicketComment {
   id: string

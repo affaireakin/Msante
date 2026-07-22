@@ -12,6 +12,10 @@ function json(body: unknown, status = 200) {
   })
 }
 
+function clientIp(req: Request): string | null {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+}
+
 const DOC_LABELS: Record<string, string> = {
   diploma: 'Diplôme universitaire',
   id_card: "Carte nationale d'identité",
@@ -63,6 +67,11 @@ Deno.serve(async (req) => {
         resource_id: practitioner.id,
         old_values: { verification_status: 'approved' },
         new_values: { verification_status: 'under_review', document_type },
+        module: 'practitioner',
+        target_user_id: user.id,
+        target_role: 'practitioner',
+        ip_address: clientIp(req),
+        user_agent: req.headers.get('user-agent'),
       })
     }
 

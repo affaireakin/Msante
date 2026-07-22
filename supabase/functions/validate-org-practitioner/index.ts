@@ -12,6 +12,10 @@ function json(body: unknown, status = 200) {
   })
 }
 
+function clientIp(req: Request): string | null {
+  return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
@@ -74,6 +78,11 @@ Deno.serve(async (req) => {
       resource_type: 'practitioner',
       resource_id: practitioner_id,
       new_values: { org_validated_at: new Date().toISOString() },
+      module: 'organization',
+      target_user_id: practitioner.user_id,
+      target_role: 'practitioner',
+      ip_address: clientIp(req),
+      user_agent: req.headers.get('user-agent'),
     })
 
     return json({ success: true })
