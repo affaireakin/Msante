@@ -36,7 +36,7 @@ export default function AuthRedirect() {
       if (!user) return
       supabase.from('users').select('role').eq('id', user.id).single().then(({ data }) => {
         if (!data) return
-        if (data.role === 'admin') router.replace('/admin/overview')
+        if (data.role === 'admin') router.replace('/admin/dashboard')
         else if (data.role === 'practitioner') router.replace('/practitioner')
         else if (data.role === 'patient') router.replace('/patient')
       })

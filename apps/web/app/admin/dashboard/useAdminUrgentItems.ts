@@ -13,6 +13,7 @@ export interface AdminUrgentItems {
   suspendedUsers: number
   recentNoShows: number
   openTickets: number
+  criticalTickets: number
 }
 
 async function fetchUrgentItems(): Promise<AdminUrgentItems> {
@@ -29,6 +30,7 @@ async function fetchUrgentItems(): Promise<AdminUrgentItems> {
     { count: suspendedUsers },
     { count: recentNoShows },
     { count: openTickets },
+    { count: criticalTickets },
   ] = await Promise.all([
     supabase.from('practitioners').select('*', { count: 'exact', head: true }).in('verification_status', ['pending', 'under_review']),
     supabase.from('organizations').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
@@ -40,6 +42,7 @@ async function fetchUrgentItems(): Promise<AdminUrgentItems> {
     supabase.from('users').select('*', { count: 'exact', head: true }).eq('account_status', 'suspended'),
     supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('status', 'no_show').gte('scheduled_at', sevenDaysAgo),
     supabase.from('tickets').select('*', { count: 'exact', head: true }).not('status', 'in', '("valide","deploye")'),
+    supabase.from('tickets').select('*', { count: 'exact', head: true }).not('status', 'in', '("valide","deploye")').eq('priority', 'urgent'),
   ])
 
   return {
@@ -52,6 +55,7 @@ async function fetchUrgentItems(): Promise<AdminUrgentItems> {
     suspendedUsers: suspendedUsers ?? 0,
     recentNoShows: recentNoShows ?? 0,
     openTickets: openTickets ?? 0,
+    criticalTickets: criticalTickets ?? 0,
   }
 }
 

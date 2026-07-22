@@ -48,7 +48,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname.startsWith('/practitioner')) {
     if (!profile || profile.role !== 'practitioner') {
-      if (profile?.role === 'admin') return NextResponse.redirect(new URL('/admin/overview', request.url))
+      if (profile?.role === 'admin') return NextResponse.redirect(new URL('/admin/dashboard', request.url))
       if (profile?.role === 'patient') return NextResponse.redirect(new URL('/patient', request.url))
       return NextResponse.redirect(new URL('/auth/login', request.url))
     }
@@ -56,7 +56,7 @@ export async function middleware(request: NextRequest) {
 
   if (pathname.startsWith('/patient')) {
     if (!profile || profile.role !== 'patient') {
-      if (profile?.role === 'admin') return NextResponse.redirect(new URL('/admin/overview', request.url))
+      if (profile?.role === 'admin') return NextResponse.redirect(new URL('/admin/dashboard', request.url))
       if (profile?.role === 'practitioner') return NextResponse.redirect(new URL('/practitioner', request.url))
       return NextResponse.redirect(new URL('/auth/login', request.url))
     }

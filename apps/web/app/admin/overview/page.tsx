@@ -2,7 +2,6 @@
 import { useAdminKpis } from './useAdminKpis'
 import { KpiCard } from './KpiCard'
 import { AdminCharts } from './AdminCharts'
-import { UrgentItemsPanel } from './UrgentItemsPanel'
 
 function UsersIcon() {
   return (
@@ -45,17 +44,11 @@ export default function OverviewPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-[#0b1c30]">Dashboard administrateur</h1>
-        <p className="text-sm text-[#6f787e] mt-1">Données en temps réel</p>
+        <h1 className="text-2xl font-bold text-[#0b1c30]">Overview</h1>
+        <p className="text-sm text-[#6f787e] mt-1">Statistiques globales et tendances de la plateforme</p>
       </div>
 
-      {/* Ce qui nécessite une intervention — toujours en premier */}
-      <UrgentItemsPanel />
-
-      {/* Vue d'ensemble — déplacée en bas, c'est un résumé, pas une file d'action */}
-      <div className="space-y-6 pt-4 border-t border-slate-200/60">
-        <h2 className="text-lg font-bold text-[#0b1c30]">Vue d&apos;ensemble</h2>
-
+      <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           <KpiCard
             title="Utilisateurs actifs (30j)"

@@ -54,7 +54,7 @@ function LoginForm() {
     }
 
     if (profile.role === 'admin') {
-      router.push('/admin/overview')
+      router.push('/admin/dashboard')
     } else if (profile.role === 'organization_admin') {
       router.push('/organization')
     } else if (profile.role === 'organization_member') {

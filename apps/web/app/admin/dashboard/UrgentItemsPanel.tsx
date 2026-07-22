@@ -20,6 +20,7 @@ export function UrgentItemsPanel() {
 
   const cards: UrgentCard[] = data ? [
     { key: 'suspended', label: 'Comptes suspendus', count: data.suspendedUsers, href: '/admin/users', icon: 'block', urgent: data.suspendedUsers > 0 },
+    { key: 'critical-tickets', label: 'Incidents critiques', count: data.criticalTickets, href: '/admin/tickets', icon: 'emergency_home', urgent: data.criticalTickets > 0 },
     { key: 'urgent-disputes', label: 'Litiges urgents', count: data.urgentDisputes, href: '/admin/tickets', icon: 'gavel', urgent: data.urgentDisputes > 0 },
     { key: 'appeals', label: 'Appels à traiter', count: data.pendingAppeals, href: '/admin/appeals', icon: 'campaign', urgent: data.pendingAppeals > 0 },
     { key: 'disputes', label: 'Litiges ouverts', count: data.openDisputes, href: '/admin/tickets', icon: 'balance', urgent: false },
@@ -49,7 +50,7 @@ export function UrgentItemsPanel() {
 
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-24 rounded-2xl bg-white/40 animate-pulse" />)}
+          {Array.from({ length: 10 }).map((_, i) => <div key={i} className="h-24 rounded-2xl bg-white/40 animate-pulse" />)}
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

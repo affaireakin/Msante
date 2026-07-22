@@ -9,9 +9,9 @@ type SubRole = 'admin' | 'moderator' | 'accountant' | 'readonly' | null
 
 // routes accessible par rôle (null = super-admin, accès complet)
 const ROLE_ACCESS: Record<string, string[]> = {
-  moderator:  ['/admin/overview', '/admin/users', '/admin/practitioners', '/admin/organizations', '/admin/messages', '/admin/disputes', '/admin/appeals', '/admin/analytics', '/admin/tickets'],
-  accountant: ['/admin/overview', '/admin/payments', '/admin/finance', '/admin/analytics', '/admin/tickets'],
-  readonly:   ['/admin/overview', '/admin/analytics', '/admin/tickets'],
+  moderator:  ['/admin/dashboard', '/admin/overview', '/admin/users', '/admin/practitioners', '/admin/organizations', '/admin/messages', '/admin/disputes', '/admin/appeals', '/admin/analytics', '/admin/tickets'],
+  accountant: ['/admin/dashboard', '/admin/overview', '/admin/payments', '/admin/finance', '/admin/analytics', '/admin/tickets'],
+  readonly:   ['/admin/dashboard', '/admin/overview', '/admin/analytics', '/admin/tickets'],
 }
 
 // Rôles admin granulaires (section 9) : un utilisateur rattaché à un
@@ -31,6 +31,20 @@ const PERMISSION_ROUTES: Record<string, string[]> = {
   'analytics.view':          ['/admin/analytics'],
   'audit.view':              ['/admin/audit'],
   'content.manage':          ['/admin/content'],
+}
+
+// Section 21.1 : le Dashboard (actions urgentes) est la page d'accueil de
+// l'admin — distincte d'Overview (statistiques/analytique), qui n'est plus
+// la landing page.
+const dashboardItem = {
+  href: '/admin/dashboard',
+  label: 'Dashboard',
+  roles: null as string[] | null,
+  icon: (
+    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+    </svg>
+  ),
 }
 
 const usersGroupIcon = (
@@ -191,7 +205,7 @@ const navItems = [
 
 function canAccess(subRole: SubRole, href: string, permissionRoutes: Set<string> | null): boolean {
   if (permissionRoutes) {
-    return href.startsWith('/admin/overview') || Array.from(permissionRoutes).some(r => href.startsWith(r))
+    return href.startsWith('/admin/dashboard') || href.startsWith('/admin/overview') || Array.from(permissionRoutes).some(r => href.startsWith(r))
   }
   if (!subRole || subRole === 'admin') return true
   const allowed = ROLE_ACCESS[subRole]
@@ -248,7 +262,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   React.useEffect(() => {
     if (!authChecked) return
     if (!canAccess(subRole, pathname, permissionRoutes)) {
-      const fallback = permissionRoutes ? (Array.from(permissionRoutes)[0] ?? '/admin/overview') : (ROLE_ACCESS[subRole ?? '']?.[0] ?? '/admin/overview')
+      const fallback = permissionRoutes ? (Array.from(permissionRoutes)[0] ?? '/admin/dashboard') : (ROLE_ACCESS[subRole ?? '']?.[0] ?? '/admin/dashboard')
       router.replace(fallback)
     }
   }, [authChecked, subRole, permissionRoutes, pathname, router])
@@ -316,6 +330,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {/* Dashboard — page d'accueil, toujours en premier */}
+          <Link
+            href={dashboardItem.href}
+            onClick={() => setSidebarOpen(false)}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+              pathname.startsWith(dashboardItem.href)
+                ? 'bg-sky-50 text-[#82d8ff] font-semibold border-r-4 border-[#82d8ff] -mr-3 pr-4'
+                : 'text-[#3f484d] hover:translate-x-1 hover:bg-slate-50/50'
+            }`}
+          >
+            <span className={pathname.startsWith(dashboardItem.href) ? 'text-[#82d8ff]' : 'text-[#6f787e]'}>
+              {dashboardItem.icon}
+            </span>
+            {dashboardItem.label}
+          </Link>
+
           {/* Groupe "Utilisateurs" — patients, praticiens, collaborateurs, organisations */}
           {(() => {
             const visibleChildren = usersGroup.children.filter(c => canAccess(subRole, c.href, permissionRoutes))
