@@ -6,8 +6,10 @@ import type { Ticket, TicketType, TicketPriority, TicketComment, TicketAttachmen
 
 const TICKET_SELECT = `
   id, title, description, type, priority, status, assignee_id, due_date, created_by, source, created_at, updated_at,
+  related_user_id, module,
   assignee:users!tickets_assignee_id_fkey(full_name),
-  creator:users!tickets_created_by_fkey(full_name)
+  creator:users!tickets_created_by_fkey(full_name),
+  related_user:users!tickets_related_user_id_fkey(full_name)
 `
 
 export function useTickets() {
@@ -40,7 +42,7 @@ export function useTickets() {
   })
 
   const createTicket = useMutation({
-    mutationFn: async (input: { title: string; description: string; type: TicketType; priority: TicketPriority; assignee_id: string | null; due_date: string | null }) => {
+    mutationFn: async (input: { title: string; description: string; type: TicketType; priority: TicketPriority; assignee_id: string | null; due_date: string | null; related_user_id: string | null; module: string | null }) => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Non connecté')
       const { data: ticket, error } = await supabase.from('tickets').insert({ ...input, created_by: user.id }).select('id').single()
@@ -51,6 +53,7 @@ export function useTickets() {
           body: 'Un nouveau ticket vous a été assigné.', channel: 'push', data: { ticket_id: ticket.id },
         })
       }
+      return ticket
     },
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['admin-tickets'] }),
   })

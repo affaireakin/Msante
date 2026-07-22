@@ -1,7 +1,7 @@
 'use client'
 import { useRef, useState } from 'react'
 import type { Ticket, TicketStatus, TicketPriority } from './types'
-import { STATUS_COLUMNS, TYPE_META, PRIORITY_META, FIELD_LABELS } from './types'
+import { STATUS_COLUMNS, TYPE_META, PRIORITY_META, FIELD_LABELS, MODULE_LABELS, isValidTicketTransition } from './types'
 import { useTicketDetail } from './useTickets'
 
 function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
@@ -27,8 +27,19 @@ export function TicketDetail({
   const { comments, attachments, history, addComment, uploadAttachment, openAttachment } = useTicketDetail(ticket.id)
   const [tab, setTab] = useState<'comments' | 'attachments' | 'history'>('comments')
   const [commentText, setCommentText] = useState('')
+  const [statusError, setStatusError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const type = TYPE_META[ticket.type]
+
+  const handleStatusChange = (newStatus: TicketStatus) => {
+    if (!isValidTicketTransition(ticket.status, newStatus)) {
+      const nextLabel = STATUS_COLUMNS[STATUS_COLUMNS.findIndex(s => s.key === ticket.status) + 1]?.label
+      setStatusError(`Étape ignorée : ce ticket doit d'abord passer par "${nextLabel}".`)
+      return
+    }
+    setStatusError(null)
+    onUpdate({ id: ticket.id, status: newStatus })
+  }
 
   const handleAddComment = () => {
     if (!commentText.trim()) return
@@ -60,16 +71,31 @@ export function TicketDetail({
           ) : (
             <p className="text-xs text-[#6f787e]">Créé par {ticket.creator?.full_name ?? '—'} le {fmtDateTime(ticket.created_at)}</p>
           )}
+          {(ticket.module || ticket.related_user) && (
+            <div className="flex flex-wrap gap-2">
+              {ticket.module && (
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
+                  Module : {MODULE_LABELS[ticket.module] ?? ticket.module}
+                </span>
+              )}
+              {ticket.related_user && (
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
+                  Utilisateur concerné : {ticket.related_user.full_name}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Edit fields */}
         <div className="p-5 space-y-3 border-b border-slate-100">
           <div>
             <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Statut</label>
-            <select value={ticket.status} onChange={e => onUpdate({ id: ticket.id, status: e.target.value as TicketStatus })}
+            <select value={ticket.status} onChange={e => handleStatusChange(e.target.value as TicketStatus)}
               className="w-full mt-1 rounded-xl border-2 border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]">
               {STATUS_COLUMNS.map(s => <option key={s.key} value={s.key}>{s.label}</option>)}
             </select>
+            {statusError && <p className="text-xs text-amber-700 mt-1">{statusError}</p>}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>

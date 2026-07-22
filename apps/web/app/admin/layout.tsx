@@ -462,7 +462,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         {/* Page content */}
-        <main className="flex-1 mt-16 p-8 overflow-y-auto">
+        {/* QA finding (section 22, responsive) : sans min-w-0, ce flex-1
+            n'accepte jamais de rétrécir sous la largeur de son contenu —
+            un contenu large (ex. le kanban des incidents) pousse tout le
+            layout au lieu de faire apparaître un scroll horizontal borné à
+            son propre conteneur. Racine du "colonnes qui sortent de l'écran". */}
+        <main className="flex-1 min-w-0 mt-16 p-8 overflow-y-auto">
           {children}
         </main>
       </div>

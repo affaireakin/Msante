@@ -15,9 +15,26 @@ export interface Ticket {
   source: string | null
   created_at: string
   updated_at: string
+  related_user_id: string | null
+  module: string | null
   assignee: { full_name: string } | null
   creator: { full_name: string } | null
+  related_user: { full_name: string } | null
 }
+
+export const MODULE_OPTIONS: { value: string; label: string }[] = [
+  { value: 'patient', label: 'Espace patient' },
+  { value: 'practitioner', label: 'Espace praticien' },
+  { value: 'organization', label: 'Espace organisation' },
+  { value: 'admin', label: 'Console admin' },
+  { value: 'appointments', label: 'Rendez-vous' },
+  { value: 'payments', label: 'Paiements' },
+  { value: 'messaging', label: 'Messagerie' },
+  { value: 'mobile', label: 'Application mobile' },
+  { value: 'auth', label: 'Authentification' },
+  { value: 'other', label: 'Autre' },
+]
+export const MODULE_LABELS: Record<string, string> = Object.fromEntries(MODULE_OPTIONS.map(m => [m.value, m.label]))
 
 export interface TicketComment {
   id: string
@@ -56,6 +73,17 @@ export const STATUS_COLUMNS: { key: TicketStatus; label: string }[] = [
   { key: 'valide', label: 'Validé' },
   { key: 'deploye', label: 'Déployé' },
 ]
+
+// Section 22 ("Respect des processus") : le parcours doit être suivi étape
+// par étape — on peut toujours reculer (rouvrir, revenir en arrière après un
+// test raté) mais jamais avancer de plus d'une étape à la fois. Backstop
+// identique côté base (trigger enforce_ticket_status_order) pour ne jamais
+// pouvoir être contourné, y compris via un appel API direct.
+export function isValidTicketTransition(from: TicketStatus, to: TicketStatus): boolean {
+  const fromRank = STATUS_COLUMNS.findIndex(s => s.key === from)
+  const toRank = STATUS_COLUMNS.findIndex(s => s.key === to)
+  return toRank <= fromRank + 1
+}
 
 export const TYPE_META: Record<TicketType, { label: string; icon: string; color: string; bg: string }> = {
   bug:       { label: 'Bug',       icon: 'bug_report',     color: '#ba1a1a', bg: '#ffdad6' },

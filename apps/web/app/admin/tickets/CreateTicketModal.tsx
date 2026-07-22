@@ -1,7 +1,26 @@
 'use client'
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 import type { TicketType, TicketPriority } from './types'
-import { TYPE_META, PRIORITY_META } from './types'
+import { TYPE_META, PRIORITY_META, MODULE_OPTIONS } from './types'
+
+interface UserSearchResult { id: string; full_name: string; email: string | null }
+
+function useUserSearch(query: string) {
+  return useQuery<UserSearchResult[]>({
+    queryKey: ['ticket-related-user-search', query],
+    enabled: query.trim().length >= 2,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('users').select('id, full_name, email')
+        .or(`full_name.ilike.%${query.trim()}%,email.ilike.%${query.trim()}%`)
+        .limit(5)
+      if (error) throw error
+      return data ?? []
+    },
+  })
+}
 
 function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
   return <span className="material-symbols-outlined" style={style}>{name}</span>
@@ -12,7 +31,7 @@ export function CreateTicketModal({
 }: {
   adminUsers: { id: string; full_name: string }[]
   onClose: () => void
-  onCreate: (input: { title: string; description: string; type: TicketType; priority: TicketPriority; assignee_id: string | null; due_date: string | null }) => void
+  onCreate: (input: { title: string; description: string; type: TicketType; priority: TicketPriority; assignee_id: string | null; due_date: string | null; related_user_id: string | null; module: string | null }) => void
   creating: boolean
 }) {
   const [title, setTitle] = useState('')
@@ -21,7 +40,12 @@ export function CreateTicketModal({
   const [priority, setPriority] = useState<TicketPriority>('medium')
   const [assigneeId, setAssigneeId] = useState('')
   const [dueDate, setDueDate] = useState('')
+  const [module, setModule] = useState('')
+  const [userQuery, setUserQuery] = useState('')
+  const [relatedUser, setRelatedUser] = useState<UserSearchResult | null>(null)
   const [error, setError] = useState('')
+
+  const userResults = useUserSearch(userQuery)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -32,6 +56,8 @@ export function CreateTicketModal({
       type, priority,
       assignee_id: assigneeId || null,
       due_date: dueDate || null,
+      related_user_id: relatedUser?.id ?? null,
+      module: module || null,
     })
   }
 
@@ -88,6 +114,41 @@ export function CreateTicketModal({
                 </button>
               ))}
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-[#0b1c30] mb-1.5">Module concerné</label>
+            <select value={module} onChange={e => setModule(e.target.value)}
+              className="w-full rounded-xl border-2 border-slate-200 px-3 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]">
+              <option value="">Non précisé</option>
+              {MODULE_OPTIONS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-[#0b1c30] mb-1.5">Utilisateur concerné</label>
+            {relatedUser ? (
+              <div className="flex items-center justify-between gap-2 rounded-xl border-2 border-[#82d8ff] bg-[#e5eeff] px-3 py-2">
+                <span className="text-sm text-[#0b1c30] font-medium">{relatedUser.full_name} {relatedUser.email ? `(${relatedUser.email})` : ''}</span>
+                <button type="button" onClick={() => { setRelatedUser(null); setUserQuery('') }} className="text-[#6f787e] hover:text-[#0b1c30]">
+                  <Icon name="close" style={{ fontSize: '16px' }} />
+                </button>
+              </div>
+            ) : (
+              <div className="relative">
+                <input value={userQuery} onChange={e => setUserQuery(e.target.value)}
+                  placeholder="Rechercher par nom ou email..."
+                  className="w-full rounded-xl border-2 border-slate-200 px-4 py-2.5 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]" />
+                {userQuery.trim().length >= 2 && (userResults.data?.length ?? 0) > 0 && (
+                  <div className="absolute z-10 mt-1 w-full bg-white rounded-xl border border-slate-200 shadow-lg overflow-hidden">
+                    {userResults.data!.map(u => (
+                      <button key={u.id} type="button" onClick={() => { setRelatedUser(u); setUserQuery('') }}
+                        className="w-full text-left px-4 py-2 text-sm text-[#0b1c30] hover:bg-slate-50 transition-colors">
+                        {u.full_name} {u.email ? <span className="text-[#6f787e]">({u.email})</span> : null}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>

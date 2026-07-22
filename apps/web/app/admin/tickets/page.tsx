@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useTickets } from './useTickets'
 import { useDisputesBoard } from './useDisputesBoard'
-import { STATUS_COLUMNS, TYPE_META, DISPUTE_STATUS_TO_KANBAN, KANBAN_TO_DISPUTE_STATUS } from './types'
+import { STATUS_COLUMNS, TYPE_META, DISPUTE_STATUS_TO_KANBAN, KANBAN_TO_DISPUTE_STATUS, isValidTicketTransition } from './types'
 import type { Ticket, TicketStatus, TicketType, Dispute } from './types'
 import { KanbanColumn } from './KanbanColumn'
 import type { IncidentCardData } from './TicketCard'
@@ -22,6 +22,7 @@ export default function TicketsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [typeFilter, setTypeFilter] = useState<TicketType | 'all'>('all')
   const [assigneeFilter, setAssigneeFilter] = useState<string>('all')
+  const [transitionError, setTransitionError] = useState<string | null>(null)
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }))
 
@@ -67,7 +68,12 @@ export default function TicketsPage() {
     const newStatus = over.id as TicketStatus
     const ticket = (tickets.data ?? []).find(t => t.id === active.id)
     if (ticket) {
-      if (ticket.status !== newStatus) updateTicket.mutate({ id: ticket.id, status: newStatus })
+      if (ticket.status === newStatus) return
+      if (!isValidTicketTransition(ticket.status, newStatus)) {
+        setTransitionError(`Étape ignorée : un ticket "${STATUS_COLUMNS.find(s => s.key === ticket.status)?.label}" doit d'abord passer par "${STATUS_COLUMNS[STATUS_COLUMNS.findIndex(s => s.key === ticket.status) + 1]?.label}".`)
+        return
+      }
+      updateTicket.mutate({ id: ticket.id, status: newStatus })
       return
     }
     const dispute = (disputes.data ?? []).find(d => d.id === active.id)
@@ -106,6 +112,15 @@ export default function TicketsPage() {
         </select>
       </div>
 
+      {transitionError && (
+        <div className="flex items-center justify-between gap-3 rounded-xl px-4 py-3 bg-amber-50 border border-amber-200 text-sm text-amber-800">
+          <span>{transitionError}</span>
+          <button onClick={() => setTransitionError(null)} className="text-amber-600 hover:text-amber-900 flex-shrink-0">
+            <Icon name="close" style={{ fontSize: '16px' }} />
+          </button>
+        </div>
+      )}
+
       {(tickets.isLoading || disputes.isLoading) ? (
         <div className="flex gap-4 overflow-x-auto pb-2">
           {STATUS_COLUMNS.map(s => <div key={s.key} className="w-72 h-64 rounded-2xl bg-white/40 animate-pulse flex-shrink-0" />)}
@@ -125,7 +140,9 @@ export default function TicketsPage() {
           adminUsers={adminUsers.data ?? []}
           onClose={() => setShowCreate(false)}
           creating={createTicket.isPending}
-          onCreate={input => createTicket.mutate(input, { onSuccess: () => setShowCreate(false) })}
+          onCreate={input => createTicket.mutate(input, {
+            onSuccess: (ticket) => { setShowCreate(false); if (ticket) setSelectedId(ticket.id) },
+          })}
         />
       )}
 

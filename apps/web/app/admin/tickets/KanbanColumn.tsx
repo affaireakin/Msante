@@ -14,7 +14,7 @@ export function KanbanColumn({
   const { setNodeRef, isOver } = useDroppable({ id: status })
 
   return (
-    <div className="flex flex-col w-72 flex-shrink-0">
+    <div className="flex flex-col w-64 sm:w-72 flex-shrink-0">
       <div className="flex items-center justify-between px-1 mb-2">
         <p className="text-sm font-bold text-[#0b1c30]">{label}</p>
         <span className="text-xs font-semibold text-[#6f787e] bg-slate-100 px-2 py-0.5 rounded-full">{cards.length}</span>
