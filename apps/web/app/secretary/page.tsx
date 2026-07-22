@@ -10,6 +10,7 @@ type Filter = 'today' | 'upcoming' | 'past'
 
 interface Appointment {
   id: string
+  practitioner_id: string
   scheduled_at: string
   duration_min: number
   status: AptStatus
@@ -76,7 +77,7 @@ function useAppointments(filter: Filter) {
       let q = supabase
         .from('appointments')
         .select(`
-          id, scheduled_at, duration_min, status, type,
+          id, practitioner_id, scheduled_at, duration_min, status, type,
           patient:patient_id(full_name),
           practitioner:practitioner_id(speciality, users!practitioners_user_id_fkey(full_name))
         `)
@@ -99,7 +100,26 @@ function useAppointments(filter: Filter) {
   })
 }
 
-function AppointmentRow({ apt }: { apt: Appointment }) {
+function useManageablePractitionerIds() {
+  return useQuery<Set<string>>({
+    queryKey: ['secretary-manageable-practitioners'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return new Set<string>()
+      const { data } = await supabase
+        .from('practitioner_secretaries')
+        .select('practitioner_id, practitioner_secretary_permissions(permission_key)')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+      const ids = (data ?? [])
+        .filter(row => (row.practitioner_secretary_permissions as { permission_key: string }[]).some(p => p.permission_key === 'appointments.manage'))
+        .map(row => row.practitioner_id)
+      return new Set(ids)
+    },
+  })
+}
+
+function AppointmentRow({ apt, canManage }: { apt: Appointment; canManage: boolean }) {
   const qc = useQueryClient()
   const [rescheduling, setRescheduling] = useState(false)
   const [newTime, setNewTime] = useState(() => apt.scheduled_at.slice(0, 16))
@@ -155,7 +175,7 @@ function AppointmentRow({ apt }: { apt: Appointment }) {
             className="px-3 py-2 rounded-lg bg-[#82d8ff] text-[#0b1c30] text-sm font-bold">Valider</button>
           <button onClick={() => setRescheduling(false)} className="px-3 py-2 rounded-lg text-sm text-[#6f787e]">Annuler</button>
         </div>
-      ) : (apt.status === 'pending' || apt.status === 'confirmed') && (
+      ) : canManage && (apt.status === 'pending' || apt.status === 'confirmed') && (
         <div className="flex items-center gap-2 pt-1 border-t border-slate-100 mt-1 pt-3">
           {apt.status === 'pending' && (
             <button onClick={() => updateStatus.mutate('confirmed')} disabled={updateStatus.isPending}
@@ -180,6 +200,7 @@ export default function SecretaryPage() {
   const [accessState, setAccessState] = useState<AccessState>('active')
   const ctx = useContext_()
   const { data: appointments, isLoading, error } = useAppointments(filter)
+  const { data: manageableIds = new Set<string>() } = useManageablePractitionerIds()
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -271,7 +292,7 @@ export default function SecretaryPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {(appointments ?? []).map(apt => <AppointmentRow key={apt.id} apt={apt} />)}
+            {(appointments ?? []).map(apt => <AppointmentRow key={apt.id} apt={apt} canManage={manageableIds.has(apt.practitioner_id)} />)}
           </div>
         )}
 

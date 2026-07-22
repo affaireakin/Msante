@@ -3,6 +3,14 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
+const PRACTITIONER_REASONS = [
+  'Absence non justifiée du patient (no-show)',
+  'Comportement inapproprié du patient',
+  'Non-paiement',
+  'Fausses informations fournies',
+  'Autre',
+]
+
 const STATUS_META: Record<string, { label: string; color: string; icon: string }> = {
   open:         { label: 'Ouvert',    color: 'bg-amber-100 text-amber-700',      icon: 'pending' },
   under_review: { label: 'En revue',  color: 'bg-sky-100 text-sky-700',          icon: 'manage_search' },
@@ -37,6 +45,11 @@ export default function PractitionerDisputesPage() {
   const qc = useQueryClient()
   const [selected, setSelected] = useState<Dispute | null>(null)
   const [comment, setComment] = useState('')
+  const [showNew, setShowNew] = useState(false)
+  const [newPatientId, setNewPatientId] = useState('')
+  const [newReason, setNewReason] = useState(PRACTITIONER_REASONS[0])
+  const [newDescription, setNewDescription] = useState('')
+  const [newError, setNewError] = useState<string | null>(null)
 
   const { data: myId } = useQuery<string>({
     queryKey: ['my-id'],
@@ -56,13 +69,16 @@ export default function PractitionerDisputesPage() {
   })
 
   const { data: disputes = [], isLoading } = useQuery<Dispute[]>({
-    queryKey: ['practitioner-disputes', practId],
-    enabled: !!practId,
+    // QA finding (section 23) : filtrait par practId (practitioners.id) alors
+    // que disputes.practitioner_id référence users.id (myId) — la liste des
+    // litiges d'un praticien était donc systématiquement vide.
+    queryKey: ['practitioner-disputes', myId],
+    enabled: !!myId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('disputes')
         .select('id, case_number, reason, description, status, priority, created_at, patient:patient_id(full_name)')
-        .eq('practitioner_id', practId!)
+        .eq('practitioner_id', myId!)
         .order('created_at', { ascending: false })
       if (error) throw error
       return (data ?? []) as unknown as Dispute[]
@@ -80,6 +96,42 @@ export default function PractitionerDisputesPage() {
         .order('created_at', { ascending: true })
       return (data ?? []) as DisputeEvent[]
     },
+  })
+
+  const { data: myPatients = [] } = useQuery<{ id: string; full_name: string }[]>({
+    queryKey: ['practitioner-dispute-patients', practId],
+    enabled: !!practId && showNew,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('patient_id, users!patient_id(id, full_name)')
+        .eq('practitioner_id', practId!)
+      if (error) throw error
+      const map = new Map<string, string>()
+      for (const row of (data ?? []) as unknown as { patient_id: string; users: { id: string; full_name: string } | null }[]) {
+        if (row.users) map.set(row.users.id, row.users.full_name)
+      }
+      return Array.from(map.entries()).map(([id, full_name]) => ({ id, full_name })).sort((a, b) => a.full_name.localeCompare(b.full_name))
+    },
+  })
+
+  const createDisputeMutation = useMutation({
+    mutationFn: async () => {
+      if (!myId || !newPatientId) return
+      const { error } = await supabase.from('disputes').insert({
+        patient_id: newPatientId,
+        practitioner_id: myId,
+        reason: newReason,
+        description: newDescription.trim() || null,
+        case_number: '',
+      })
+      if (error) throw error
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['practitioner-disputes'] })
+      setShowNew(false); setNewPatientId(''); setNewReason(PRACTITIONER_REASONS[0]); setNewDescription(''); setNewError(null)
+    },
+    onError: (e: Error) => setNewError(e.message),
   })
 
   const commentMutation = useMutation({
@@ -113,18 +165,66 @@ export default function PractitionerDisputesPage() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-black text-[#0b1c30]">Litiges</h1>
           <p className="text-sm text-[#6f787e] mt-1">Réclamations impliquant votre activité</p>
         </div>
-        {open > 0 && (
-          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
-            <span className="material-symbols-outlined text-amber-600" style={{ fontSize: '18px' }}>warning</span>
-            <span className="text-sm font-semibold text-amber-700">{open} en cours</span>
-          </div>
-        )}
+        <div className="flex items-center gap-3">
+          {open > 0 && (
+            <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+              <span className="material-symbols-outlined text-amber-600" style={{ fontSize: '18px' }}>warning</span>
+              <span className="text-sm font-semibold text-amber-700">{open} en cours</span>
+            </div>
+          )}
+          <button onClick={() => setShowNew(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg transition-all">
+            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>add</span>
+            Ouvrir un litige
+          </button>
+        </div>
       </div>
+
+      {showNew && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowNew(false)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md space-y-4 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-[#0b1c30]">Ouvrir un litige</h3>
+            <div>
+              <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Patient concerné</label>
+              <select value={newPatientId} onChange={e => setNewPatientId(e.target.value)}
+                className="w-full mt-1 rounded-xl border-2 border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]">
+                <option value="">Sélectionner un patient</option>
+                {myPatients.map(p => <option key={p.id} value={p.id}>{p.full_name}</option>)}
+              </select>
+              {myPatients.length === 0 && (
+                <p className="text-xs text-[#6f787e] mt-1">Aucun patient éligible — un rendez-vous commun est requis.</p>
+              )}
+            </div>
+            <div>
+              <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Motif</label>
+              <select value={newReason} onChange={e => setNewReason(e.target.value)}
+                className="w-full mt-1 rounded-xl border-2 border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]">
+                {PRACTITIONER_REASONS.map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Description</label>
+              <textarea value={newDescription} onChange={e => setNewDescription(e.target.value)} rows={3}
+                className="w-full mt-1 rounded-xl border-2 border-slate-200 px-3 py-2 text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] resize-none" />
+            </div>
+            {newError && <p className="text-sm text-[#ba1a1a] font-semibold">{newError}</p>}
+            <div className="flex gap-3 pt-1">
+              <button onClick={() => setShowNew(false)} className="flex-1 border-2 border-slate-200 text-[#0b1c30] rounded-xl py-2.5 text-sm font-bold hover:bg-slate-50">
+                Annuler
+              </button>
+              <button onClick={() => createDisputeMutation.mutate()} disabled={!newPatientId || createDisputeMutation.isPending}
+                className="flex-1 bg-[#82d8ff] text-[#0b1c30] rounded-xl py-2.5 text-sm font-bold disabled:opacity-50">
+                {createDisputeMutation.isPending ? 'Création...' : 'Créer le litige'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Liste */}

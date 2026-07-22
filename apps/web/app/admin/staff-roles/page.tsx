@@ -1,6 +1,63 @@
 'use client'
 import { useMemo, useState, useEffect } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 import { useStaffRoles, useRolePermissionIds } from './useStaffRoles'
+
+interface SecretaryPermission { id: string; key: string; label: string; description: string | null; delegatable: boolean }
+
+// Section 23 : plafond fixé par l'administrateur général sur ce qu'un
+// praticien peut déléguer à ses secrétaires — un praticien ne peut jamais
+// accorder une permission désactivée ici (contrainte également imposée
+// côté RLS, cette bascule n'est pas la seule ligne de défense).
+function SecretaryDelegationSection() {
+  const qc = useQueryClient()
+  const { data: perms, isLoading } = useQuery<SecretaryPermission[]>({
+    queryKey: ['secretary-permissions-catalog'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('secretary_permissions_catalog').select('*').order('key')
+      if (error) throw error
+      return data ?? []
+    },
+  })
+
+  const toggle = useMutation({
+    mutationFn: async ({ key, delegatable }: { key: string; delegatable: boolean }) => {
+      const { error } = await supabase.from('secretary_permissions_catalog').update({ delegatable }).eq('key', key)
+      if (error) throw error
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['secretary-permissions-catalog'] }),
+  })
+
+  return (
+    <div className="rounded-2xl p-6 space-y-4" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
+      <div>
+        <h2 className="text-lg font-bold text-[#0b1c30]">Délégation aux secrétaires (praticiens)</h2>
+        <p className="text-sm text-[#6f787e] mt-0.5">
+          Permissions que les praticiens indépendants peuvent accorder à leurs secrétaires. Désactiver une permission ici
+          l&apos;empêche d&apos;être déléguée, même si un praticien l&apos;avait déjà accordée.
+        </p>
+      </div>
+      {isLoading ? (
+        <div className="space-y-2">{[1, 2].map(i => <div key={i} className="h-14 rounded-xl bg-white/40 animate-pulse" />)}</div>
+      ) : (
+        <div className="space-y-2">
+          {(perms ?? []).map(p => (
+            <label key={p.key} className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-slate-200 cursor-pointer">
+              <div>
+                <p className="text-sm font-semibold text-[#0b1c30]">{p.label}</p>
+                {p.description && <p className="text-xs text-[#6f787e] mt-0.5">{p.description}</p>}
+              </div>
+              <input type="checkbox" checked={p.delegatable} disabled={toggle.isPending}
+                onChange={e => toggle.mutate({ key: p.key, delegatable: e.target.checked })}
+                className="w-5 h-5 accent-[#82d8ff] flex-shrink-0" />
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
   return <span className="material-symbols-outlined" style={style}>{name}</span>
@@ -177,6 +234,8 @@ export default function StaffRolesPage() {
           </div>
         )}
       </div>
+
+      <SecretaryDelegationSection />
 
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowCreate(false)}>

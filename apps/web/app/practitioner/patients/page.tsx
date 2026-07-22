@@ -1098,7 +1098,8 @@ export default function PatientsPage() {
                 className="flex-1 border border-slate-200 text-[#6f787e] rounded-xl py-2.5 text-sm font-semibold hover:bg-slate-50">
                 Annuler
               </button>
-              <button onClick={() => blockMutation.mutate()} disabled={blockMutation.isPending}
+              <button onClick={() => blockMutation.mutate()}
+                disabled={blockMutation.isPending || (blockReason === 'Autre' && !blockCustom.trim())}
                 className="flex-1 bg-[#ba1a1a] text-white rounded-xl py-2.5 text-sm font-semibold disabled:opacity-50">
                 {blockMutation.isPending ? 'Blocage...' : 'Confirmer le blocage'}
               </button>

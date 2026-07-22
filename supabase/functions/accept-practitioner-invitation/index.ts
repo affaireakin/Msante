@@ -53,11 +53,22 @@ Deno.serve(async (req) => {
     if (invitation.account_type === 'secretary' && invitation.invited_by_practitioner_id) {
       await supabase.from('users').update({ role: 'secretary', organization_id: null }).eq('id', user.id)
 
-      await supabase.from('practitioner_secretaries').upsert({
+      const { data: secretaryRow } = await supabase.from('practitioner_secretaries').upsert({
         practitioner_id: invitation.invited_by_practitioner_id,
         user_id: user.id,
         status: 'pending',
-      }, { onConflict: 'practitioner_id,user_id' })
+      }, { onConflict: 'practitioner_id,user_id' }).select('id').single()
+
+      // Section 23 : accès par défaut identique au comportement historique
+      // (voir + gérer l'agenda) — le praticien pourra ensuite restreindre ces
+      // permissions depuis /practitioner/secretary.
+      if (secretaryRow) {
+        const { data: catalog } = await supabase.from('secretary_permissions_catalog').select('key').eq('delegatable', true)
+        if (catalog && catalog.length > 0) {
+          await supabase.from('practitioner_secretary_permissions')
+            .upsert(catalog.map(c => ({ secretary_id: secretaryRow.id, permission_key: c.key })), { onConflict: 'secretary_id,permission_key' })
+        }
+      }
 
       await supabase.from('practitioner_invitations').update({ status: 'used' }).eq('id', invitation.id)
 

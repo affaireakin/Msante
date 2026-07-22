@@ -14,6 +14,30 @@ interface Secretary {
   user: { full_name: string; email: string | null } | null
 }
 
+interface CatalogPermission { key: string; label: string; description: string | null }
+
+function useDelegatablePermissions() {
+  return useQuery<CatalogPermission[]>({
+    queryKey: ['secretary-delegatable-permissions'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('secretary_permissions_catalog').select('key, label, description').eq('delegatable', true).order('key')
+      if (error) throw error
+      return data ?? []
+    },
+  })
+}
+
+function useSecretaryGrants(secretaryId: string) {
+  return useQuery<string[]>({
+    queryKey: ['secretary-grants', secretaryId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('practitioner_secretary_permissions').select('permission_key').eq('secretary_id', secretaryId)
+      if (error) throw error
+      return (data ?? []).map(r => r.permission_key)
+    },
+  })
+}
+
 function useMyPractitionerId() {
   return useQuery<string | null>({
     queryKey: ['my-practitioner-id'],
@@ -41,6 +65,41 @@ function useSecretaries(practitionerId: string | null) {
       return (data ?? []) as unknown as Secretary[]
     },
   })
+}
+
+function SecretaryPermissionsEditor({ secretaryId }: { secretaryId: string }) {
+  const qc = useQueryClient()
+  const { data: catalog = [], isLoading: loadingCatalog } = useDelegatablePermissions()
+  const { data: granted = [], isLoading: loadingGrants } = useSecretaryGrants(secretaryId)
+
+  const toggle = useMutation({
+    mutationFn: async ({ key, grant }: { key: string; grant: boolean }) => {
+      if (grant) {
+        const { error } = await supabase.from('practitioner_secretary_permissions').insert({ secretary_id: secretaryId, permission_key: key })
+        if (error) throw error
+      } else {
+        const { error } = await supabase.from('practitioner_secretary_permissions').delete().eq('secretary_id', secretaryId).eq('permission_key', key)
+        if (error) throw error
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['secretary-grants', secretaryId] }),
+  })
+
+  if (loadingCatalog || loadingGrants) return <div className="h-16 rounded-xl bg-white/40 animate-pulse" />
+
+  return (
+    <div className="space-y-2 pt-3 mt-3 border-t border-slate-100">
+      {catalog.map(p => (
+        <label key={p.key} className="flex items-center justify-between gap-3 cursor-pointer">
+          <span className="text-sm text-[#0b1c30]">{p.label}</span>
+          <input type="checkbox" checked={granted.includes(p.key)} disabled={toggle.isPending}
+            onChange={e => toggle.mutate({ key: p.key, grant: e.target.checked })}
+            className="w-4 h-4 accent-[#82d8ff] flex-shrink-0" />
+        </label>
+      ))}
+      {catalog.length === 0 && <p className="text-xs text-[#6f787e]">Aucune permission délégable pour le moment.</p>}
+    </div>
+  )
 }
 
 function InviteModal({ onClose }: { onClose: () => void }) {
@@ -85,7 +144,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
         ) : (
           <>
             <h3 className="text-lg font-bold text-[#0b1c30] mb-1">Inviter un(e) secrétaire</h3>
-            <p className="text-sm text-[#6f787e] mb-5">Il/elle pourra consulter et gérer vos rendez-vous (confirmer, reporter, annuler).</p>
+            <p className="text-sm text-[#6f787e] mb-5">Accès complet à l&apos;agenda par défaut — vous pourrez restreindre ses permissions une fois l&apos;invitation acceptée.</p>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <input value={firstname} onChange={e => setFirstname(e.target.value)} placeholder="Prénom"
@@ -120,6 +179,7 @@ function InviteModal({ onClose }: { onClose: () => void }) {
 
 export default function PractitionerSecretaryPage() {
   const [inviting, setInviting] = useState(false)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
   const { data: practitionerId } = useMyPractitionerId()
   const { data: secretaries, isLoading } = useSecretaries(practitionerId ?? null)
   const queryClient = useQueryClient()
@@ -167,26 +227,32 @@ export default function PractitionerSecretaryPage() {
       ) : (
         <div className="space-y-3">
           {(secretaries ?? []).map(s => (
-            <div key={s.id} className="rounded-2xl p-5 flex items-center justify-between" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#e5eeff] flex items-center justify-center flex-shrink-0">
-                  <Icon name="support_agent" style={{ fontSize: '20px', color: '#005e7a' }} />
+            <div key={s.id} className="rounded-2xl p-5" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#e5eeff] flex items-center justify-center flex-shrink-0">
+                    <Icon name="support_agent" style={{ fontSize: '20px', color: '#005e7a' }} />
+                  </div>
+                  <div>
+                    <p className="font-bold text-[#0b1c30]">{s.user?.full_name ?? '—'}</p>
+                    <p className="text-xs text-[#6f787e]">{s.user?.email ?? ''}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-bold text-[#0b1c30]">{s.user?.full_name ?? '—'}</p>
-                  <p className="text-xs text-[#6f787e]">{s.user?.email ?? ''}</p>
+                <div className="flex items-center gap-3">
+                  <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${s.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                    {s.status === 'active' ? 'Actif' : 'Révoqué'}
+                  </span>
+                  <button onClick={() => setExpandedId(expandedId === s.id ? null : s.id)} className="text-xs font-semibold text-[#005e7a] hover:underline">
+                    Permissions
+                  </button>
+                  {s.status === 'active' ? (
+                    <button onClick={() => revoke.mutate(s.id)} className="text-xs font-semibold text-red-600 hover:underline">Révoquer</button>
+                  ) : (
+                    <button onClick={() => reactivate.mutate(s.id)} className="text-xs font-semibold text-[#005e7a] hover:underline">Réactiver</button>
+                  )}
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${s.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                  {s.status === 'active' ? 'Actif' : 'Révoqué'}
-                </span>
-                {s.status === 'active' ? (
-                  <button onClick={() => revoke.mutate(s.id)} className="text-xs font-semibold text-red-600 hover:underline">Révoquer</button>
-                ) : (
-                  <button onClick={() => reactivate.mutate(s.id)} className="text-xs font-semibold text-[#005e7a] hover:underline">Réactiver</button>
-                )}
-              </div>
+              {expandedId === s.id && <SecretaryPermissionsEditor secretaryId={s.id} />}
             </div>
           ))}
         </div>
