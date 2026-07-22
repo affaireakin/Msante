@@ -113,33 +113,46 @@ Deno.serve(async (req) => {
       if (role?.name === 'Secrétaire') finalRole = 'secretary'
     }
 
-    // Attach the account to the organization.
-    await supabase.from('users').update({
+    // Attach the account to the organization. These writes used to be
+    // unchecked: a partial failure (e.g. a stale duplicate practitioners row)
+    // still returned { success: true } below, leaving users.organization_id
+    // set while practitioners.organization_id stayed NULL — the practitioner
+    // then looked "attached" from users but was invisible in every roster
+    // that filters on practitioners.organization_id (org/admin practitioner
+    // lists). Any failure here now aborts with a 500 instead of a silent
+    // half-attached state.
+    const { error: userUpdateError } = await supabase.from('users').update({
       role: finalRole,
       organization_id: invitation.organization_id,
     }).eq('id', user.id)
+    if (userUpdateError) return json({ error: userUpdateError.message }, 500)
 
     if (isPractitioner) {
       // Create the practitioner row (speciality left blank — filled during the
       // standard practitioner onboarding that follows, same as any other practitioner).
-      const { data: existing } = await supabase.from('practitioners').select('id').eq('user_id', user.id).maybeSingle()
+      const { data: existing, error: existingError } = await supabase.from('practitioners').select('id').eq('user_id', user.id).maybeSingle()
+      if (existingError) return json({ error: existingError.message }, 500)
+
       if (!existing) {
-        await supabase.from('practitioners').insert({
+        const { error: insertError } = await supabase.from('practitioners').insert({
           user_id: user.id,
           speciality: '',
           organization_id: invitation.organization_id,
           verification_status: 'pending',
         })
+        if (insertError) return json({ error: insertError.message }, 500)
       } else {
-        await supabase.from('practitioners').update({ organization_id: invitation.organization_id }).eq('id', existing.id)
+        const { error: updateError } = await supabase.from('practitioners').update({ organization_id: invitation.organization_id }).eq('id', existing.id)
+        if (updateError) return json({ error: updateError.message }, 500)
       }
     } else if (invitation.role_id) {
       // Collaborator with a role pre-assigned at invite time.
-      await supabase.from('user_roles').insert({
+      const { error: roleInsertError } = await supabase.from('user_roles').insert({
         user_id: user.id,
         role_id: invitation.role_id,
         organization_id: invitation.organization_id,
       })
+      if (roleInsertError) return json({ error: roleInsertError.message }, 500)
     }
 
     await supabase.from('practitioner_invitations').update({ status: 'used' }).eq('id', invitation.id)

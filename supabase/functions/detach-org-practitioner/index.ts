@@ -62,6 +62,13 @@ Deno.serve(async (req) => {
       org_validated_by: null,
     }).eq('id', practitioner_id)
 
+    // organization_id is duplicated on users AND practitioners with nothing
+    // keeping them in sync — clearing only the practitioners row left
+    // users.organization_id pointing at the former org (the mirror image of
+    // the "Astou Sall" bug, where the two columns disagree in the other
+    // direction).
+    await supabase.from('users').update({ organization_id: null }).eq('id', practitioner.user_id)
+
     await supabase.from('notifications').insert({
       user_id: practitioner.user_id,
       type: 'practitioner_org_detached',

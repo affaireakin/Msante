@@ -7,7 +7,7 @@ function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
   return <span className="material-symbols-outlined" style={style}>{name}</span>
 }
 
-interface Permission { id: string; code: string; label: string; category: string }
+interface Permission { id: string; code: string; label: string; category: string; delegatable: boolean }
 interface OrgRole { id: string; name: string; description: string | null; is_system: boolean }
 
 interface RolesData {
@@ -30,7 +30,7 @@ function useRolesData() {
 
       const [{ data: roles }, { data: permissions }, { data: canManage }] = await Promise.all([
         supabase.from('org_roles').select('id, name, description, is_system').eq('organization_id', organizationId).order('is_system', { ascending: false }),
-        supabase.from('permissions').select('id, code, label, category').order('category'),
+        supabase.from('permissions').select('id, code, label, category, delegatable').order('category'),
         supabase.rpc('user_has_permission', { perm_code: 'roles.manage' }),
       ])
 
@@ -122,18 +122,25 @@ export default function OrganizationRolesPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {perms.map(p => {
                         const granted = data?.grantedByRole[role.id]?.has(p.id) ?? false
+                        // Un admin d'organisation peut toujours révoquer une permission déjà
+                        // accordée, mais ne peut plus en accorder une que l'admin général a
+                        // retirée du plafond délégable (voir role_permissions_write, migration
+                        // 20260727000002) — le checkbox reflète ce plafond au lieu d'échouer
+                        // silencieusement en base au moment du clic.
+                        const locked = !granted && !p.delegatable
                         return (
-                          <label key={p.id} className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm cursor-pointer transition-colors ${
+                          <label key={p.id} title={locked ? "Permission non délégable — plafond fixé par l'administrateur général" : undefined} className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors ${
                             granted ? 'bg-[#e5eeff] border-[#82d8ff] text-[#0b1c30]' : 'bg-white/50 border-slate-200 text-[#6f787e]'
-                          } ${!data?.canManage ? 'cursor-not-allowed opacity-70' : ''}`}>
+                          } ${!data?.canManage || locked ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}>
                             <input
                               type="checkbox"
                               checked={granted}
-                              disabled={!data?.canManage || toggle.isPending}
+                              disabled={!data?.canManage || toggle.isPending || locked}
                               onChange={() => toggle.mutate({ roleId: role.id, permissionId: p.id, grant: !granted })}
                               className="accent-[#82d8ff]"
                             />
                             {p.label}
+                            {locked && <Icon name="lock" style={{ fontSize: '14px', color: '#bec8ce' }} />}
                           </label>
                         )
                       })}

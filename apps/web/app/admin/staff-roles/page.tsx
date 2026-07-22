@@ -59,6 +59,68 @@ function SecretaryDelegationSection() {
   )
 }
 
+interface OrgPermission { id: string; code: string; label: string; category: string; delegatable: boolean }
+
+// Section 24 : plafond fixé par l'administrateur général sur ce qu'un admin
+// d'organisation peut déléguer à un rôle de son organisation (ex-secteur.
+// users.manage / roles.manage pouvaient jusqu'ici être accordés à n'importe
+// quel rôle personnalisé sans aucun garde-fou platform-level).
+function OrgPermissionDelegationSection() {
+  const qc = useQueryClient()
+  const { data: perms, isLoading } = useQuery<OrgPermission[]>({
+    queryKey: ['org-permissions-catalog'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('permissions').select('*').order('category').order('label')
+      if (error) throw error
+      return data ?? []
+    },
+  })
+
+  const toggle = useMutation({
+    mutationFn: async ({ id, delegatable }: { id: string; delegatable: boolean }) => {
+      const { error } = await supabase.from('permissions').update({ delegatable }).eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['org-permissions-catalog'] }),
+  })
+
+  const categories = useMemo(() => [...new Set((perms ?? []).map(p => p.category))], [perms])
+
+  return (
+    <div className="rounded-2xl p-6 space-y-4" style={{ backgroundColor: 'rgba(255,255,255,0.60)', border: '1px solid rgba(255,255,255,0.80)' }}>
+      <div>
+        <h2 className="text-lg font-bold text-[#0b1c30]">Délégation aux organisations</h2>
+        <p className="text-sm text-[#6f787e] mt-0.5">
+          Permissions que les administrateurs d&apos;organisation peuvent accorder à leurs propres rôles (page Rôles &amp; permissions
+          de l&apos;espace organisation). Désactiver une permission ici l&apos;empêche d&apos;être déléguée, même si un admin
+          d&apos;organisation l&apos;avait déjà accordée à un rôle.
+        </p>
+      </div>
+      {isLoading ? (
+        <div className="space-y-2">{[1, 2, 3].map(i => <div key={i} className="h-14 rounded-xl bg-white/40 animate-pulse" />)}</div>
+      ) : (
+        <div className="space-y-4">
+          {categories.map(cat => (
+            <div key={cat}>
+              <p className="text-[11px] font-bold uppercase tracking-widest text-[#6f787e] mb-2">{cat}</p>
+              <div className="space-y-2">
+                {(perms ?? []).filter(p => p.category === cat).map(p => (
+                  <label key={p.id} className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-slate-200 cursor-pointer">
+                    <span className="text-sm font-semibold text-[#0b1c30]">{p.label}</span>
+                    <input type="checkbox" checked={p.delegatable} disabled={toggle.isPending}
+                      onChange={e => toggle.mutate({ id: p.id, delegatable: e.target.checked })}
+                      className="w-5 h-5 accent-[#82d8ff] flex-shrink-0" />
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
   return <span className="material-symbols-outlined" style={style}>{name}</span>
 }
@@ -236,6 +298,8 @@ export default function StaffRolesPage() {
       </div>
 
       <SecretaryDelegationSection />
+
+      <OrgPermissionDelegationSection />
 
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setShowCreate(false)}>
