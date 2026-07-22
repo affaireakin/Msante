@@ -39,6 +39,8 @@ function InviteForm() {
   const [invitation, setInvitation] = useState<Invitation | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -67,6 +69,7 @@ function InviteForm() {
   }, [token])
 
   const validate = () => {
+    if (!firstName.trim() || !lastName.trim()) return 'Prénom et nom requis'
     if (password.length < 8) return 'Minimum 8 caractères'
     if (!/[A-Z]/.test(password)) return 'Au moins une majuscule'
     if (!/[0-9]/.test(password)) return 'Au moins un chiffre'
@@ -84,10 +87,11 @@ function InviteForm() {
     setError(null)
 
     const userRole = invitation.role === 'practitioner' ? 'practitioner' : 'admin'
+    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim()
     const { data: signUpData, error: authErr } = await supabase.auth.signUp({
       email: invitation.email,
       password,
-      options: { data: { role: userRole, full_name: '' } },
+      options: { data: { role: userRole, full_name: fullName } },
     })
     if (authErr) {
       setError(authErr.message ?? 'Erreur lors de la création du compte')
@@ -158,6 +162,30 @@ function InviteForm() {
             <p className="text-slate-500 text-sm mt-1">{invitation?.email}</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-semibold text-[#0b1c30]">Prénom</label>
+                <input
+                  type="text"
+                  value={firstName}
+                  onChange={e => setFirstName(e.target.value)}
+                  required
+                  className="w-full mt-1 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-[#0b1c30] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#82d8ff] focus:border-[#82d8ff]"
+                  placeholder="Aminata"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-semibold text-[#0b1c30]">Nom</label>
+                <input
+                  type="text"
+                  value={lastName}
+                  onChange={e => setLastName(e.target.value)}
+                  required
+                  className="w-full mt-1 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-[#0b1c30] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#82d8ff] focus:border-[#82d8ff]"
+                  placeholder="Diallo"
+                />
+              </div>
+            </div>
             <div>
               <label className="text-sm font-semibold text-[#0b1c30]">Mot de passe</label>
               <div className="relative mt-1">

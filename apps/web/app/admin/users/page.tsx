@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { getSignedDocumentUrl } from '@/lib/signedDocumentUrl'
 
@@ -219,132 +220,6 @@ function DocStatusBadge({ status }: { status: DocumentStatus }) {
     >
       {s.label}
     </span>
-  )
-}
-
-// ─── Invite Admin Modal ───────────────────────────────────────────────────────
-
-function InviteAdminModal({ onClose }: { onClose: () => void }) {
-  const queryClient = useQueryClient()
-  const [email, setEmail] = useState('')
-  const [fullName, setFullName] = useState('')
-
-  const inviteMutation = useMutation({
-    mutationFn: async (data: { email: string; fullName: string }) => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) throw new Error('Session expirée, reconnectez-vous.')
-
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-      const res = await fetch(`${supabaseUrl}/functions/v1/invite-collaborator`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ email: data.email, role: 'admin' }),
-      })
-
-      const json = await res.json() as { success?: boolean; error?: string }
-      if (!res.ok || json.error) {
-        throw new Error(json.error ?? 'Erreur lors de l\'invitation')
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
-    },
-  })
-
-  const handleInvite = (e: React.FormEvent) => {
-    e.preventDefault()
-    inviteMutation.mutate({ email, fullName })
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
-      <div
-        className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-8 flex flex-col gap-5"
-        style={{
-          backgroundColor: 'rgba(255,255,255,0.97)',
-          boxShadow: '0 20px 60px rgba(0,102,133,0.15)',
-        }}
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-black text-[#0b1c30]">Inviter un administrateur</h2>
-            <p className="text-sm text-[#6f787e] mt-0.5">Supabase enverra un lien de connexion sécurisé</p>
-          </div>
-          <button onClick={onClose} aria-label="Fermer" className="text-[#6f787e] hover:text-[#0b1c30] text-xl leading-none">✕</button>
-        </div>
-
-        {inviteMutation.isSuccess ? (
-          <div className="flex flex-col items-center gap-4 py-4 text-center">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center text-3xl">✓</div>
-            <div>
-              <p className="font-semibold text-[#0b1c30]">Invitation envoyée !</p>
-              <p className="text-sm text-[#6f787e] mt-1"><strong>{email}</strong> recevra un lien pour créer son mot de passe.</p>
-            </div>
-            <button
-              onClick={onClose}
-              className="px-6 py-2.5 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl text-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all"
-            >
-              Fermer
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleInvite} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Nom complet</label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={e => setFullName(e.target.value)}
-                placeholder="Prénom Nom"
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all text-sm"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Email administrateur</label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="admin@example.com"
-                required
-                className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all text-sm"
-              />
-            </div>
-
-            {inviteMutation.isError && (
-              <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-600">
-                {inviteMutation.error instanceof Error ? inviteMutation.error.message : 'Erreur lors de l\'invitation'}
-              </div>
-            )}
-
-            <div className="bg-[#e5eeff] rounded-xl px-4 py-3 text-xs text-[#005e7a]">
-              🔐 Un email avec un lien sécurisé sera envoyé. Le compte sera créé avec le rôle <strong>admin</strong>.
-            </div>
-
-            <div className="flex gap-3 mt-1">
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 py-3 rounded-xl border border-slate-200 text-sm font-medium text-[#6f787e] hover:bg-slate-50 transition-all"
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                disabled={inviteMutation.isPending}
-                className="flex-1 py-3 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl text-sm hover:shadow-lg hover:shadow-sky-500/20 transition-all disabled:opacity-50"
-              >
-                {inviteMutation.isPending ? 'Envoi...' : 'Envoyer l\'invitation'}
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
-    </div>
   )
 }
 
@@ -676,6 +551,22 @@ function UserProfilePanel({
   const [showSuspendForm, setShowSuspendForm] = useState(false)
   const [suspendReason, setSuspendReason] = useState('')
 
+  // Section 21.3 : le nom doit pouvoir être consulté, modifié et enregistré
+  // depuis la fiche utilisateur.
+  const [editingName, setEditingName] = useState(false)
+  const [nameDraft, setNameDraft] = useState(user.full_name)
+
+  const renameMutation = useMutation({
+    mutationFn: async (fullName: string) => {
+      const { error } = await supabase.from('users').update({ full_name: fullName }).eq('id', user.id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      setEditingName(false)
+    },
+  })
+
   const suspendMutation = useMutation({
     mutationFn: async (reason?: string) => {
       const newStatus: AccountStatus = isSuspended ? 'active' : 'suspended'
@@ -737,8 +628,47 @@ function UserProfilePanel({
             >
               {initials(user.full_name)}
             </div>
-            <div className="space-y-1.5">
-              <p className="text-base font-semibold text-[#0b1c30] leading-tight">{user.full_name}</p>
+            <div className="space-y-1.5 flex-1 min-w-0">
+              {editingName ? (
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={nameDraft}
+                    onChange={e => setNameDraft(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-lg border border-[#82d8ff] text-sm text-[#0b1c30] outline-none focus:ring-2 focus:ring-[#82d8ff]/20"
+                    autoFocus
+                  />
+                  {renameMutation.isError && (
+                    <p className="text-xs text-red-500">{(renameMutation.error as Error).message}</p>
+                  )}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEditingName(false)}
+                      className="px-3 py-1 rounded-lg border border-slate-200 text-xs font-semibold text-[#6f787e] hover:bg-slate-50 transition-colors"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      onClick={() => renameMutation.mutate(nameDraft.trim())}
+                      disabled={!nameDraft.trim() || renameMutation.isPending}
+                      className="px-3 py-1 rounded-lg bg-[#82d8ff] text-xs font-bold text-[#0b1c30] hover:shadow-md transition-all disabled:opacity-50"
+                    >
+                      {renameMutation.isPending ? 'Enregistrement...' : 'Enregistrer'}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <p className="text-base font-semibold text-[#0b1c30] leading-tight truncate">{user.full_name}</p>
+                  <button
+                    onClick={() => { setNameDraft(user.full_name); setEditingName(true) }}
+                    aria-label="Modifier le nom"
+                    className="text-[#6f787e] hover:text-[#82d8ff] transition-colors flex-shrink-0"
+                  >
+                    <span className="material-symbols-outlined text-sm">edit</span>
+                  </button>
+                </div>
+              )}
               <div className="flex items-center gap-2">
                 <RoleBadge role={user.role} />
                 <AccountStatusBadge status={user.account_status} />
@@ -877,7 +807,6 @@ function UsersPageInner() {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [page, setPage] = useState(0)
   const [selectedUser, setSelectedUser] = useState<UserRow | null>(null)
-  const [showInvite, setShowInvite] = useState(false)
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const handleSearch = (value: string) => {
@@ -919,17 +848,15 @@ function UsersPageInner() {
           </div>
           <p className="text-sm text-[#6f787e] mt-1">{data?.total ?? 0} utilisateurs au total</p>
         </div>
-        <button
-          onClick={() => setShowInvite(true)}
+        <Link
+          href="/admin/collaborators"
           className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-sky-500/20 transition-all"
         >
           <span className="material-symbols-outlined text-base">person_add</span>
           <span className="hidden sm:inline">Inviter un admin</span>
           <span className="sm:hidden">Inviter</span>
-        </button>
+        </Link>
       </div>
-
-      {showInvite && <InviteAdminModal onClose={() => setShowInvite(false)} />}
 
       {/* Filters + Search */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
