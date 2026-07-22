@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import InternalMessaging from '@/app/admin/messages/InternalMessaging'
+import NotificationBell from '@/components/NotificationBell'
 
 type AptStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show'
 type Filter = 'today' | 'upcoming' | 'past'
@@ -198,6 +199,7 @@ export default function SecretaryPage() {
   const [filter, setFilter] = useState<Filter>('today')
   const [checking, setChecking] = useState(true)
   const [accessState, setAccessState] = useState<AccessState>('active')
+  const [userId, setUserId] = useState<string | null>(null)
   const ctx = useContext_()
   const { data: appointments, isLoading, error } = useAppointments(filter)
   const { data: manageableIds = new Set<string>() } = useManageablePractitionerIds()
@@ -205,6 +207,7 @@ export default function SecretaryPage() {
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
+      setUserId(user.id)
       const { data: profile } = await supabase.from('users').select('role, organization_id').eq('id', user.id).single()
       if (profile?.role !== 'secretary') { router.push('/auth/login'); return }
 
@@ -264,7 +267,10 @@ export default function SecretaryPage() {
             <h1 className="text-2xl font-black text-[#0b1c30] mt-1">Bonjour {ctx.data?.name ?? ''}</h1>
             {ctx.data?.context && <p className="text-sm text-[#6f787e] mt-0.5">{ctx.data.context}</p>}
           </div>
-          <button onClick={handleLogout} className="text-sm font-semibold text-[#6f787e] hover:text-[#0b1c30]">Se déconnecter</button>
+          <div className="flex items-center gap-3">
+            {userId && <NotificationBell userId={userId} basePath="/secretary" historyHref="/secretary/notifications" />}
+            <button onClick={handleLogout} className="text-sm font-semibold text-[#6f787e] hover:text-[#0b1c30]">Se déconnecter</button>
+          </div>
         </div>
 
         <div className="flex gap-2 mb-6">

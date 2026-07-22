@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import InternalMessaging from '@/app/admin/messages/InternalMessaging'
+import NotificationBell from '@/components/NotificationBell'
 
 function Icon({ name, size = 20, color }: { name: string; size?: number; color?: string }) {
   return <span className="material-symbols-outlined" style={{ fontSize: `${size}px`, color }}>{name}</span>
@@ -14,10 +15,12 @@ export default function OrganizationMemberPage() {
   const [name, setName] = useState('')
   const [orgName, setOrgName] = useState('')
   const [roleName, setRoleName] = useState<string | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
+      setUserId(user.id)
       const { data: profile } = await supabase.from('users').select('full_name, role, organization_id').eq('id', user.id).single()
       if (!profile || profile.role !== 'organization_member' || !profile.organization_id) {
         router.push('/auth/login')
@@ -49,6 +52,11 @@ export default function OrganizationMemberPage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9ff] p-6 space-y-6 max-w-3xl mx-auto">
+      {userId && (
+        <div className="flex justify-end">
+          <NotificationBell userId={userId} basePath="/organization-member" historyHref="/organization-member/notifications" />
+        </div>
+      )}
       <div className="bg-white rounded-2xl p-8 text-center space-y-3 shadow-xl">
         <div className="w-16 h-16 rounded-full bg-[#e5eeff] flex items-center justify-center mx-auto">
           <Icon name="badge" size={32} color="#005e7a" />

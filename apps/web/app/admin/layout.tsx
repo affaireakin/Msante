@@ -454,7 +454,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
           <div className="flex items-center gap-3">
-            {userId && <NotificationBell userId={userId} />}
+            {userId && <NotificationBell userId={userId} basePath="/admin" historyHref="/admin/notifications" />}
             <div className="w-9 h-9 rounded-full bg-[#82d8ff] flex items-center justify-center text-[#0b1c30] text-sm font-bold shadow-sm">
               A
             </div>

@@ -1,36 +1,17 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { iconFor, colorFor, resolveNotificationRoute } from '@/lib/notifications'
 
 interface Notif {
   id: string
   type: string
   title: string
   body: string
+  data: Record<string, unknown> | null
   status: string
   created_at: string
-}
-
-const TYPE_ICON: Record<string, string> = {
-  new_message:           'chat_bubble',
-  conversation_closed:   'lock',
-  appointment_confirmed: 'calendar_month',
-  appointment_reminder:  'alarm',
-  appointment_cancelled: 'event_busy',
-  prescription_created:  'receipt_long',
-  payment_success:       'payments',
-  payment_failed:        'money_off',
-}
-
-const TYPE_COLOR: Record<string, string> = {
-  new_message:           'text-[#82d8ff] bg-sky-50',
-  conversation_closed:   'text-[#6f787e] bg-slate-100',
-  appointment_confirmed: 'text-emerald-700 bg-emerald-50',
-  appointment_reminder:  'text-amber-700 bg-amber-50',
-  appointment_cancelled: 'text-[#ba1a1a] bg-red-50',
-  prescription_created:  'text-purple-700 bg-purple-50',
-  payment_success:       'text-emerald-700 bg-emerald-50',
-  payment_failed:        'text-[#ba1a1a] bg-red-50',
 }
 
 function timeAgo(iso: string) {
@@ -43,7 +24,13 @@ function timeAgo(iso: string) {
   return `il y a ${Math.floor(h / 24)}j`
 }
 
-export default function NotificationBell({ userId }: { userId: string }) {
+// `basePath` (ex. "/patient", "/practitioner") sert à résoudre le lien
+// "accéder directement à l'élément concerné" (Section 26) — un même `type`
+// de notification ne pointe pas vers la même route selon le profil, donc
+// chaque layout doit préciser le sien. `historyHref` pointe vers la page
+// d'historique complet (NotificationCenter) de ce même espace.
+export default function NotificationBell({ userId, basePath, historyHref }: { userId: string; basePath?: string; historyHref?: string }) {
+  const router = useRouter()
   const [notifs, setNotifs] = useState<Notif[]>([])
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -53,21 +40,23 @@ export default function NotificationBell({ userId }: { userId: string }) {
   const fetchNotifs = async () => {
     const { data } = await supabase
       .from('notifications')
-      .select('id, type, title, body, status, created_at')
+      .select('id, type, title, body, data, status, created_at')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(20)
-    setNotifs((data ?? []) as Notif[])
+    setNotifs((data ?? []) as unknown as Notif[])
   }
 
   useEffect(() => {
     if (!userId) return
     void fetchNotifs()
 
+    // '*' (pas seulement INSERT) pour rester à jour si l'état lu/non lu
+    // change depuis un autre onglet ou depuis la page d'historique complet.
     const channel = supabase
       .channel(`notifs-${userId}`)
       .on('postgres_changes', {
-        event: 'INSERT',
+        event: '*',
         schema: 'public',
         table: 'notifications',
         filter: `user_id=eq.${userId}`,
@@ -96,6 +85,15 @@ export default function NotificationBell({ userId }: { userId: string }) {
   const markOneRead = async (id: string) => {
     await supabase.from('notifications').update({ status: 'read', read_at: new Date().toISOString() }).eq('id', id)
     setNotifs(prev => prev.map(n => n.id === id ? { ...n, status: 'read' } : n))
+  }
+
+  const handleClick = (n: Notif) => {
+    if (n.status !== 'read') void markOneRead(n.id)
+    const route = basePath ? resolveNotificationRoute(n.type, n.data, basePath) : null
+    if (route) {
+      setOpen(false)
+      router.push(route)
+    }
   }
 
   return (
@@ -131,17 +129,15 @@ export default function NotificationBell({ userId }: { userId: string }) {
                 <p className="text-xs text-[#6f787e]">Aucune notification</p>
               </div>
             ) : notifs.map(n => {
-              const icon = TYPE_ICON[n.type] ?? 'notifications'
-              const color = TYPE_COLOR[n.type] ?? 'text-[#82d8ff] bg-sky-50'
               const isUnread = n.status !== 'read'
               return (
                 <button
                   key={n.id}
-                  onClick={() => void markOneRead(n.id)}
+                  onClick={() => handleClick(n)}
                   className={`w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-50 transition-colors ${isUnread ? 'bg-sky-50/30' : ''}`}
                 >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${color}`}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>{icon}</span>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${colorFor(n.type)}`}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>{iconFor(n.type)}</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
@@ -155,6 +151,15 @@ export default function NotificationBell({ userId }: { userId: string }) {
               )
             })}
           </div>
+
+          {historyHref && (
+            <button
+              onClick={() => { setOpen(false); router.push(historyHref) }}
+              className="w-full py-2.5 text-center text-xs font-semibold text-[#005e7a] hover:bg-slate-50 border-t border-slate-100 transition-colors"
+            >
+              Voir tout l&apos;historique
+            </button>
+          )}
         </div>
       )}
     </div>
