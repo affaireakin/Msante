@@ -309,7 +309,7 @@ export default function PractitionerLayout({ children }: { children: React.React
         </div>
       </aside>
 
-      <div className="flex-1 ml-0 md:ml-64 flex flex-col min-h-screen">
+      <div className="flex-1 min-w-0 ml-0 md:ml-64 flex flex-col min-h-screen">
         <header
           className="fixed top-0 right-0 left-0 md:left-64 h-16 z-20 flex items-center justify-between px-4 md:px-8"
           style={{
