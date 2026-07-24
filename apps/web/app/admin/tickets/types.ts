@@ -1,5 +1,5 @@
 export type TicketType = 'bug' | 'evolution' | 'support' | 'incident' | 'tache' | 'litige'
-export type TicketStatus = 'a_faire' | 'en_cours' | 'en_test' | 'corrige' | 'valide' | 'deploye'
+export type TicketStatus = 'a_faire' | 'en_cours' | 'en_test' | 'corrige' | 'valide' | 'deploye' | 'cloture'
 export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent'
 
 export interface Ticket {
@@ -60,6 +60,7 @@ export const STATUS_COLUMNS: { key: TicketStatus; label: string }[] = [
   { key: 'corrige', label: 'Corrigé' },
   { key: 'valide', label: 'Validé' },
   { key: 'deploye', label: 'Déployé' },
+  { key: 'cloture', label: 'Clôturé' },
 ]
 
 // Section 22 ("Respect des processus") : le parcours doit être suivi étape
@@ -67,7 +68,13 @@ export const STATUS_COLUMNS: { key: TicketStatus; label: string }[] = [
 // test raté) mais jamais avancer de plus d'une étape à la fois. Backstop
 // identique côté base (trigger enforce_ticket_status_order) pour ne jamais
 // pouvoir être contourné, y compris via un appel API direct.
+//
+// "Clôturé" est une sortie/entrée volontaire du pipeline (utile pour les
+// tickets support/tâche/litige qui n'ont pas de "code déployé" à proprement
+// parler) — accessible depuis n'importe quel statut, et permet de rouvrir
+// vers n'importe quel statut, sans compter comme un saut d'étape.
 export function isValidTicketTransition(from: TicketStatus, to: TicketStatus): boolean {
+  if (from === 'cloture' || to === 'cloture') return true
   const fromRank = STATUS_COLUMNS.findIndex(s => s.key === from)
   const toRank = STATUS_COLUMNS.findIndex(s => s.key === to)
   return toRank <= fromRank + 1
@@ -119,10 +126,10 @@ export interface DisputeEvent {
 }
 
 export const DISPUTE_STATUS_TO_KANBAN: Record<DisputeStatus, TicketStatus> = {
-  open: 'a_faire', under_review: 'en_cours', resolved: 'valide', closed: 'deploye',
+  open: 'a_faire', under_review: 'en_cours', resolved: 'valide', closed: 'cloture',
 }
 export const KANBAN_TO_DISPUTE_STATUS: Record<TicketStatus, DisputeStatus> = {
-  a_faire: 'open', en_cours: 'under_review', en_test: 'under_review', corrige: 'under_review', valide: 'resolved', deploye: 'closed',
+  a_faire: 'open', en_cours: 'under_review', en_test: 'under_review', corrige: 'under_review', valide: 'resolved', deploye: 'resolved', cloture: 'closed',
 }
 
 export const PRIORITY_META: Record<TicketPriority, { label: string; color: string; bg: string }> = {

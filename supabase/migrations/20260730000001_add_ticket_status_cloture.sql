@@ -1,0 +1,11 @@
+-- QA finding : les 6 statuts existants (à faire → ... → déployé) décrivent
+-- un pipeline de développement — pertinent pour bug/évolution, mais un
+-- ticket support/tâche/litige n'a jamais vraiment de "code déployé" et ne
+-- pouvait donc jamais être clôturé sans passer artificiellement par cette
+-- case. Ajout d'un statut terminal dédié.
+--
+-- Séparé dans sa propre migration : ALTER TYPE ... ADD VALUE ne peut pas
+-- être utilisé dans la même transaction que celle qui l'ajoute (restriction
+-- Postgres) — la migration suivante (20260730000002) qui référence
+-- 'cloture' doit donc s'exécuter après que celle-ci a été validée.
+ALTER TYPE public.ticket_status ADD VALUE IF NOT EXISTS 'cloture';

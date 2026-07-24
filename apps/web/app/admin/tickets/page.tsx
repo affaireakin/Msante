@@ -41,7 +41,7 @@ export default function TicketsPage() {
   }, [disputes.data, typeFilter, assigneeFilter])
 
   const byStatus = useMemo(() => {
-    const map: Record<TicketStatus, IncidentCardData[]> = { a_faire: [], en_cours: [], en_test: [], corrige: [], valide: [], deploye: [] }
+    const map: Record<TicketStatus, IncidentCardData[]> = { a_faire: [], en_cours: [], en_test: [], corrige: [], valide: [], deploye: [], cloture: [] }
     for (const t of filteredTickets) {
       map[t.status].push({
         id: t.id, title: t.title, type: t.type, priority: t.priority, status: t.status,

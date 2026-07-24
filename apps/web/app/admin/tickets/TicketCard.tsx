@@ -26,7 +26,7 @@ export function TicketCard({ card, onOpen }: { card: IncidentCardData; onOpen: (
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: card.id })
   const type = TYPE_META[card.type]
   const priority = PRIORITY_META[card.priority]
-  const overdue = card.dueDate ? new Date(card.dueDate) < new Date() && card.status !== 'deploye' : false
+  const overdue = card.dueDate ? new Date(card.dueDate) < new Date() && card.status !== 'deploye' && card.status !== 'cloture' : false
 
   return (
     <div
