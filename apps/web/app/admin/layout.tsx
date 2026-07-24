@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import React from 'react'
 import { supabase } from '@/lib/supabase'
 import NotificationBell from '@/components/NotificationBell'
@@ -203,6 +203,75 @@ const navItems = [
   },
 ]
 
+// useSearchParams() forces this subtree to opt out of static rendering
+// unless isolated behind its own Suspense boundary — without this, building
+// unrelated static admin pages (e.g. /admin/analytics) failed outright,
+// since the whole layout (and everything it wraps) would inherit the bailout.
+function UsersNavGroup({
+  subRole, permissionRoutes, usersGroupOpen, setUsersGroupOpen, setSidebarOpen,
+}: {
+  subRole: SubRole
+  permissionRoutes: Set<string> | null
+  usersGroupOpen: boolean
+  setUsersGroupOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setSidebarOpen: (v: boolean) => void
+}) {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  const visibleChildren = usersGroup.children.filter(c => canAccess(subRole, c.href, permissionRoutes))
+  if (visibleChildren.length === 0) return null
+
+  // pathname (Next.js) ne contient jamais la query string — "Vue
+  // d'ensemble" (/admin/users) et "Patients" (/admin/users?role=patient)
+  // partagent le même chemin, donc comparer seulement pathname faisait
+  // apparaître les deux comme actifs simultanément. On compare aussi le
+  // paramètre `role` de chaque lien à celui de l'URL courante.
+  const isChildActive = (href: string) => {
+    const [childPath, childQuery] = href.split('?')
+    if (!pathname.startsWith(childPath)) return false
+    const childRole = childQuery ? new URLSearchParams(childQuery).get('role') : null
+    return childRole === searchParams.get('role')
+  }
+  const groupActive = visibleChildren.some(c => isChildActive(c.href))
+
+  return (
+    <div>
+      <button
+        onClick={() => setUsersGroupOpen(v => !v)}
+        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-[#3f484d] hover:bg-slate-50/50"
+      >
+        <span className={groupActive ? 'text-[#82d8ff]' : 'text-[#6f787e]'}>{usersGroup.icon}</span>
+        <span className="flex-1 text-left">{usersGroup.label}</span>
+        <svg className={`w-4 h-4 text-[#6f787e] transition-transform ${usersGroupOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {usersGroupOpen && (
+        <div className="ml-4 pl-4 border-l border-slate-200/60 space-y-1 mt-1">
+          {visibleChildren.map(child => {
+            const childActive = isChildActive(child.href)
+            return (
+              <Link
+                key={child.href}
+                href={child.href}
+                onClick={() => setSidebarOpen(false)}
+                className={`block px-4 py-2 rounded-xl text-sm transition-all duration-200 ${
+                  childActive
+                    ? 'bg-sky-50 text-[#82d8ff] font-semibold'
+                    : 'text-[#3f484d] hover:bg-slate-50/50'
+                }`}
+              >
+                {child.label}
+              </Link>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function canAccess(subRole: SubRole, href: string, permissionRoutes: Set<string> | null): boolean {
   if (permissionRoutes) {
     return href.startsWith('/admin/dashboard') || href.startsWith('/admin/overview') || Array.from(permissionRoutes).some(r => href.startsWith(r))
@@ -347,46 +416,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
 
           {/* Groupe "Utilisateurs" — patients, praticiens, collaborateurs, organisations */}
-          {(() => {
-            const visibleChildren = usersGroup.children.filter(c => canAccess(subRole, c.href, permissionRoutes))
-            if (visibleChildren.length === 0) return null
-            const groupActive = visibleChildren.some(c => pathname.startsWith(c.href.split('?')[0]))
-            return (
-              <div>
-                <button
-                  onClick={() => setUsersGroupOpen(v => !v)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-[#3f484d] hover:bg-slate-50/50"
-                >
-                  <span className={groupActive ? 'text-[#82d8ff]' : 'text-[#6f787e]'}>{usersGroup.icon}</span>
-                  <span className="flex-1 text-left">{usersGroup.label}</span>
-                  <svg className={`w-4 h-4 text-[#6f787e] transition-transform ${usersGroupOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {usersGroupOpen && (
-                  <div className="ml-4 pl-4 border-l border-slate-200/60 space-y-1 mt-1">
-                    {visibleChildren.map(child => {
-                      const childActive = pathname.startsWith(child.href.split('?')[0])
-                      return (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          onClick={() => setSidebarOpen(false)}
-                          className={`block px-4 py-2 rounded-xl text-sm transition-all duration-200 ${
-                            childActive
-                              ? 'bg-sky-50 text-[#82d8ff] font-semibold'
-                              : 'text-[#3f484d] hover:bg-slate-50/50'
-                          }`}
-                        >
-                          {child.label}
-                        </Link>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-            )
-          })()}
+          <React.Suspense fallback={null}>
+            <UsersNavGroup
+              subRole={subRole}
+              permissionRoutes={permissionRoutes}
+              usersGroupOpen={usersGroupOpen}
+              setUsersGroupOpen={setUsersGroupOpen}
+              setSidebarOpen={setSidebarOpen}
+            />
+          </React.Suspense>
           {navItems.filter(item => item.href === '/admin/staff-roles' ? isSuperAdmin : (item.roles === null || canAccess(subRole, item.href, permissionRoutes))).map((item) => {
             const isActive = pathname.startsWith(item.href)
             return (
