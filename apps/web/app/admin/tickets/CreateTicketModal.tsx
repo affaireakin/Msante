@@ -27,12 +27,13 @@ function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
 }
 
 export function CreateTicketModal({
-  adminUsers, onClose, onCreate, creating,
+  adminUsers, onClose, onCreate, creating, serverError,
 }: {
   adminUsers: { id: string; full_name: string }[]
   onClose: () => void
   onCreate: (input: { title: string; description: string; type: TicketType; priority: TicketPriority; assignee_id: string | null; due_date: string | null; related_user_id: string | null; module: string | null }) => void
   creating: boolean
+  serverError?: string | null
 }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -85,7 +86,12 @@ export function CreateTicketModal({
           <div>
             <label className="block text-sm font-bold text-[#0b1c30] mb-1.5">Type</label>
             <div className="flex gap-2 flex-wrap">
-              {(Object.keys(TYPE_META) as TicketType[]).map(t => (
+              {/* "litige" existe dans TYPE_META pour styliser les cartes du
+                  board provenant de la table `disputes` (toujours créées côté
+                  patient/praticien) — ce n'est pas une valeur acceptée par
+                  l'enum ticket_type en base, la sélectionner ici ferait
+                  échouer la création avec un 400. */}
+              {(Object.keys(TYPE_META) as TicketType[]).filter(t => t !== 'litige').map(t => (
                 <button key={t} type="button" onClick={() => setType(t)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border-2 transition-all"
                   style={{
@@ -166,6 +172,7 @@ export function CreateTicketModal({
             </div>
           </div>
           {error && <p className="text-sm text-[#ba1a1a] font-semibold">{error}</p>}
+          {serverError && <p className="text-sm text-[#ba1a1a] font-semibold">Erreur : {serverError}</p>}
           <div className="flex gap-3 pt-1">
             <button type="button" onClick={onClose} className="flex-1 border-2 border-slate-200 text-[#0b1c30] rounded-xl py-2.5 text-sm font-bold hover:bg-slate-50">
               Annuler

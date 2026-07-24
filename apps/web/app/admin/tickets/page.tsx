@@ -23,6 +23,7 @@ export default function TicketsPage() {
   const [typeFilter, setTypeFilter] = useState<TicketType | 'all'>('all')
   const [assigneeFilter, setAssigneeFilter] = useState<string>('all')
   const [transitionError, setTransitionError] = useState<string | null>(null)
+  const [createError, setCreateError] = useState<string | null>(null)
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }))
 
@@ -140,9 +141,14 @@ export default function TicketsPage() {
           adminUsers={adminUsers.data ?? []}
           onClose={() => setShowCreate(false)}
           creating={createTicket.isPending}
-          onCreate={input => createTicket.mutate(input, {
-            onSuccess: (ticket) => { setShowCreate(false); if (ticket) setSelectedId(ticket.id) },
-          })}
+          serverError={createError}
+          onCreate={input => {
+            setCreateError(null)
+            createTicket.mutate(input, {
+              onSuccess: (ticket) => { setShowCreate(false); if (ticket) setSelectedId(ticket.id) },
+              onError: (err: Error) => setCreateError(err.message),
+            })
+          }}
         />
       )}
 
