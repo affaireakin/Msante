@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { supabase } from '@/lib/supabase'
+import { logPatientAccess } from '@/lib/patientAccessLog'
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -102,6 +103,12 @@ function useJourneyData(patientId: string) {
       const sevenDaysAgo = new Date(now)
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
       const SEVEN_DAYS_AGO = sevenDaysAgo.toISOString()
+
+      const { data: { user } } = await supabase.auth.getUser()
+      const { data: pract } = user
+        ? await supabase.from('practitioners').select('id').eq('user_id', user.id).maybeSingle()
+        : { data: null }
+      if (pract) logPatientAccess(patientId, pract.id, 'mood_journal')
 
       const [
         { data: patientData, error: pErr },

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { logPatientAccess } from '@/lib/patientAccessLog'
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -115,6 +116,8 @@ function useNotesData(patientId: string) {
 
       if (ptErr) throw ptErr
       if (nErr) throw nErr
+
+      logPatientAccess(patientId, pract.id, 'notes')
 
       return {
         patient: patientData as PatientInfo,
