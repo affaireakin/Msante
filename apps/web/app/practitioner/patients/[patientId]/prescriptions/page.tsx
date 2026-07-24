@@ -22,6 +22,24 @@ function initials(name: string): string {
   return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('')
 }
 
+// QA finding : le patient n'était notifié que si le praticien pensait à
+// cliquer "Envoyer au patient" après coup — l'ordonnance était pourtant déjà
+// visible/lisible immédiatement (RLS patients_read_own_prescriptions). On
+// notifie désormais automatiquement dès qu'une ordonnance devient "signed"
+// (à la création ou lors de la signature d'un brouillon), qui est le seul
+// moment où elle a un sens pour le patient.
+function notifyPrescriptionSent(prescriptionId: string, patientId: string, practitionerType: 'healthcare' | 'wellness') {
+  void supabase.from('notifications').insert({
+    user_id: patientId,
+    type: 'prescription_sent',
+    title: practitionerType === 'wellness' ? 'Nouvelle recommandation disponible 📋' : 'Nouvelle ordonnance disponible 📋',
+    body: practitionerType === 'wellness' ? 'Votre praticien a émis une recommandation. Consultez-la dans votre espace santé.' : 'Votre médecin a émis une ordonnance. Consultez-la dans votre espace santé.',
+    data: { prescription_id: prescriptionId, route: '/patient/prescriptions' },
+    channel: 'push',
+    status: 'pending',
+  })
+}
+
 function statusColors(status: string): { bg: string; text: string } {
   switch (status) {
     case 'draft':     return { bg: '#f1f5f9', text: '#475569' }
@@ -141,25 +159,9 @@ function PrescriptionCard({ rx, patientId, practitionerType }: { rx: Prescriptio
     mutationFn: async () => {
       const { error } = await supabase.from('prescriptions').update({ status: 'signed' }).eq('id', rx.id)
       if (error) throw error
+      notifyPrescriptionSent(rx.id, rx.patient_id, practitionerType)
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['practitioner-prescriptions', patientId] }),
-  })
-
-  const sendMutation = useMutation({
-    mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Non connecté')
-      await supabase.from('notifications').insert({
-        user_id: rx.patient_id,
-        type: 'prescription_sent',
-        title: practitionerType === 'wellness' ? 'Nouvelle recommandation disponible 📋' : 'Nouvelle ordonnance disponible 📋',
-        body: practitionerType === 'wellness' ? 'Votre praticien a émis une recommandation. Consultez-la dans votre espace santé.' : 'Votre médecin a émis une ordonnance. Consultez-la dans votre espace santé.',
-        data: { prescription_id: rx.id, route: '/patient/prescriptions' },
-        channel: 'push',
-        status: 'pending',
-      })
-    },
-    onSuccess: () => alert(practitionerType === 'wellness' ? 'Recommandation envoyée au patient.' : 'Ordonnance envoyée au patient.'),
   })
 
   return (
@@ -234,17 +236,6 @@ function PrescriptionCard({ rx, patientId, practitionerType }: { rx: Prescriptio
             </button>
           )}
 
-          {rx.status === 'signed' && (
-            <button
-              onClick={() => sendMutation.mutate()}
-              disabled={sendMutation.isPending}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-colors disabled:opacity-50"
-              style={{ background: '#82d8ff' }}
-            >
-              <Icon name="send" size={14} color="#fff" />
-              {sendMutation.isPending ? 'Envoi…' : 'Envoyer au patient'}
-            </button>
-          )}
         </div>
       </div>
     </div>
@@ -490,7 +481,7 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
     mutationFn: async () => {
       if (isWellness) {
         if (!instructions.trim()) throw new Error('Ajoutez au moins un conseil ou une recommandation')
-        const { error } = await supabase.from('prescriptions').insert({
+        const { data, error } = await supabase.from('prescriptions').insert({
           patient_id: patientId,
           practitioner_id: practitionerId,
           diagnosis: diagnosis.trim() || null,
@@ -500,12 +491,13 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
           status,
           consultation_type: consultationType,
           document_type: 'recommandation',
-        })
+        }).select('id').single()
         if (error) throw error
+        if (status === 'signed') notifyPrescriptionSent(data.id, patientId, practitionerType)
       } else {
         const filledMeds = medications.filter(m => m.name.trim())
         if (filledMeds.length === 0) throw new Error('Ajoutez au moins un médicament')
-        const { error } = await supabase.from('prescriptions').insert({
+        const { data, error } = await supabase.from('prescriptions').insert({
           patient_id: patientId,
           practitioner_id: practitionerId,
           diagnosis: diagnosis.trim() || null,
@@ -515,8 +507,9 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
           status,
           consultation_type: consultationType,
           document_type: 'ordonnance',
-        })
+        }).select('id').single()
         if (error) throw error
+        if (status === 'signed') notifyPrescriptionSent(data.id, patientId, practitionerType)
       }
     },
     onSuccess: () => {
