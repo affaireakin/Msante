@@ -14,7 +14,7 @@ interface JournalEntry {
   title: string | null
   content: string
   mood_score: number | null
-  tags: string[]
+  emotions: string[]
   is_private: boolean
   created_at: string
 }
@@ -44,7 +44,7 @@ export default function JournalEntryPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('journal_entries')
-        .select('id, title, content, mood_score, tags, is_private, created_at')
+        .select('id, title, content, mood_score, emotions, is_private, created_at')
         .eq('id', id)
         .single()
       if (error) throw error
@@ -125,8 +125,8 @@ export default function JournalEntryPage() {
               {entry.mood_score}/10 · {moodCfg.label}
             </span>
           )}
-          {(entry.tags ?? []).map((tag: string) => (
-            <span key={tag} className="text-xs px-2.5 py-1 rounded-full bg-[#e5eeff] text-[#82d8ff] font-semibold">{tag}</span>
+          {(entry.emotions ?? []).map((emotion: string) => (
+            <span key={emotion} className="text-xs px-2.5 py-1 rounded-full bg-[#e5eeff] text-[#82d8ff] font-semibold">{emotion}</span>
           ))}
           {entry.is_private && (
             <span className="flex items-center gap-1 text-xs text-[#6f787e]">

@@ -185,7 +185,7 @@ export default function PatientProfilePage() {
       supabase.from('users').select('*').eq('id', user.id).single(),
       supabase.from('patient_medical_profiles').select('*').eq('patient_id', user.id).maybeSingle(),
       supabase.from('mood_entries').select('*').eq('patient_id', user.id).order('entry_date', { ascending: false }),
-      supabase.from('journal_entries').select('id, title, content, mood_score, tags, created_at').eq('patient_id', user.id).order('created_at', { ascending: false }),
+      supabase.from('journal_entries').select('id, title, content, mood_score, emotions, created_at').eq('patient_id', user.id).order('created_at', { ascending: false }),
       supabase.from('appointments').select('id, scheduled_at, status, type, created_at').eq('patient_id', user.id).order('scheduled_at', { ascending: false }),
     ])
     const payload = { exported_at: new Date().toISOString(), profile, medical_profile: med, mood_entries: moods ?? [], journal_entries: journals ?? [], appointments: appts ?? [] }

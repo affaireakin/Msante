@@ -53,7 +53,7 @@ export default function JournalNewPage() {
           patient_id: user.id,
           title: title.trim() || null,
           content: content.trim(),
-          tags: selectedEmotions,
+          emotions: selectedEmotions,
           mood_score: moodScore,
           is_private: true,
         })

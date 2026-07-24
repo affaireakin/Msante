@@ -12,7 +12,7 @@ interface JournalEntry {
   title: string | null
   content: string
   mood_score: number | null
-  tags: string[]
+  emotions: string[]
   created_at: string
 }
 
@@ -29,7 +29,7 @@ function useJournalEntries() {
       if (!user) throw new Error('Non connecté')
       const { data, error } = await supabase
         .from('journal_entries')
-        .select('id, title, content, mood_score, tags, created_at')
+        .select('id, title, content, mood_score, emotions, created_at')
         .eq('patient_id', user.id)
         .order('created_at', { ascending: false })
       if (error) throw error
@@ -118,10 +118,10 @@ export default function JournalListPage() {
                 <p className="text-sm text-[#6f787e] line-clamp-2 ml-13" style={{ marginLeft: '52px' }}>
                   {entry.content}
                 </p>
-                {(entry.tags ?? []).length > 0 && (
+                {(entry.emotions ?? []).length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2" style={{ marginLeft: '52px' }}>
-                    {entry.tags.slice(0, 3).map((tag: string) => (
-                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-[#e5eeff] text-[#82d8ff] font-semibold">{tag}</span>
+                    {entry.emotions.slice(0, 3).map((emotion: string) => (
+                      <span key={emotion} className="text-[10px] px-2 py-0.5 rounded-full bg-[#e5eeff] text-[#82d8ff] font-semibold">{emotion}</span>
                     ))}
                   </div>
                 )}
