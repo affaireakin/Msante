@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
 type VerifStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
@@ -17,7 +18,9 @@ interface Practitioner {
   practitioner_type: PractType | null
   permissions: { can_prescribe: boolean; can_order_exams: boolean } | null
   created_at: string
+  organization_id: string | null
   users: { full_name: string } | null
+  organizations: { name: string } | null
 }
 
 const ACCOUNT_STATUS_COLORS: Record<AccountStatus, string> = {
@@ -59,7 +62,7 @@ function usePractitioners() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, users!user_id(full_name)')
+        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, organization_id, users!user_id(full_name), organizations(name)')
         .order('created_at', { ascending: false })
       if (error) throw error
       const sorted = (data ?? []) as unknown as Practitioner[]
@@ -285,6 +288,15 @@ function PractitionersContent() {
                     <p className="text-xs text-[#6f787e] mt-0.5">
                       Soumis le {new Date(pract.created_at).toLocaleDateString('fr-FR')}
                     </p>
+                    {pract.organization_id && (
+                      <Link
+                        href={`/admin/organizations/${pract.organization_id}`}
+                        className="inline-flex items-center gap-1 mt-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-[#e5eeff] text-[#005e7a] hover:bg-[#d3e4fe] transition-colors"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>business</span>
+                        {pract.organizations?.name ?? 'Organisation'}
+                      </Link>
+                    )}
                   </div>
                 </div>
 

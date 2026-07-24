@@ -40,6 +40,8 @@ interface PractitionerProfile {
   bio: string | null
   rating: number | null
   total_reviews: number
+  organization_id: string | null
+  organizations: { name: string } | null
 }
 
 interface VerificationDocument {
@@ -126,11 +128,11 @@ function usePractitionerProfile(userId: string | null) {
       if (!userId) return null
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, speciality, is_verified, verification_status, bio, rating, total_reviews')
+        .select('id, speciality, is_verified, verification_status, bio, rating, total_reviews, organization_id, organizations(name)')
         .eq('user_id', userId)
         .single()
       if (error) return null
-      return data as PractitionerProfile
+      return data as unknown as PractitionerProfile
     },
     enabled: !!userId,
     staleTime: 30_000,
@@ -351,6 +353,19 @@ function PractitionerSection({ userId }: { userId: string }) {
         <div className="flex justify-between items-center">
           <span className="text-xs text-[#6f787e]">Spécialité</span>
           <span className="text-xs font-medium text-[#0b1c30]">{practitioner.speciality}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-xs text-[#6f787e]">Organisation</span>
+          {practitioner.organization_id ? (
+            <Link
+              href={`/admin/organizations/${practitioner.organization_id}`}
+              className="text-xs font-semibold text-[#005e7a] hover:underline"
+            >
+              {practitioner.organizations?.name ?? 'Voir l\'organisation'}
+            </Link>
+          ) : (
+            <span className="text-xs text-[#6f787e] italic">Indépendant</span>
+          )}
         </div>
         {practitioner.rating !== null && (
           <div className="flex justify-between items-center">
