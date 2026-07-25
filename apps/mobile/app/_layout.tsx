@@ -13,7 +13,7 @@ import { Providers } from './_providers'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { usePushNotifications } from '@/features/notifications/hooks/usePushNotifications'
 import { useMoodReminder } from '@/features/notifications/hooks/useMoodReminder'
-import { supabase, fetchUserProfile, fetchPractitionerProfile } from '@/services/supabase'
+import { supabase, fetchUserProfile, fetchPractitionerProfile, withTimeout } from '@/services/supabase'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -47,23 +47,37 @@ export default function RootLayout() {
   }, [fontsLoaded])
 
   useEffect(() => {
+    // QA finding: supabase-js awaits every onAuthStateChange callback to
+    // completion before letting signInWithPassword/getSession's own promise
+    // resolve. This callback used to `await` the profile fetches directly —
+    // if either ever stalled (observed reliably after a background/foreground
+    // cycle on RN), the hang propagated all the way back to the login
+    // screen's `await`, and the button spun forever on every attempt after
+    // that (the stuck state lives in the JS client, not on the screen, so it
+    // didn't recover until the app was killed and relaunched). The callback
+    // itself must stay synchronous; profile fetching now runs in its own
+    // fire-and-forget block, bounded by withTimeout so it can't hang forever
+    // either.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setLoading(true)
+      (_event, session) => {
         if (session?.user) {
           setSession(session.user)
-          const [userProfile, practitionerProfile] = await Promise.all([
-            fetchUserProfile(session.user.id),
-            fetchPractitionerProfile(session.user.id),
-          ])
-          setProfile(userProfile)
-          setPractitioner(practitionerProfile)
+          setLoading(true)
+          void (async () => {
+            const [userProfile, practitionerProfile] = await Promise.all([
+              withTimeout(fetchUserProfile(session.user.id), 12000, null),
+              withTimeout(fetchPractitionerProfile(session.user.id), 12000, null),
+            ])
+            setProfile(userProfile)
+            setPractitioner(practitionerProfile)
+            setLoading(false)
+          })()
         } else {
           setSession(null)
           setProfile(null)
           setPractitioner(null)
+          setLoading(false)
         }
-        setLoading(false)
       }
     )
     return () => subscription.unsubscribe()

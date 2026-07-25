@@ -22,10 +22,23 @@ export default function LoginScreen() {
   const onSubmit = async (data: LoginFormData) => {
     setLoading(true)
     try {
-      const result = await authService.signInWithEmail(data.email, data.password)
+      // Last-resort safety net: signInWithPassword can hang indefinitely if
+      // the Supabase client's internal auth-state machinery stalls (see
+      // app/_layout.tsx for the primary fix) — without this ceiling, the
+      // button would spin forever with no way for the user to retry.
+      const result = await Promise.race([
+        authService.signInWithEmail(data.email, data.password),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('TIMEOUT')), 15000)
+        ),
+      ])
       if (result.error) Alert.alert('Erreur de connexion', result.error)
-    } catch {
-      Alert.alert('Erreur de connexion', 'Une erreur réseau est survenue. Réessayez.')
+    } catch (e) {
+      const timedOut = e instanceof Error && e.message === 'TIMEOUT'
+      Alert.alert(
+        'Erreur de connexion',
+        timedOut ? 'La connexion prend trop de temps. Fermez complètement l\'application et réessayez.' : 'Une erreur réseau est survenue. Réessayez.'
+      )
     } finally {
       setLoading(false)
     }
