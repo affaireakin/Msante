@@ -90,26 +90,35 @@ export default function FindPractitionersScreen() {
           onSpecialityChange={setSpeciality}
           onLanguageChange={setLanguage}
         />
-        {/* Toggle accepte nouveaux patients */}
-        <TouchableOpacity
-          onPress={() => setAcceptingNewOnly(v => !v)}
-          style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8), paddingVertical: scale(4) }}
-        >
-          <View style={{
-            width: scale(40), height: scale(22), borderRadius: scale(11),
-            backgroundColor: acceptingNewOnly ? '#82d8ff' : '#bec8ce',
-            justifyContent: 'center', paddingHorizontal: 2,
-          }}>
+
+        {/* Séparé visuellement des puces de filtre ci-dessus (bordure + son
+            propre encart) — c'est un contrôle binaire, pas une puce parmi
+            d'autres, il ne doit pas sembler collé à la suite du reste. */}
+        <View style={{ borderTopWidth: 1, borderTopColor: '#e5eeff', paddingTop: scale(12) }}>
+          <TouchableOpacity
+            onPress={() => setAcceptingNewOnly(v => !v)}
+            style={{
+              flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+              backgroundColor: 'rgba(255,255,255,0.70)', borderRadius: scale(12),
+              borderWidth: 1, borderColor: '#e5eeff', paddingHorizontal: scale(14), paddingVertical: scale(10),
+            }}
+          >
+            <Text style={{ fontSize: fs.sm, color: '#3f484d', fontFamily: 'Manrope', fontWeight: '600' }}>
+              Accepte de nouveaux patients
+            </Text>
             <View style={{
-              width: scale(18), height: scale(18), borderRadius: scale(9),
-              backgroundColor: '#fff',
-              transform: [{ translateX: acceptingNewOnly ? scale(18) : 0 }],
-            }} />
-          </View>
-          <Text style={{ fontSize: fs.sm, color: '#3f484d', fontFamily: 'Manrope', fontWeight: '600' }}>
-            Accepte de nouveaux patients
-          </Text>
-        </TouchableOpacity>
+              width: scale(40), height: scale(22), borderRadius: scale(11),
+              backgroundColor: acceptingNewOnly ? '#82d8ff' : '#bec8ce',
+              justifyContent: 'center', paddingHorizontal: 2,
+            }}>
+              <View style={{
+                width: scale(18), height: scale(18), borderRadius: scale(9),
+                backgroundColor: '#fff',
+                transform: [{ translateX: acceptingNewOnly ? scale(18) : 0 }],
+              }} />
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {isLoading ? (
