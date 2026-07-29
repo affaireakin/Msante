@@ -93,6 +93,8 @@ export default function OrganizationLayout() {
         name="notifications"
         options={{ href: null }}
       />
+      <Tabs.Screen name="messages/index" options={{ href: null }} />
+      <Tabs.Screen name="messages/[id]" options={{ href: null }} />
     </Tabs>
   )
 }

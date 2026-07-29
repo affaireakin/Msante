@@ -107,6 +107,8 @@ export default function AdminLayout() {
         name="audit"
         options={{ href: null }}
       />
+      <Tabs.Screen name="messages/index" options={{ href: null }} />
+      <Tabs.Screen name="messages/[id]" options={{ href: null }} />
     </Tabs>
   )
 }

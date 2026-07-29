@@ -42,6 +42,16 @@ export default function AdminProfileScreen() {
             Outils
           </Text>
           <TouchableOpacity
+            onPress={() => router.push('/(admin)/messages')}
+            style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: scale(14), borderBottomWidth: 1, borderBottomColor: 'rgba(190,200,206,0.25)' }}
+          >
+            <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+              <MaterialIcons name="forum" size={18} color="#82d8ff" />
+            </View>
+            <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.sm, color: '#0b1c30', fontWeight: '500' }}>Messages internes</Text>
+            <MaterialIcons name="chevron-right" size={20} color="#bec8ce" />
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => router.push('/(admin)/audit')}
             style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: scale(14) }}
           >
