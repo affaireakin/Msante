@@ -122,9 +122,15 @@ export default function RootLayout() {
       return
     }
 
-    // admin / organization_member have no mobile experience yet (web-only).
-    // Without this guard, they fell through to the "else" branch below and
-    // got silently routed into patient ONBOARDING (onboarding_completed is
+    // Super admins have a dedicated mobile tab group.
+    if (profile?.role === 'admin') {
+      if (segments[0] !== '(admin)') router.replace('/(admin)/')
+      return
+    }
+
+    // organization_member has no mobile experience yet (web-only). Without
+    // this guard, they fell through to the "else" branch below and got
+    // silently routed into patient ONBOARDING (onboarding_completed is
     // never set for these accounts, since they're created via web signup/
     // invite, not the mobile onboarding flow) — which looks exactly like
     // being sent back to signup.
