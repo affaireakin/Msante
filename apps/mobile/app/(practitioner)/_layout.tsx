@@ -136,6 +136,12 @@ export default function PractitionerLayout() {
         name="notes-cliniques"
         options={{ href: null }}
       />
+      {/* Was missing entirely (neither shown nor hidden) — auto-registered
+          as the one extra unlabeled tab icon after "Profil". */}
+      <Tabs.Screen
+        name="availability"
+        options={{ href: null }}
+      />
     </Tabs>
   )
 }
