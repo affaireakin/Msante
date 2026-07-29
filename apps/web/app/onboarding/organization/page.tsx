@@ -277,40 +277,40 @@ export default function OrganizationOnboardingPage() {
               <div>
                 <label className="text-sm font-semibold text-slate-700">Nom de l&apos;organisation *</label>
                 <input value={name} onChange={e => setName(e.target.value)} placeholder="Ex : Cabinet Médical Diallo"
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                  className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-sky-500" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-sm font-semibold text-slate-700">Email *</label>
                   <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-sky-500" />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-slate-700">Téléphone *</label>
                   <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+221 7X XXX XX XX"
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-sky-500" />
                 </div>
               </div>
               <div>
                 <label className="text-sm font-semibold text-slate-700">Adresse *</label>
                 <input value={address} onChange={e => setAddress(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                  className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-sky-500" />
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-sm font-semibold text-slate-700">Ville *</label>
                   <input value={city} onChange={e => setCity(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-sky-500" />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-slate-700">Code postal</label>
                   <input value={postalCode} onChange={e => setPostalCode(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-sky-500" />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-slate-700">Pays</label>
                   <select value={country} onChange={e => setCountry(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                    className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-sky-500">
                     <option value="SN">Sénégal</option>
                     <option value="CI">Côte d&apos;Ivoire</option>
                     <option value="CM">Cameroun</option>
@@ -321,7 +321,7 @@ export default function OrganizationOnboardingPage() {
               <div>
                 <label className="text-sm font-semibold text-slate-700">SIRET <span className="text-slate-400 font-normal">(optionnel selon le pays)</span></label>
                 <input value={siret} onChange={e => setSiret(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                  className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-sky-500" />
               </div>
             </div>
           )}
