@@ -1,9 +1,12 @@
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native'
+import { useState } from 'react'
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl, Modal } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useAuthStore } from '@/features/auth/store/authStore'
+import { usePatients } from '@/features/practitioner/hooks/usePatients'
 import { supabase } from '@/services/supabase'
 
 interface ConversationPreview {
@@ -29,9 +32,61 @@ function getInitials(name: string) {
   return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
 }
 
+function NewMessageModal({ onClose }: { onClose: () => void }) {
+  const router = useRouter()
+  const { practitioner } = useAuth()
+  const { data: patients = [], isLoading } = usePatients(practitioner?.id ?? '')
+
+  return (
+    <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+      <View style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(226,232,240,0.5)' }}>
+          <Text style={{ fontSize: 17, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope' }}>Nouveau message</Text>
+          <TouchableOpacity onPress={onClose}><MaterialIcons name="close" size={22} color="#6f787e" /></TouchableOpacity>
+        </View>
+        {isLoading ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <ActivityIndicator color="#82d8ff" size="large" />
+          </View>
+        ) : patients.length === 0 ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 40 }}>
+            <MaterialIcons name="group" size={36} color="#bec8ce" />
+            <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center' }}>
+              Vos patients apparaîtront ici après un premier rendez-vous.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={patients}
+            keyExtractor={p => p.patientId}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  onClose()
+                  router.push({ pathname: '/(practitioner)/messages/[id]', params: { id: item.patientId, name: item.patientName } })
+                }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 20, paddingVertical: 14 }}
+              >
+                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontFamily: 'Manrope', fontWeight: '800', fontSize: 15, color: '#82d8ff' }}>{item.patientInitials}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>{item.patientName}</Text>
+                  <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>{item.shortId}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        )}
+      </View>
+    </Modal>
+  )
+}
+
 export default function PractitionerMessagesScreen() {
   const router = useRouter()
   const { profile } = useAuthStore()
+  const [showNewMessage, setShowNewMessage] = useState(false)
 
   const { data: conversations = [], isLoading, isError, refetch, isRefetching } = useQuery<ConversationPreview[]>({
     queryKey: ['practitioner-conversations', profile?.id],
@@ -70,19 +125,17 @@ export default function PractitionerMessagesScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
-      {/* Header */}
+      {/* Header — écran racine de l'onglet Messages, plus de bouton retour */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingVertical: 14, backgroundColor: 'rgba(255,255,255,0.70)', borderBottomWidth: 1, borderBottomColor: 'rgba(226,232,240,0.5)' }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ padding: 4 }}>
-          <MaterialIcons name="arrow-back" size={24} color="#0b1c30" />
-        </TouchableOpacity>
         <Text style={{ flex: 1, fontSize: 18, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope' }}>
           Messages patients
         </Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999, backgroundColor: '#e5eeff' }}>
-          <MaterialIcons name="lock" size={12} color="#82d8ff" />
-          <Text style={{ fontSize: 11, fontFamily: 'Manrope', fontWeight: '600', color: '#82d8ff' }}>Sécurisé</Text>
-        </View>
+        <TouchableOpacity onPress={() => setShowNewMessage(true)} style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
+          <MaterialIcons name="add" size={20} color="#0b1c30" />
+        </TouchableOpacity>
       </View>
+
+      {showNewMessage && <NewMessageModal onClose={() => setShowNewMessage(false)} />}
 
       {isLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>

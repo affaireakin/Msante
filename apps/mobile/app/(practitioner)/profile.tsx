@@ -464,73 +464,43 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {/* ── Actions ── */}
-        <View style={{ gap: 12 }}>
-          <TouchableOpacity
-            onPress={() => router.push('/(practitioner)/services' as never)}
-            style={{
-              paddingVertical: 16, borderRadius: 999,
-              alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,
-              backgroundColor: '#e5eeff',
-            }}
-          >
-            <MaterialIcons name="medical-services" size={20} color="#82d8ff" />
-            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#82d8ff' }}>
-              Mes prestations
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => router.push('/(practitioner)/availability')}
-            style={{
-              paddingVertical: 16, borderRadius: 999,
-              alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,
-              backgroundColor: '#e5eeff',
-            }}
-          >
-            <MaterialIcons name="event-available" size={20} color="#82d8ff" />
-            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#82d8ff' }}>
-              Gérer mes disponibilités
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => router.push('/(practitioner)/secretary' as never)}
-            style={{
-              paddingVertical: 16, borderRadius: 999,
-              alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,
-              backgroundColor: '#e5eeff',
-            }}
-          >
-            <MaterialIcons name="support-agent" size={20} color="#82d8ff" />
-            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#82d8ff' }}>
-              Mes secrétaires
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => router.push('/(practitioner)/disputes' as never)}
-            style={{
-              paddingVertical: 16, borderRadius: 999,
-              alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,
-              backgroundColor: '#e5eeff',
-            }}
-          >
-            <MaterialIcons name="gavel" size={20} color="#82d8ff" />
-            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#82d8ff' }}>
-              Litiges
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleSignOut}
-            style={{ paddingVertical: 16, borderRadius: 999, alignItems: 'center', backgroundColor: '#ffdad6' }}
-          >
-            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#ba1a1a' }}>
-              Se déconnecter
-            </Text>
-          </TouchableOpacity>
+        {/* ── Gestion du cabinet — cartes groupées à la manière du profil patient ── */}
+        <View style={{ borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.70)', padding: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.80)' }}>
+          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#0b1c30', marginBottom: 4 }}>
+            Gestion du cabinet
+          </Text>
+          {[
+            { icon: 'medical-services' as const, label: 'Mes prestations', href: '/(practitioner)/services' as const },
+            { icon: 'event-available' as const, label: 'Gérer mes disponibilités', href: '/(practitioner)/availability' as const },
+            { icon: 'support-agent' as const, label: 'Mes secrétaires', href: '/(practitioner)/secretary' as const },
+            { icon: 'gavel' as const, label: 'Litiges', href: '/(practitioner)/disputes' as const },
+          ].map((item, i) => (
+            <TouchableOpacity
+              key={item.href}
+              onPress={() => router.push(item.href as never)}
+              style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: 'rgba(190,200,206,0.25)' }}
+            >
+              <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                <MaterialIcons name={item.icon} size={18} color="#82d8ff" />
+              </View>
+              <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', fontWeight: '500' }}>{item.label}</Text>
+              <MaterialIcons name="chevron-right" size={20} color="#bec8ce" />
+            </TouchableOpacity>
+          ))}
         </View>
+
+        {/* ── Sign out ── */}
+        <TouchableOpacity
+          onPress={handleSignOut}
+          style={{
+            flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+            gap: 8, paddingVertical: 14, borderRadius: 100,
+            backgroundColor: 'rgba(186,26,26,0.06)', borderWidth: 1, borderColor: 'rgba(186,26,26,0.15)',
+          }}
+        >
+          <MaterialIcons name="logout" size={18} color="#ba1a1a" />
+          <Text style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 14, color: '#ba1a1a' }}>Déconnexion</Text>
+        </TouchableOpacity>
 
         <View style={{ height: 16 }} />
       </ScrollView>

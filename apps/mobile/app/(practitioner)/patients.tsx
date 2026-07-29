@@ -400,6 +400,7 @@ export default function PatientsScreen() {
             M-Santé
           </Text>
           <TouchableOpacity
+            onPress={() => router.push('/(practitioner)/profile')}
             style={{
               width: 36,
               height: 36,

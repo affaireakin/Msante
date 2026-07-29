@@ -27,12 +27,16 @@ export function useAgenda(practitionerId: string) {
         59,
       ).toISOString()
 
+      // "Demandes en attente" doit remonter toute requête future, pas
+      // uniquement celles du jour même (sinon l'écran paraît vide dès qu'il
+      // n'y a rien programmé aujourd'hui) ; seul "Confirmés aujourd'hui"
+      // reste borné à la journée en cours.
       const { data, error } = await supabase
         .from('appointments')
         .select('id, scheduled_at, status, notes, type, patient_id, users!appointments_patient_id_fkey(full_name)')
         .eq('practitioner_id', practitionerId)
+        .in('status', ['pending', 'confirmed'])
         .gte('scheduled_at', todayStart)
-        .lte('scheduled_at', todayEnd)
         .order('scheduled_at', { ascending: true })
 
       if (error) throw error
@@ -60,7 +64,9 @@ export function useAgenda(practitionerId: string) {
 
       return {
         pending: appointments.filter((a) => a.status === 'pending'),
-        confirmed: appointments.filter((a) => a.status === 'confirmed'),
+        confirmed: appointments.filter(
+          (a) => a.status === 'confirmed' && a.scheduledAt >= todayStart && a.scheduledAt <= todayEnd,
+        ),
       }
     },
     staleTime: 15_000,

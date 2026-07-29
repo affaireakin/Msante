@@ -15,11 +15,11 @@ function TabIcon({ name, label, focused }: TabIconProps) {
       style={{
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
         borderRadius: 12,
         backgroundColor: focused ? 'rgba(0,102,133,0.08)' : 'transparent',
-        minWidth: 52,
+        minWidth: 58,
       }}
     >
       <MaterialIcons
@@ -55,7 +55,8 @@ export default function PatientLayout() {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          height: Platform.OS === 'ios' ? 88 : 68,
+          height: Platform.OS === 'ios' ? 92 : 72,
+          paddingTop: 8,
           backgroundColor: 'rgba(255,255,255,0.92)',
           borderTopColor: 'rgba(130,216,255,0.15)',
           borderTopWidth: 1,
@@ -65,6 +66,7 @@ export default function PatientLayout() {
           shadowOffset: { width: 0, height: -6 },
           shadowRadius: 20,
         },
+        tabBarItemStyle: { paddingHorizontal: 2 },
       }}
     >
       {/* 5 onglets : HOME · ASSISTANT · ACTIVITIES · RENDEZ-VOUS · MESSAGERIE

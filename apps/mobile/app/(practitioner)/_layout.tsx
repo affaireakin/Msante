@@ -15,11 +15,11 @@ function TabIcon({ name, label, focused }: TabIconProps) {
       style={{
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
         borderRadius: 12,
         backgroundColor: focused ? 'rgba(0,102,133,0.08)' : 'transparent',
-        minWidth: 52,
+        minWidth: 58,
       }}
     >
       <MaterialIcons name={name} size={focused ? 24 : 22} color={focused ? '#82d8ff' : '#6f787e'} />
@@ -51,7 +51,8 @@ export default function PractitionerLayout() {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          height: Platform.OS === 'ios' ? 86 : 66,
+          height: Platform.OS === 'ios' ? 92 : 72,
+          paddingTop: 8,
           backgroundColor: 'rgba(255,255,255,0.80)',
           borderTopColor: 'rgba(255,255,255,0.30)',
           borderTopWidth: 1,
@@ -61,6 +62,7 @@ export default function PractitionerLayout() {
           shadowOffset: { width: 0, height: -8 },
           shadowRadius: 24,
         },
+        tabBarItemStyle: { paddingHorizontal: 2 },
       }}
     >
       <Tabs.Screen
