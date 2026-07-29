@@ -109,20 +109,25 @@ export default function RootLayout() {
     // to run before both the web-only-roles check and the onboarding_completed
     // check below, otherwise they'd be redirected into patient onboarding on
     // every fresh app launch instead of back to their organization's status.
-    // Once approved, role flips to 'organization_admin' and pendingOrganization
-    // is no longer enough on its own to keep matching this branch — falls
-    // through to the web-only gate below (no mobile org-admin space yet).
+    // Once approved, role flips to 'organization_admin' and is handled by its
+    // own tab group just below instead.
     if (pendingOrganization && profile?.role === 'patient') {
       if (segments[0] !== '(onboarding)') router.replace('/(onboarding)/organization')
       return
     }
 
-    // admin / organization_admin / organization_member have no mobile
-    // experience (web-only). Without this guard, they fell through to the
-    // "else" branch below and got silently routed into patient ONBOARDING
-    // (onboarding_completed is never set for these accounts, since they're
-    // created via web signup/invite, not the mobile onboarding flow) — which
-    // looks exactly like being sent back to signup.
+    // Approved organization admins have a dedicated mobile tab group.
+    if (profile?.role === 'organization_admin') {
+      if (segments[0] !== '(organization)') router.replace('/(organization)/')
+      return
+    }
+
+    // admin / organization_member have no mobile experience yet (web-only).
+    // Without this guard, they fell through to the "else" branch below and
+    // got silently routed into patient ONBOARDING (onboarding_completed is
+    // never set for these accounts, since they're created via web signup/
+    // invite, not the mobile onboarding flow) — which looks exactly like
+    // being sent back to signup.
     if (profile && profile.role !== 'patient' && profile.role !== 'practitioner') {
       const path = (segments as string[]).join('/')
       if (path !== '(auth)/web-only') {
