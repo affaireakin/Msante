@@ -78,6 +78,12 @@ export default function AdminLayout() {
         }}
       />
       <Tabs.Screen
+        name="users"
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon name="group" label="Utilisateurs" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
         name="disputes"
         options={{
           tabBarIcon: ({ focused }) => <TabIcon name="gavel" label="Litiges" focused={focused} />,

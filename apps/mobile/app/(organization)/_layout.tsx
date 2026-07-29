@@ -72,6 +72,12 @@ export default function OrganizationLayout() {
         }}
       />
       <Tabs.Screen
+        name="practitioners"
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon name="medical-services" label="Praticiens" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
         name="collaborators"
         options={{
           tabBarIcon: ({ focused }) => <TabIcon name="group" label="Équipe" focused={focused} />,
