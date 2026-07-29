@@ -93,6 +93,7 @@ export default function PractitionerProfilePage() {
   const licenseRef = useRef<HTMLInputElement>(null)
   const orderRef = useRef<HTMLInputElement>(null)
   const insuranceRef = useRef<HTMLInputElement>(null)
+  const extraDocRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState<string | null>(null)
   const [docError, setDocError] = useState('')
 
@@ -219,7 +220,7 @@ export default function PractitionerProfilePage() {
     }
   }
 
-  const uploadDoc = async (file: File, type: 'diploma' | 'id_card' | 'license' | 'order_certificate' | 'professional_insurance') => {
+  const uploadDoc = async (file: File, type: 'diploma' | 'id_card' | 'license' | 'order_certificate' | 'professional_insurance' | 'other') => {
     const practId = data?.pract?.id
     const userId = data?.user.id
     if (!practId || !userId) return
@@ -228,7 +229,13 @@ export default function PractitionerProfilePage() {
     setUploading(type)
     try {
       const ext = file.name.split('.').pop()
-      const path = `${userId}/${type}_${Date.now()}.${ext}`
+      // For 'other', several distinct uploads can coexist (no dedicated enum
+      // value per document), so the sanitized original filename is kept in
+      // the path — it's the only thing that lets the list below tell them apart.
+      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9-_]/g, '_').slice(0, 40)
+      const path = type === 'other'
+        ? `${userId}/other_${Date.now()}_${baseName}.${ext}`
+        : `${userId}/${type}_${Date.now()}.${ext}`
       const { error: uploadError } = await supabase.storage.from('documents').upload(path, file, { upsert: true })
       if (uploadError) throw uploadError
       await supabase.from('verification_documents').insert({ practitioner_id: practId, document_type: type, file_url: path, status: 'pending' })
@@ -279,6 +286,15 @@ export default function PractitionerProfilePage() {
     license: "Licence d'exercice / Autorisation",
     order_certificate: "Attestation Ordre professionnel",
     professional_insurance: "Assurance RC professionnelle",
+    other: 'Document complémentaire',
+  }
+
+  // 'other' docs carry their original filename in the storage path
+  // (other_<timestamp>_<name>.<ext>) since several can coexist with no
+  // dedicated type of their own — extract it so the list can tell them apart.
+  const otherDocLabel = (fileUrl: string): string => {
+    const match = fileUrl.match(/other_\d+_(.+)\.[^.]+$/)
+    return match ? match[1].replace(/_/g, ' ') : DOC_LABELS.other
   }
 
   return (
@@ -497,7 +513,9 @@ export default function PractitionerProfilePage() {
                     <div key={doc.id} className="flex items-center gap-3 p-3 rounded-xl bg-[#f8f9ff] border border-[#bec8ce]">
                       <Icon name="description" color="#82d8ff" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-[#0b1c30]">{DOC_LABELS[doc.document_type] ?? doc.document_type}</p>
+                        <p className="text-sm font-semibold text-[#0b1c30]">
+                          {doc.document_type === 'other' ? otherDocLabel(doc.file_url) : (DOC_LABELS[doc.document_type] ?? doc.document_type)}
+                        </p>
                         <p className="text-xs text-[#6f787e]">{new Date(doc.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                       </div>
                       <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0" style={{ backgroundColor: docStatus.bg, color: docStatus.color }}>
@@ -548,6 +566,28 @@ export default function PractitionerProfilePage() {
                     onChange={e => { const f = e.target.files?.[0]; if (f) uploadDoc(f, type) }} />
                 </div>
               ))}
+
+              {/* Documents complémentaires — aucune limite de nombre ou de
+                  type, chaque ajout est une nouvelle soumission indépendante
+                  envoyée en révision, sans jamais remplacer les précédentes. */}
+              <div>
+                <button type="button" onClick={() => extraDocRef.current?.click()}
+                  className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all hover:border-[#82d8ff] hover:bg-[#e5eeff]/20 text-left"
+                  style={{ borderColor: uploading === 'other' ? '#82d8ff' : '#bec8ce' }}>
+                  <div className="w-10 h-10 rounded-xl bg-[#e5eeff] flex items-center justify-center flex-shrink-0">
+                    {uploading === 'other'
+                      ? <div className="w-5 h-5 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" />
+                      : <Icon name="add" color="#82d8ff" />}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#0b1c30]">Ajouter un document</p>
+                    <p className="text-xs text-[#6f787e]">Tout justificatif complémentaire — PDF, JPG, PNG, max 10 Mo</p>
+                  </div>
+                  <Icon name="upload" color="#6f787e" size={18} />
+                </button>
+                <input ref={extraDocRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden"
+                  onChange={e => { const f = e.target.files?.[0]; if (f) { uploadDoc(f, 'other'); e.target.value = '' } }} />
+              </div>
             </div>
 
             {docError && (
