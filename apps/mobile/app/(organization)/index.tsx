@@ -143,11 +143,19 @@ export default function OrganizationDashboardScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }} edges={['top']}>
       <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(16) }} showsVerticalScrollIndicator={false}>
-        <View>
-          <Text style={{ fontFamily: 'Manrope', fontSize: fs.xxl, fontWeight: '800', color: '#0b1c30' }}>{data?.name ?? '—'}</Text>
-          <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#6f787e', marginTop: 2 }}>
-            {data?.city ? `${data.city} · ` : ''}Vue d&apos;ensemble de votre organisation
-          </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.xxl, fontWeight: '800', color: '#0b1c30' }}>{data?.name ?? '—'}</Text>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#6f787e', marginTop: 2 }}>
+              {data?.city ? `${data.city} · ` : ''}Vue d&apos;ensemble de votre organisation
+            </Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => router.push('/(organization)/notifications')}
+            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.70)', borderWidth: 1, borderColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <MaterialIcons name="notifications-none" size={20} color="#0b1c30" />
+          </TouchableOpacity>
         </View>
 
         {/* Logo */}

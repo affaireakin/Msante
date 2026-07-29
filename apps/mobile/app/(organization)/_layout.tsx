@@ -89,6 +89,10 @@ export default function OrganizationLayout() {
           tabBarIcon: ({ focused }) => <TabIcon name="person" label="Profil" focused={focused} />,
         }}
       />
+      <Tabs.Screen
+        name="notifications"
+        options={{ href: null }}
+      />
     </Tabs>
   )
 }

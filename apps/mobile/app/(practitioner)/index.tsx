@@ -100,7 +100,8 @@ export default function DashboardScreen() {
             </Text>
           </View>
         </View>
-        <View
+        <TouchableOpacity
+          onPress={() => router.push('/(practitioner)/notifications')}
           style={{
             width: 40,
             height: 40,
@@ -113,7 +114,7 @@ export default function DashboardScreen() {
           }}
         >
           <MaterialIcons name="notifications-none" size={22} color="#0b1c30" />
-        </View>
+        </TouchableOpacity>
       </View>
 
       <ScrollView

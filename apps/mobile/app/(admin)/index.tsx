@@ -86,9 +86,17 @@ export default function AdminDashboardScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }} edges={['top']}>
       <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(16) }} showsVerticalScrollIndicator={false}>
-        <View>
-          <Text style={{ fontFamily: 'Manrope', fontSize: fs.xxl, fontWeight: '800', color: '#0b1c30' }}>Tableau de bord</Text>
-          <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#6f787e', marginTop: 2 }}>Statistiques globales de la plateforme</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <View>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.xxl, fontWeight: '800', color: '#0b1c30' }}>Tableau de bord</Text>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#6f787e', marginTop: 2 }}>Statistiques globales de la plateforme</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => router.push('/(admin)/notifications')}
+            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.70)', borderWidth: 1, borderColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <MaterialIcons name="notifications-none" size={20} color="#0b1c30" />
+          </TouchableOpacity>
         </View>
 
         {isLoading ? (

@@ -99,6 +99,10 @@ export default function AdminLayout() {
         name="payments"
         options={{ href: null }}
       />
+      <Tabs.Screen
+        name="notifications"
+        options={{ href: null }}
+      />
     </Tabs>
   )
 }
