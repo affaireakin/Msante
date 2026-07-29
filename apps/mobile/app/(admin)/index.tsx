@@ -126,6 +126,14 @@ export default function AdminDashboardScreen() {
                 </View>
               ))}
             </View>
+
+            <TouchableOpacity
+              onPress={() => router.push('/(admin)/payments')}
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: scale(8), paddingVertical: scale(14), borderRadius: 999, backgroundColor: '#82d8ff' }}
+            >
+              <MaterialIcons name="account-balance-wallet" size={scale(18)} color="#0b1c30" />
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '800', color: '#0b1c30' }}>Voir les paiements</Text>
+            </TouchableOpacity>
           </>
         )}
       </ScrollView>

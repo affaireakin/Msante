@@ -95,6 +95,10 @@ export default function AdminLayout() {
           tabBarIcon: ({ focused }) => <TabIcon name="person" label="Profil" focused={focused} />,
         }}
       />
+      <Tabs.Screen
+        name="payments"
+        options={{ href: null }}
+      />
     </Tabs>
   )
 }
