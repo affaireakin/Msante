@@ -89,6 +89,12 @@ export default function WelcomeScreen() {
             onPress={() => router.push('/(auth)/practitioner-type')}
             variant="outline"
           />
+          <TouchableOpacity onPress={() => router.push('/(auth)/signup-organization')} style={{ paddingVertical: 4 }}>
+            <Text style={{ textAlign: 'center', fontSize: 13, color: '#6f787e', fontFamily: 'Manrope' }}>
+              Je représente une organisation{' '}
+              <Text style={{ color: '#82d8ff', fontWeight: '700' }}>Créer un compte</Text>
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push('/(auth)/login')} style={{ paddingVertical: 8 }}>
             <Text style={{ textAlign: 'center', fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>
               Déjà un compte ?{' '}

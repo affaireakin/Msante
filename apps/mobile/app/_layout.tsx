@@ -13,7 +13,7 @@ import { Providers } from './_providers'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { usePushNotifications } from '@/features/notifications/hooks/usePushNotifications'
 import { useMoodReminder } from '@/features/notifications/hooks/useMoodReminder'
-import { supabase, fetchUserProfile, fetchPractitionerProfile, withTimeout } from '@/services/supabase'
+import { supabase, fetchUserProfile, fetchPractitionerProfile, fetchPendingOrganization, withTimeout } from '@/services/supabase'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -34,8 +34,8 @@ export default function RootLayout() {
   })
 
   const {
-    isAuthenticated, profile, isLoading,
-    setSession, setProfile, setPractitioner, setLoading,
+    isAuthenticated, profile, pendingOrganization, isLoading,
+    setSession, setProfile, setPractitioner, setPendingOrganization, setLoading,
   } = useAuthStore()
   const router = useRouter()
   const segments = useSegments()
@@ -64,18 +64,21 @@ export default function RootLayout() {
           setSession(session.user)
           setLoading(true)
           void (async () => {
-            const [userProfile, practitionerProfile] = await Promise.all([
+            const [userProfile, practitionerProfile, pendingOrg] = await Promise.all([
               withTimeout(fetchUserProfile(session.user.id), 12000, null),
               withTimeout(fetchPractitionerProfile(session.user.id), 12000, null),
+              withTimeout(fetchPendingOrganization(session.user.id), 12000, null),
             ])
             setProfile(userProfile)
             setPractitioner(practitionerProfile)
+            setPendingOrganization(pendingOrg)
             setLoading(false)
           })()
         } else {
           setSession(null)
           setProfile(null)
           setPractitioner(null)
+          setPendingOrganization(null)
           setLoading(false)
         }
       }
@@ -97,6 +100,20 @@ export default function RootLayout() {
     // Secretaries (personal or org-invited) have a dedicated mobile tab group.
     if (profile?.role === 'secretary') {
       if (segments[0] !== '(secretary)') router.replace('/(secretary)/')
+      return
+    }
+
+    // An organization-creation request is never tracked via role/
+    // onboarding_completed — the requester stays role='patient' until a
+    // Super Admin approves it (see fetchPendingOrganization) — so this has
+    // to run before both the web-only-roles check and the onboarding_completed
+    // check below, otherwise they'd be redirected into patient onboarding on
+    // every fresh app launch instead of back to their organization's status.
+    // Once approved, role flips to 'organization_admin' and pendingOrganization
+    // is no longer enough on its own to keep matching this branch — falls
+    // through to the web-only gate below (no mobile org-admin space yet).
+    if (pendingOrganization && profile?.role === 'patient') {
+      if (segments[0] !== '(onboarding)') router.replace('/(onboarding)/organization')
       return
     }
 
@@ -137,7 +154,7 @@ export default function RootLayout() {
     } else {
       if (segments[0] !== '(patient)') router.replace('/(patient)/home')
     }
-  }, [isAuthenticated, profile, isLoading])
+  }, [isAuthenticated, profile, pendingOrganization, isLoading])
 
   if (!fontsLoaded) return null
 

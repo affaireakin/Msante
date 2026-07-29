@@ -66,3 +66,27 @@ export async function fetchPractitionerProfile(userId: string): Promise<Practiti
   if (error) return null
   return data as Practitioner
 }
+
+export interface PendingOrganization {
+  id: string
+  name: string
+  status: string
+}
+
+// An organization-creation request is NOT tracked via users.role or
+// onboarding_completed — the requester stays role='patient' until a Super
+// Admin approves the org (see validate-organization edge function), so the
+// only way to know "this patient is actually mid organization-signup" is to
+// look up the organizations row by created_by. Mirrors the equivalent
+// per-page check on web (onboarding/organization/page.tsx).
+export async function fetchPendingOrganization(userId: string): Promise<PendingOrganization | null> {
+  const { data, error } = await supabase
+    .from('organizations')
+    .select('id, name, status')
+    .eq('created_by', userId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error) return null
+  return data as PendingOrganization | null
+}

@@ -11,7 +11,7 @@ const RESEND_COOLDOWN = 60
 
 export default function VerifyOtpScreen() {
   const router = useRouter()
-  const { email } = useLocalSearchParams<{ email: string }>()
+  const { email, intent } = useLocalSearchParams<{ email: string; intent?: string }>()
 
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
@@ -56,8 +56,17 @@ export default function VerifyOtpScreen() {
         Alert.alert('Code incorrect', 'Le code saisi est invalide ou expiré. Réessayez.')
         setOtp('')
         inputRef.current?.focus()
+        return
       }
       // On success _layout.tsx onAuthStateChange handles navigation automatically
+      // for every role EXCEPT organization: the account is created role='patient'
+      // (the real intent lives only in this query param, not in the DB) until an
+      // organizations row exists, so the generic redirect can't yet tell this
+      // apart from a real patient signup — same gap web solves with its own
+      // role query param at this exact step.
+      if (intent === 'organization') {
+        router.replace('/(onboarding)/organization')
+      }
     } catch {
       Alert.alert('Erreur', 'Une erreur réseau est survenue. Réessayez.')
     } finally {
