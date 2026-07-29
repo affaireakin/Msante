@@ -15,7 +15,7 @@ const EMERGENCY_CONTACTS = [
 const FAQ: { q: string; a: string }[] = [
   {
     q: 'Comment prendre un rendez-vous ?',
-    a: 'Rendez-vous dans l\'onglet "Praticiens", choisissez un professionnel, sélectionnez un créneau disponible et procédez au paiement.',
+    a: 'Depuis l\'accueil, appuyez sur "Trouver un praticien", choisissez un professionnel, sélectionnez un créneau disponible et procédez au paiement.',
   },
   {
     q: 'Quels moyens de paiement sont acceptés ?',

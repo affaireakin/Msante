@@ -499,6 +499,16 @@ export default function ProfileScreen() {
             <MaterialIcons name="chevron-right" size={20} color="#bec8ce" />
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => router.push('/(patient)/permissions' as never)}
+            style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, borderTopWidth: 1, borderTopColor: 'rgba(190,200,206,0.25)' }}
+          >
+            <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+              <MaterialIcons name="shield" size={18} color="#82d8ff" />
+            </View>
+            <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', fontWeight: '500' }}>Rôles & autorisations</Text>
+            <MaterialIcons name="chevron-right" size={20} color="#bec8ce" />
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => router.push('/(patient)/support' as never)}
             style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 14, borderTopWidth: 1, borderTopColor: 'rgba(190,200,206,0.25)' }}
           >

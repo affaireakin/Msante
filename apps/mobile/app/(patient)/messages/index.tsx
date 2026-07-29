@@ -1,4 +1,5 @@
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native'
+import { useState } from 'react'
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl, Modal } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -29,9 +30,91 @@ function getInitials(name: string) {
   return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
 }
 
+interface MyPractitioner {
+  userId: string
+  fullName: string
+  speciality: string
+}
+
+// Nouveau message : on ne laisse choisir que des praticiens avec qui le
+// patient a effectivement un rendez-vous — pas une recherche libre parmi
+// tous les praticiens de la plateforme.
+function useMyPractitioners(enabled: boolean) {
+  const { profile } = useAuthStore()
+  return useQuery<MyPractitioner[]>({
+    queryKey: ['my-practitioners-for-message', profile?.id],
+    enabled: enabled && !!profile?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('practitioners(user_id, speciality, users(full_name))')
+        .eq('patient_id', profile!.id)
+      if (error) throw error
+      const map = new Map<string, MyPractitioner>()
+      for (const row of (data ?? [])) {
+        const pract = row.practitioners as unknown as { user_id: string; speciality: string; users: { full_name: string } } | null
+        if (!pract || map.has(pract.user_id)) continue
+        map.set(pract.user_id, { userId: pract.user_id, fullName: pract.users?.full_name ?? 'Praticien', speciality: pract.speciality })
+      }
+      return Array.from(map.values())
+    },
+  })
+}
+
+function NewMessageModal({ onClose }: { onClose: () => void }) {
+  const router = useRouter()
+  const { data: practitioners = [], isLoading } = useMyPractitioners(true)
+
+  return (
+    <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+      <View style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(226,232,240,0.5)' }}>
+          <Text style={{ fontSize: 17, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope' }}>Nouveau message</Text>
+          <TouchableOpacity onPress={onClose}><MaterialIcons name="close" size={22} color="#6f787e" /></TouchableOpacity>
+        </View>
+        {isLoading ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <ActivityIndicator color="#82d8ff" size="large" />
+          </View>
+        ) : practitioners.length === 0 ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 40 }}>
+            <MaterialIcons name="medical-services" size={36} color="#bec8ce" />
+            <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center' }}>
+              Vous pourrez contacter un praticien après un premier rendez-vous.
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={practitioners}
+            keyExtractor={p => p.userId}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  onClose()
+                  router.push({ pathname: '/(patient)/messages/[id]', params: { id: item.userId, name: item.fullName, speciality: item.speciality } })
+                }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 20, paddingVertical: 14 }}
+              >
+                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontFamily: 'Manrope', fontWeight: '800', fontSize: 15, color: '#82d8ff' }}>{getInitials(item.fullName)}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>{item.fullName}</Text>
+                  <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>{item.speciality}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        )}
+      </View>
+    </Modal>
+  )
+}
+
 export default function PatientMessagesScreen() {
   const router = useRouter()
   const { profile } = useAuthStore()
+  const [showNewMessage, setShowNewMessage] = useState(false)
 
   const { data: conversations = [], isLoading, isError, refetch, isRefetching } = useQuery<ConversationPreview[]>({
     queryKey: ['conversations', profile?.id],
@@ -70,15 +153,17 @@ export default function PatientMessagesScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
-      {/* Header */}
+      {/* Header — écran racine de l'onglet Messagerie, plus de bouton retour */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingVertical: 14, backgroundColor: 'rgba(255,255,255,0.70)', borderBottomWidth: 1, borderBottomColor: 'rgba(226,232,240,0.5)' }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ padding: 4 }}>
-          <MaterialIcons name="arrow-back" size={24} color="#0b1c30" />
-        </TouchableOpacity>
         <Text style={{ flex: 1, fontSize: 18, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope' }}>
-          Messages
+          Messagerie
         </Text>
+        <TouchableOpacity onPress={() => setShowNewMessage(true)} style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
+          <MaterialIcons name="add" size={20} color="#0b1c30" />
+        </TouchableOpacity>
       </View>
+
+      {showNewMessage && <NewMessageModal onClose={() => setShowNewMessage(false)} />}
 
       {isLoading ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>

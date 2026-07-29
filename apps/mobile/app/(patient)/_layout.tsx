@@ -67,7 +67,11 @@ export default function PatientLayout() {
         },
       }}
     >
-      {/* 5 onglets : HOME · ASSISTANT · ACTIVITIES · PROVIDERS · SUPPORT */}
+      {/* 5 onglets : HOME · ASSISTANT · ACTIVITIES · RENDEZ-VOUS · MESSAGERIE
+          — Praticiens et Support ont été retirés de la barre (accessibles
+          depuis le bandeau d'accueil et le profil respectivement) pour
+          laisser la place à Rendez-vous et Messagerie, plus utilisés au
+          quotidien. */}
       <Tabs.Screen
         name="home"
         options={{
@@ -87,15 +91,15 @@ export default function PatientLayout() {
         }}
       />
       <Tabs.Screen
-        name="find-practitioners"
+        name="appointments"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="medical-services" label="Praticiens" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="calendar-today" label="Rendez-vous" focused={focused} />,
         }}
       />
       <Tabs.Screen
-        name="support"
+        name="messages/index"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="support-agent" label="Support" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="chat-bubble-outline" label="Messagerie" focused={focused} />,
         }}
       />
 
@@ -108,8 +112,8 @@ export default function PatientLayout() {
           those nested screens was rendering as its own unlabeled, icon-less
           tab bar button instead of being hidden (visible as a row of extra
           "tofu" icons after the 5 real tabs). */}
-      <Tabs.Screen name="appointments" options={{ href: null }} />
-      <Tabs.Screen name="messages/index" options={{ href: null }} />
+      <Tabs.Screen name="find-practitioners" options={{ href: null }} />
+      <Tabs.Screen name="support" options={{ href: null }} />
       <Tabs.Screen name="messages/[id]" options={{ href: null }} />
       <Tabs.Screen name="profile" options={{ href: null }} />
       <Tabs.Screen name="notifications" options={{ href: null }} />
@@ -122,6 +126,7 @@ export default function PatientLayout() {
       <Tabs.Screen name="consultation" options={{ href: null }} />
       <Tabs.Screen name="referring-doctor" options={{ href: null }} />
       <Tabs.Screen name="dossier" options={{ href: null }} />
+      <Tabs.Screen name="permissions/index" options={{ href: null }} />
       <Tabs.Screen name="permissions/[practitionerId]" options={{ href: null }} />
       <Tabs.Screen name="disputes" options={{ href: null }} />
       <Tabs.Screen name="prescriptions/index" options={{ href: null }} />
