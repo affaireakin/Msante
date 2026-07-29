@@ -142,6 +142,10 @@ export default function PractitionerLayout() {
         name="availability"
         options={{ href: null }}
       />
+      <Tabs.Screen
+        name="disputes"
+        options={{ href: null }}
+      />
     </Tabs>
   )
 }

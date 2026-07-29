@@ -14,6 +14,8 @@ interface Secretary {
   user: { full_name: string; email: string | null } | null
 }
 
+interface CatalogPermission { key: string; label: string; description: string | null }
+
 function useSecretaries(practitionerId: string | undefined) {
   return useQuery<Secretary[]>({
     queryKey: ['practitioner-secretaries', practitionerId],
@@ -30,12 +32,88 @@ function useSecretaries(practitionerId: string | undefined) {
   })
 }
 
+// Section 23 (web) : le praticien plafonne ce qu'une secrétaire peut voir/
+// faire, permission par permission — n'existait que sur le web, pas mobile.
+function useDelegatablePermissions() {
+  return useQuery<CatalogPermission[]>({
+    queryKey: ['secretary-delegatable-permissions'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('secretary_permissions_catalog').select('key, label, description').eq('delegatable', true).order('key')
+      if (error) throw error
+      return data ?? []
+    },
+  })
+}
+
+function useSecretaryGrants(secretaryId: string) {
+  return useQuery<string[]>({
+    queryKey: ['secretary-grants', secretaryId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('practitioner_secretary_permissions').select('permission_key').eq('secretary_id', secretaryId)
+      if (error) throw error
+      return (data ?? []).map(r => r.permission_key)
+    },
+  })
+}
+
+function SecretaryPermissionsEditor({ secretaryId }: { secretaryId: string }) {
+  const { fs, scale } = useResponsive()
+  const qc = useQueryClient()
+  const { data: catalog = [], isLoading: loadingCatalog } = useDelegatablePermissions()
+  const { data: granted = [], isLoading: loadingGrants } = useSecretaryGrants(secretaryId)
+
+  const toggle = useMutation({
+    mutationFn: async ({ key, grant }: { key: string; grant: boolean }) => {
+      if (grant) {
+        const { error } = await supabase.from('practitioner_secretary_permissions').insert({ secretary_id: secretaryId, permission_key: key })
+        if (error) throw error
+      } else {
+        const { error } = await supabase.from('practitioner_secretary_permissions').delete().eq('secretary_id', secretaryId).eq('permission_key', key)
+        if (error) throw error
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['secretary-grants', secretaryId] }),
+  })
+
+  if (loadingCatalog || loadingGrants) return <ActivityIndicator color="#82d8ff" style={{ marginTop: scale(10) }} />
+
+  return (
+    <View style={{ marginTop: scale(10), paddingTop: scale(10), borderTopWidth: 1, borderTopColor: '#e5eeff', gap: 8 }}>
+      {catalog.map(p => {
+        const isGranted = granted.includes(p.key)
+        return (
+          <TouchableOpacity
+            key={p.key}
+            onPress={() => toggle.mutate({ key: p.key, grant: !isGranted })}
+            disabled={toggle.isPending}
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 4 }}
+          >
+            <View style={{ flex: 1, marginRight: 8 }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#0b1c30', fontWeight: '600' }}>{p.label}</Text>
+              {p.description && <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, color: '#6f787e' }}>{p.description}</Text>}
+            </View>
+            <View style={{
+              width: 40, height: 22, borderRadius: 11,
+              backgroundColor: isGranted ? '#82d8ff' : '#bec8ce',
+              justifyContent: 'center', paddingHorizontal: 2,
+            }}>
+              <View style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: '#fff', transform: [{ translateX: isGranted ? 18 : 0 }] }} />
+            </View>
+          </TouchableOpacity>
+        )
+      })}
+      {catalog.length === 0 && <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, color: '#6f787e' }}>Aucune permission délégable pour le moment.</Text>}
+    </View>
+  )
+}
+
 export default function ManageSecretariesScreen() {
   const router = useRouter()
   const { px, fs, scale } = useResponsive()
   const { practitioner } = useAuth()
   const queryClient = useQueryClient()
   const { data: secretaries, isLoading } = useSecretaries(practitioner?.id)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
 
   const [inviting, setInviting] = useState(false)
   const [firstname, setFirstname] = useState('')
@@ -140,24 +218,33 @@ export default function ManageSecretariesScreen() {
         ) : (
           (secretaries ?? []).map(s => (
             <View key={s.id} style={{
-              flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
               backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: scale(14), borderWidth: 1, borderColor: '#e5eeff',
               padding: scale(14),
             }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(10), flex: 1 }}>
-                <View style={{ width: scale(38), height: scale(38), borderRadius: scale(12), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                  <MaterialIcons name="support-agent" size={scale(18)} color="#005e7a" />
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(10), flex: 1 }}>
+                  <View style={{ width: scale(38), height: scale(38), borderRadius: scale(12), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+                    <MaterialIcons name="support-agent" size={scale(18)} color="#005e7a" />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#0b1c30' }}>{s.user?.full_name ?? '—'}</Text>
+                    <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, color: '#6f787e' }}>{s.user?.email ?? ''}</Text>
+                  </View>
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#0b1c30' }}>{s.user?.full_name ?? '—'}</Text>
-                  <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, color: '#6f787e' }}>{s.user?.email ?? ''}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(14) }}>
+                  <TouchableOpacity onPress={() => setExpandedId(expandedId === s.id ? null : s.id)}>
+                    <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#005e7a' }}>
+                      {expandedId === s.id ? 'Fermer' : 'Permissions'}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => (s.status === 'active' ? revoke : reactivate).mutate(s.id)}>
+                    <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: s.status === 'active' ? '#ba1a1a' : '#005e7a' }}>
+                      {s.status === 'active' ? 'Révoquer' : 'Réactiver'}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-              <TouchableOpacity onPress={() => (s.status === 'active' ? revoke : reactivate).mutate(s.id)}>
-                <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: s.status === 'active' ? '#ba1a1a' : '#005e7a' }}>
-                  {s.status === 'active' ? 'Révoquer' : 'Réactiver'}
-                </Text>
-              </TouchableOpacity>
+              {expandedId === s.id && <SecretaryPermissionsEditor secretaryId={s.id} />}
             </View>
           ))
         )}

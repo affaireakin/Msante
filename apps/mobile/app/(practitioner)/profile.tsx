@@ -509,6 +509,20 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
+            onPress={() => router.push('/(practitioner)/disputes' as never)}
+            style={{
+              paddingVertical: 16, borderRadius: 999,
+              alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,
+              backgroundColor: '#e5eeff',
+            }}
+          >
+            <MaterialIcons name="gavel" size={20} color="#82d8ff" />
+            <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '700', color: '#82d8ff' }}>
+              Litiges
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             onPress={handleSignOut}
             style={{ paddingVertical: 16, borderRadius: 999, alignItems: 'center', backgroundColor: '#ffdad6' }}
           >
