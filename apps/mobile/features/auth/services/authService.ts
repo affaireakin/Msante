@@ -52,11 +52,20 @@ export const authService = {
     return { error: null }
   },
 
+  // No redirectTo: harmonized with web to use a 6-digit OTP typed in-app
+  // (verify-reset-otp screen) instead of an email link — a deep link to
+  // msante://reset-password can't be tested at all in Expo Go (it only
+  // understands its own exp:// scheme), and requiring a real build just to
+  // test "forgot password" was an unnecessary gap versus the web flow.
   async resetPassword(email: string): Promise<void> {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'msante://reset-password',
-    })
+    const { error } = await supabase.auth.resetPasswordForEmail(email)
     if (error) throw error
+  },
+
+  async verifyResetOtp(email: string, token: string): Promise<{ error: string | null }> {
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: 'recovery' })
+    if (error) return { error: error.message }
+    return { error: null }
   },
 
   async completePatientOnboarding(data: PatientOnboardingData): Promise<void> {
