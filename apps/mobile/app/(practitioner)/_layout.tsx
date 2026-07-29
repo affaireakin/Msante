@@ -81,12 +81,17 @@ export default function PractitionerLayout() {
           tabBarIcon: ({ focused }) => <TabIcon name="group" label="Patients" focused={focused} />,
         }}
       />
+      {/* QA finding: messages/ is a folder (index.tsx + [id].tsx) — Expo
+          Router registers it under those full names, not "messages", so this
+          Tabs.Screen never actually matched a route and messages/[id]
+          (unhidden) surfaced as its own unlabeled tab bar button. */}
       <Tabs.Screen
-        name="messages"
+        name="messages/index"
         options={{
           tabBarIcon: ({ focused }) => <TabIcon name="chat-bubble-outline" label="Messages" focused={focused} />,
         }}
       />
+      <Tabs.Screen name="messages/[id]" options={{ href: null }} />
       <Tabs.Screen
         name="profile"
         options={{
@@ -108,16 +113,19 @@ export default function PractitionerLayout() {
           tabBarStyle: { display: 'none' },
         }}
       />
+      {/* Same folder/index naming mismatch as messages/ above — these three
+          are folders each containing a single dynamic/new-style file, so the
+          real route name includes that file, not just the folder. */}
       <Tabs.Screen
-        name="patient-notes"
+        name="patient-notes/[patientId]"
         options={{ tabBarButton: () => null }}
       />
       <Tabs.Screen
-        name="prescription"
+        name="prescription/new"
         options={{ href: null }}
       />
       <Tabs.Screen
-        name="schedule-blocks"
+        name="schedule-blocks/new"
         options={{ href: null }}
       />
       <Tabs.Screen

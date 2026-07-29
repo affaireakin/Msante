@@ -99,22 +99,33 @@ export default function PatientLayout() {
         }}
       />
 
-      {/* Hidden screens */}
+      {/* Hidden screens — QA finding: these used to be listed by folder name
+          ("messages", "booking", "payment", "practitioner", "permissions",
+          "prescriptions"), but Expo Router registers folder+index/dynamic
+          routes under their full nested name ("messages/index",
+          "booking/[practitionerId]", etc.). A href:null whose `name` doesn't
+          exactly match a real route name silently does nothing — each of
+          those nested screens was rendering as its own unlabeled, icon-less
+          tab bar button instead of being hidden (visible as a row of extra
+          "tofu" icons after the 5 real tabs). */}
       <Tabs.Screen name="appointments" options={{ href: null }} />
-      <Tabs.Screen name="messages" options={{ href: null }} />
+      <Tabs.Screen name="messages/index" options={{ href: null }} />
+      <Tabs.Screen name="messages/[id]" options={{ href: null }} />
       <Tabs.Screen name="profile" options={{ href: null }} />
       <Tabs.Screen name="notifications" options={{ href: null }} />
-      <Tabs.Screen name="booking" options={{ href: null }} />
+      <Tabs.Screen name="booking/[practitionerId]" options={{ href: null }} />
       <Tabs.Screen name="booking-success" options={{ href: null }} />
       <Tabs.Screen name="confirm-session" options={{ href: null }} />
-      <Tabs.Screen name="payment" options={{ href: null }} />
-      <Tabs.Screen name="practitioner" options={{ href: null }} />
+      <Tabs.Screen name="payment/mock-checkout" options={{ href: null }} />
+      <Tabs.Screen name="payment/processing" options={{ href: null }} />
+      <Tabs.Screen name="practitioner/[id]" options={{ href: null }} />
       <Tabs.Screen name="consultation" options={{ href: null }} />
       <Tabs.Screen name="referring-doctor" options={{ href: null }} />
       <Tabs.Screen name="dossier" options={{ href: null }} />
-      <Tabs.Screen name="permissions" options={{ href: null }} />
+      <Tabs.Screen name="permissions/[practitionerId]" options={{ href: null }} />
       <Tabs.Screen name="disputes" options={{ href: null }} />
-      <Tabs.Screen name="prescriptions" options={{ href: null }} />
+      <Tabs.Screen name="prescriptions/index" options={{ href: null }} />
+      <Tabs.Screen name="prescriptions/[id]" options={{ href: null }} />
     </Tabs>
   )
 }
