@@ -10,7 +10,7 @@ type Role = 'all' | 'patient' | 'practitioner' | 'admin'
 type AccountStatus = 'active' | 'suspended' | 'blocked'
 type VerificationStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
 type DocumentStatus = 'pending' | 'approved' | 'rejected'
-type DocumentType = 'diploma' | 'license' | 'id_card' | 'other'
+type DocumentType = 'diploma' | 'license' | 'id_card' | 'order_certificate' | 'professional_insurance' | 'other'
 
 interface UserRow {
   id: string
@@ -77,10 +77,12 @@ const accountStatusColors: Record<string, { bg: string; text: string }> = {
 }
 
 const docTypeLabels: Record<DocumentType, string> = {
-  diploma:  'Diplôme',
-  license:  'Licence professionnelle',
-  id_card:  'Carte d\'identité',
-  other:    'Autre document',
+  diploma:                'Diplôme',
+  license:                'Licence professionnelle',
+  id_card:                'Carte d\'identité',
+  order_certificate:      'Certificat de l\'Ordre professionnel',
+  professional_insurance: 'Assurance professionnelle',
+  other:                  'Autre document',
 }
 
 // ─── Hooks ───────────────────────────────────────────────────────────────────

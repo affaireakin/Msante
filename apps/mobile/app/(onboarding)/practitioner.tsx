@@ -24,20 +24,26 @@ type DocConfig = {
   hint: string
 }
 
+// Le `key` (document_type) doit être une des 6 valeurs acceptées par le
+// CHECK constraint Postgres (diploma/license/id_card/order_certificate/
+// professional_insurance/other) — le `label` reste la description exacte
+// affichée à l'utilisateur, seul le tag interne est parfois approximatif
+// faute d'un type dédié (ex. un justificatif d'adresse est tagué 'other'
+// ou 'license' selon la catégorie, pour rester unique dans la liste).
 const HEALTHCARE_DOCS: DocConfig[] = [
   { key: 'diploma', label: 'Diplôme', hint: 'Médecine, psychologie, psychiatrie...' },
   { key: 'license', label: 'Autorisation d\'exercer', hint: 'Numéro RPPS, ordre, ou équivalent' },
-  { key: 'professional_card', label: 'Carte de l\'Ordre professionnel', hint: 'Ordre des médecins, des psychologues...' },
+  { key: 'order_certificate', label: 'Carte de l\'Ordre professionnel', hint: 'Ordre des médecins, des psychologues...' },
   { key: 'id_card', label: 'Pièce d\'identité officielle', hint: 'CNI, passeport ou titre de séjour' },
-  { key: 'address_proof', label: 'Justificatif adresse professionnelle', hint: 'Bail, facture récente...' },
+  { key: 'other', label: 'Justificatif adresse professionnelle', hint: 'Bail, facture récente...' },
 ]
 
 const WELLNESS_DOCS: DocConfig[] = [
-  { key: 'training_certificate', label: 'Certificat de formation', hint: 'Diplôme bien-être, coaching certifié...' },
-  { key: 'insurance', label: 'Attestation d\'assurance pro', hint: 'Responsabilité civile professionnelle' },
+  { key: 'diploma', label: 'Certificat de formation', hint: 'Diplôme bien-être, coaching certifié...' },
+  { key: 'professional_insurance', label: 'Attestation d\'assurance pro', hint: 'Responsabilité civile professionnelle' },
   { key: 'id_card', label: 'Pièce d\'identité officielle', hint: 'CNI, passeport ou titre de séjour' },
-  { key: 'address_proof', label: 'Justificatif adresse professionnelle', hint: 'Bail, facture récente...' },
-  { key: 'portfolio', label: 'Portfolio ou références', hint: 'PDF de témoignages, certifications, références' },
+  { key: 'license', label: 'Justificatif adresse professionnelle', hint: 'Bail, facture récente...' },
+  { key: 'other', label: 'Portfolio ou références', hint: 'PDF de témoignages, certifications, références' },
 ]
 
 const DURATIONS = [30, 45, 60, 90]

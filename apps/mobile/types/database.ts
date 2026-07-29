@@ -1,15 +1,15 @@
 export type UserRole = 'patient' | 'practitioner' | 'admin' | 'organization_admin' | 'organization_member' | 'secretary'
 export type VerificationStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
+// Doit rester strictement aligné avec le CHECK constraint Postgres
+// (verification_documents_document_type_check) — toute autre valeur
+// fait échouer l'insert en base.
 export type DocumentType =
   | 'diploma'
   | 'license'
   | 'id_card'
+  | 'order_certificate'
+  | 'professional_insurance'
   | 'other'
-  | 'professional_card'
-  | 'address_proof'
-  | 'training_certificate'
-  | 'insurance'
-  | 'portfolio'
 
 export interface UserProfile {
   id: string
