@@ -81,7 +81,7 @@ function VerifyOtpContent() {
 
     setSuccess(true)
     setTimeout(() => {
-      if (orgInvitationId && acceptedRole === 'secretary') router.push('/secretary')
+      if (orgInvitationId && acceptedRole === 'secretary') router.push('/onboarding/secretary')
       else if (orgInvitationId && accountType === 'collaborator') router.push('/organization-member')
       else if (role === 'practitioner') router.push('/onboarding/practitioner')
       else if (role === 'admin') router.push('/admin')
