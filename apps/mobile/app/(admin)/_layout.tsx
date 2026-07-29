@@ -103,6 +103,10 @@ export default function AdminLayout() {
         name="notifications"
         options={{ href: null }}
       />
+      <Tabs.Screen
+        name="audit"
+        options={{ href: null }}
+      />
     </Tabs>
   )
 }
