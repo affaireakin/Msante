@@ -6,7 +6,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { GlassCard, PrimaryButton } from '@/components/ui'
 import { authService } from '@/features/auth/services/authService'
 
-const OTP_LENGTH = 6
+const OTP_LENGTH = 8
 const RESEND_COOLDOWN = 60
 
 export default function VerifyOtpScreen() {
@@ -105,7 +105,7 @@ export default function VerifyOtpScreen() {
             Vérifiez votre email
           </Text>
           <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', lineHeight: 22 }}>
-            Nous avons envoyé un code à 6 chiffres à{'\n'}
+            Nous avons envoyé un code à 8 chiffres à{'\n'}
             <Text style={{ fontWeight: '700', color: '#3f484d' }}>{maskedEmail}</Text>
           </Text>
         </View>
@@ -113,7 +113,7 @@ export default function VerifyOtpScreen() {
         {/* OTP boxes */}
         <GlassCard style={{ alignItems: 'center', paddingVertical: 28 }}>
           <Pressable onPress={() => inputRef.current?.focus()}>
-            <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View style={{ flexDirection: 'row', gap: 5 }}>
               {Array.from({ length: OTP_LENGTH }).map((_, i) => {
                 const char = otp[i]
                 const isFocused = otp.length === i
@@ -121,7 +121,7 @@ export default function VerifyOtpScreen() {
                   <View
                     key={i}
                     style={{
-                      width: 46, height: 56, borderRadius: 12,
+                      width: 30, height: 44, borderRadius: 10,
                       borderWidth: isFocused ? 2 : 1.5,
                       borderColor: isFocused ? '#82d8ff' : char ? '#82d8ff' : '#bec8ce',
                       backgroundColor: char ? '#eff4ff' : '#ffffff',
@@ -129,12 +129,12 @@ export default function VerifyOtpScreen() {
                     }}
                   >
                     {char ? (
-                      <Text style={{ fontSize: 22, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope' }}>
+                      <Text style={{ fontSize: 18, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope' }}>
                         {char}
                       </Text>
                     ) : (
                       isFocused && (
-                        <View style={{ width: 2, height: 22, backgroundColor: '#82d8ff', borderRadius: 1 }} />
+                        <View style={{ width: 2, height: 18, backgroundColor: '#82d8ff', borderRadius: 1 }} />
                       )
                     )}
                   </View>

@@ -43,7 +43,7 @@ function InvitePractitionerContent() {
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    if (otp.trim().length !== 6) { setError('Le code doit contenir 6 chiffres.'); return }
+    if (otp.trim().length !== 8) { setError('Le code doit contenir 8 chiffres.'); return }
     setVerifying(true)
     try {
       const { data, error: fnError } = await supabase.functions.invoke('verify-practitioner-invitation', {
@@ -105,19 +105,19 @@ function InvitePractitionerContent() {
               <span className="material-symbols-outlined text-[#82d8ff]" style={{ fontSize: '28px' }}>mail</span>
             </div>
             <h1 className="text-xl font-black text-[#0b1c30]">Invitation praticien</h1>
-            <p className="text-sm text-slate-400 mt-2">Saisissez le code à 6 chiffres reçu par email</p>
+            <p className="text-sm text-slate-400 mt-2">Saisissez le code à 8 chiffres reçu par email</p>
           </div>
           <input
             type="text"
             inputMode="numeric"
-            maxLength={6}
+            maxLength={8}
             value={otp}
             onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
-            placeholder="000000"
-            className="w-full text-center text-2xl font-black tracking-[0.5em] rounded-xl border-2 border-slate-200 py-4 outline-none focus:border-[#82d8ff]"
+            placeholder="00000000"
+            className="w-full text-center text-2xl font-black tracking-[0.5em] text-[#0b1c30] rounded-xl border-2 border-slate-200 py-4 outline-none focus:border-[#82d8ff]"
           />
           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-          <button type="submit" disabled={verifying || otp.length !== 6}
+          <button type="submit" disabled={verifying || otp.length !== 8}
             className="w-full py-3.5 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl hover:shadow-lg transition-all disabled:opacity-50">
             {verifying ? 'Vérification...' : 'Vérifier le code'}
           </button>
@@ -142,7 +142,7 @@ function InvitePractitionerContent() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="w-full rounded-lg border border-slate-200 px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full rounded-lg border border-slate-200 px-4 py-3 pr-11 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
               <button type="button" onClick={() => setShowPwd(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" tabIndex={-1}>
                 <span className="material-symbols-outlined text-xl">{showPwd ? 'visibility_off' : 'visibility'}</span>
@@ -156,7 +156,7 @@ function InvitePractitionerContent() {
               value={confirm}
               onChange={e => setConfirm(e.target.value)}
               required
-              className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="mt-1 w-full rounded-lg border border-slate-200 px-4 py-3 text-sm text-[#0b1c30] focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}

@@ -52,7 +52,7 @@ export const authService = {
     return { error: null }
   },
 
-  // No redirectTo: harmonized with web to use a 6-digit OTP typed in-app
+  // No redirectTo: harmonized with web to use an 8-digit OTP typed in-app
   // (verify-reset-otp screen) instead of an email link — a deep link to
   // msante://reset-password can't be tested at all in Expo Go (it only
   // understands its own exp:// scheme), and requiring a real build just to

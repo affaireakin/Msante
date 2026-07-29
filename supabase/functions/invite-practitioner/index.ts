@@ -17,7 +17,7 @@ function clientIp(req: Request): string | null {
 }
 
 function generateOtp(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString() // 6 digits
+  return Math.floor(10000000 + Math.random() * 90000000).toString() // 8 digits
 }
 
 async function sendInviteEmail(apiKey: string, from: string, to: string, firstname: string, orgName: string, otp: string, inviteUrl: string, accountType: 'practitioner' | 'collaborator' | 'secretary', roleName?: string): Promise<void> {
