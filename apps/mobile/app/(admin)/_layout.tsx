@@ -109,6 +109,11 @@ export default function AdminLayout() {
       />
       <Tabs.Screen name="messages/index" options={{ href: null }} />
       <Tabs.Screen name="messages/[id]" options={{ href: null }} />
+      <Tabs.Screen name="roles/index" options={{ href: null }} />
+      <Tabs.Screen name="roles/[key]" options={{ href: null }} />
+      <Tabs.Screen name="delegation" options={{ href: null }} />
+      <Tabs.Screen name="analytics" options={{ href: null }} />
+      <Tabs.Screen name="finance" options={{ href: null }} />
     </Tabs>
   )
 }

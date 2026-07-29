@@ -135,12 +135,28 @@ export default function AdminDashboardScreen() {
               ))}
             </View>
 
+            <View style={{ flexDirection: 'row', gap: scale(10) }}>
+              <TouchableOpacity
+                onPress={() => router.push('/(admin)/payments')}
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: scale(8), paddingVertical: scale(14), borderRadius: 999, backgroundColor: '#82d8ff' }}
+              >
+                <MaterialIcons name="account-balance-wallet" size={scale(18)} color="#0b1c30" />
+                <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '800', color: '#0b1c30' }}>Paiements</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push('/(admin)/analytics')}
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: scale(8), paddingVertical: scale(14), borderRadius: 999, backgroundColor: '#e5eeff' }}
+              >
+                <MaterialIcons name="insights" size={scale(18)} color="#82d8ff" />
+                <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '800', color: '#82d8ff' }}>Analytiques</Text>
+              </TouchableOpacity>
+            </View>
             <TouchableOpacity
-              onPress={() => router.push('/(admin)/payments')}
-              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: scale(8), paddingVertical: scale(14), borderRadius: 999, backgroundColor: '#82d8ff' }}
+              onPress={() => router.push('/(admin)/finance')}
+              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: scale(8), paddingVertical: scale(14), borderRadius: 999, borderWidth: 1, borderColor: '#e5eeff' }}
             >
-              <MaterialIcons name="account-balance-wallet" size={scale(18)} color="#0b1c30" />
-              <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '800', color: '#0b1c30' }}>Voir les paiements</Text>
+              <MaterialIcons name="account-balance" size={scale(18)} color="#82d8ff" />
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '800', color: '#82d8ff' }}>Réconciliation financière</Text>
             </TouchableOpacity>
           </>
         )}

@@ -43,12 +43,22 @@ export default function OrganizationProfileScreen() {
           </Text>
           <TouchableOpacity
             onPress={() => router.push('/(organization)/messages')}
-            style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: scale(14) }}
+            style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: scale(14), borderBottomWidth: 1, borderBottomColor: 'rgba(190,200,206,0.25)' }}
           >
             <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
               <MaterialIcons name="forum" size={18} color="#82d8ff" />
             </View>
             <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.sm, color: '#0b1c30', fontWeight: '500' }}>Messages</Text>
+            <MaterialIcons name="chevron-right" size={20} color="#bec8ce" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push('/(organization)/roles')}
+            style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: scale(14) }}
+          >
+            <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+              <MaterialIcons name="admin-panel-settings" size={18} color="#82d8ff" />
+            </View>
+            <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.sm, color: '#0b1c30', fontWeight: '500' }}>Rôles &amp; permissions</Text>
             <MaterialIcons name="chevron-right" size={20} color="#bec8ce" />
           </TouchableOpacity>
         </View>
