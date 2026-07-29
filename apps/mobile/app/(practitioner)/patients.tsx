@@ -395,26 +395,9 @@ export default function PatientsScreen() {
           gap: 12,
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text style={{ fontFamily: 'Manrope', fontSize: 22, fontWeight: '700', color: '#0b1c30' }}>
-            M-Santé
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.push('/(practitioner)/profile')}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 18,
-              backgroundColor: 'rgba(255,255,255,0.60)',
-              borderWidth: 1,
-              borderColor: 'rgba(190,200,206,0.50)',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <MaterialIcons name="settings" size={18} color="#6f787e" />
-          </TouchableOpacity>
-        </View>
+        <Text style={{ fontFamily: 'Manrope', fontSize: 22, fontWeight: '700', color: '#0b1c30' }}>
+          Patients
+        </Text>
 
         {/* Search bar */}
         {activeTab !== 'blocked' && (
