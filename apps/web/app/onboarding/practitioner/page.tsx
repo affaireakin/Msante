@@ -19,8 +19,6 @@ function normalizeLanguages(langs: string[]): string[] {
 const DURATIONS = [{ value: 30, label: '30 min' }, { value: 45, label: '45 min' }, { value: 60, label: '1h' }, { value: 90, label: '1h30' }]
 const SESSION_TYPES = [
   { value: 'video', icon: 'videocam', label: 'Vidéo' },
-  { value: 'audio', icon: 'mic', label: 'Audio' },
-  { value: 'chat', icon: 'chat_bubble', label: 'Chat' },
 ]
 
 interface DocFile { file: File | null; url: string; uploading: boolean; uploaded: boolean }
@@ -45,7 +43,7 @@ export default function PractitionerOnboardingPage() {
   const [price, setPrice] = useState('')
   const [currency, setCurrency] = useState('XOF')
   const [duration, setDuration] = useState(60)
-  const [sessionTypes, setSessionTypes] = useState<string[]>(['video'])
+  const [sessionTypes] = useState<string[]>(['video'])
   const [timezone, setTimezone] = useState('Africa/Dakar')
 
   // Step 2 — documents
@@ -338,16 +336,10 @@ export default function PractitionerOnboardingPage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Types de consultation *</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {SESSION_TYPES.map(t => (
-                    <button key={t.value} type="button" onClick={() => setSessionTypes(toggle(sessionTypes, t.value))}
-                      className="flex flex-col items-center gap-2 p-4 rounded-xl transition-all border-2"
-                      style={{ backgroundColor: sessionTypes.includes(t.value) ? '#e5eeff' : '#f8f9ff', borderColor: sessionTypes.includes(t.value) ? '#82d8ff' : '#bec8ce' }}>
-                      <Icon name={t.icon} color={sessionTypes.includes(t.value) ? '#82d8ff' : '#6f787e'} />
-                      <span className="text-xs font-bold" style={{ color: sessionTypes.includes(t.value) ? '#82d8ff' : '#6f787e' }}>{t.label}</span>
-                    </button>
-                  ))}
+                <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">Type de consultation</label>
+                <div className="flex items-center gap-2 p-4 rounded-xl border-2" style={{ backgroundColor: '#e5eeff', borderColor: '#82d8ff' }}>
+                  <Icon name={SESSION_TYPES[0].icon} color="#82d8ff" />
+                  <span className="text-xs font-bold" style={{ color: '#82d8ff' }}>{SESSION_TYPES[0].label}</span>
                 </div>
               </div>
 
