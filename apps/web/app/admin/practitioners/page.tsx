@@ -110,17 +110,18 @@ function PractitionersContent() {
   const [statusReason, setStatusReason] = useState('')
 
   const updateStatus = useMutation({
-    mutationFn: async ({ practId, status, userId }: { practId: string; status: VerifStatus; userId: string }) => {
+    mutationFn: async ({ practId, status, userId, reason }: { practId: string; status: VerifStatus; userId: string; reason?: string }) => {
       const updates: Record<string, unknown> = { verification_status: status }
       if (status === 'approved') updates.is_verified = true
       const { error } = await supabase.from('practitioners').update(updates).eq('id', practId)
       if (error) throw error
 
-      if (status === 'approved') {
+      if (status === 'approved' || status === 'rejected') {
         const { data: { session } } = await supabase.auth.getSession()
         if (session) {
-          await supabase.functions.invoke('notify-practitioner-approved', {
-            body: { practitionerUserId: userId },
+          const fn = status === 'approved' ? 'notify-practitioner-approved' : 'notify-practitioner-rejected'
+          await supabase.functions.invoke(fn, {
+            body: status === 'approved' ? { practitionerUserId: userId } : { practitionerUserId: userId, reason },
           })
         }
       }
@@ -157,7 +158,7 @@ function PractitionersContent() {
 
   const handleReject = () => {
     if (!rejectDialog || !rejectReason.trim()) return
-    updateStatus.mutate({ practId: rejectDialog.practId, status: 'rejected', userId: rejectDialog.userId })
+    updateStatus.mutate({ practId: rejectDialog.practId, status: 'rejected', userId: rejectDialog.userId, reason: rejectReason.trim() })
     setRejectDialog(null)
     setRejectReason('')
   }

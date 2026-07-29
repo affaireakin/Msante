@@ -163,6 +163,7 @@ export default function PractitionerOnboardingPage() {
       }
 
       await supabase.from('users').update({ onboarding_completed: true }).eq('id', userId)
+      void supabase.functions.invoke('notify-documents-submitted', { body: {} })
       router.push('/practitioner')
     } catch {
       setDocError('Erreur lors de la sauvegarde. Réessayez.')
