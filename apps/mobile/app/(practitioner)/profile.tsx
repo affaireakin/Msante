@@ -472,6 +472,7 @@ export default function ProfileScreen() {
           {[
             { icon: 'medical-services' as const, label: 'Mes prestations', href: '/(practitioner)/services' as const },
             { icon: 'event-available' as const, label: 'Gérer mes disponibilités', href: '/(practitioner)/availability' as const },
+            { icon: 'description' as const, label: 'Mes documents', href: '/(practitioner)/documents' as const },
             { icon: 'support-agent' as const, label: 'Mes secrétaires', href: '/(practitioner)/secretary' as const },
             { icon: 'gavel' as const, label: 'Litiges', href: '/(practitioner)/disputes' as const },
           ].map((item, i) => (

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, ScrollView, Alert, Image, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as ImagePicker from 'expo-image-picker'
@@ -56,6 +57,7 @@ const LANGUAGES = [
 const STEP_LABELS = ['Profil', 'Documents', 'Récap']
 
 export default function PractitionerOnboardingScreen() {
+  const router = useRouter()
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [documents, setDocuments] = useState<UploadedDoc[]>([])
@@ -112,9 +114,9 @@ export default function PractitionerOnboardingScreen() {
         profilePhotoUri: profilePhoto?.uri,
       }
       await authService.completePractitionerOnboarding(data)
+      router.replace('/(onboarding)/practitioner-submitted')
     } catch {
       Alert.alert('Erreur', 'Impossible de soumettre. Réessayez.')
-    } finally {
       setLoading(false)
     }
   }

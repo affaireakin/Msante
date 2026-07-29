@@ -124,6 +124,14 @@ export default function RootLayout() {
       return
     }
 
+    // One-time "Demande envoyée !" confirmation shown right after onboarding
+    // submits successfully — onboarding_completed is already true at this
+    // point (set by completePractitionerOnboarding), so without this bypass
+    // this effect would redirect straight to /(practitioner)/ before the
+    // user ever sees it, exactly like the silent redirect this screen
+    // exists to replace.
+    if ((segments as string[]).join('/') === '(onboarding)/practitioner-submitted') return
+
     if (profile.role === 'practitioner') {
       if (segments[0] !== '(practitioner)') router.replace('/(practitioner)/')
     } else {
