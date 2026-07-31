@@ -19,6 +19,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useResponsive } from '@/hooks/useResponsive'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { DiagnosticAidSearch } from '@/components/DiagnosticAidSearch'
 import {
   usePatientNotes,
   useCreateNote,
@@ -556,9 +557,14 @@ function NewNoteModal({ visible, patientId, onClose }: NewNoteModalProps) {
                 backgroundColor: 'rgba(255,255,255,0.80)',
                 minHeight: scale(120),
                 lineHeight: fs.md * 1.6,
-                marginBottom: scale(20),
               }}
             />
+            <View style={{ marginTop: scale(10), marginBottom: scale(20) }}>
+              <DiagnosticAidSearch
+                patientId={patientId}
+                onSelect={d => setContent(prev => `${prev}${prev ? '\n' : ''}Diagnostic évoqué : ${d.label} (${d.source.toUpperCase()} ${d.code})`)}
+              />
+            </View>
 
             {/* Tags */}
             <Text

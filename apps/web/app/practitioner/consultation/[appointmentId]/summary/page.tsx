@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import type { ChatMessage } from '@/types/consultation'
+import DiagnosticAidSearch from '@/components/DiagnosticAidSearch'
 
 type DocType = 'prescription' | 'report' | 'appreciation' | 'certificate'
 
@@ -49,6 +50,7 @@ export default function ConsultationSummaryPage() {
 
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
   const [aiSummary, setAiSummary] = useState<string | null>(aiSummaryParam)
+  const [patientId, setPatientId] = useState<string | null>(null)
 
   // Notes
   const [practNotes, setPractNotes] = useState('')
@@ -66,7 +68,7 @@ export default function ConsultationSummaryPage() {
   useEffect(() => {
     if (!consultationId) return
     async function load() {
-      const [{ data: consult }, { data: docs }] = await Promise.all([
+      const [{ data: consult }, { data: docs }, { data: apt }] = await Promise.all([
         supabase
           .from('consultations')
           .select('chat_history, ai_summary, practitioner_notes')
@@ -77,7 +79,9 @@ export default function ConsultationSummaryPage() {
           .select('id, document_type, content, created_at')
           .eq('consultation_id', consultationId)
           .order('created_at', { ascending: false }),
+        supabase.from('appointments').select('patient_id').eq('id', appointmentId).single(),
       ])
+      if (apt) setPatientId(apt.patient_id)
 
       if (consult) {
         const history = consult.chat_history as ChatMessage[] | null
@@ -88,7 +92,7 @@ export default function ConsultationSummaryPage() {
       setDocuments((docs ?? []) as PractDocument[])
     }
     void load()
-  }, [consultationId, aiSummaryParam])
+  }, [consultationId, aiSummaryParam, appointmentId])
 
   async function saveNotes() {
     if (!consultationId) return
@@ -342,6 +346,15 @@ export default function ConsultationSummaryPage() {
                 }
                 className="w-full px-4 py-3 bg-white border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] text-sm focus:outline-none focus:border-[#82d8ff] transition-all resize-none"
               />
+
+              <div className="mt-2">
+                <DiagnosticAidSearch
+                  patientId={patientId ?? undefined}
+                  consultationId={consultationId}
+                  appointmentId={appointmentId}
+                  onSelect={d => setNewDocContent(prev => `${prev}${prev ? '\n' : ''}Diagnostic évoqué : ${d.label} (${d.source.toUpperCase()} ${d.code})`)}
+                />
+              </div>
 
               <div className="flex gap-2 mt-3">
                 <button

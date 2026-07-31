@@ -24,6 +24,12 @@ interface ProfessionPermission {
   can_view_appreciations: boolean
   can_view_mood_journal: boolean
   can_teleconsult: boolean
+  can_use_dsm: boolean
+  can_use_cim: boolean
+  can_view_diagnostic_criteria: boolean
+  can_advanced_search_diagnostic: boolean
+  can_associate_diagnosis: boolean
+  can_export_diagnostic: boolean
   allowed_data_categories: string[]
   description: string | null
 }
@@ -57,6 +63,17 @@ const PERMISSION_GROUPS: { group: string; icon: React.ComponentProps<typeof Mate
       { key: 'can_view_prescriptions', label: 'Ordonnances' },
       { key: 'can_view_appreciations', label: 'Appréciations patients' },
       { key: 'can_view_mood_journal', label: 'Journal mood & bien-être' },
+    ],
+  },
+  {
+    group: 'Aide au diagnostic (DSM / CIM)', icon: 'psychology-alt',
+    items: [
+      { key: 'can_use_dsm', label: 'Accès au DSM' },
+      { key: 'can_use_cim', label: 'Accès à la CIM' },
+      { key: 'can_view_diagnostic_criteria', label: 'Consultation des critères' },
+      { key: 'can_advanced_search_diagnostic', label: 'Recherche avancée par symptômes' },
+      { key: 'can_associate_diagnosis', label: 'Association au dossier patient' },
+      { key: 'can_export_diagnostic', label: 'Export / impression' },
     ],
   },
 ]

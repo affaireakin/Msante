@@ -19,6 +19,7 @@ import {
   type MedicationLine,
 } from '@/features/practitioner/hooks/usePrescription'
 import { searchMedications, type MedicationEntry } from '@/data/medications'
+import { DiagnosticAidSearch } from '@/components/DiagnosticAidSearch'
 
 // ─── Empty medication factory ────────────────────────────────────────────────
 
@@ -523,6 +524,9 @@ export default function NewPrescriptionScreen() {
               multiline
               returnKeyType="default"
             />
+            <View style={{ marginTop: 10 }}>
+              <DiagnosticAidSearch patientId={patientId} onSelect={d => setDiagnosis(d.label)} />
+            </View>
           </View>
 
           {/* Medications section */}

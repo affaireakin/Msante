@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { logPatientAccess } from '@/lib/patientAccessLog'
+import DiagnosticAidSearch from '@/components/DiagnosticAidSearch'
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -285,6 +286,12 @@ function NewNoteModal({ patientId, practitionerId, onClose }: NewNoteModalProps)
               placeholder="Rédigez votre note ici…"
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff] resize-none"
             />
+            <div className="mt-2">
+              <DiagnosticAidSearch
+                patientId={patientId}
+                onSelect={d => setContent(prev => `${prev}${prev ? '\n' : ''}Diagnostic évoqué : ${d.label} (${d.source.toUpperCase()} ${d.code})`)}
+              />
+            </div>
           </div>
 
           {/* Tags */}

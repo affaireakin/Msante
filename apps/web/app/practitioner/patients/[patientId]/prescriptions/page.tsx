@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import DiagnosticAidSearch from '@/components/DiagnosticAidSearch'
 
 function Icon({ name, size = 18, color }: { name: string; size?: number; color?: string }) {
   return (
@@ -549,6 +550,11 @@ function NewPrescriptionModal({ patientId, practitionerId, practitionerType, onC
             <input type="text" value={diagnosis} onChange={e => setDiagnosis(e.target.value)}
               placeholder={isWellness ? 'Ex: Perte de poids, Gestion du stress, Amélioration du sommeil…' : 'Ex: Anxiété généralisée, Trouble du sommeil…'}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-[#0b1c30] bg-white focus:outline-none focus:border-[#82d8ff]" />
+            {!isWellness && (
+              <div className="mt-2">
+                <DiagnosticAidSearch patientId={patientId} onSelect={d => setDiagnosis(d.label)} />
+              </div>
+            )}
           </div>
 
           {/* Type + Status */}
