@@ -22,9 +22,7 @@ interface ProfessionPermission {
   can_view_appreciations: boolean
   can_view_mood_journal: boolean
   can_teleconsult: boolean
-  can_use_dsm: boolean
   can_use_cim: boolean
-  can_view_diagnostic_criteria: boolean
   can_advanced_search_diagnostic: boolean
   can_associate_diagnosis: boolean
   can_export_diagnostic: boolean
@@ -48,9 +46,7 @@ interface PermissionState {
   can_view_appreciations: boolean
   can_view_mood_journal: boolean
   can_teleconsult: boolean
-  can_use_dsm: boolean
   can_use_cim: boolean
-  can_view_diagnostic_criteria: boolean
   can_advanced_search_diagnostic: boolean
   can_associate_diagnosis: boolean
   can_export_diagnostic: boolean
@@ -95,14 +91,12 @@ const PERMISSION_GROUPS: Array<{
     ],
   },
   {
-    group: 'Aide au diagnostic (DSM / CIM)',
+    group: 'Aide au diagnostic (CIM)',
     icon: 'psychology_alt',
     items: [
-      { key: 'can_use_dsm',                     label: 'Accès au DSM',                description: 'Rechercher un diagnostic par nom, code ou catégorie DSM.' },
       { key: 'can_use_cim',                     label: 'Accès à la CIM',               description: 'Rechercher un diagnostic via la classification OMS (CIM-11).' },
-      { key: 'can_view_diagnostic_criteria',    label: 'Consultation des critères',    description: 'Voir le détail (catégorie, code croisé) d\'un diagnostic, au-delà du simple nom.' },
       { key: 'can_advanced_search_diagnostic',  label: 'Recherche avancée par symptômes', description: 'Rechercher un diagnostic à partir de mots-clés de symptômes plutôt que par nom exact.' },
-      { key: 'can_associate_diagnosis',         label: 'Association au dossier patient', description: 'Enregistrer un diagnostic DSM/CIM sur le dossier du patient ou la consultation en cours.' },
+      { key: 'can_associate_diagnosis',         label: 'Association au dossier patient', description: 'Enregistrer un diagnostic CIM sur le dossier du patient ou la consultation en cours.' },
       { key: 'can_export_diagnostic',           label: 'Export / impression',          description: 'Exporter ou imprimer les résultats de recherche diagnostique.' },
     ],
   },
@@ -128,7 +122,7 @@ const DEFAULT_STATE: PermissionState = {
   can_share_with_patient: true, can_request_analyses: false,
   can_view_notes: true, can_view_prescriptions: false, can_view_appreciations: false,
   can_view_mood_journal: false, can_teleconsult: false,
-  can_use_dsm: false, can_use_cim: false, can_view_diagnostic_criteria: false,
+  can_use_cim: false,
   can_advanced_search_diagnostic: false, can_associate_diagnosis: false, can_export_diagnostic: false,
   allowed_data_categories: [], description: '',
 }
@@ -180,9 +174,7 @@ export default function EditProfessionPage() {
         can_view_appreciations: profession.can_view_appreciations ?? false,
         can_view_mood_journal:  profession.can_view_mood_journal ?? false,
         can_teleconsult:        profession.can_teleconsult ?? false,
-        can_use_dsm:                    profession.can_use_dsm ?? false,
         can_use_cim:                    profession.can_use_cim ?? false,
-        can_view_diagnostic_criteria:   profession.can_view_diagnostic_criteria ?? false,
         can_advanced_search_diagnostic: profession.can_advanced_search_diagnostic ?? false,
         can_associate_diagnosis:        profession.can_associate_diagnosis ?? false,
         can_export_diagnostic:          profession.can_export_diagnostic ?? false,

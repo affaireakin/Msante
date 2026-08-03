@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import {
   View,
   Text,
@@ -18,7 +18,7 @@ import {
   useCreatePrescription,
   type MedicationLine,
 } from '@/features/practitioner/hooks/usePrescription'
-import { searchMedications, type MedicationEntry } from '@/data/medications'
+import { searchBdpmMedications, type BdpmMedication } from '@/data/medications'
 import { DiagnosticAidSearch } from '@/components/DiagnosticAidSearch'
 
 // ─── Empty medication factory ────────────────────────────────────────────────
@@ -39,24 +39,29 @@ interface MedicationCardProps {
 }
 
 function MedicationCard({ index, med, canRemove, onChange, onRemove, r }: MedicationCardProps) {
-  const [suggestions, setSuggestions] = useState<MedicationEntry[]>([])
+  const [suggestions, setSuggestions] = useState<BdpmMedication[]>([])
+  const searchSeq = useRef(0)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const handleNameChange = useCallback(
     (text: string) => {
       onChange(index, 'name', text)
-      setSuggestions(searchMedications(text))
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+      const seq = ++searchSeq.current
+      debounceRef.current = setTimeout(async () => {
+        const results = await searchBdpmMedications(text)
+        if (seq === searchSeq.current) setSuggestions(results)
+      }, 250)
     },
     [index, onChange]
   )
 
   const handleSuggestionPress = useCallback(
-    (entry: MedicationEntry) => {
-      onChange(index, 'name', entry.dci)
-      if (!med.dosage) onChange(index, 'dosage', entry.defaultDosages[0] ?? '')
-      if (!med.frequency) onChange(index, 'frequency', entry.defaultFrequencies[0] ?? '')
+    (entry: BdpmMedication) => {
+      onChange(index, 'name', entry.denomination)
       setSuggestions([])
     },
-    [index, onChange, med.dosage, med.frequency]
+    [index, onChange]
   )
 
   return (
@@ -161,7 +166,7 @@ function MedicationCard({ index, med, canRemove, onChange, onRemove, r }: Medica
         >
           {suggestions.map((entry) => (
             <TouchableOpacity
-              key={entry.dci}
+              key={entry.cis_code}
               onPress={() => handleSuggestionPress(entry)}
               style={{
                 paddingHorizontal: 14,
@@ -183,37 +188,30 @@ function MedicationCard({ index, med, canRemove, onChange, onRemove, r }: Medica
                     fontWeight: '600',
                   }}
                 >
-                  {entry.dci}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: r.fs.xs,
-                    color: '#6f787e',
-                    fontFamily: 'Manrope',
-                  }}
-                >
-                  {entry.commercial[0]}
+                  {entry.denomination}
                 </Text>
               </View>
-              <View
-                style={{
-                  backgroundColor: '#e5eeff',
-                  paddingHorizontal: 6,
-                  paddingVertical: 2,
-                  borderRadius: 999,
-                }}
-              >
-                <Text
+              {entry.forme_pharmaceutique && (
+                <View
                   style={{
-                    fontSize: 9,
-                    color: '#82d8ff',
-                    fontFamily: 'Manrope',
-                    fontWeight: '700',
+                    backgroundColor: '#e5eeff',
+                    paddingHorizontal: 6,
+                    paddingVertical: 2,
+                    borderRadius: 999,
                   }}
                 >
-                  {entry.category}
-                </Text>
-              </View>
+                  <Text
+                    style={{
+                      fontSize: 9,
+                      color: '#82d8ff',
+                      fontFamily: 'Manrope',
+                      fontWeight: '700',
+                    }}
+                  >
+                    {entry.forme_pharmaceutique}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           ))}
         </View>
