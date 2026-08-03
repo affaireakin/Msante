@@ -225,6 +225,69 @@ function AddProfessionModal({ onClose }: { onClose: () => void }) {
   )
 }
 
+// ─── BDPM import (Base de Données Publique des Médicaments) ───────────────────
+
+function useBdpmStatus() {
+  return useQuery({
+    queryKey: ['bdpm-status'],
+    queryFn: async () => {
+      const { count } = await supabase.from('bdpm_medications').select('*', { count: 'exact', head: true })
+      const { data: latest } = await supabase.from('bdpm_medications').select('updated_at').order('updated_at', { ascending: false }).limit(1).maybeSingle()
+      return { count: count ?? 0, lastUpdate: latest?.updated_at as string | null }
+    },
+    staleTime: 30_000,
+  })
+}
+
+function BdpmImportCard() {
+  const queryClient = useQueryClient()
+  const { data: status } = useBdpmStatus()
+  const [result, setResult] = useState<string | null>(null)
+
+  const importMutation = useMutation({
+    mutationFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      const { data, error } = await supabase.functions.invoke('bdpm-import', {
+        headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
+      })
+      if (error) throw error
+      if ((data as { error?: string })?.error) throw new Error((data as { error?: string }).error)
+      return data as { success: boolean; imported: number; total_lines: number }
+    },
+    onSuccess: data => {
+      setResult(`${data.imported.toLocaleString('fr-FR')} médicaments importés.`)
+      queryClient.invalidateQueries({ queryKey: ['bdpm-status'] })
+    },
+    onError: (e: Error) => setResult(`Erreur : ${e.message}`),
+  })
+
+  return (
+    <div className="flex items-center justify-between gap-4 bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm px-5 py-4 flex-wrap">
+      <div className="flex items-center gap-3">
+        <span className="material-symbols-outlined text-[#82d8ff]" style={{ fontSize: '22px' }}>medication</span>
+        <div>
+          <p className="text-sm font-semibold text-[#0b1c30]">Base médicaments (BDPM)</p>
+          <p className="text-xs text-[#6f787e]">
+            {status ? `${status.count.toLocaleString('fr-FR')} médicaments référencés` : 'Chargement…'}
+            {status?.lastUpdate && ` · dernière mise à jour ${new Date(status.lastUpdate).toLocaleDateString('fr-FR')}`}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        {result && <p className="text-xs font-medium text-[#3f484d]">{result}</p>}
+        <button
+          onClick={() => { setResult(null); importMutation.mutate() }}
+          disabled={importMutation.isPending}
+          className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-60"
+          style={{ backgroundColor: '#82d8ff' }}
+        >
+          {importMutation.isPending ? 'Import en cours…' : 'Importer / Mettre à jour'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function RolesPage() {
@@ -259,6 +322,8 @@ export default function RolesPage() {
             Le patient contrôle ensuite précisément l'accès de chaque praticien individuel depuis son espace (Mes permissions).
           </div>
         </div>
+
+        <BdpmImportCard />
 
         <div className="bg-white/60 backdrop-blur-sm border border-white/80 rounded-xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
