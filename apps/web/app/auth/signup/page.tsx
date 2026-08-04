@@ -4,9 +4,17 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import SiteLogo from '@/components/SiteLogo'
 
 type Role = 'patient' | 'practitioner' | 'organization'
 type PractType = 'healthcare' | 'wellness'
+type Step = 'select' | 'form'
+
+const PROFILE_CARDS: { value: Role; label: string; desc: string; icon: string }[] = [
+  { value: 'patient',      label: 'Patient',      desc: 'Je cherche un praticien et je veux prendre rendez-vous.', icon: 'person' },
+  { value: 'practitioner', label: 'Praticien',     desc: 'Je propose des consultations sur la plateforme.',        icon: 'medical_services' },
+  { value: 'organization', label: 'Organisation',  desc: 'Cabinet, clinique — je gère une équipe de praticiens.',  icon: 'business' },
+]
 
 function translateError(msg: string): string {
   if (msg.includes('already registered') || msg.includes('User already registered')) return 'Un compte existe déjà avec cet email.'
@@ -20,7 +28,9 @@ function SignupForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const initialRole = (searchParams.get('role') as Role | null)
-  const [role, setRole] = useState<Role>(initialRole === 'organization' || initialRole === 'practitioner' ? initialRole : 'patient')
+  const hasPreselectedRole = initialRole === 'organization' || initialRole === 'practitioner' || initialRole === 'patient'
+  const [step, setStep] = useState<Step>(hasPreselectedRole ? 'form' : 'select')
+  const [role, setRole] = useState<Role>(hasPreselectedRole ? (initialRole as Role) : 'patient')
   const [practType, setPractType]     = useState<PractType>('healthcare')
   const [fullName, setFullName]       = useState('')
   const [email, setEmail]             = useState('')
@@ -42,11 +52,14 @@ function SignupForm() {
 
   const specialityList = specialities
 
-  const handleRoleChange = (newRole: Role) => {
+  const chooseRole = (newRole: Role) => {
     setRole(newRole)
     setSpeciality('')
     setPractType('healthcare')
+    setStep('form')
   }
+
+  const backToSelection = () => setStep('select')
 
   const handlePractTypeChange = (t: PractType) => {
     setPractType(t)
@@ -105,9 +118,7 @@ function SignupForm() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 justify-center">
-            <div className="w-10 h-10 rounded-xl bg-[#82d8ff] flex items-center justify-center shadow-md">
-              <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>medical_services</span>
-            </div>
+            <SiteLogo size={40} />
             <div className="text-left">
               <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
               <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
@@ -115,31 +126,55 @@ function SignupForm() {
           </Link>
         </div>
 
-        {/* Card */}
-        <div className="bg-white/60 backdrop-blur-xl border border-white/80 rounded-2xl p-8" style={{ boxShadow: '0 20px 60px rgba(0,102,133,0.08)' }}>
-          <h1 className="text-2xl font-black text-[#0b1c30] mb-1">Inscription</h1>
-          <p className="text-sm text-slate-400 mb-6">Rejoignez la plateforme M-Santé</p>
+        {step === 'select' ? (
+          /* ── Étape 1 : sélection du profil ── */
+          <div className="bg-white/60 backdrop-blur-xl border border-white/80 rounded-2xl p-8" style={{ boxShadow: '0 20px 60px rgba(0,102,133,0.08)' }}>
+            <h1 className="text-2xl font-black text-[#0b1c30] mb-1">Inscription</h1>
+            <p className="text-sm text-slate-400 mb-6">Quel est votre profil ?</p>
 
-          {/* Choix rôle */}
-          <div className="flex gap-1 mb-6 p-1 bg-[#e5eeff] rounded-xl">
-            {([
-              { value: 'patient',      label: 'Patient',      icon: 'person' },
-              { value: 'practitioner', label: 'Praticien',    icon: 'medical_services' },
-              { value: 'organization', label: 'Organisation', icon: 'business' },
-            ] as { value: Role; label: string; icon: string }[]).map(({ value, label, icon }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => handleRoleChange(value)}
-                className={`flex-1 min-w-0 py-2 px-1 rounded-lg text-[11px] sm:text-sm font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 ${
-                  role === value ? 'bg-white text-[#82d8ff] shadow-sm' : 'text-slate-500 hover:text-[#82d8ff]'
-                }`}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>{icon}</span>
-                <span className="truncate">{label}</span>
-              </button>
-            ))}
+            <div className="flex flex-col gap-3">
+              {PROFILE_CARDS.map(({ value, label, desc, icon }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => chooseRole(value)}
+                  className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-[#bec8ce] bg-[#f8f9ff] text-left transition-all hover:border-[#82d8ff] hover:bg-[#e5eeff]"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-[#82d8ff]/15 flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-[#82d8ff]" style={{ fontSize: '22px' }}>{icon}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-[#0b1c30]">{label}</p>
+                    <p className="text-xs text-[#6f787e] mt-0.5 leading-snug">{desc}</p>
+                  </div>
+                  <span className="material-symbols-outlined text-[#bec8ce]" style={{ fontSize: '20px' }}>chevron_right</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-slate-100 text-center">
+              <p className="text-sm text-slate-400">
+                Déjà un compte ?{' '}
+                <Link href="/auth/login" className="text-[#82d8ff] font-semibold hover:underline">Se connecter</Link>
+              </p>
+            </div>
           </div>
+        ) : (
+        /* ── Étape 2 : formulaire ── */
+        <div className="bg-white/60 backdrop-blur-xl border border-white/80 rounded-2xl p-8" style={{ boxShadow: '0 20px 60px rgba(0,102,133,0.08)' }}>
+          <button
+            type="button"
+            onClick={backToSelection}
+            className="flex items-center gap-1 text-sm font-semibold text-slate-400 hover:text-[#82d8ff] transition-colors mb-4"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
+            Retour
+          </button>
+
+          <h1 className="text-2xl font-black text-[#0b1c30] mb-1">
+            Inscription {role === 'practitioner' ? 'praticien' : role === 'organization' ? 'organisation' : 'patient'}
+          </h1>
+          <p className="text-sm text-slate-400 mb-6">Rejoignez la plateforme M-Santé</p>
 
           {/* Type praticien */}
           {role === 'practitioner' && (
@@ -294,6 +329,7 @@ function SignupForm() {
             </p>
           </div>
         </div>
+        )}
       </div>
     </div>
   )

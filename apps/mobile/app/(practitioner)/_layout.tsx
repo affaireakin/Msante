@@ -102,7 +102,7 @@ export default function PractitionerLayout() {
       />
       <Tabs.Screen
         name="services"
-        options={{ tabBarButton: () => null }}
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="secretary"
@@ -111,7 +111,7 @@ export default function PractitionerLayout() {
       <Tabs.Screen
         name="consultation"
         options={{
-          tabBarButton: () => null,
+          href: null,
           tabBarStyle: { display: 'none' },
         }}
       />
@@ -120,7 +120,7 @@ export default function PractitionerLayout() {
           real route name includes that file, not just the folder. */}
       <Tabs.Screen
         name="patient-notes/[patientId]"
-        options={{ tabBarButton: () => null }}
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="prescription/new"

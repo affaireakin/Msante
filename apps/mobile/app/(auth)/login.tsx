@@ -133,7 +133,7 @@ export default function LoginScreen() {
 
         {/* Lien inscription */}
         <TouchableOpacity
-          onPress={() => router.push('/(auth)/signup-patient')}
+          onPress={() => router.push('/(auth)/signup-profile')}
           style={{ paddingVertical: 16 }}
         >
           <Text style={{ textAlign: 'center', fontSize: 14, color: '#6f787e', fontFamily: 'Manrope' }}>
