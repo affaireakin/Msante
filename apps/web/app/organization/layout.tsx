@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import NotificationBell from '@/components/NotificationBell'
+import SiteLogo from '@/components/SiteLogo'
 
 const navItems = [
   {
@@ -130,7 +131,7 @@ export default function OrganizationLayout({ children }: { children: React.React
         }}
       >
         <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-100/60">
-          <img src="/logo.png" alt="M-Santé" className="w-10 h-10 rounded-xl object-cover shadow-sm" />
+          <SiteLogo size={40} />
           <div className="flex-1">
             <h1 className="text-lg font-black tracking-tighter text-[#0b1c30]">M-Santé</h1>
             <p className="text-xs text-[#82d8ff] font-semibold tracking-wide uppercase">Organisation</p>

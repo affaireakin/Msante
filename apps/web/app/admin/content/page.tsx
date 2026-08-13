@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { useSiteSettings, useContentPages, useFaqAdmin } from './useContent'
+import { useHomepageContent, useSaveHomepageContent, DEFAULT_HOMEPAGE_CONTENT, type HomepageContent } from '@/lib/useHomepageContent'
 
 function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
   return <span className="material-symbols-outlined" style={style}>{name}</span>
@@ -284,27 +285,158 @@ function FaqTab() {
   )
 }
 
+// ─── Page d'accueil ─────────────────────────────────────────────────────────
+
+function SectionCard({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
+      <div>
+        <h3 className="text-sm font-bold text-[#0b1c30]">{title}</h3>
+        {hint && <p className="text-xs text-[#6f787e] mt-0.5">{hint}</p>}
+      </div>
+      {children}
+    </div>
+  )
+}
+
+function TextField({ label, value, onChange, multiline }: { label: string; value: string; onChange: (v: string) => void; multiline?: boolean }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">{label}</label>
+      {multiline ? (
+        <textarea value={value} onChange={e => onChange(e.target.value)} rows={3}
+          className="w-full px-4 py-2.5 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff] resize-none" />
+      ) : (
+        <input value={value} onChange={e => onChange(e.target.value)}
+          className="w-full px-4 py-2.5 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] focus:outline-none focus:border-[#82d8ff]" />
+      )}
+    </div>
+  )
+}
+
+function HomepageTab() {
+  const { data } = useHomepageContent()
+  const save = useSaveHomepageContent()
+  const [content, setContent] = useState<HomepageContent>(DEFAULT_HOMEPAGE_CONTENT)
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    if (data) setContent(data)
+  }, [data])
+
+  const handleSave = () => {
+    save.mutate(content, { onSuccess: () => { setSaved(true); setTimeout(() => setSaved(false), 2500) } })
+  }
+
+  const updateFeature = (i: number, key: 'title' | 'desc', value: string) => {
+    setContent(c => ({ ...c, features: c.features.map((f, idx) => idx === i ? { ...f, [key]: value } : f) }))
+  }
+  const updateValueItem = (i: number, key: 'title' | 'desc', value: string) => {
+    setContent(c => ({ ...c, valueProposition: { ...c.valueProposition, items: c.valueProposition.items.map((it, idx) => idx === i ? { ...it, [key]: value } : it) } }))
+  }
+  const updatePartner = (i: number, value: string) => {
+    setContent(c => ({ ...c, trustBar: { ...c.trustBar, partners: c.trustBar.partners.map((p, idx) => idx === i ? { label: value } : p) } }))
+  }
+
+  return (
+    <div className="space-y-5">
+      <SectionCard title="En-tête (Hero)" hint="Premier bloc visible en arrivant sur le site">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <TextField label="Badge" value={content.hero.badge} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, badge: v } }))} />
+          <TextField label="Statistique (ex: 98%)" value={content.hero.statBadgeValue} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, statBadgeValue: v } }))} />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <TextField label="Titre (partie normale)" value={content.hero.titleMain} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, titleMain: v } }))} />
+          <TextField label="Titre (partie en couleur)" value={content.hero.titleHighlight} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, titleHighlight: v } }))} />
+        </div>
+        <TextField label="Sous-titre" multiline value={content.hero.subtitle} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, subtitle: v } }))} />
+        <TextField label="Légende de la statistique" value={content.hero.statBadgeLabel} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, statBadgeLabel: v } }))} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <TextField label="Bouton principal" value={content.hero.ctaPrimary} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, ctaPrimary: v } }))} />
+          <TextField label="Bouton secondaire" value={content.hero.ctaSecondary} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, ctaSecondary: v } }))} />
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Fonctionnalités" hint="Les 4 cartes affichées sous l'en-tête">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {content.features.map((f, i) => (
+            <div key={i} className="space-y-2 p-3 rounded-xl bg-[#f8f9ff] border border-[#bec8ce]/50">
+              <TextField label={`Carte ${i + 1} — Titre`} value={f.title} onChange={v => updateFeature(i, 'title', v)} />
+              <TextField label="Description" multiline value={f.desc} onChange={v => updateFeature(i, 'desc', v)} />
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Proposition de valeur" hint="Bloc avec les 3 points + statistiques">
+        <TextField label="Titre du bloc" value={content.valueProposition.heading} onChange={v => setContent(c => ({ ...c, valueProposition: { ...c.valueProposition, heading: v } }))} />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {content.valueProposition.items.map((it, i) => (
+            <div key={i} className="space-y-2 p-3 rounded-xl bg-[#f8f9ff] border border-[#bec8ce]/50">
+              <TextField label={`Point ${i + 1} — Titre`} value={it.title} onChange={v => updateValueItem(i, 'title', v)} />
+              <TextField label="Description" multiline value={it.desc} onChange={v => updateValueItem(i, 'desc', v)} />
+            </div>
+          ))}
+        </div>
+        <TextField label="Légende vidéo" value={content.valueProposition.videoLabel} onChange={v => setContent(c => ({ ...c, valueProposition: { ...c.valueProposition, videoLabel: v } }))} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <TextField label="Statistique 1" value={content.valueProposition.stat1Value} onChange={v => setContent(c => ({ ...c, valueProposition: { ...c.valueProposition, stat1Value: v } }))} />
+          <TextField label="Légende statistique 1" value={content.valueProposition.stat1Label} onChange={v => setContent(c => ({ ...c, valueProposition: { ...c.valueProposition, stat1Label: v } }))} />
+          <TextField label="Statistique 2" value={content.valueProposition.stat2Value} onChange={v => setContent(c => ({ ...c, valueProposition: { ...c.valueProposition, stat2Value: v } }))} />
+          <TextField label="Légende statistique 2" value={content.valueProposition.stat2Label} onChange={v => setContent(c => ({ ...c, valueProposition: { ...c.valueProposition, stat2Label: v } }))} />
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Appel à l'action final" hint="Bloc sombre juste avant le pied de page">
+        <TextField label="Titre" value={content.ctaFinal.heading} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, heading: v } }))} />
+        <TextField label="Sous-titre" multiline value={content.ctaFinal.subtitle} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, subtitle: v } }))} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <TextField label="Bouton principal" value={content.ctaFinal.ctaPrimary} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, ctaPrimary: v } }))} />
+          <TextField label="Bouton secondaire" value={content.ctaFinal.ctaSecondary} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, ctaSecondary: v } }))} />
+        </div>
+        <TextField label="Mention légale / disclaimer" value={content.ctaFinal.disclaimer} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, disclaimer: v } }))} />
+      </SectionCard>
+
+      <SectionCard title="Bandeau partenaires" hint="Juste avant le pied de page">
+        <TextField label="Titre du bandeau" value={content.trustBar.label} onChange={v => setContent(c => ({ ...c, trustBar: { ...c.trustBar, label: v } }))} />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {content.trustBar.partners.map((p, i) => (
+            <TextField key={i} label={`Partenaire ${i + 1}`} value={p.label} onChange={v => updatePartner(i, v)} />
+          ))}
+        </div>
+      </SectionCard>
+
+      <button onClick={handleSave} disabled={save.isPending}
+        className="px-5 py-2.5 rounded-xl text-sm font-bold text-[#0b1c30] disabled:opacity-50"
+        style={{ backgroundColor: saved ? '#1d7a3a' : '#82d8ff', color: saved ? '#fff' : '#0b1c30' }}>
+        {save.isPending ? 'Sauvegarde...' : saved ? 'Sauvegardé !' : 'Sauvegarder'}
+      </button>
+    </div>
+  )
+}
+
 export default function AdminContentPage() {
-  const [tab, setTab] = useState<'settings' | 'pages' | 'faq'>('settings')
+  const [tab, setTab] = useState<'settings' | 'homepage' | 'pages' | 'faq'>('settings')
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-[#0b1c30]">Contenu du site</h1>
-        <p className="text-sm text-[#6f787e] mt-0.5">Logo, contact, réseaux sociaux, pages et FAQ</p>
+        <p className="text-sm text-[#6f787e] mt-0.5">Logo, contact, réseaux sociaux, page d&apos;accueil, pages et FAQ</p>
       </div>
 
-      <div className="flex gap-1 p-1 rounded-xl bg-white/60 w-fit" style={{ border: '1px solid rgba(255,255,255,0.80)' }}>
-        {(['settings', 'pages', 'faq'] as const).map(t => (
+      <div className="flex gap-1 p-1 rounded-xl bg-white/60 w-fit flex-wrap" style={{ border: '1px solid rgba(255,255,255,0.80)' }}>
+        {(['settings', 'homepage', 'pages', 'faq'] as const).map(t => (
           <button key={t} onClick={() => setTab(t)}
             className="px-4 py-2 rounded-lg text-sm font-bold transition-all"
             style={{ backgroundColor: tab === t ? '#82d8ff' : 'transparent', color: tab === t ? '#fff' : '#6f787e' }}>
-            {t === 'settings' ? 'Paramètres du site' : t === 'pages' ? 'Pages' : 'FAQ'}
+            {t === 'settings' ? 'Paramètres du site' : t === 'homepage' ? "Page d'accueil" : t === 'pages' ? 'Pages' : 'FAQ'}
           </button>
         ))}
       </div>
 
       {tab === 'settings' && <SiteSettingsTab />}
+      {tab === 'homepage' && <HomepageTab />}
       {tab === 'pages' && <PagesTab />}
       {tab === 'faq' && <FaqTab />}
     </div>
