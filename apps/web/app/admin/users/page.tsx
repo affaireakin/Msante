@@ -619,6 +619,24 @@ function UserProfilePanel({
     },
   })
 
+  const [showDeleteForm, setShowDeleteForm] = useState(false)
+  const [deleteReason, setDeleteReason] = useState('')
+
+  const deleteMutation = useMutation({
+    mutationFn: async (reason: string) => {
+      const { data, error } = await supabase.functions.invoke('admin-delete-account', {
+        body: { target_user_id: user.id, reason },
+      })
+      if (error) throw error
+      if ((data as { error?: string })?.error) throw new Error((data as { error?: string }).error)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-users-suspended-count'] })
+      onClose()
+    },
+  })
+
   const avatarBg = roleColors[user.role]?.bg ?? '#e5eeff'
   const avatarText = roleColors[user.role]?.text ?? '#82d8ff'
 
@@ -787,6 +805,46 @@ function UserProfilePanel({
                   Erreur : {(suspendMutation.error as Error).message}
                 </p>
               )}
+
+              {/* Delete account */}
+              <div className="mt-3">
+                {!showDeleteForm ? (
+                  <button
+                    onClick={() => setShowDeleteForm(true)}
+                    disabled={deleteMutation.isPending}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold border-2 border-[#ba1a1a] text-[#ba1a1a] hover:bg-[#ffdad6]/30 transition-all disabled:opacity-50"
+                  >
+                    <span className="material-symbols-outlined text-base">delete_forever</span>
+                    Supprimer le compte
+                  </button>
+                ) : (
+                  <div className="space-y-2 p-3 rounded-xl bg-[#ffdad6]/40 border border-[#ba1a1a]/20">
+                    <p className="text-xs font-semibold text-[#930009]">
+                      Le compte sera immédiatement bloqué et les données effacées sous 30 jours (RGPD). Cette action est irréversible.
+                    </p>
+                    <label className="text-xs font-semibold text-[#930009] uppercase tracking-wide">Motif (obligatoire)</label>
+                    <textarea value={deleteReason} onChange={e => setDeleteReason(e.target.value)} rows={2}
+                      placeholder="Ce motif sera envoyé par email/WhatsApp à l'utilisateur"
+                      className="w-full px-3 py-2 border border-[#ba1a1a]/30 rounded-lg text-sm text-[#0b1c30] outline-none focus:border-[#ba1a1a] resize-none" />
+                    <div className="flex gap-2">
+                      <button onClick={() => { setShowDeleteForm(false); setDeleteReason('') }} className="flex-1 py-2 rounded-lg text-xs font-semibold border border-slate-200 text-slate-500">
+                        Annuler
+                      </button>
+                      <button
+                        onClick={() => { if (confirm(`Confirmer la suppression définitive du compte de ${user.full_name} ?`)) deleteMutation.mutate(deleteReason.trim()) }}
+                        disabled={deleteMutation.isPending || !deleteReason.trim()}
+                        className="flex-1 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-50" style={{ backgroundColor: '#ba1a1a' }}>
+                        {deleteMutation.isPending ? 'Suppression…' : 'Supprimer définitivement'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {deleteMutation.isError && (
+                  <p className="text-xs text-[#ba1a1a] mt-1.5">
+                    Erreur : {(deleteMutation.error as Error).message}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 

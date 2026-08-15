@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { getSignedDocumentUrl } from '@/lib/signedDocumentUrl'
 
-type OrgStatus = 'pending' | 'active' | 'suspended' | 'rejected' | 'archived'
+type OrgStatus = 'pending' | 'active' | 'suspended' | 'rejected' | 'archived' | 'deleted'
 
 interface Organization {
   id: string
@@ -20,13 +20,14 @@ interface Organization {
   organization_documents: { id: string; document_type: string; file_url: string }[]
 }
 
-const STATUS_ORDER: OrgStatus[] = ['pending', 'active', 'suspended', 'rejected', 'archived']
+const STATUS_ORDER: OrgStatus[] = ['pending', 'active', 'suspended', 'rejected', 'archived', 'deleted']
 const STATUS_LABELS: Record<OrgStatus, string> = {
   pending: 'En attente',
   active: 'Active',
   suspended: 'Suspendue',
   rejected: 'Rejetée',
   archived: 'Archivée',
+  deleted: 'Supprimée',
 }
 const STATUS_COLORS: Record<OrgStatus, string> = {
   pending: 'bg-amber-100 text-amber-700',
@@ -34,6 +35,7 @@ const STATUS_COLORS: Record<OrgStatus, string> = {
   suspended: 'bg-orange-100 text-orange-700',
   rejected: 'bg-red-100 text-red-700',
   archived: 'bg-slate-100 text-slate-500',
+  deleted: 'bg-red-100 text-red-800',
 }
 
 const STATUS_FILTERS = [
@@ -43,6 +45,7 @@ const STATUS_FILTERS = [
   { value: 'suspended', label: 'Suspendues' },
   { value: 'rejected', label: 'Rejetées' },
   { value: 'archived', label: 'Archivées' },
+  { value: 'deleted', label: 'Supprimées' },
 ] as const
 
 function useOrganizations() {
@@ -71,7 +74,7 @@ export default function OrganizationsPage() {
   const [rejectReason, setRejectReason] = useState('')
   const [infoDialog, setInfoDialog] = useState<{ orgId: string } | null>(null)
   const [infoNote, setInfoNote] = useState('')
-  const [statusDialog, setStatusDialog] = useState<{ orgId: string; action: 'suspend' | 'reactivate' | 'archive' } | null>(null)
+  const [statusDialog, setStatusDialog] = useState<{ orgId: string; action: 'suspend' | 'reactivate' | 'archive' | 'delete' } | null>(null)
   const [statusReason, setStatusReason] = useState('')
 
   const validate = useMutation({
@@ -87,7 +90,7 @@ export default function OrganizationsPage() {
   })
 
   const changeStatus = useMutation({
-    mutationFn: async (body: { organization_id: string; action: 'suspend' | 'reactivate' | 'archive'; reason: string }) => {
+    mutationFn: async (body: { organization_id: string; action: 'suspend' | 'reactivate' | 'archive' | 'delete'; reason: string }) => {
       const { error } = await supabase.functions.invoke('suspend-organization', { body })
       if (error) throw error
     },
@@ -243,6 +246,13 @@ export default function OrganizationsPage() {
                       </button>
                     </>
                   )}
+
+                  {org.status !== 'deleted' && (
+                    <button onClick={() => { setStatusDialog({ orgId: org.id, action: 'delete' }); setStatusReason('') }}
+                      className="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-full hover:bg-red-700 transition-colors">
+                      Supprimer
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -310,11 +320,16 @@ export default function OrganizationsPage() {
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setStatusDialog(null)} />
           <div className="relative bg-white rounded-2xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl mx-4">
             <h3 className="text-lg font-bold text-[#0b1c30] mb-2">
-              {statusDialog.action === 'suspend' ? 'Suspendre l\'organisation' : statusDialog.action === 'archive' ? 'Archiver l\'organisation' : 'Réactiver l\'organisation'}
+              {statusDialog.action === 'suspend' ? 'Suspendre l\'organisation'
+                : statusDialog.action === 'archive' ? 'Archiver l\'organisation'
+                : statusDialog.action === 'delete' ? 'Supprimer l\'organisation'
+                : 'Réactiver l\'organisation'}
             </h3>
             <p className="text-sm text-[#6f787e] mb-4">
               {statusDialog.action === 'suspend'
                 ? 'Les administrateurs et praticiens de cette organisation ne pourront plus se connecter, prendre de rendez-vous ni envoyer de messages. Les données sont conservées.'
+                : statusDialog.action === 'delete'
+                ? 'Le compte du créateur de l\'organisation sera immédiatement bloqué et les données effacées sous 30 jours (RGPD). Cette action est irréversible.'
                 : 'Ce motif sera envoyé aux membres de l\'organisation par notification.'}
             </p>
             <textarea value={statusReason} onChange={(e) => setStatusReason(e.target.value)}
@@ -324,10 +339,16 @@ export default function OrganizationsPage() {
               <button onClick={() => setStatusDialog(null)} className="flex-1 py-2.5 border border-slate-200 rounded-full text-sm font-medium text-[#6f787e] hover:bg-slate-50">
                 Annuler
               </button>
-              <button onClick={handleStatusChange} disabled={!statusReason.trim() || changeStatus.isPending}
+              <button
+                onClick={() => {
+                  if (statusDialog.action === 'delete' && !confirm('Confirmer la suppression définitive de cette organisation ?')) return
+                  handleStatusChange()
+                }}
+                disabled={!statusReason.trim() || changeStatus.isPending}
                 className={`flex-1 py-2.5 text-white rounded-full text-sm font-semibold transition-colors disabled:opacity-50 ${
                   statusDialog.action === 'reactivate' ? 'bg-emerald-500 hover:bg-emerald-600' :
                   statusDialog.action === 'suspend' ? 'bg-orange-500 hover:bg-orange-600' :
+                  statusDialog.action === 'delete' ? 'bg-red-600 hover:bg-red-700' :
                   'bg-slate-500 hover:bg-slate-600'
                 }`}>
                 {changeStatus.isPending ? 'Traitement...' : 'Confirmer'}

@@ -36,13 +36,13 @@ Deno.serve(async (req) => {
 
     const { organization_id, action, reason } = await req.json() as {
       organization_id?: string
-      action?: 'suspend' | 'reactivate' | 'archive'
+      action?: 'suspend' | 'reactivate' | 'archive' | 'delete'
       reason?: string
     }
     if (!organization_id || !action) return json({ error: 'organization_id and action are required' }, 400)
     if (!reason || !reason.trim()) return json({ error: 'A reason is required' }, 400)
 
-    const targetStatus: Record<string, string> = { suspend: 'suspended', reactivate: 'active', archive: 'archived' }
+    const targetStatus: Record<string, string> = { suspend: 'suspended', reactivate: 'active', archive: 'archived', delete: 'deleted' }
     if (!(action in targetStatus)) return json({ error: 'Invalid action' }, 400)
     const newStatus = targetStatus[action]
 
@@ -59,6 +59,18 @@ Deno.serve(async (req) => {
       .eq('id', organization_id)
     if (updateError) return json({ error: updateError.message }, 500)
 
+    // Suppression = même blocage RGPD que la suppression individuelle d'un
+    // compte (delete-account / admin-delete-account) : le créateur/admin de
+    // l'organisation est bloqué au niveau Supabase Auth, pas seulement
+    // "archivé" côté organisation.
+    if (action === 'delete' && org.created_by) {
+      await supabase.auth.admin.updateUserById(org.created_by, { ban_duration: '87600h' })
+      await supabase.from('users').update({
+        account_status: 'suspended',
+        status_reason: `Suppression de l'organisation "${org.name}" par un administrateur (RGPD) — traitement des données sous 30 jours. Motif : ${reason.trim()}`,
+      }).eq('id', org.created_by)
+    }
+
     // Notify the org admin(s) and every practitioner attached to the org.
     const { data: members } = await supabase
       .from('users')
@@ -70,6 +82,7 @@ Deno.serve(async (req) => {
       suspend: 'Organisation suspendue',
       reactivate: 'Organisation réactivée',
       archive: 'Organisation archivée',
+      delete: 'Organisation supprimée',
     }
     const title = titles[action]
     const body = `${org.name} : ${reason}`
@@ -90,7 +103,7 @@ Deno.serve(async (req) => {
 
     await supabase.from('audit_logs').insert({
       actor_id: user.id,
-      action: `organization.${action}`,
+      action: action === 'delete' ? 'organization.deletion_requested' : `organization.${action}`,
       resource_type: 'organization',
       resource_id: organization_id,
       old_values: { status: org.status },
