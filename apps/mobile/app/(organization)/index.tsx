@@ -86,11 +86,7 @@ export default function OrganizationDashboardScreen() {
 
   const uploadLogo = async () => {
     if (!data?.organizationId) return
-    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (!perm.granted) {
-      Alert.alert('Permission requise', "Autorisez l'accès à la galerie pour choisir un logo.")
-      return
-    }
+    // Sélecteur système (Photo Picker) — aucune permission de galerie requise.
     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.85, allowsEditing: true, aspect: [1, 1] })
     if (result.canceled || !result.assets[0]) return
 

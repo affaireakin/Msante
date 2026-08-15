@@ -6,6 +6,8 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 
 type AssetType = 'avatar' | 'stamp' | 'signature'
 
+// La galerie utilise le sélecteur système (Photo Picker) — aucune permission
+// de bibliothèque média requise. Seule la caméra nécessite une autorisation.
 async function pickImage(allowCamera: boolean): Promise<ImagePicker.ImagePickerResult | null> {
   if (allowCamera && Platform.OS === 'ios') {
     return new Promise((resolve) => {
@@ -13,17 +15,15 @@ async function pickImage(allowCamera: boolean): Promise<ImagePicker.ImagePickerR
         { options: ['Annuler', 'Prendre une photo', 'Choisir dans la galerie'], cancelButtonIndex: 0 },
         async (idx) => {
           if (idx === 0) return resolve(null)
-          const { status } = idx === 1
-            ? await ImagePicker.requestCameraPermissionsAsync()
-            : await ImagePicker.requestMediaLibraryPermissionsAsync()
-          if (status !== 'granted') {
-            Alert.alert('Permission refusée', 'Autorisez l\'accès dans les réglages.')
-            return resolve(null)
+          if (idx === 1) {
+            const { status } = await ImagePicker.requestCameraPermissionsAsync()
+            if (status !== 'granted') {
+              Alert.alert('Permission refusée', 'Autorisez l\'accès à la caméra dans les réglages.')
+              return resolve(null)
+            }
+            return resolve(await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.85, allowsEditing: true, aspect: [1, 1] }))
           }
-          const result = idx === 1
-            ? await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.85, allowsEditing: true, aspect: [1, 1] })
-            : await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.85, allowsEditing: true, aspect: [1, 1] })
-          resolve(result)
+          resolve(await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.85, allowsEditing: true, aspect: [1, 1] }))
         },
       )
     })
@@ -51,11 +51,6 @@ async function pickImage(allowCamera: boolean): Promise<ImagePicker.ImagePickerR
           {
             text: 'Galerie',
             onPress: async () => {
-              const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-              if (status !== 'granted') {
-                Alert.alert('Permission refusée', 'Autorisez l\'accès à la galerie dans les réglages.')
-                return resolve(null)
-              }
               resolve(await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.85, allowsEditing: true, aspect: [1, 1] }))
             },
           },
@@ -65,11 +60,6 @@ async function pickImage(allowCamera: boolean): Promise<ImagePicker.ImagePickerR
   }
 
   // Library only (stamp, signature)
-  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-  if (status !== 'granted') {
-    Alert.alert('Permission refusée', 'Autorisez l\'accès à la galerie dans les réglages.')
-    return null
-  }
   return ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.9, allowsEditing: false })
 }
 

@@ -152,11 +152,7 @@ export default function ProfileScreen() {
   })
 
   const uploadAvatar = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (status !== 'granted') {
-      Alert.alert('Permission requise', "L'accès à la galerie est nécessaire pour choisir une photo.")
-      return
-    }
+    // Sélecteur système (Photo Picker) — aucune permission de galerie requise.
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,

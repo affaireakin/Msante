@@ -130,12 +130,7 @@ export default function PractitionerOnboardingScreen() {
 
   const pickProfilePhoto = async () => {
     setPickingPhoto(true)
-    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync()
-    if (!perm.granted) {
-      Alert.alert('Permission requise', 'Autorisez l\'accès à la galerie pour choisir votre photo.')
-      setPickingPhoto(false)
-      return
-    }
+    // Sélecteur système (Photo Picker) — aucune permission de galerie requise.
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
