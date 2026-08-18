@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useHomepageContent, DEFAULT_HOMEPAGE_CONTENT } from '@/lib/useHomepageContent'
+import HeroCarousel from './HeroCarousel'
 
 function Icon({ name, className = '', style }: { name: string; className?: string; style?: React.CSSProperties }) {
   return <span className={`material-symbols-outlined ${className}`} style={style}>{name}</span>
@@ -38,31 +39,35 @@ export default function HeroSection() {
 
         <div className="relative group hidden lg:block">
           <div className="absolute -inset-4 bg-[#82d8ff]/10 blur-3xl rounded-full opacity-50 group-hover:opacity-70 transition-opacity" />
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-square p-2" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
-            <div className="w-full h-full rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #e5eeff 0%, #82d8ff 40%, #bee9ff 70%, #f8f9ff 100%)' }}>
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center space-y-4">
-                  <div className="w-24 h-24 rounded-full bg-[#82d8ff] flex items-center justify-center mx-auto shadow-2xl">
-                    <Icon name="medical_services" className="text-white" style={{ fontSize: '48px' }} />
-                  </div>
-                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-lg">
-                    <p className="text-xl font-black text-[#0b1c30]">Dr. Aminata Diallo</p>
-                    <p className="text-sm text-[#6f787e] font-medium">Psychologue Clinicienne</p>
-                    <div className="flex items-center justify-center gap-1 mt-2">
-                      {[1, 2, 3, 4, 5].map(i => (
-                        <Icon key={i} name="star" className="text-[#ffde5c]" style={{ fontSize: '16px' }} />
-                      ))}
-                      <span className="text-xs text-[#6f787e] ml-1">5.0</span>
+          {c.carouselImage1Url ? (
+            <HeroCarousel image1={c.carouselImage1Url} image2={c.carouselImage2Url} />
+          ) : (
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-square p-2" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
+              <div className="w-full h-full rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #e5eeff 0%, #82d8ff 40%, #bee9ff 70%, #f8f9ff 100%)' }}>
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="text-center space-y-4">
+                    <div className="w-24 h-24 rounded-full bg-[#82d8ff] flex items-center justify-center mx-auto shadow-2xl">
+                      <Icon name="medical_services" className="text-white" style={{ fontSize: '48px' }} />
                     </div>
-                    <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#82d8ff] text-[#0b1c30] rounded-full text-xs font-bold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
-                      Disponible maintenant
+                    <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-lg">
+                      <p className="text-xl font-black text-[#0b1c30]">Dr. Aminata Diallo</p>
+                      <p className="text-sm text-[#6f787e] font-medium">Psychologue Clinicienne</p>
+                      <div className="flex items-center justify-center gap-1 mt-2">
+                        {[1, 2, 3, 4, 5].map(i => (
+                          <Icon key={i} name="star" className="text-[#ffde5c]" style={{ fontSize: '16px' }} />
+                        ))}
+                        <span className="text-xs text-[#6f787e] ml-1">5.0</span>
+                      </div>
+                      <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#82d8ff] text-[#0b1c30] rounded-full text-xs font-bold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#4ade80]" />
+                        Disponible maintenant
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="absolute -bottom-6 -left-6 p-5 rounded-2xl shadow-xl max-w-[200px]" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
             <div className="flex items-center gap-3 mb-2">

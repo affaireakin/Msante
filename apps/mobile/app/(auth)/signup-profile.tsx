@@ -10,9 +10,9 @@ const PROFILES: {
   icon: React.ComponentProps<typeof MaterialIcons>['name']
   route: string
 }[] = [
-  { value: 'patient',      label: 'Patient',      desc: 'Je cherche un praticien et je veux prendre rendez-vous.', icon: 'person',            route: '/(auth)/signup-patient' },
-  { value: 'practitioner', label: 'Praticien',     desc: 'Je propose des consultations sur la plateforme.',        icon: 'medical-services',  route: '/(auth)/practitioner-type' },
-  { value: 'organization', label: 'Organisation',  desc: 'Cabinet, clinique — je gère une équipe de praticiens.',  icon: 'business',          route: '/(auth)/signup-organization' },
+  { value: 'patient',      label: 'Patient',      desc: '', icon: 'person',            route: '/(auth)/signup-patient' },
+  { value: 'practitioner', label: 'Praticien',     desc: '', icon: 'medical-services',  route: '/(auth)/practitioner-type' },
+  { value: 'organization', label: 'Organisation',  desc: '(Cabinet, clinique, hôpitaux)', icon: 'business', route: '/(auth)/signup-organization' },
 ]
 
 export default function SignupProfileScreen() {
@@ -72,9 +72,11 @@ export default function SignupProfileScreen() {
                 <Text style={{ fontSize: 15, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>
                   {p.label}
                 </Text>
-                <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', marginTop: 2, lineHeight: 17 }}>
-                  {p.desc}
-                </Text>
+                {!!p.desc && (
+                  <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', marginTop: 2, lineHeight: 17 }}>
+                    {p.desc}
+                  </Text>
+                )}
               </View>
               <MaterialIcons name="chevron-right" size={22} color="#bec8ce" />
             </TouchableOpacity>

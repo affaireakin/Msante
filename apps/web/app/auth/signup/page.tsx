@@ -11,9 +11,9 @@ type PractType = 'healthcare' | 'wellness'
 type Step = 'select' | 'form'
 
 const PROFILE_CARDS: { value: Role; label: string; desc: string; icon: string }[] = [
-  { value: 'patient',      label: 'Patient',      desc: 'Je cherche un praticien et je veux prendre rendez-vous.', icon: 'person' },
-  { value: 'practitioner', label: 'Praticien',     desc: 'Je propose des consultations sur la plateforme.',        icon: 'medical_services' },
-  { value: 'organization', label: 'Organisation',  desc: 'Cabinet, clinique — je gère une équipe de praticiens.',  icon: 'business' },
+  { value: 'patient',      label: 'Patient',      desc: '', icon: 'person' },
+  { value: 'practitioner', label: 'Praticien',     desc: '', icon: 'medical_services' },
+  { value: 'organization', label: 'Organisation',  desc: '(Cabinet, clinique, hôpitaux)',  icon: 'business' },
 ]
 
 function translateError(msg: string): string {
@@ -44,7 +44,7 @@ function SignupForm() {
   const [specialities, setSpecialities] = useState<string[]>([])
 
   useEffect(() => {
-    supabase.from('profession_permissions').select('profession_label').eq('category', practType).order('profession_label')
+    supabase.from('profession_permissions').select('profession_label').eq('category', practType).order('sort_order')
       .then(({ data }) => {
         setSpecialities(data?.length ? data.map(r => r.profession_label) : [])
       })
@@ -145,7 +145,7 @@ function SignupForm() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-[#0b1c30]">{label}</p>
-                    <p className="text-xs text-[#6f787e] mt-0.5 leading-snug">{desc}</p>
+                    {desc && <p className="text-xs text-[#6f787e] mt-0.5 leading-snug">{desc}</p>}
                   </div>
                   <span className="material-symbols-outlined text-[#bec8ce]" style={{ fontSize: '20px' }}>chevron_right</span>
                 </button>
@@ -171,10 +171,9 @@ function SignupForm() {
             Retour
           </button>
 
-          <h1 className="text-2xl font-black text-[#0b1c30] mb-1">
+          <h1 className="text-2xl font-black text-[#0b1c30] mb-6">
             Inscription {role === 'practitioner' ? 'praticien' : role === 'organization' ? 'organisation' : 'patient'}
           </h1>
-          <p className="text-sm text-slate-400 mb-6">Rejoignez la plateforme M-Santé</p>
 
           {/* Type praticien */}
           {role === 'practitioner' && (
@@ -305,11 +304,15 @@ function SignupForm() {
                 className="mt-0.5 w-4 h-4 rounded border-[#bec8ce] text-[#82d8ff] accent-[#82d8ff] flex-shrink-0"
               />
               <span className="text-xs text-slate-500 leading-relaxed">
-                En validant votre inscription, vous acceptez les{' '}
+                J&apos;accepte les{' '}
                 <Link href="/cgu" target="_blank" className="text-[#82d8ff] font-semibold hover:underline">
-                  Conditions Générales d&apos;Utilisation
+                  Conditions Générales
                 </Link>
-                {' '}de M-Santé.
+                {' '}et le{' '}
+                <Link href="/pages/confidentialite" target="_blank" className="text-[#82d8ff] font-semibold hover:underline">
+                  traitement de mes données
+                </Link>
+                {' '}conformément à la politique de confidentialité.
               </span>
             </label>
 

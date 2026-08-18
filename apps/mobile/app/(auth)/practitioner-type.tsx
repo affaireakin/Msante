@@ -1,41 +1,37 @@
 import { useState } from 'react'
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/services/supabase'
 import { PrimaryButton } from '@/components/ui'
 
-// Doit correspondre EXACTEMENT aux profession_label de la table profession_permissions
-const HEALTHCARE_SPECIALTIES = [
-  'Médecin généraliste',
-  'Psychiatre',
-  'Cardiologue',
-  'Dermatologue',
-  'Gynécologue',
-  'Pédiatre',
-  'Ophtalmologue',
-  'Sage-femme',
-  'Infirmier(e)',
-  'Kinésithérapeute',
-  'Dentiste',
-]
-
-const WELLNESS_SPECIALTIES = [
-  'Psychologue',
-  'Thérapeute',
-  'Coach bien-être',
-  'Sophrologue',
-  'Nutritionniste',
-]
-
 type PractitionerType = 'healthcare' | 'wellness' | null
+
+function useSpecialities(category: 'healthcare' | 'wellness' | null) {
+  return useQuery<string[]>({
+    queryKey: ['signup-specialities', category],
+    enabled: !!category,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profession_permissions')
+        .select('profession_label')
+        .eq('category', category!)
+        .order('sort_order')
+      if (error) throw error
+      return (data ?? []).map(r => r.profession_label)
+    },
+    staleTime: 5 * 60_000,
+  })
+}
 
 export default function PractitionerTypeScreen() {
   const router = useRouter()
   const [selectedType, setSelectedType] = useState<PractitionerType>(null)
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null)
 
-  const specialties = selectedType === 'healthcare' ? HEALTHCARE_SPECIALTIES : WELLNESS_SPECIALTIES
+  const { data: specialties = [], isLoading } = useSpecialities(selectedType)
 
   const canContinue = selectedType !== null && selectedSpecialty !== null
 
@@ -97,10 +93,10 @@ export default function PractitionerTypeScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: 2 }}>
-                Professionnel de santé
+                Professionnels de santé
               </Text>
               <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', lineHeight: 17 }}>
-                Médecin, cardiologue, gynécologue, pédiatre…
+                Psychiatre, psychologue, médecin…
               </Text>
             </View>
             {selectedType === 'healthcare' && (
@@ -128,10 +124,10 @@ export default function PractitionerTypeScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: 2 }}>
-                Praticien bien-être
+                Praticiens bien-être
               </Text>
               <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope', lineHeight: 17 }}>
-                Psychologue, thérapeute, coach, sophrologue…
+                Coach, coach de vie, développement personnel…
               </Text>
             </View>
             {selectedType === 'wellness' && (
@@ -146,32 +142,36 @@ export default function PractitionerTypeScreen() {
             <Text style={{ fontSize: 13, fontWeight: '700', color: '#3f484d', fontFamily: 'Manrope', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.8 }}>
               2. Spécialité
             </Text>
-            <View style={{ gap: 8, marginBottom: 32 }}>
-              {specialties.map(spec => {
-                const isSelected = selectedSpecialty === spec
-                const accent = selectedType === 'healthcare' ? '#82d8ff' : '#705d00'
-                const bgSelected = selectedType === 'healthcare' ? '#e5eeff' : '#fff8e1'
-                return (
-                  <TouchableOpacity
-                    key={spec}
-                    onPress={() => setSelectedSpecialty(spec)}
-                    activeOpacity={0.75}
-                    style={{
-                      borderRadius: 12, borderWidth: 1.5,
-                      borderColor: isSelected ? accent : '#e5eeff',
-                      backgroundColor: isSelected ? bgSelected : '#fff',
-                      paddingHorizontal: 16, paddingVertical: 13,
-                      flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-                    }}
-                  >
-                    <Text style={{ fontSize: 14, fontFamily: 'Manrope', fontWeight: isSelected ? '700' : '500', color: isSelected ? accent : '#0b1c30' }}>
-                      {spec}
-                    </Text>
-                    {isSelected && <MaterialIcons name="check" size={18} color={accent} />}
-                  </TouchableOpacity>
-                )
-              })}
-            </View>
+            {isLoading ? (
+              <ActivityIndicator color="#82d8ff" style={{ marginBottom: 32 }} />
+            ) : (
+              <View style={{ gap: 8, marginBottom: 32 }}>
+                {specialties.map(spec => {
+                  const isSelected = selectedSpecialty === spec
+                  const accent = selectedType === 'healthcare' ? '#82d8ff' : '#705d00'
+                  const bgSelected = selectedType === 'healthcare' ? '#e5eeff' : '#fff8e1'
+                  return (
+                    <TouchableOpacity
+                      key={spec}
+                      onPress={() => setSelectedSpecialty(spec)}
+                      activeOpacity={0.75}
+                      style={{
+                        borderRadius: 12, borderWidth: 1.5,
+                        borderColor: isSelected ? accent : '#e5eeff',
+                        backgroundColor: isSelected ? bgSelected : '#fff',
+                        paddingHorizontal: 16, paddingVertical: 13,
+                        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+                      }}
+                    >
+                      <Text style={{ fontSize: 14, fontFamily: 'Manrope', fontWeight: isSelected ? '700' : '500', color: isSelected ? accent : '#0b1c30' }}>
+                        {spec}
+                      </Text>
+                      {isSelected && <MaterialIcons name="check" size={18} color={accent} />}
+                    </TouchableOpacity>
+                  )
+                })}
+              </View>
+            )}
           </>
         )}
 

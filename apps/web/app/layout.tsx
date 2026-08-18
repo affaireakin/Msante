@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Manrope } from 'next/font/google'
 import './globals.css'
 import { QueryProvider } from '@/lib/query-client'
@@ -79,6 +79,16 @@ export const metadata: Metadata = {
     canonical: BASE_URL,
     languages: { 'fr-SN': BASE_URL, 'fr-FR': BASE_URL },
   },
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    title: 'M-Santé',
+    statusBarStyle: 'default',
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#82d8ff',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -21,7 +21,7 @@ export default function CtaFinalSection() {
             <Link href="/auth/signup" className="px-10 py-4 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-2xl shadow-xl shadow-[#82d8ff]/30 hover:scale-105 active:scale-95 transition-all">
               {c.ctaPrimary}
             </Link>
-            <Link href="/auth/login" className="px-10 py-4 font-bold rounded-2xl hover:bg-white/20 transition-all text-white border border-white/20" style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
+            <Link href="/pages/tarifs" className="px-10 py-4 font-bold rounded-2xl hover:bg-white/20 transition-all text-white border border-white/20" style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
               {c.ctaSecondary}
             </Link>
           </div>

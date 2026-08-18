@@ -20,7 +20,7 @@ function useSpecialitiesFor(category: 'healthcare' | 'wellness') {
   return useQuery({
     queryKey: ['profession-specialities', category],
     queryFn: async () => {
-      const { data } = await supabase.from('profession_permissions').select('profession_label').eq('category', category).order('profession_label')
+      const { data } = await supabase.from('profession_permissions').select('profession_label').eq('category', category).order('sort_order')
       return (data ?? []).map(r => r.profession_label)
     },
   })

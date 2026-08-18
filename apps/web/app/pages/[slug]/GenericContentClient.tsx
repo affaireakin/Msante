@@ -40,8 +40,8 @@ export default function GenericContentClient({ slug }: { slug: string }) {
           <>
             <h1 className="text-3xl font-black text-[#0b1c30]">{data?.title}</h1>
             <div
-              className="space-y-5 text-sm text-[#3f484d] leading-relaxed [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-[#0b1c30] [&_h2]:mt-8 [&_h2]:mb-2 [&_ul]:list-disc [&_ul]:list-inside [&_ul]:space-y-1 [&_strong]:text-[#0b1c30]"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(data?.body ?? '') }}
+              className="space-y-4 text-sm text-[#3f484d] leading-relaxed [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-[#0b1c30] [&_h2]:mt-8 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-[#0b1c30] [&_h3]:mt-6 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:list-inside [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:list-inside [&_ol]:space-y-1 [&_strong]:text-[#0b1c30] [&_a]:text-[#82d8ff] [&_a]:underline [&_a]:font-semibold"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(data?.body ?? '', { ADD_ATTR: ['target', 'rel'] }) }}
             />
           </>
         )}

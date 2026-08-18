@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { useSiteSettings, useContentPages, useFaqAdmin } from './useContent'
-import { useHomepageContent, useSaveHomepageContent, DEFAULT_HOMEPAGE_CONTENT, type HomepageContent } from '@/lib/useHomepageContent'
+import { useHomepageContent, useSaveHomepageContent, useUploadHeroImage, DEFAULT_HOMEPAGE_CONTENT, type HomepageContent } from '@/lib/useHomepageContent'
+import RichTextEditor from '@/components/RichTextEditor'
 
 function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
   return <span className="material-symbols-outlined" style={style}>{name}</span>
@@ -163,10 +164,9 @@ function PagesTab() {
             </button>
           </div>
           <p className="text-xs text-[#6f787e]">
-            Page publique : <strong>{KNOWN_ROUTES[selected.slug] ?? `/pages/${selected.slug}`}</strong> · HTML simple accepté (h2, p, ul/li, strong)
+            Page publique : <strong>{KNOWN_ROUTES[selected.slug] ?? `/pages/${selected.slug}`}</strong>
           </p>
-          <textarea value={body} onChange={e => setBody(e.target.value)} rows={18}
-            className="w-full px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-xs text-[#0b1c30] font-mono focus:outline-none focus:border-[#82d8ff] resize-y" />
+          <RichTextEditor value={body} onChange={setBody} resetKey={selected.slug} />
           <button onClick={() => save.mutate({ slug: selected.slug, title, body }, { onSuccess: () => { setSaved(true); setTimeout(() => setSaved(false), 2500) } })}
             disabled={save.isPending}
             className="px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50"
@@ -314,9 +314,36 @@ function TextField({ label, value, onChange, multiline }: { label: string; value
   )
 }
 
+function ImageUploadField({ label, value, onUpload, isPending }: { label: string; value: string | null; onUpload: (file: File) => void; isPending: boolean }) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  return (
+    <div className="flex items-center gap-4 p-3 rounded-xl bg-[#f8f9ff] border border-[#bec8ce]/50">
+      <div className="w-16 h-20 rounded-lg overflow-hidden bg-white border border-[#bec8ce]/50 flex-shrink-0 flex items-center justify-center">
+        {value ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={value} alt={label} className="w-full h-full object-cover" />
+        ) : (
+          <Icon name="image" style={{ fontSize: '22px', color: '#bec8ce' }} />
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-bold text-[#0b1c30] mb-1">{label}</p>
+        <p className="text-xs text-[#6f787e] mb-2">{value ? 'Image envoyée' : 'Aucune image envoyée'}</p>
+        <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden"
+          onChange={e => { const f = e.target.files?.[0]; if (f) onUpload(f) }} />
+        <button onClick={() => inputRef.current?.click()} disabled={isPending}
+          className="px-3 py-1.5 rounded-lg text-xs font-bold text-[#0b1c30] disabled:opacity-50" style={{ backgroundColor: '#82d8ff' }}>
+          {isPending ? 'Envoi...' : value ? 'Changer' : 'Envoyer'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function HomepageTab() {
   const { data } = useHomepageContent()
   const save = useSaveHomepageContent()
+  const uploadImage = useUploadHeroImage()
   const [content, setContent] = useState<HomepageContent>(DEFAULT_HOMEPAGE_CONTENT)
   const [saved, setSaved] = useState(false)
 
@@ -354,6 +381,31 @@ function HomepageTab() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <TextField label="Bouton principal" value={content.hero.ctaPrimary} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, ctaPrimary: v } }))} />
           <TextField label="Bouton secondaire" value={content.hero.ctaSecondary} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, ctaSecondary: v } }))} />
+        </div>
+
+        <div className="pt-2 border-t border-[#bec8ce]/40 space-y-3">
+          <div>
+            <p className="text-xs font-bold text-[#0b1c30]">Visuel Hero (carousel)</p>
+            <p className="text-xs text-[#6f787e] mt-0.5">Tant qu'aucune image n'est envoyée, le visuel actuel (carte praticien) reste affiché. Dès la première image envoyée, le carousel la remplace — l'alternance automatique démarre dès que les 2 images sont présentes.</p>
+          </div>
+          <ImageUploadField
+            label="Image 1 du carousel"
+            value={content.hero.carouselImage1Url}
+            isPending={uploadImage.isPending}
+            onUpload={file => uploadImage.mutate({ file, field: 'carouselImage1Url' })}
+          />
+          <ImageUploadField
+            label="Image 2 du carousel"
+            value={content.hero.carouselImage2Url}
+            isPending={uploadImage.isPending}
+            onUpload={file => uploadImage.mutate({ file, field: 'carouselImage2Url' })}
+          />
+          <ImageUploadField
+            label="Capture d'écran iPhone"
+            value={content.hero.phoneScreenshotUrl}
+            isPending={uploadImage.isPending}
+            onUpload={file => uploadImage.mutate({ file, field: 'phoneScreenshotUrl' })}
+          />
         </div>
       </SectionCard>
 

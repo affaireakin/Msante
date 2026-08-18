@@ -59,7 +59,7 @@ export default function PractitionerOnboardingPage() {
   const [specialities, setSpecialities] = useState<string[]>([])
 
   useEffect(() => {
-    supabase.from('profession_permissions').select('profession_label').order('profession_label')
+    supabase.from('profession_permissions').select('profession_label').order('sort_order')
       .then(({ data }) => {
         if (data?.length) setSpecialities(data.map(r => r.profession_label))
       })

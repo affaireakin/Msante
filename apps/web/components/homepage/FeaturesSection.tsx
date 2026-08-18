@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import { useHomepageContent, DEFAULT_HOMEPAGE_CONTENT } from '@/lib/useHomepageContent'
 
 function Icon({ name, className = '', style }: { name: string; className?: string; style?: React.CSSProperties }) {
@@ -30,8 +31,9 @@ export default function FeaturesSection() {
         {features.map((card, i) => {
           const style = CARD_STYLE[i]
           return (
-            <div
+            <Link
               key={card.title}
+              href="/auth/signup"
               className="group rounded-[2rem] hover:shadow-2xl hover:-translate-y-2 transition-all py-12 px-8 text-center flex flex-col items-center"
               style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}
             >
@@ -46,7 +48,7 @@ export default function FeaturesSection() {
               <div className={`w-full h-36 rounded-xl bg-gradient-to-br ${style.gradient} flex items-center justify-center`}>
                 <Icon name={style.icon} className="opacity-20" style={{ fontSize: '72px', color: style.iconColor }} />
               </div>
-            </div>
+            </Link>
           )
         })}
       </div>

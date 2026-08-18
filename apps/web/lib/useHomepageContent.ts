@@ -12,6 +12,9 @@ export interface HomepageContent {
     ctaSecondary: string
     statBadgeValue: string
     statBadgeLabel: string
+    carouselImage1Url: string | null
+    carouselImage2Url: string | null
+    phoneScreenshotUrl: string | null
   }
   features: { title: string; desc: string }[]
   valueProposition: {
@@ -49,6 +52,9 @@ export const DEFAULT_HOMEPAGE_CONTENT: HomepageContent = {
     ctaSecondary: 'Découvrir nos praticiens',
     statBadgeValue: '98%',
     statBadgeLabel: 'de confiance renouvelée.',
+    carouselImage1Url: null,
+    carouselImage2Url: null,
+    phoneScreenshotUrl: null,
   },
   features: [
     { title: 'Compagnon Bien-être IA', desc: "Un assistant émotionnel intelligent disponible 24/7 pour vous écouter, analyser vos humeurs et proposer des exercices adaptés." },
@@ -110,6 +116,30 @@ export function useHomepageContent() {
       return mergeWithDefaults(data?.homepage_content as Partial<HomepageContent> | null)
     },
     staleTime: 5 * 60_000,
+  })
+}
+
+// Upload direct d'une image Hero (carousel ou capture iPhone) vers le bucket
+// public site-assets, puis écrit son URL dans homepage_content — même
+// mécanisme que le logo (SiteSettingsTab), pour rester cohérent.
+export function useUploadHeroImage() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ file, field }: { file: File; field: 'carouselImage1Url' | 'carouselImage2Url' | 'phoneScreenshotUrl' }) => {
+      const ext = file.name.split('.').pop() ?? 'png'
+      const path = `site/hero-${field}.${ext}`
+      const { error: uploadError } = await supabase.storage.from('site-assets').upload(path, file, { upsert: true })
+      if (uploadError) throw uploadError
+      const { data: { publicUrl } } = supabase.storage.from('site-assets').getPublicUrl(path)
+      const bustedUrl = `${publicUrl}?t=${Date.now()}`
+
+      const { data: current } = await supabase.from('site_settings').select('homepage_content').eq('id', 1).single()
+      const content = mergeWithDefaults(current?.homepage_content as Partial<HomepageContent> | null)
+      const updated: HomepageContent = { ...content, hero: { ...content.hero, [field]: bustedUrl } }
+      const { error } = await supabase.from('site_settings').update({ homepage_content: updated }).eq('id', 1)
+      if (error) throw error
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['homepage-content'] }),
   })
 }
 

@@ -127,9 +127,16 @@ export default function SignupPatientScreen() {
                 style={{ color: '#82d8ff', fontWeight: '700' }}
                 onPress={() => router.push('/(auth)/cgu' as never)}
               >
-                Conditions Générales d'Utilisation
+                Conditions Générales
               </Text>
-              {' '}et la politique de confidentialité de M-Santé.
+              {' '}et le{' '}
+              <Text
+                style={{ color: '#82d8ff', fontWeight: '700' }}
+                onPress={() => router.push('/(auth)/confidentialite' as never)}
+              >
+                traitement de mes données
+              </Text>
+              {' '}conformément à la politique de confidentialité.
             </Text>
           </TouchableOpacity>
 
