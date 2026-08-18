@@ -69,15 +69,17 @@ export default function HeroSection() {
             </div>
           )}
 
-          <div className="absolute -bottom-6 -left-6 p-5 rounded-2xl shadow-xl max-w-[200px]" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-[#ffde5c] flex items-center justify-center text-[#705d00]">
-                <Icon name="auto_awesome" style={{ fontSize: '20px' }} />
+          {!c.carouselImage1Url && (
+            <div className="absolute -bottom-6 -left-6 p-5 rounded-2xl shadow-xl max-w-[200px]" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-full bg-[#ffde5c] flex items-center justify-center text-[#705d00]">
+                  <Icon name="auto_awesome" style={{ fontSize: '20px' }} />
+                </div>
+                <span className="font-bold text-2xl leading-none text-[#82d8ff]">{c.statBadgeValue}</span>
               </div>
-              <span className="font-bold text-2xl leading-none text-[#82d8ff]">{c.statBadgeValue}</span>
+              <p className="text-sm text-[#6f787e]">{c.statBadgeLabel}</p>
             </div>
-            <p className="text-sm text-[#6f787e]">{c.statBadgeLabel}</p>
-          </div>
+          )}
         </div>
       </div>
     </section>
