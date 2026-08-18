@@ -181,8 +181,8 @@ function SignupForm() {
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Type de pratique</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {([
-                  { value: 'healthcare', label: 'Professionnel de santé', icon: 'local_hospital', desc: 'Médecins, psychiatres, infirmiers…' },
-                  { value: 'wellness',   label: 'Praticien bien-être',     icon: 'self_improvement', desc: 'Coachs, relaxologues, thérapeutes…' },
+                  { value: 'healthcare', label: 'Professionnels de santé', icon: 'local_hospital', desc: 'Psychiatre, psychologue, médecin…' },
+                  { value: 'wellness',   label: 'Praticiens bien-être',     icon: 'self_improvement', desc: 'Coach, coach de vie, développement personnel…' },
                 ] as { value: PractType; label: string; icon: string; desc: string }[]).map(({ value, label, icon, desc }) => (
                   <button
                     key={value}
