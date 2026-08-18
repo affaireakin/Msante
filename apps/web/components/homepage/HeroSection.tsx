@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useHomepageContent, DEFAULT_HOMEPAGE_CONTENT } from '@/lib/useHomepageContent'
 import HeroCarousel from './HeroCarousel'
+import RichTextDisplay from '@/components/RichTextDisplay'
 
 function Icon({ name, className = '', style }: { name: string; className?: string; style?: React.CSSProperties }) {
   return <span className={`material-symbols-outlined ${className}`} style={style}>{name}</span>
@@ -24,9 +25,7 @@ export default function HeroSection() {
             {c.titleMain}{' '}
             <span className="text-[#82d8ff]">{c.titleHighlight}</span>
           </h1>
-          <p className="text-lg text-[#6f787e] max-w-lg leading-relaxed">
-            {c.subtitle}
-          </p>
+          <RichTextDisplay html={c.subtitle} className="text-lg text-[#6f787e] max-w-lg leading-relaxed" />
           <div className="flex flex-wrap gap-4 pt-2">
             <Link href="/auth/signup" className="px-8 py-4 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-xl shadow-xl shadow-[#82d8ff]/20 hover:scale-105 active:scale-95 transition-all">
               {c.ctaPrimary}

@@ -340,6 +340,15 @@ function ImageUploadField({ label, value, onUpload, isPending }: { label: string
   )
 }
 
+function RichTextField({ label, value, onChange, resetKey }: { label: string; value: string; onChange: (v: string) => void; resetKey: string }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs font-bold text-[#6f787e] uppercase tracking-wide">{label}</label>
+      <RichTextEditor value={value} onChange={onChange} resetKey={resetKey} />
+    </div>
+  )
+}
+
 function HomepageTab() {
   const { data } = useHomepageContent()
   const save = useSaveHomepageContent()
@@ -376,7 +385,7 @@ function HomepageTab() {
           <TextField label="Titre (partie normale)" value={content.hero.titleMain} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, titleMain: v } }))} />
           <TextField label="Titre (partie en couleur)" value={content.hero.titleHighlight} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, titleHighlight: v } }))} />
         </div>
-        <TextField label="Sous-titre" multiline value={content.hero.subtitle} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, subtitle: v } }))} />
+        <RichTextField label="Sous-titre" resetKey="hero-subtitle" value={content.hero.subtitle} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, subtitle: v } }))} />
         <TextField label="Légende de la statistique" value={content.hero.statBadgeLabel} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, statBadgeLabel: v } }))} />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <TextField label="Bouton principal" value={content.hero.ctaPrimary} onChange={v => setContent(c => ({ ...c, hero: { ...c.hero, ctaPrimary: v } }))} />
@@ -414,7 +423,7 @@ function HomepageTab() {
           {content.features.map((f, i) => (
             <div key={i} className="space-y-2 p-3 rounded-xl bg-[#f8f9ff] border border-[#bec8ce]/50">
               <TextField label={`Carte ${i + 1} — Titre`} value={f.title} onChange={v => updateFeature(i, 'title', v)} />
-              <TextField label="Description" multiline value={f.desc} onChange={v => updateFeature(i, 'desc', v)} />
+              <RichTextField label="Description" resetKey={`feature-${i}`} value={f.desc} onChange={v => updateFeature(i, 'desc', v)} />
             </div>
           ))}
         </div>
@@ -426,7 +435,7 @@ function HomepageTab() {
           {content.valueProposition.items.map((it, i) => (
             <div key={i} className="space-y-2 p-3 rounded-xl bg-[#f8f9ff] border border-[#bec8ce]/50">
               <TextField label={`Point ${i + 1} — Titre`} value={it.title} onChange={v => updateValueItem(i, 'title', v)} />
-              <TextField label="Description" multiline value={it.desc} onChange={v => updateValueItem(i, 'desc', v)} />
+              <RichTextField label="Description" resetKey={`value-item-${i}`} value={it.desc} onChange={v => updateValueItem(i, 'desc', v)} />
             </div>
           ))}
         </div>
@@ -441,12 +450,12 @@ function HomepageTab() {
 
       <SectionCard title="Appel à l'action final" hint="Bloc sombre juste avant le pied de page">
         <TextField label="Titre" value={content.ctaFinal.heading} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, heading: v } }))} />
-        <TextField label="Sous-titre" multiline value={content.ctaFinal.subtitle} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, subtitle: v } }))} />
+        <RichTextField label="Sous-titre" resetKey="cta-final-subtitle" value={content.ctaFinal.subtitle} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, subtitle: v } }))} />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <TextField label="Bouton principal" value={content.ctaFinal.ctaPrimary} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, ctaPrimary: v } }))} />
           <TextField label="Bouton secondaire" value={content.ctaFinal.ctaSecondary} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, ctaSecondary: v } }))} />
         </div>
-        <TextField label="Mention légale / disclaimer" value={content.ctaFinal.disclaimer} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, disclaimer: v } }))} />
+        <RichTextField label="Mention légale / disclaimer" resetKey="cta-final-disclaimer" value={content.ctaFinal.disclaimer} onChange={v => setContent(c => ({ ...c, ctaFinal: { ...c.ctaFinal, disclaimer: v } }))} />
       </SectionCard>
 
       <SectionCard title="Bandeau partenaires" hint="Juste avant le pied de page">

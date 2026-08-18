@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useHomepageContent, DEFAULT_HOMEPAGE_CONTENT } from '@/lib/useHomepageContent'
+import RichTextDisplay from '@/components/RichTextDisplay'
 
 export default function CtaFinalSection() {
   const { data } = useHomepageContent()
@@ -14,9 +15,7 @@ export default function CtaFinalSection() {
           <h2 className="text-3xl md:text-5xl font-black text-white leading-tight">
             {c.heading}
           </h2>
-          <p className="text-white/70 max-w-xl mx-auto text-base">
-            {c.subtitle}
-          </p>
+          <RichTextDisplay html={c.subtitle} className="text-white/70 max-w-xl mx-auto text-base" />
           <div className="flex flex-wrap justify-center gap-4 pt-2">
             <Link href="/auth/signup" className="px-10 py-4 bg-[#82d8ff] text-[#0b1c30] font-bold rounded-2xl shadow-xl shadow-[#82d8ff]/30 hover:scale-105 active:scale-95 transition-all">
               {c.ctaPrimary}
@@ -25,7 +24,7 @@ export default function CtaFinalSection() {
               {c.ctaSecondary}
             </Link>
           </div>
-          <p className="text-white/40 text-sm">{c.disclaimer}</p>
+          <RichTextDisplay html={c.disclaimer} className="text-white/40 text-sm" />
         </div>
       </div>
     </section>

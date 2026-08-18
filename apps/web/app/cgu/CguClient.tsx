@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import DOMPurify from 'dompurify'
+import DOMPurify from 'isomorphic-dompurify'
 import { supabase } from '@/lib/supabase'
 
 function useCguContent() {

@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useHomepageContent, DEFAULT_HOMEPAGE_CONTENT } from '@/lib/useHomepageContent'
+import RichTextDisplay from '@/components/RichTextDisplay'
 
 function Icon({ name, className = '', style }: { name: string; className?: string; style?: React.CSSProperties }) {
   return <span className={`material-symbols-outlined ${className}`} style={style}>{name}</span>
@@ -44,7 +45,7 @@ export default function FeaturesSection() {
                 <Icon name={style.icon} style={{ fontSize: '36px', color: style.iconColor }} />
               </div>
               <h3 className="text-xl font-bold text-[#0b1c30] mb-4">{card.title}</h3>
-              <p className="text-[#6f787e] text-sm leading-relaxed mb-6">{card.desc}</p>
+              <RichTextDisplay html={card.desc} className="text-[#6f787e] text-sm leading-relaxed mb-6" />
               <div className={`w-full h-36 rounded-xl bg-gradient-to-br ${style.gradient} flex items-center justify-center`}>
                 <Icon name={style.icon} className="opacity-20" style={{ fontSize: '72px', color: style.iconColor }} />
               </div>

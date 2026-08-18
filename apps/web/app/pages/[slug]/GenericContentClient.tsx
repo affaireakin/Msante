@@ -2,7 +2,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import DOMPurify from 'dompurify'
+import DOMPurify from 'isomorphic-dompurify'
 import { supabase } from '@/lib/supabase'
 import SiteLogo from '@/components/SiteLogo'
 

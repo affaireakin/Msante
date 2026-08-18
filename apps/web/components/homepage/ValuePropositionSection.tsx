@@ -1,5 +1,6 @@
 'use client'
 import { useHomepageContent, DEFAULT_HOMEPAGE_CONTENT } from '@/lib/useHomepageContent'
+import RichTextDisplay from '@/components/RichTextDisplay'
 
 function Icon({ name, className = '', style }: { name: string; className?: string; style?: React.CSSProperties }) {
   return <span className={`material-symbols-outlined ${className}`} style={style}>{name}</span>
@@ -31,7 +32,7 @@ export default function ValuePropositionSection() {
                     </div>
                     <div>
                       <h4 className="font-bold text-[#0b1c30] mb-1">{item.title}</h4>
-                      <p className="text-sm text-[#6f787e]">{item.desc}</p>
+                      <RichTextDisplay html={item.desc} className="text-sm text-[#6f787e]" />
                     </div>
                   </div>
                 ))}
