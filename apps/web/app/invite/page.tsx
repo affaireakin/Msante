@@ -144,7 +144,7 @@ function InviteForm() {
           <span className="material-symbols-outlined text-sky-500 text-3xl">medical_services</span>
           <div>
             <h1 className="text-2xl font-black tracking-tighter text-slate-900">M-Santé</h1>
-            <p className="text-xs text-slate-500 font-medium">Health Sanctuary</p>
+            <p className="text-xs text-slate-500 font-medium">MIND · CARE · CONNECT</p>
           </div>
         </div>
         <div className="glass-card rounded-xl p-8 space-y-6">

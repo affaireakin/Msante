@@ -157,7 +157,7 @@ function VerifyOtpContent() {
             </div>
             <div className="text-left">
               <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
-              <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">Health Sanctuary</p>
+              <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">MIND · CARE · CONNECT</p>
             </div>
           </Link>
         </div>

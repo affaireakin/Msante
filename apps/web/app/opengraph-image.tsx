@@ -42,7 +42,7 @@ export default function Image() {
               M-Santé
             </span>
             <span style={{ fontSize: 16, color: '#82d8ff', fontWeight: 700, letterSpacing: '8px', textTransform: 'uppercase' }}>
-              Health Sanctuary
+              MIND · CARE · CONNECT
             </span>
           </div>
         </div>

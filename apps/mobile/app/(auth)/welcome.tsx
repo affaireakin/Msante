@@ -18,7 +18,7 @@ export default function WelcomeScreen() {
             resizeMode="cover"
           />
           <Text style={{ fontSize: 13, color: '#6f787e', fontFamily: 'Manrope', fontWeight: '600', marginTop: 10, letterSpacing: 0.5 }}>
-            Health Sanctuary
+            MIND · CARE · CONNECT
           </Text>
         </View>
 

@@ -123,7 +123,7 @@ export default function PatientOnboardingPage() {
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
           <span className="text-3xl font-black tracking-tighter text-[#0b1c30]">M-Santé</span>
-          <p className="text-xs text-[#6f787e] font-medium mt-1">Health Sanctuary</p>
+          <p className="text-xs text-[#6f787e] font-medium mt-1">MIND · CARE · CONNECT</p>
         </div>
 
         {/* Steps indicator */}

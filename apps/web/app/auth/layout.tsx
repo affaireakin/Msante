@@ -17,7 +17,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <SiteLogo size={40} />
           <div>
             <h1 className="text-2xl font-black tracking-tighter text-slate-900">M-Santé</h1>
-            <p className="text-xs text-slate-500 font-medium">Health Sanctuary</p>
+            <p className="text-xs text-slate-500 font-medium">MIND · CARE · CONNECT</p>
           </div>
         </div>
         {children}

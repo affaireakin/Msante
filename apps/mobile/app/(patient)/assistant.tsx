@@ -154,7 +154,7 @@ export default function AssistantTab() {
             </View>
             <View>
               <Text style={{ fontSize: fs.lg, fontWeight: '900', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.3 }}>M-Santé</Text>
-              <Text style={{ fontSize: scale(9), color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8 }}>Health Sanctuary</Text>
+              <Text style={{ fontSize: scale(9), color: '#82d8ff', fontFamily: 'Manrope', fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.8 }}>MIND · CARE · CONNECT</Text>
             </View>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(6) }}>
