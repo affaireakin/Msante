@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import SiteLogo from '@/components/SiteLogo'
 
 const OTP_LENGTH = 8
 
@@ -112,15 +111,7 @@ function VerifyResetContent() {
   const codeComplete = digits.join('').length === OTP_LENGTH
 
   return (
-    <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
-      <div className="w-full max-w-sm">
-
-        {/* Logo */}
-        <div className="flex flex-col items-center gap-2 mb-8">
-          <SiteLogo size={56} variant="mark" />
-          <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest">MIND · CARE · CONNECT</p>
-        </div>
-
+    <>
         {/* Card */}
         <div
           className="bg-white/60 backdrop-blur-xl border border-white/80 rounded-2xl p-8"
@@ -234,8 +225,7 @@ function VerifyResetContent() {
         <p className="text-[10px] text-slate-400 text-center mt-4 leading-relaxed">
           Ce code est valable 60 minutes · En cas d&apos;urgence médicale : <span className="font-bold">15 (SAMU)</span>
         </p>
-      </div>
-    </div>
+    </>
   )
 }
 

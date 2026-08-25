@@ -63,10 +63,15 @@ function SiteSettingsTab() {
         </div>
         <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden"
           onChange={e => { const f = e.target.files?.[0]; if (f) uploadLogo.mutate(f) }} />
-        <button onClick={() => fileInputRef.current?.click()} disabled={uploadLogo.isPending}
-          className="px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl disabled:opacity-50 flex-shrink-0">
-          {uploadLogo.isPending ? 'Envoi...' : 'Changer le logo'}
-        </button>
+        <div className="flex flex-col items-end gap-1 flex-shrink-0">
+          <button onClick={() => fileInputRef.current?.click()} disabled={uploadLogo.isPending}
+            className="px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl disabled:opacity-50">
+            {uploadLogo.isPending ? 'Envoi...' : 'Changer le logo'}
+          </button>
+          {uploadLogo.isError && (
+            <p className="text-xs text-red-500 max-w-[200px] text-right">{(uploadLogo.error as Error)?.message ?? "Échec de l'envoi"}</p>
+          )}
+        </div>
       </div>
 
       <div className="rounded-2xl p-5 flex items-center gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
@@ -84,10 +89,15 @@ function SiteSettingsTab() {
         </div>
         <input ref={markFileInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden"
           onChange={e => { const f = e.target.files?.[0]; if (f) uploadLogoMark.mutate(f) }} />
-        <button onClick={() => markFileInputRef.current?.click()} disabled={uploadLogoMark.isPending}
-          className="px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl disabled:opacity-50 flex-shrink-0">
-          {uploadLogoMark.isPending ? 'Envoi...' : "Changer l'icône"}
-        </button>
+        <div className="flex flex-col items-end gap-1 flex-shrink-0">
+          <button onClick={() => markFileInputRef.current?.click()} disabled={uploadLogoMark.isPending}
+            className="px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl disabled:opacity-50">
+            {uploadLogoMark.isPending ? 'Envoi...' : "Changer l'icône"}
+          </button>
+          {uploadLogoMark.isError && (
+            <p className="text-xs text-red-500 max-w-[200px] text-right">{(uploadLogoMark.error as Error)?.message ?? "Échec de l'envoi"}</p>
+          )}
+        </div>
       </div>
 
       <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>

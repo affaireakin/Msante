@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import SiteLogo from '@/components/SiteLogo'
 
 type Role = 'patient' | 'practitioner' | 'organization'
 type PractType = 'healthcare' | 'wellness'
@@ -112,15 +111,7 @@ function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
-
-        {/* Logo */}
-        <div className="flex flex-col items-center gap-2 mb-8">
-          <SiteLogo size={56} variant="mark" />
-          <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest">MIND · CARE · CONNECT</p>
-        </div>
-
+    <>
         {step === 'select' ? (
           /* ── Étape 1 : sélection du profil ── */
           <div className="bg-white/60 backdrop-blur-xl border border-white/80 rounded-2xl p-8" style={{ boxShadow: '0 20px 60px rgba(0,102,133,0.08)' }}>
@@ -328,8 +319,7 @@ function SignupForm() {
           </div>
         </div>
         )}
-      </div>
-    </div>
+    </>
   )
 }
 

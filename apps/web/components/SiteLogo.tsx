@@ -47,7 +47,11 @@ export default function SiteLogo({ size = 40, variant = 'mark' }: { size?: numbe
     )
   }
 
-  const src = data?.logo_mark_url || data?.logo_url || '/logo.png'
+  // Ne PAS retomber sur logo_url ici : c'est une image large (icône +
+  // "-Santé"), l'écraser dans une case carrée en object-cover la rogne
+  // (ex. un fragment "- Sa" à la place de l'icône). Tant que l'admin n'a
+  // pas envoyé d'icône dédiée, mieux vaut garder l'ancien logo carré par défaut.
+  const src = data?.logo_mark_url || '/logo.png'
   return (
     <Link href={href ?? '/'} aria-label="Accueil">
       {/* eslint-disable-next-line @next/next/no-img-element */}
