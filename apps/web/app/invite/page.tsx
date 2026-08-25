@@ -2,6 +2,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import SiteLogo from '@/components/SiteLogo'
 
 function EyeIcon({ open }: { open: boolean }) {
   return open ? (
@@ -140,12 +141,9 @@ function InviteForm() {
   return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
       <div className="w-full max-w-md space-y-6">
-        <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-sky-500 text-3xl">medical_services</span>
-          <div>
-            <h1 className="text-2xl font-black tracking-tighter text-slate-900">M-Santé</h1>
-            <p className="text-xs text-slate-500 font-medium">MIND · CARE · CONNECT</p>
-          </div>
+        <div className="flex flex-col items-center gap-2">
+          <SiteLogo size={56} variant="mark" />
+          <p className="text-xs text-slate-500 font-medium">MIND · CARE · CONNECT</p>
         </div>
         <div className="glass-card rounded-xl p-8 space-y-6">
           <div>

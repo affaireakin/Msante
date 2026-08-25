@@ -2,8 +2,8 @@
 
 import { useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import SiteLogo from '@/components/SiteLogo'
 
 function translateError(msg: string): string {
   if (msg.includes('already registered') || msg.includes('User already registered')) return 'Un compte existe déjà avec cet email.'
@@ -174,16 +174,9 @@ export default function InvitePractitionerPage() {
   return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3 justify-center">
-            <div className="w-10 h-10 rounded-xl bg-[#82d8ff] flex items-center justify-center shadow-md">
-              <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>medical_services</span>
-            </div>
-            <div className="text-left">
-              <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
-              <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">MIND · CARE · CONNECT</p>
-            </div>
-          </Link>
+        <div className="flex flex-col items-center gap-2 mb-8">
+          <SiteLogo size={56} variant="mark" />
+          <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest">MIND · CARE · CONNECT</p>
         </div>
         <Suspense fallback={<div className="flex justify-center"><div className="w-8 h-8 border-2 border-[#82d8ff] border-t-transparent rounded-full animate-spin" /></div>}>
           <InvitePractitionerContent />

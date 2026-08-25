@@ -116,14 +116,9 @@ function SignupForm() {
       <div className="w-full max-w-md">
 
         {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-3 justify-center">
-            <SiteLogo size={40} />
-            <div className="text-left">
-              <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
-              <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">MIND · CARE · CONNECT</p>
-            </div>
-          </Link>
+        <div className="flex flex-col items-center gap-2 mb-8">
+          <SiteLogo size={56} variant="mark" />
+          <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest">MIND · CARE · CONNECT</p>
         </div>
 
         {step === 'select' ? (

@@ -9,8 +9,9 @@ function Icon({ name, style }: { name: string; style?: React.CSSProperties }) {
 }
 
 function SiteSettingsTab() {
-  const { settings, save, uploadLogo } = useSiteSettings()
+  const { settings, save, uploadLogo, uploadLogoMark } = useSiteSettings()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const markFileInputRef = useRef<HTMLInputElement>(null)
   const [form, setForm] = useState({
     phone: '', whatsapp_number: '', contact_email: '',
     facebook_url: '', instagram_url: '', twitter_url: '', linkedin_url: '', tiktok_url: '', youtube_url: '',
@@ -57,14 +58,35 @@ function SiteSettingsTab() {
           )}
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-[#0b1c30] text-sm">Logo M-Santé</p>
-          <p className="text-xs text-[#6f787e] mt-0.5">Affiché dans l&apos;en-tête et le pied de page du site public</p>
+          <p className="font-semibold text-[#0b1c30] text-sm">Logo complet (icône + « -Santé »)</p>
+          <p className="text-xs text-[#6f787e] mt-0.5">Affiché sur la page d&apos;accueil</p>
         </div>
         <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden"
           onChange={e => { const f = e.target.files?.[0]; if (f) uploadLogo.mutate(f) }} />
         <button onClick={() => fileInputRef.current?.click()} disabled={uploadLogo.isPending}
           className="px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl disabled:opacity-50 flex-shrink-0">
           {uploadLogo.isPending ? 'Envoi...' : 'Changer le logo'}
+        </button>
+      </div>
+
+      <div className="rounded-2xl p-5 flex items-center gap-4" style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)' }}>
+        <div className="w-16 h-16 rounded-xl bg-[#e5eeff] flex items-center justify-center overflow-hidden flex-shrink-0 border border-[#d3e4fe]">
+          {settings.data?.logo_mark_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={settings.data.logo_mark_url} alt="Icône" className="w-full h-full object-cover" />
+          ) : (
+            <Icon name="medical_services" style={{ fontSize: '28px', color: '#005e7a' }} />
+          )}
+        </div>
+        <div className="flex-1">
+          <p className="font-semibold text-[#0b1c30] text-sm">Icône seule (sans texte)</p>
+          <p className="text-xs text-[#6f787e] mt-0.5">Affichée sur les pages de connexion/inscription et dans les menus — sans le texte « -Santé »</p>
+        </div>
+        <input ref={markFileInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden"
+          onChange={e => { const f = e.target.files?.[0]; if (f) uploadLogoMark.mutate(f) }} />
+        <button onClick={() => markFileInputRef.current?.click()} disabled={uploadLogoMark.isPending}
+          className="px-4 py-2 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl disabled:opacity-50 flex-shrink-0">
+          {uploadLogoMark.isPending ? 'Envoi...' : "Changer l'icône"}
         </button>
       </div>
 

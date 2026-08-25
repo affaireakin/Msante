@@ -46,7 +46,19 @@ export function useSiteSettings() {
     },
   })
 
-  return { settings, save, uploadLogo }
+  const uploadLogoMark = useMutation({
+    mutationFn: async (file: File) => {
+      const ext = file.name.split('.').pop() ?? 'png'
+      const path = `site/logo-mark.${ext}`
+      const { error: uploadError } = await supabase.storage.from('site-assets').upload(path, file, { upsert: true })
+      if (uploadError) throw uploadError
+      const { data: { publicUrl } } = supabase.storage.from('site-assets').getPublicUrl(path)
+      const bustedUrl = `${publicUrl}?t=${Date.now()}`
+      await save.mutateAsync({ logo_mark_url: bustedUrl })
+    },
+  })
+
+  return { settings, save, uploadLogo, uploadLogoMark }
 }
 
 export function useContentPages() {

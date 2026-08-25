@@ -73,11 +73,8 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 bg-[#f8f9ff]/80 backdrop-blur-xl border-b border-white/10 shadow-sm">
         <div className="flex justify-between items-center h-20 px-6 max-w-7xl mx-auto w-full">
           <div className="flex items-center gap-3">
-            <SiteLogo size={40} />
-            <div>
-              <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
-              <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">MIND · CARE · CONNECT</p>
-            </div>
+            <SiteLogo size={36} variant="full" />
+            <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest">MIND · CARE · CONNECT</p>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
             <Link className="text-[#82d8ff] font-bold border-b-2 border-[#82d8ff] py-1 text-sm" href="/">Accueil</Link>
@@ -118,11 +115,8 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 px-6 py-12 max-w-7xl mx-auto w-full">
           <div className="space-y-5">
             <div className="flex items-center gap-3">
-              <SiteLogo size={36} />
-              <div>
-                <p className="text-lg font-black tracking-tighter text-[#0b1c30] leading-none">M-Santé</p>
-                <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest leading-none mt-0.5">MIND · CARE · CONNECT</p>
-              </div>
+              <SiteLogo size={32} variant="full" />
+              <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest">MIND · CARE · CONNECT</p>
             </div>
             <p className="text-sm text-[#6f787e] max-w-xs leading-relaxed">
               Votre partenaire de confiance pour une santé mentale épanouie, alliant innovation et humanité.

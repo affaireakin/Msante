@@ -13,12 +13,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
       <div className="w-full max-w-md">
-        <div className="flex items-center gap-3 mb-8">
-          <SiteLogo size={40} />
-          <div>
-            <h1 className="text-2xl font-black tracking-tighter text-slate-900">M-Santé</h1>
-            <p className="text-xs text-slate-500 font-medium">MIND · CARE · CONNECT</p>
-          </div>
+        <div className="flex flex-col items-center gap-2 mb-8">
+          <SiteLogo size={56} variant="mark" />
+          <p className="text-xs text-slate-500 font-medium tracking-wide">MIND · CARE · CONNECT</p>
         </div>
         {children}
       </div>

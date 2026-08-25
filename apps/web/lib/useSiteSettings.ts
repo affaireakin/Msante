@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 
 export interface PublicSiteSettings {
   logo_url: string | null
+  logo_mark_url: string | null
   phone: string | null
   whatsapp_number: string | null
   contact_email: string | null
