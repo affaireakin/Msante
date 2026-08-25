@@ -72,7 +72,7 @@ export default function LandingPage() {
       {/* ── Topbar ── */}
       <header className="sticky top-0 z-50 bg-[#f8f9ff]/80 backdrop-blur-xl border-b border-white/10 shadow-sm">
         <div className="flex justify-between items-center h-20 px-6 max-w-7xl mx-auto w-full">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col items-start gap-0.5">
             <SiteLogo size={36} variant="full" />
             <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest">MIND · CARE · CONNECT</p>
           </div>
@@ -114,7 +114,7 @@ export default function LandingPage() {
       <footer className="bg-[#dce9ff] border-t border-[#bec8ce]/30">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 px-6 py-12 max-w-7xl mx-auto w-full">
           <div className="space-y-5">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col items-start gap-0.5">
               <SiteLogo size={32} variant="full" />
               <p className="text-[10px] text-[#82d8ff] font-semibold uppercase tracking-widest">MIND · CARE · CONNECT</p>
             </div>
