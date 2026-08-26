@@ -49,9 +49,10 @@ export default function SiteLogo({ size = 40, variant = 'mark' }: { size?: numbe
 
   // Ne PAS retomber sur logo_url ici : c'est une image large (icône +
   // "-Santé"), l'écraser dans une case carrée en object-cover la rogne
-  // (ex. un fragment "- Sa" à la place de l'icône). Tant que l'admin n'a
-  // pas envoyé d'icône dédiée, mieux vaut garder l'ancien logo carré par défaut.
-  const src = data?.logo_mark_url || '/logo.png'
+  // (ex. un fragment "- Sa" à la place de l'icône). /logo-mark.png est un
+  // fallback carré dédié (copie statique de logo_mark_url), utilisé aussi
+  // pendant le chargement de la requête pour éviter un flash au rafraîchissement.
+  const src = data?.logo_mark_url || '/logo-mark.png'
   return (
     <Link href={href ?? '/'} aria-label="Accueil">
       {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -151,7 +151,7 @@ export default function PatientPrescriptionPage() {
       {/* Print toolbar */}
       <div className="no-print fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-6 py-3 flex items-center justify-between font-[Manrope]">
         <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="M-Santé" className="w-8 h-8 rounded-lg object-cover" />
+          <img src="/icon.png" alt="M-Santé" className="w-8 h-8 rounded-lg object-cover" />
           <span className="text-xs text-[#6f787e]">Document patient</span>
         </div>
         <button
