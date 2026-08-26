@@ -19,7 +19,7 @@ export const authService = {
     password: string,
     role: 'patient' | 'practitioner',
     full_name: string,
-    extra?: { practitioner_type?: string; speciality?: string }
+    extra?: { practitioner_type?: string; speciality?: string; phone?: string; country?: string }
   ): Promise<AuthResult> {
     const { data, error } = await supabase.auth.signUp({
       email,

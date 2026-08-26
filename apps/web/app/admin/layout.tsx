@@ -183,6 +183,17 @@ const navItems = [
     ),
   },
   {
+    href: '/admin/countries',
+    label: 'Pays autorisés',
+    roles: ['admin'],
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 010 18M12 3a15 15 0 000 18" />
+      </svg>
+    ),
+  },
+  {
     href: '/admin/audit',
     label: 'Journal d\'audit',
     roles: ['admin'],

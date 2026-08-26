@@ -1003,6 +1003,7 @@ function UsersPageInner() {
               <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Utilisateur</th>
               <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Rôle</th>
               <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Pays</th>
+              <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Téléphone</th>
               <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Onboarding</th>
               <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Statut</th>
               <th className="text-left px-6 py-4 text-xs font-bold text-[#82d8ff] uppercase tracking-widest">Inscrit le</th>
@@ -1012,7 +1013,7 @@ function UsersPageInner() {
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i} className="border-b border-slate-50/60">
-                  {Array.from({ length: 6 }).map((__, j) => (
+                  {Array.from({ length: 7 }).map((__, j) => (
                     <td key={j} className="px-6 py-4">
                       <div className="h-4 bg-slate-100 rounded animate-pulse" />
                     </td>
@@ -1042,6 +1043,7 @@ function UsersPageInner() {
                 </td>
                 <td className="px-6 py-4"><RoleBadge role={user.role} /></td>
                 <td className="px-6 py-4 text-sm text-[#6f787e]">{user.country ?? '—'}</td>
+                <td className="px-6 py-4 text-sm text-[#6f787e]">{user.phone ?? '—'}</td>
                 <td className="px-6 py-4">
                   <span
                     className="text-xs font-semibold px-2 py-0.5 rounded-full"

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
@@ -8,6 +8,15 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { GlassCard, AppTextInput, PrimaryButton } from '@/components/ui'
 import { authService } from '@/features/auth/services/authService'
 import { signupSchema, type SignupFormData } from '@/features/auth/schemas/authSchemas'
+import { supabase } from '@/services/supabase'
+
+interface AllowedCountry {
+  id: string
+  iso_code: string
+  dial_code: string
+  flag_emoji: string
+  label: string
+}
 
 export default function SignupPatientScreen() {
   const router = useRouter()
@@ -15,6 +24,19 @@ export default function SignupPatientScreen() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [acceptedCgu, setAcceptedCgu] = useState(false)
+
+  const [countries, setCountries] = useState<AllowedCountry[]>([])
+  const [countryId, setCountryId] = useState('')
+  const [phone, setPhone] = useState('')
+  const [phoneError, setPhoneError] = useState('')
+
+  useEffect(() => {
+    supabase.from('allowed_countries').select('id, iso_code, dial_code, flag_emoji, label').eq('is_active', true).order('sort_order')
+      .then(({ data }) => {
+        setCountries(data ?? [])
+        if (data?.length) setCountryId(prev => prev || data[0].id)
+      })
+  }, [])
 
   const { control, handleSubmit, formState: { errors } } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -25,9 +47,18 @@ export default function SignupPatientScreen() {
       Alert.alert('Conditions requises', 'Veuillez accepter les CGU pour continuer.')
       return
     }
+    const selectedCountry = countries.find(c => c.id === countryId)
+    if (!selectedCountry || !phone.trim()) {
+      setPhoneError('Le numéro de téléphone est obligatoire.')
+      return
+    }
+    setPhoneError('')
     setLoading(true)
     try {
-      const result = await authService.signUpWithEmail(data.email, data.password, 'patient', data.full_name)
+      const result = await authService.signUpWithEmail(data.email, data.password, 'patient', data.full_name, {
+        phone: `${selectedCountry.dial_code}${phone.trim()}`,
+        country: selectedCountry.iso_code,
+      })
       if (result.error) {
         Alert.alert('Erreur', result.error)
         return
@@ -106,6 +137,39 @@ export default function SignupPatientScreen() {
                 }
               />
             )} />
+
+          {/* Téléphone (obligatoire) */}
+          <View style={{ gap: 6 }}>
+            <Text style={{ fontSize: 13, fontFamily: 'Manrope', fontWeight: '500', color: '#3f484d' }}>Indicatif pays</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingBottom: 2 }}>
+              {countries.map(c => (
+                <TouchableOpacity
+                  key={c.id}
+                  onPress={() => { setCountryId(c.id); setPhoneError('') }}
+                  style={{
+                    flexDirection: 'row', alignItems: 'center', gap: 6,
+                    paddingHorizontal: 14, paddingVertical: 10, borderRadius: 10,
+                    borderWidth: 1.5,
+                    borderColor: countryId === c.id ? '#82d8ff' : '#bec8ce',
+                    backgroundColor: countryId === c.id ? '#e5eeff' : '#eff4ff',
+                  }}
+                >
+                  <Text style={{ fontSize: 16 }}>{c.flag_emoji}</Text>
+                  <Text style={{ fontSize: 13, fontFamily: 'Manrope', fontWeight: '700', color: countryId === c.id ? '#82d8ff' : '#0b1c30' }}>
+                    {c.dial_code}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+          <AppTextInput
+            label="Téléphone"
+            value={phone}
+            onChangeText={t => { setPhone(t.replace(/[^\d\s]/g, '')); setPhoneError('') }}
+            keyboardType="phone-pad"
+            placeholder="77 000 00 00"
+            error={phoneError}
+          />
 
           {/* CGU */}
           <TouchableOpacity

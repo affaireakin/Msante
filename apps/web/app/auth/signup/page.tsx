@@ -9,6 +9,14 @@ type Role = 'patient' | 'practitioner' | 'organization'
 type PractType = 'healthcare' | 'wellness'
 type Step = 'select' | 'form'
 
+interface AllowedCountry {
+  id: string
+  iso_code: string
+  dial_code: string
+  flag_emoji: string
+  label: string
+}
+
 const PROFILE_CARDS: { value: Role; label: string; desc: string; icon: string }[] = [
   { value: 'patient',      label: 'Patient',      desc: '', icon: 'person' },
   { value: 'practitioner', label: 'Praticien',     desc: '', icon: 'medical_services' },
@@ -42,6 +50,18 @@ function SignupForm() {
 
   const [specialities, setSpecialities] = useState<string[]>([])
 
+  const [countries, setCountries]   = useState<AllowedCountry[]>([])
+  const [countryId, setCountryId]   = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
+
+  useEffect(() => {
+    supabase.from('allowed_countries').select('id, iso_code, dial_code, flag_emoji, label').eq('is_active', true).order('sort_order')
+      .then(({ data }) => {
+        setCountries(data ?? [])
+        if (data?.length) setCountryId(prev => prev || data[0].id)
+      })
+  }, [])
+
   useEffect(() => {
     supabase.from('profession_permissions').select('profession_label').eq('category', practType).order('sort_order')
       .then(({ data }) => {
@@ -74,6 +94,12 @@ function SignupForm() {
       return
     }
 
+    const selectedCountry = countries.find(c => c.id === countryId)
+    if (role === 'patient' && (!selectedCountry || !phoneNumber.trim())) {
+      setError('Le numéro de téléphone est obligatoire.')
+      return
+    }
+
     setLoading(true)
 
     // The DB role check only accepts patient/practitioner/admin/organization_admin.
@@ -84,7 +110,15 @@ function SignupForm() {
     const { data: signUpData, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { role: dbRole, full_name: fullName } },
+      options: {
+        data: {
+          role: dbRole,
+          full_name: fullName,
+          ...(role === 'patient' && selectedCountry
+            ? { phone: `${selectedCountry.dial_code}${phoneNumber.trim()}`, country: selectedCountry.iso_code }
+            : {}),
+        },
+      },
     })
 
     if (authError) {
@@ -242,6 +276,34 @@ function SignupForm() {
                 </button>
               </div>
             </div>
+
+            {/* Téléphone (obligatoire patient) */}
+            {role === 'patient' && (
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Téléphone</label>
+                <div className="flex gap-2">
+                  <select
+                    value={countryId}
+                    onChange={e => setCountryId(e.target.value)}
+                    required
+                    className="px-3 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] text-sm focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
+                  >
+                    {countries.length === 0 && <option value="">…</option>}
+                    {countries.map(c => (
+                      <option key={c.id} value={c.id}>{c.flag_emoji} {c.dial_code}</option>
+                    ))}
+                  </select>
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={e => setPhoneNumber(e.target.value.replace(/[^\d\s]/g, ''))}
+                    placeholder="77 000 00 00"
+                    required
+                    className="flex-1 px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Spécialité praticien */}
             {role === 'practitioner' && (
