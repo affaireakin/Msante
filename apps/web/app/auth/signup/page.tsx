@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { WORLD_COUNTRIES, flagEmoji } from '@/lib/worldCountries'
 
 type Role = 'patient' | 'practitioner' | 'organization'
 type PractType = 'healthcare' | 'wellness'
@@ -50,15 +51,18 @@ function SignupForm() {
 
   const [specialities, setSpecialities] = useState<string[]>([])
 
-  const [countries, setCountries]   = useState<AllowedCountry[]>([])
-  const [countryId, setCountryId]   = useState('')
+  // Praticien/organisation : liste restreinte par l'admin (/admin/countries).
+  const [restrictedCountries, setRestrictedCountries] = useState<AllowedCountry[]>([])
+  const [restrictedCountryId, setRestrictedCountryId] = useState('')
+  // Patient : accepté de partout, aucune restriction admin — liste mondiale statique.
+  const [worldIso, setWorldIso] = useState('SN')
   const [phoneNumber, setPhoneNumber] = useState('')
 
   useEffect(() => {
     supabase.from('allowed_countries').select('id, iso_code, dial_code, flag_emoji, label').eq('is_active', true).order('sort_order')
       .then(({ data }) => {
-        setCountries(data ?? [])
-        if (data?.length) setCountryId(prev => prev || data[0].id)
+        setRestrictedCountries(data ?? [])
+        if (data?.length) setRestrictedCountryId(prev => prev || data[0].id)
       })
   }, [])
 
@@ -75,6 +79,7 @@ function SignupForm() {
     setRole(newRole)
     setSpeciality('')
     setPractType('healthcare')
+    setPhoneNumber('')
     setStep('form')
   }
 
@@ -94,8 +99,14 @@ function SignupForm() {
       return
     }
 
-    const selectedCountry = countries.find(c => c.id === countryId)
-    if (role === 'patient' && (!selectedCountry || !phoneNumber.trim())) {
+    // Patient : n'importe quel pays (liste mondiale statique). Praticien/
+    // organisation : uniquement les pays débloqués par l'admin.
+    const world = WORLD_COUNTRIES.find(c => c.iso2 === worldIso)
+    const restricted = restrictedCountries.find(c => c.id === restrictedCountryId)
+    const dialCode = role === 'patient' ? world?.dial : restricted?.dial_code
+    const isoCode = role === 'patient' ? world?.iso2 : restricted?.iso_code
+
+    if (!dialCode || !isoCode || !phoneNumber.trim()) {
       setError('Le numéro de téléphone est obligatoire.')
       return
     }
@@ -114,9 +125,8 @@ function SignupForm() {
         data: {
           role: dbRole,
           full_name: fullName,
-          ...(role === 'patient' && selectedCountry
-            ? { phone: `${selectedCountry.dial_code}${phoneNumber.trim()}`, country: selectedCountry.iso_code }
-            : {}),
+          phone: `${dialCode}${phoneNumber.trim()}`,
+          country: isoCode,
         },
       },
     })
@@ -277,33 +287,47 @@ function SignupForm() {
               </div>
             </div>
 
-            {/* Téléphone (obligatoire patient) */}
-            {role === 'patient' && (
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Téléphone</label>
-                <div className="flex gap-2">
+            {/* Téléphone (obligatoire pour tous les profils) */}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Téléphone</label>
+              <div className="flex gap-2">
+                {role === 'patient' ? (
                   <select
-                    value={countryId}
-                    onChange={e => setCountryId(e.target.value)}
+                    value={worldIso}
+                    onChange={e => setWorldIso(e.target.value)}
                     required
                     className="px-3 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] text-sm focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
                   >
-                    {countries.length === 0 && <option value="">…</option>}
-                    {countries.map(c => (
+                    {WORLD_COUNTRIES.map(c => (
+                      <option key={c.iso2} value={c.iso2}>{flagEmoji(c.iso2)} {c.dial}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <select
+                    value={restrictedCountryId}
+                    onChange={e => setRestrictedCountryId(e.target.value)}
+                    required
+                    className="px-3 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] text-sm focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
+                  >
+                    {restrictedCountries.length === 0 && <option value="">…</option>}
+                    {restrictedCountries.map(c => (
                       <option key={c.id} value={c.id}>{c.flag_emoji} {c.dial_code}</option>
                     ))}
                   </select>
-                  <input
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={e => setPhoneNumber(e.target.value.replace(/[^\d\s]/g, ''))}
-                    placeholder="77 000 00 00"
-                    required
-                    className="flex-1 px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
-                  />
-                </div>
+                )}
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={e => setPhoneNumber(e.target.value.replace(/[^\d\s]/g, ''))}
+                  placeholder="77 000 00 00"
+                  required
+                  className="flex-1 px-4 py-3 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff] focus:ring-2 focus:ring-[#82d8ff]/10 transition-all"
+                />
               </div>
-            )}
+              {role !== 'patient' && (
+                <p className="text-[11px] text-[#6f787e] mt-0.5">Pays disponibles définis par l&apos;administrateur.</p>
+              )}
+            </div>
 
             {/* Spécialité praticien */}
             {role === 'practitioner' && (

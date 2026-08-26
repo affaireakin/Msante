@@ -224,7 +224,7 @@ export default function AdminCountriesPage() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-black text-[#0b1c30] tracking-tight">Pays autorisés</h1>
-          <p className="text-sm text-[#6f787e] mt-1">Pays sélectionnables dans le drapeau/indicatif du téléphone à l&apos;inscription patient</p>
+          <p className="text-sm text-[#6f787e] mt-1">Pays sélectionnables dans le drapeau/indicatif du téléphone à l&apos;inscription praticien et organisation. Les patients, eux, sont acceptés depuis n&apos;importe quel pays.</p>
         </div>
         <button
           onClick={() => setModal({ mode: 'create' })}
@@ -259,7 +259,7 @@ export default function AdminCountriesPage() {
       <div className="bg-[#e5eeff] border border-[#c5d8f5] rounded-xl px-5 py-3 flex items-start gap-3">
         <span className="text-[#82d8ff] text-lg mt-0.5">ℹ️</span>
         <div className="text-sm text-[#005e7a]">
-          <span className="font-bold">Impact plateforme :</span> seuls les pays débloqués ici apparaissent dans le sélecteur de drapeau/indicatif à l&apos;inscription patient. Le numéro de téléphone est obligatoire pour créer un compte patient.
+          <span className="font-bold">Impact plateforme :</span> seuls les pays débloqués ici apparaissent dans le sélecteur de drapeau/indicatif à l&apos;inscription praticien et organisation. Le numéro de téléphone est obligatoire pour créer un compte, quel que soit le profil.
         </div>
       </div>
 

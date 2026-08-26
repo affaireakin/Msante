@@ -1,13 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { GlassCard, AppTextInput, PrimaryButton } from '@/components/ui'
+import { GlassCard, AppTextInput, PrimaryButton, PhoneCountryField, type PhoneCountryOption } from '@/components/ui'
 import { authService } from '@/features/auth/services/authService'
 import { signupSchema, type SignupFormData } from '@/features/auth/schemas/authSchemas'
+import { supabase } from '@/services/supabase'
 
 // Le compte du créateur d'organisation reste role='patient' en base jusqu'à
 // validation par un Super Admin (voir validate-organization côté web) — la
@@ -23,6 +24,23 @@ export default function SignupOrganizationScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [acceptedCgu, setAcceptedCgu] = useState(false)
 
+  // Comme pour le praticien, le pays de l'organisation est restreint à la
+  // liste débloquée par l'admin (allowed_countries) — contrairement au
+  // patient, accepté de partout.
+  const [countries, setCountries] = useState<(PhoneCountryOption & { dialCode: string; isoCode: string })[]>([])
+  const [countryId, setCountryId] = useState('')
+  const [phone, setPhone] = useState('')
+  const [phoneError, setPhoneError] = useState('')
+
+  useEffect(() => {
+    supabase.from('allowed_countries').select('id, iso_code, dial_code, flag_emoji').eq('is_active', true).order('sort_order')
+      .then(({ data }) => {
+        const rows = (data ?? []).map(c => ({ id: c.id, flag: c.flag_emoji, dial: c.dial_code, dialCode: c.dial_code, isoCode: c.iso_code }))
+        setCountries(rows)
+        if (rows.length) setCountryId(prev => prev || rows[0].id)
+      })
+  }, [])
+
   const { control, handleSubmit, formState: { errors } } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
   })
@@ -32,9 +50,18 @@ export default function SignupOrganizationScreen() {
       Alert.alert('Conditions requises', 'Veuillez accepter les CGU pour continuer.')
       return
     }
+    const selectedCountry = countries.find(c => c.id === countryId)
+    if (!selectedCountry || !phone.trim()) {
+      setPhoneError('Le numéro de téléphone est obligatoire.')
+      return
+    }
+    setPhoneError('')
     setLoading(true)
     try {
-      const result = await authService.signUpWithEmail(data.email, data.password, 'patient', data.full_name)
+      const result = await authService.signUpWithEmail(data.email, data.password, 'patient', data.full_name, {
+        phone: `${selectedCountry.dialCode}${phone.trim()}`,
+        country: selectedCountry.isoCode,
+      })
       if (result.error) {
         Alert.alert('Erreur', result.error)
         return
@@ -116,6 +143,17 @@ export default function SignupOrganizationScreen() {
                 }
               />
             )} />
+
+          {/* Téléphone (obligatoire, pays limités par l'admin) */}
+          <PhoneCountryField
+            countries={countries}
+            selectedId={countryId}
+            onSelectCountry={id => { setCountryId(id); setPhoneError('') }}
+            phone={phone}
+            onChangePhone={t => { setPhone(t.replace(/[^\d\s]/g, '')); setPhoneError('') }}
+            error={phoneError}
+            helperText="Pays disponibles définis par l'administrateur."
+          />
 
           {/* CGU */}
           <TouchableOpacity
