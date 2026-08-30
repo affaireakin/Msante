@@ -19,6 +19,17 @@ const corsHeaders = {
 type Data = Record<string, string | number>
 type Role = 'patient' | 'practitioner'
 
+// WhatsApp est un message initié par l'entreprise hors fenêtre 24h pour la
+// plupart de ces événements — Meta exige un template approuvé, pas du texte
+// libre. Plutôt que faire approuver un template par type d'événement (et
+// exposer du contenu potentiellement sensible en aperçu verrouillé), on
+// envoie le même message générique pour tous les cas ; le contenu réel
+// n'apparaît que dans l'app, derrière l'authentification. Email garde le
+// détail par événement, ce canal n'a pas cette contrainte.
+function genericWhatsAppMessage(name: string): string {
+  return `Bonjour ${name} 👋\n\nVous avez une nouvelle notification dans votre espace personnel M-Santé.\n\nConnectez-vous à l'application pour la consulter.`
+}
+
 const TEMPLATES: Record<string, {
   title: string
   emailSubject: string
@@ -26,7 +37,6 @@ const TEMPLATES: Record<string, {
   // a practitioner would receive "Votre RDV avec Dr. {eux-mêmes}", referring
   // to themself in the third person. Branch by role instead.
   emailHtml: (d: Data, role: Role) => string
-  whatsapp: (name: string, d: Data, role: Role) => string
 }> = {
   appointment_confirm: {
     title: 'RDV confirmé ✓',
@@ -34,9 +44,6 @@ const TEMPLATES: Record<string, {
     emailHtml: (d, role) => role === 'practitioner'
       ? `<p>Bonjour,</p><p>Votre RDV avec <strong>${d.patientName}</strong> le <strong>${d.date} à ${d.time}</strong> est confirmé.</p><p>L'équipe M-Santé</p>`
       : `<p>Bonjour,</p><p>Votre RDV avec <strong>Dr. ${d.practitionerName}</strong> le <strong>${d.date} à ${d.time}</strong> est confirmé.</p><p>L'équipe M-Santé</p>`,
-    whatsapp: (name, d, role) => role === 'practitioner'
-      ? `Bonjour ${name} 👋\n\nVotre RDV avec ${d.patientName} le ${d.date} à ${d.time} est confirmé ✅\n\nÀ bientôt sur M-Santé !`
-      : `Bonjour ${name} 👋\n\nVotre RDV avec Dr. ${d.practitionerName} le ${d.date} à ${d.time} est confirmé ✅\n\nÀ bientôt sur M-Santé !`,
   },
   appointment_cancelled: {
     title: 'RDV annulé',
@@ -44,9 +51,6 @@ const TEMPLATES: Record<string, {
     emailHtml: (d, role) => role === 'practitioner'
       ? `<p>Bonjour,</p><p>Votre RDV avec <strong>${d.patientName}</strong> le <strong>${d.date} à ${d.time}</strong> a été annulé.${d.reason ? `<br>Motif : ${d.reason}` : ''}</p><p>L'équipe M-Santé</p>`
       : `<p>Bonjour,</p><p>Votre RDV avec <strong>Dr. ${d.practitionerName}</strong> le <strong>${d.date} à ${d.time}</strong> a été annulé.${d.reason ? `<br>Motif : ${d.reason}` : ''}</p><p>L'équipe M-Santé</p>`,
-    whatsapp: (name, d, role) => role === 'practitioner'
-      ? `Bonjour ${name},\n\nVotre RDV avec ${d.patientName} le ${d.date} à ${d.time} a été annulé.${d.reason ? `\nMotif : ${d.reason}` : ''}\n\nM-Santé`
-      : `Bonjour ${name},\n\nVotre RDV avec Dr. ${d.practitionerName} le ${d.date} à ${d.time} a été annulé.${d.reason ? `\nMotif : ${d.reason}` : ''}\n\nM-Santé`,
   },
   appointment_reminder: {
     title: 'RDV dans 24h 📅',
@@ -54,33 +58,26 @@ const TEMPLATES: Record<string, {
     emailHtml: (d, role) => role === 'practitioner'
       ? `<p>Bonjour,</p><p>Rappel : votre consultation avec <strong>${d.patientName}</strong> est demain à <strong>${d.time}</strong>.</p><p>L'équipe M-Santé</p>`
       : `<p>Bonjour,</p><p>Rappel : votre consultation avec <strong>Dr. ${d.practitionerName}</strong> est demain à <strong>${d.time}</strong>.</p><p>L'équipe M-Santé</p>`,
-    whatsapp: (name, d, role) => role === 'practitioner'
-      ? `Bonjour ${name} ⏰\n\nRappel : votre RDV avec ${d.patientName} est demain à ${d.time}.\n\nM-Santé`
-      : `Bonjour ${name} ⏰\n\nRappel : votre RDV avec Dr. ${d.practitionerName} est demain à ${d.time}.\n\nM-Santé`,
   },
   prescription_created: {
     title: 'Nouvelle ordonnance 📋',
     emailSubject: 'Nouvelle ordonnance disponible — M-Santé',
     emailHtml: (d) => `<p>Bonjour,</p><p>Dr. ${d.practitionerName} vous a créé une nouvelle ordonnance. Connectez-vous à M-Santé pour la consulter.</p><p>L'équipe M-Santé</p>`,
-    whatsapp: (name, d) => `Bonjour ${name} 📋\n\nDr. ${d.practitionerName} vient de vous créer une ordonnance. Connectez-vous à M-Santé pour la consulter.\n\nM-Santé`,
   },
   payment_success: {
     title: 'Paiement reçu ✓',
     emailSubject: 'Confirmation de paiement — M-Santé',
     emailHtml: (d) => `<p>Bonjour,</p><p>Votre paiement de <strong>${d.amount} ${d.currency}</strong> via ${d.provider} a été reçu avec succès.</p><p>L'équipe M-Santé</p>`,
-    whatsapp: (name, d) => `Bonjour ${name} ✅\n\nVotre paiement de ${d.amount} ${d.currency} a été confirmé.\n\nM-Santé`,
   },
   payment_failed: {
     title: 'Paiement échoué ⚠️',
     emailSubject: 'Votre paiement a échoué — M-Santé',
     emailHtml: (d) => `<p>Bonjour,</p><p>Votre paiement de <strong>${d.amount} ${d.currency}</strong> via ${d.provider} a échoué. Veuillez réessayer.</p><p>L'équipe M-Santé</p>`,
-    whatsapp: (name, d) => `Bonjour ${name} ⚠️\n\nVotre paiement de ${d.amount} ${d.currency} a échoué. Connectez-vous à M-Santé pour réessayer.\n\nM-Santé`,
   },
   practitioner_approved: {
     title: 'Compte praticien approuvé ✓',
     emailSubject: 'Votre compte praticien M-Santé est validé !',
     emailHtml: (_d) => `<p>Bonjour,</p><p>Félicitations ! Votre profil praticien M-Santé a été validé. Vous pouvez maintenant recevoir des patients.</p><p>L'équipe M-Santé</p>`,
-    whatsapp: (name, _d) => `Bonjour Dr. ${name} 🎉\n\nVotre compte praticien M-Santé a été validé ✅\n\nVous pouvez maintenant recevoir des patients.\n\nM-Santé`,
   },
 }
 
@@ -190,7 +187,7 @@ Deno.serve(async (req) => {
             })
           }
           if (r.phone && waToken && waPhoneId) {
-            const msg = tpl.whatsapp(r.full_name, data, role)
+            const msg = genericWhatsAppMessage(r.full_name)
             await sendWhatsApp(waToken, waPhoneId, r.phone, msg)
             await supabase.from('notifications').insert({
               user_id: r.user_id, type: eventType, title: tpl.title,

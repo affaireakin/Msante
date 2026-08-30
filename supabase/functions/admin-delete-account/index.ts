@@ -16,6 +16,14 @@ function clientIp(req: Request): string | null {
   return req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null
 }
 
+// WhatsApp est un message initié par l'entreprise hors fenêtre 24h — Meta
+// exige un template approuvé, pas du texte libre. On envoie le même message
+// générique pour tous les événements plutôt que d'exposer le détail (motif
+// de suppression, etc.) en aperçu verrouillé ; le détail reste dans l'app.
+function genericWhatsAppMessage(name: string): string {
+  return `Bonjour ${name} 👋\n\nVous avez une nouvelle notification dans votre espace personnel M-Santé.\n\nConnectez-vous à l'application pour la consulter.`
+}
+
 // Équivalent admin de delete-account (self-service) : même comportement
 // RGPD (blocage immédiat via ban Supabase Auth, effacement des données sous
 // 30 jours), mais déclenché par un admin pour un utilisateur qui ne peut ou
@@ -114,7 +122,7 @@ Deno.serve(async (req) => {
         await fetch(`https://graph.facebook.com/v18.0/${waPhoneId}/messages`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${waToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messaging_product: 'whatsapp', to: intl, type: 'text', text: { body: `*${title}*\n\n${body}` } }),
+          body: JSON.stringify({ messaging_product: 'whatsapp', to: intl, type: 'text', text: { body: genericWhatsAppMessage(target.full_name) } }),
         }).catch(err => console.error('admin-delete-account: whatsapp failed', err))
       }
     } catch (notifErr) {

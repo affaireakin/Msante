@@ -5,10 +5,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// WhatsApp est un message initié par l'entreprise hors fenêtre 24h — Meta
+// exige un template approuvé, pas du texte libre. On envoie le même message
+// générique que pour tous les autres événements ; le détail reste dans l'app.
 async function sendWhatsApp(token: string, phoneNumberId: string, to: string, name: string): Promise<void> {
   const phone = to.replace(/[^0-9]/g, '')
   const intl = phone.startsWith('0') ? `221${phone.slice(1)}` : phone
-  const message = `Bonjour Dr. ${name} 🎉\n\nVotre compte praticien M-Santé a été validé ✅\n\nVous pouvez maintenant recevoir des patients et gérer votre agenda sur M-Santé Clinical Portal.\n\nL'équipe M-Santé`
+  const message = `Bonjour ${name} 👋\n\nVous avez une nouvelle notification dans votre espace personnel M-Santé.\n\nConnectez-vous à l'application pour la consulter.`
   await fetch(`https://graph.facebook.com/v18.0/${phoneNumberId}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },

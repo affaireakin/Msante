@@ -1,6 +1,6 @@
 // packages/notifications/adapters/WhatsAppAdapter.ts
 import type { NotificationAdapter, NotificationEvent } from '../types.ts'
-import { buildNotificationPayload } from '../templates.ts'
+import { genericWhatsAppMessage } from '../whatsappMessage.ts'
 
 export class WhatsAppAdapter implements NotificationAdapter {
   constructor(
@@ -17,7 +17,6 @@ export class WhatsAppAdapter implements NotificationAdapter {
       throw new Error('WhatsAppAdapter: recipient has no WhatsApp number')
     }
 
-    const payload = buildNotificationPayload(event.type, event.data)
     const cleanPhone = phone.replace(/\D/g, '')
 
     const response = await fetch(
@@ -32,7 +31,7 @@ export class WhatsAppAdapter implements NotificationAdapter {
           messaging_product: 'whatsapp',
           to: cleanPhone,
           type: 'text',
-          text: { body: `*${payload.title}*\n\n${payload.body}` },
+          text: { body: genericWhatsAppMessage(event.recipient.full_name) },
         }),
       },
     )

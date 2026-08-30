@@ -90,16 +90,25 @@ class ResendAdapter implements NotificationAdapter {
   }
 }
 
+// WhatsApp est un message initié par l'entreprise hors fenêtre 24h pour la
+// plupart de ces événements — Meta exige un template approuvé, pas du texte
+// libre. Plutôt que faire approuver un template par type d'événement (et
+// exposer du contenu potentiellement sensible en aperçu verrouillé, ex. une
+// alerte humeur), on envoie le même message générique pour tous les cas ;
+// le contenu réel n'apparaît que dans l'app, derrière l'authentification.
+function genericWhatsAppMessage(name: string): string {
+  return `Bonjour ${name} 👋\n\nVous avez une nouvelle notification dans votre espace personnel M-Santé.\n\nConnectez-vous à l'application pour la consulter.`
+}
+
 class WhatsAppAdapter implements NotificationAdapter {
   constructor(private readonly token: string, private readonly phoneNumberId: string) {}
   async send(event: NotificationEvent): Promise<void> {
     if (!this.token || !this.phoneNumberId) throw new Error('WhatsApp not configured')
     if (!event.recipient.whatsapp_number) throw new Error('WhatsAppAdapter: no WhatsApp number')
-    const payload = buildNotificationPayload(event.type, event.data)
     const res = await fetch(`https://graph.facebook.com/v18.0/${this.phoneNumberId}/messages`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${this.token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messaging_product: 'whatsapp', to: event.recipient.whatsapp_number.replace(/\D/g, ''), type: 'text', text: { body: `*${payload.title}*\n\n${payload.body}` } }),
+      body: JSON.stringify({ messaging_product: 'whatsapp', to: event.recipient.whatsapp_number.replace(/\D/g, ''), type: 'text', text: { body: genericWhatsAppMessage(event.recipient.full_name) } }),
     })
     if (!res.ok) throw new Error(`WhatsApp failed: ${res.status} ${await res.text()}`)
   }
