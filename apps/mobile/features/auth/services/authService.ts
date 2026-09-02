@@ -97,9 +97,13 @@ export const authService = {
 
     const practitionerType = (user.user_metadata?.practitioner_type as string | undefined) ?? 'healthcare'
 
+    // upsert, not insert: a first attempt can create this row and then fail
+    // later (e.g. a document upload rejected by the storage bucket) — a
+    // plain insert on retry hits practitioners_user_id_key (unique) and
+    // leaves the user permanently stuck on "Impossible de soumettre".
     const { data: practitioner, error: pErr } = await supabase
       .from('practitioners')
-      .insert({
+      .upsert({
         user_id: user.id,
         speciality: data.speciality,
         bio: data.bio,
@@ -109,7 +113,7 @@ export const authService = {
         session_duration_min: data.session_duration_min,
         verification_status: 'pending',
         practitioner_type: practitionerType,
-      })
+      }, { onConflict: 'user_id' })
       .select()
       .single()
 

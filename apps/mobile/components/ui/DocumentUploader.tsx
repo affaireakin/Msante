@@ -18,8 +18,12 @@ interface DocumentUploaderProps {
 
 export function DocumentUploader({ label, documentType, value, onUpload }: DocumentUploaderProps) {
   const handlePick = async () => {
+    // Must match the verification-documents storage bucket's allowed MIME
+    // types exactly (supabase/migrations/20260430000005_storage_buckets.sql)
+    // — 'image/*' let HEIC photos through, which the bucket then silently
+    // rejects at upload time, stranding the onboarding submit mid-flow.
     const result = await DocumentPicker.getDocumentAsync({
-      type: ['application/pdf', 'image/*'],
+      type: ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'],
       copyToCacheDirectory: true,
     })
     if (!result.canceled && result.assets[0]) {

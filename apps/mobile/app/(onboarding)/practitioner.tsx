@@ -115,8 +115,10 @@ export default function PractitionerOnboardingScreen() {
       }
       await authService.completePractitionerOnboarding(data)
       router.replace('/(onboarding)/practitioner-submitted')
-    } catch {
-      Alert.alert('Erreur', 'Impossible de soumettre. Réessayez.')
+    } catch (err) {
+      console.error('practitioner onboarding submit failed', err)
+      const message = err instanceof Error ? err.message : 'Erreur inconnue'
+      Alert.alert('Impossible de soumettre', message)
       setLoading(false)
     }
   }

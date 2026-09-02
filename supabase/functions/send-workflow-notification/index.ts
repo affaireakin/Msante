@@ -145,14 +145,28 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Check if this workflow template is active
-    const { data: workflow } = await supabase
+    // Check if this workflow template is active. Filters is_active in the
+    // query itself (not after fetching) and takes just one row — the admin
+    // UI's create-if-missing logic can end up with duplicate rows sharing
+    // the same template_key (e.g. a double-click), and .maybeSingle() would
+    // throw "multiple rows returned" on that; the error was previously
+    // swallowed (never checked), silently reporting workflow_inactive even
+    // when an active row genuinely existed.
+    const { data: activeWorkflows, error: workflowErr } = await supabase
       .from('workflows')
       .select('id, is_active')
       .filter('trigger_config->>template_key', 'eq', template_key)
-      .maybeSingle()
+      .eq('is_active', true)
+      .limit(1)
 
-    if (!workflow?.is_active) {
+    if (workflowErr) {
+      console.error('send-workflow-notification: workflow lookup failed', workflowErr)
+      return new Response(JSON.stringify({ error: workflowErr.message }), {
+        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (!activeWorkflows?.length) {
       return new Response(JSON.stringify({ skipped: true, reason: 'workflow_inactive' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
