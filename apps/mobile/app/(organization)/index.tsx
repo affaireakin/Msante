@@ -84,11 +84,34 @@ export default function OrganizationDashboardScreen() {
     setEditingProfile(true)
   }
 
+  const pickLogoSource = (): Promise<ImagePicker.ImagePickerResult | null> => new Promise((resolve) => {
+    Alert.alert('Logo de l\'organisation', 'Prendre une photo ou choisir depuis la galerie', [
+      { text: 'Annuler', style: 'cancel', onPress: () => resolve(null) },
+      {
+        text: 'Prendre une photo',
+        onPress: async () => {
+          const { status } = await ImagePicker.requestCameraPermissionsAsync()
+          if (status !== 'granted') {
+            Alert.alert('Permission refusée', "Autorisez l'accès à la caméra dans les réglages.")
+            return resolve(null)
+          }
+          resolve(await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.85, allowsEditing: true, aspect: [1, 1] }))
+        },
+      },
+      {
+        text: 'Galerie',
+        onPress: async () => {
+          // Sélecteur système (Photo Picker) — aucune permission de galerie requise.
+          resolve(await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.85, allowsEditing: true, aspect: [1, 1] }))
+        },
+      },
+    ])
+  })
+
   const uploadLogo = async () => {
     if (!data?.organizationId) return
-    // Sélecteur système (Photo Picker) — aucune permission de galerie requise.
-    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.85, allowsEditing: true, aspect: [1, 1] })
-    if (result.canceled || !result.assets[0]) return
+    const result = await pickLogoSource()
+    if (!result || result.canceled || !result.assets[0]) return
 
     setUploadingLogo(true)
     try {
