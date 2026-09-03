@@ -206,6 +206,8 @@ Ajouter l'événement `welcome` au système existant (déjà simplifié en un se
 
 ### Task 3.1 — Réorganisation espace praticien mobile
 
+**Statut : ⚠️ PARTIEL. Fait : Agenda en accueil (Task 1.2, `256ef84`), accès rapides déjà groupés dans "Gestion du cabinet" (`profile.tsx`). Non fait : consolidation d'un écran "Paramètres" unique séparé du Profil pour notifications/sécurité/préférences — le profil actuel fait déjà office de hub secondaire raisonnable, mais ce n'est pas la refonte complète demandée. Follow-up si souhaité.**
+
 **Files:** navigation/tabs praticien (`apps/mobile/app/(practitioner)/_layout.tsx`), écrans à regrouper sous "Paramètres".
 
 **Step 1:** Agenda en accueil (recoupe Task 1.2 — s'assurer que c'est fait avant de commencer cette tâche).
@@ -216,6 +218,8 @@ Ajouter l'événement `welcome` au système existant (déjà simplifié en un se
 
 ### Task 3.2 — Format de date JJ/MM/AAAA partout
 
+**Statut : ✅ FAIT — commit `2f97162`.**
+
 **Files:** dépend du rapport Task 1.1 pour l'écran "Congés & exceptions" ; grep plus large `AAAA-MM-JJ`/`YYYY-MM-DD` en placeholder/label affiché à l'utilisateur (pas les valeurs internes ISO, qui peuvent rester ISO en stockage — seul l'AFFICHAGE doit changer).
 
 **Step 1:** Grep exhaustif mobile + web des libellés de date affichés.
@@ -223,6 +227,8 @@ Ajouter l'événement `welcome` au système existant (déjà simplifié en un se
 **Step 3:** Commit.
 
 ### Task 3.3 — Barre de navigation (visibilité, safe area)
+
+**Statut : ✅ FAIT — commit `d438d60`.**
 
 **Files:** layouts mobile concernés (admin en particulier, cité explicitement par l'utilisateur), vérifier `useSafeAreaInsets`/`SafeAreaView` bottom.
 
@@ -232,6 +238,8 @@ Ajouter l'événement `welcome` au système existant (déjà simplifié en un se
 **Step 4:** Commit.
 
 ### Task 3.4 — Suppression de compte dans Paramètres (mobile)
+
+**Statut : ✅ FAIT — commit `de4b14a`. Patient/praticien/secrétaire couverts ; organisation volontairement exclue (voir note dans le commit) ; admin exclu (rejeté par l'Edge Function elle-même).**
 
 **Files:** écran Paramètres mobile (à créer/étendre selon Task 3.1), Edge Function `delete-account` déjà existante (self-service RGPD, utilisée côté web — réutiliser telle quelle, ne pas dupliquer la logique).
 
