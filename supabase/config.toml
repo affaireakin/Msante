@@ -18,13 +18,29 @@ port = 54324
 [storage]
 file_size_limit = "50MiB"
 
+# site_url/additional_redirect_urls/mfa/email.* below were previously only
+# set on the remote project (dashboard), never captured here — `config push`
+# treats an absent key as "reset to CLI default", not "leave remote as-is",
+# so omitting them clobbers real production settings. All restored explicitly.
 [auth]
-site_url = "http://localhost:8081"
-additional_redirect_urls = ["msante://"]
+site_url = "https://m-santé.com"
+additional_redirect_urls = ["https://m-santé.com/**", "msante://"]
 jwt_expiry = 3600
 enable_signup = true
+
+[auth.mfa]
+max_enrolled_factors = 10
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
 
 [auth.email]
 enable_signup = true
 double_confirm_changes = true
-enable_confirmations = false
+enable_confirmations = true
+secure_password_change = false
+max_frequency = "1m0s"
+otp_length = 8
+# Cahier des charges 2026-09-02, section 7 : 60 min → 10 min, tous rôles.
+otp_expiry = 600
