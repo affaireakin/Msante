@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { View, Text, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, Alert, ActivityIndicator, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
-import * as DocumentPicker from 'expo-document-picker'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-import { GlassCard, AppTextInput, PrimaryButton, StepIndicator } from '@/components/ui'
+import { GlassCard, AppTextInput, PrimaryButton, StepIndicator, pickDocumentAsset } from '@/components/ui'
 import { supabase } from '@/services/supabase'
 import { useAuthStore } from '@/features/auth/store/authStore'
 
@@ -24,7 +23,7 @@ const STATUS_META: Record<string, { label: string; icon: React.ComponentProps<ty
   archived: { label: 'Organisation archivée', icon: 'archive', bg: '#e5eeff', color: '#6f787e' },
 }
 
-interface PickedDoc { uri: string; name: string; type: string }
+interface PickedDoc { uri: string; name: string; type: string; isImage: boolean }
 
 function slugify(name: string): string {
   const stripDiacritics = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '')
@@ -45,6 +44,7 @@ export default function OrganizationOnboardingScreen() {
   const [step, setStep] = useState(0)
   const [submitted, setSubmitted] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [submitProgress, setSubmitProgress] = useState('')
   const [error, setError] = useState('')
 
   // Step 0 — organisation
@@ -86,9 +86,9 @@ export default function OrganizationOnboardingScreen() {
   }, [router])
 
   const pickDocument = async () => {
-    const result = await DocumentPicker.getDocumentAsync({ type: ['application/pdf', 'image/*'], copyToCacheDirectory: true })
-    if (result.canceled || !result.assets[0]) return
-    setDocs(prev => [...prev, { uri: result.assets[0].uri, name: result.assets[0].name, type: prev.length === 0 ? 'siret_extract' : 'autre' }])
+    const asset = await pickDocumentAsset()
+    if (!asset) return
+    setDocs(prev => [...prev, { uri: asset.uri, name: asset.name, isImage: asset.isImage, type: prev.length === 0 ? 'siret_extract' : 'autre' }])
   }
 
   const removeDoc = (idx: number) => setDocs(prev => prev.filter((_, i) => i !== idx))
@@ -132,13 +132,15 @@ export default function OrganizationOnboardingScreen() {
 
       if (orgError || !org) throw new Error(orgError?.message ?? "Impossible de créer l'organisation")
 
-      for (const doc of docs) {
+      for (let i = 0; i < docs.length; i++) {
+        const doc = docs[i]
+        setSubmitProgress(`Envoi du document ${i + 1}/${docs.length}...`)
         const ext = doc.name.split('.').pop() ?? 'pdf'
         const path = `${userId}/org_${doc.type}_${Date.now()}.${ext}`
         const response = await fetch(doc.uri)
         const blob = await response.blob()
         const { error: uploadError } = await supabase.storage.from('documents').upload(path, blob, { upsert: true })
-        if (uploadError) continue
+        if (uploadError) throw new Error(`Échec de l'envoi de "${doc.name}" : ${uploadError.message}`)
         await supabase.from('organization_documents').insert({
           organization_id: org.id,
           document_type: doc.type,
@@ -167,6 +169,7 @@ export default function OrganizationOnboardingScreen() {
       setError(e instanceof Error ? e.message : 'Une erreur est survenue.')
     } finally {
       setSaving(false)
+      setSubmitProgress('')
     }
   }
 
@@ -212,10 +215,10 @@ export default function OrganizationOnboardingScreen() {
           <MaterialIcons name="check-circle" size={40} color="#059669" />
         </View>
         <Text style={{ fontFamily: 'Manrope', fontSize: 22, fontWeight: '800', color: '#0b1c30', textAlign: 'center', marginBottom: 10 }}>
-          Demande envoyée !
+          Documents reçus
         </Text>
         <Text style={{ fontFamily: 'Manrope', fontSize: 14, color: '#6f787e', textAlign: 'center', lineHeight: 21, marginBottom: 32 }}>
-          Votre demande de création pour {name} a été transmise à notre équipe.{'\n'}Vous recevrez une notification dès qu&apos;elle sera validée.
+          Nous avons bien reçu vos documents. Merci pour votre envoi. Nous allons les analyser et reviendrons vers vous dans les meilleurs délais.{'\n\n'}Vous serez informé(e) dès que l&apos;analyse sera terminée.
         </Text>
         <TouchableOpacity onPress={handleLogout} style={{ width: '100%', paddingVertical: 16, borderRadius: 999, alignItems: 'center', backgroundColor: '#82d8ff' }}>
           <Text style={{ fontFamily: 'Manrope', fontSize: 15, fontWeight: '800', color: '#0b1c30' }}>Retour à la connexion</Text>
@@ -275,7 +278,11 @@ export default function OrganizationOnboardingScreen() {
                 <View style={{ gap: 8 }}>
                   {docs.map((doc, i) => (
                     <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#f8f9ff', borderRadius: 12, borderWidth: 1, borderColor: '#e5eeff', padding: 12 }}>
-                      <MaterialIcons name="description" size={18} color="#82d8ff" />
+                      {doc.isImage ? (
+                        <Image source={{ uri: doc.uri }} style={{ width: 32, height: 32, borderRadius: 8 }} resizeMode="cover" />
+                      ) : (
+                        <MaterialIcons name="picture-as-pdf" size={18} color="#82d8ff" />
+                      )}
                       <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: 13, color: '#0b1c30' }} numberOfLines={1}>{doc.name}</Text>
                       <TouchableOpacity onPress={() => removeDoc(i)}>
                         <MaterialIcons name="close" size={18} color="#6f787e" />
@@ -299,6 +306,11 @@ export default function OrganizationOnboardingScreen() {
           )}
 
           {error ? <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: '#ba1a1a' }}>{error}</Text> : null}
+          {submitProgress ? (
+            <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#82d8ff', textAlign: 'center', fontWeight: '600' }}>
+              {submitProgress}
+            </Text>
+          ) : null}
 
           <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
             {step > 0 && (

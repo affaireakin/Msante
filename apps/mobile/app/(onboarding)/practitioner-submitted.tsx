@@ -17,10 +17,10 @@ export default function PractitionerSubmittedScreen() {
           <MaterialIcons name="check-circle" size={40} color="#059669" />
         </View>
         <Text style={{ fontFamily: 'Manrope', fontSize: 22, fontWeight: '800', color: '#0b1c30', textAlign: 'center', marginBottom: 10 }}>
-          Demande envoyée !
+          Documents reçus
         </Text>
         <Text style={{ fontFamily: 'Manrope', fontSize: 14, color: '#6f787e', textAlign: 'center', lineHeight: 21, marginBottom: 32 }}>
-          Votre profil praticien a été transmis à notre équipe.{'\n'}Vous recevrez une notification dès qu&apos;il sera validé.
+          Nous avons bien reçu vos documents. Merci pour votre envoi. Nous allons les analyser et reviendrons vers vous dans les meilleurs délais.{'\n\n'}Vous serez informé(e) dès que l&apos;analyse sera terminée.
         </Text>
         <TouchableOpacity
           onPress={() => router.replace('/(practitioner)/')}

@@ -91,7 +91,7 @@ export const authService = {
     useAuthStore.getState().setProfile(profile)
   },
 
-  async completePractitionerOnboarding(data: PractitionerOnboardingData): Promise<void> {
+  async completePractitionerOnboarding(data: PractitionerOnboardingData, onProgress?: (current: number, total: number) => void): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
 
@@ -133,7 +133,9 @@ export const authService = {
       }
     }
 
-    for (const doc of data.documents) {
+    for (let i = 0; i < data.documents.length; i++) {
+      const doc = data.documents[i]
+      onProgress?.(i + 1, data.documents.length)
       const fileExt = doc.name.split('.').pop() ?? 'pdf'
       const filePath = `${user.id}/${doc.document_type}.${fileExt}`
       const response = await fetch(doc.uri)

@@ -17,6 +17,7 @@ type UploadedDoc = {
   uri: string
   name: string
   document_type: DocumentType
+  isImage: boolean
 }
 
 type DocConfig = {
@@ -60,6 +61,7 @@ export default function PractitionerOnboardingScreen() {
   const router = useRouter()
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [submitProgress, setSubmitProgress] = useState('')
   const [documents, setDocuments] = useState<UploadedDoc[]>([])
   const [step1Data, setStep1Data] = useState<PractitionerStep1FormData | null>(null)
   const [practitionerType, setPractitionerType] = useState<'healthcare' | 'wellness'>('healthcare')
@@ -107,19 +109,23 @@ export default function PractitionerOnboardingScreen() {
   const handleFinalSubmit = async () => {
     if (!step1Data) return
     setLoading(true)
+    setSubmitProgress('')
     try {
       const data: PractitionerOnboardingData = {
         ...step1Data,
         documents,
         profilePhotoUri: profilePhoto?.uri,
       }
-      await authService.completePractitionerOnboarding(data)
+      await authService.completePractitionerOnboarding(data, (current, total) => {
+        setSubmitProgress(`Envoi du document ${current}/${total}...`)
+      })
       router.replace('/(onboarding)/practitioner-submitted')
     } catch (err) {
       console.error('practitioner onboarding submit failed', err)
       const message = err instanceof Error ? err.message : 'Erreur inconnue'
       Alert.alert('Impossible de soumettre', message)
       setLoading(false)
+      setSubmitProgress('')
     }
   }
 
@@ -459,10 +465,16 @@ export default function PractitionerOnboardingScreen() {
               ))}
             </View>
 
+            {submitProgress ? (
+              <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#82d8ff', textAlign: 'center', fontWeight: '600' }}>
+                {submitProgress}
+              </Text>
+            ) : null}
             <View style={{ width: '100%', flexDirection: 'row', gap: 12 }}>
               <TouchableOpacity
                 onPress={() => setStep(1)}
-                style={{ flex: 1, paddingVertical: 16, borderRadius: 12, borderWidth: 1.5, borderColor: '#bec8ce', alignItems: 'center' }}
+                disabled={loading}
+                style={{ flex: 1, paddingVertical: 16, borderRadius: 12, borderWidth: 1.5, borderColor: '#bec8ce', alignItems: 'center', opacity: loading ? 0.5 : 1 }}
               >
                 <Text style={{ fontFamily: 'Manrope', fontWeight: '600', color: '#0b1c30' }}>← Retour</Text>
               </TouchableOpacity>
