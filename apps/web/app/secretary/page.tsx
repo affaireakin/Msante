@@ -17,7 +17,7 @@ interface Appointment {
   status: AptStatus
   type: 'video' | 'audio' | 'presentiel'
   patient: { full_name: string } | null
-  practitioner: { speciality: string; users: { full_name: string } | null } | null
+  practitioner: { speciality: string; users: { full_name: string; prefix: { prefix: string } | null } | null } | null
 }
 
 const STATUS_LABELS: Record<AptStatus, string> = {
@@ -80,7 +80,7 @@ function useAppointments(filter: Filter) {
         .select(`
           id, practitioner_id, scheduled_at, duration_min, status, type,
           patient:patient_id(full_name),
-          practitioner:practitioner_id(speciality, users!practitioners_user_id_fkey(full_name))
+          practitioner:practitioner_id(speciality, users!practitioners_user_id_fkey(full_name, prefix:professional_prefixes(prefix)))
         `)
         .order('scheduled_at', { ascending: filter !== 'past' })
 
@@ -149,7 +149,9 @@ function AppointmentRow({ apt, canManage }: { apt: Appointment; canManage: boole
         <div>
           <p className="font-bold text-[#0b1c30]">{apt.patient?.full_name ?? 'Patient'}</p>
           <p className="text-xs text-[#6f787e] mt-0.5">
-            {apt.practitioner?.users?.full_name ? `Dr. ${apt.practitioner.users.full_name}` : ''}
+            {apt.practitioner?.users?.full_name
+              ? (apt.practitioner.users.prefix?.prefix ? `${apt.practitioner.users.prefix.prefix} ${apt.practitioner.users.full_name}` : apt.practitioner.users.full_name)
+              : ''}
             {apt.practitioner?.speciality ? ` · ${apt.practitioner.speciality}` : ''}
           </p>
         </div>

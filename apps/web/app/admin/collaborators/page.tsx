@@ -250,13 +250,13 @@ export default function CollaboratorsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, speciality, verification_status, practitioner_type, created_at, users!user_id(full_name)')
+        .select('id, speciality, verification_status, practitioner_type, created_at, users!user_id(full_name, prefix:professional_prefixes(prefix))')
         .order('created_at', { ascending: false })
       if (error) throw error
       return (data ?? []) as unknown as {
         id: string; speciality: string; verification_status: string
         practitioner_type: string | null; created_at: string
-        users: { full_name: string } | null
+        users: { full_name: string; prefix: { prefix: string } | null } | null
       }[]
     },
   })
@@ -268,7 +268,7 @@ export default function CollaboratorsPage() {
     status: 'pending' | 'active' | 'revoked' | 'rejected'
     created_at: string
     user: { full_name: string; email: string | null } | null
-    practitioner: { speciality: string; users: { full_name: string } | null } | null
+    practitioner: { speciality: string; users: { full_name: string; prefix: { prefix: string } | null } | null } | null
   }
 
   const { data: secretaries = [], isLoading: loadingSec } = useQuery<PractSecretary[]>({
@@ -280,7 +280,7 @@ export default function CollaboratorsPage() {
         .select(`
           id, user_id, status, created_at,
           user:user_id(full_name, email),
-          practitioner:practitioner_id(speciality, users!practitioners_user_id_fkey(full_name))
+          practitioner:practitioner_id(speciality, users!practitioners_user_id_fkey(full_name, prefix:professional_prefixes(prefix)))
         `)
         .order('created_at', { ascending: false })
       if (error) throw error
@@ -612,8 +612,8 @@ export default function CollaboratorsPage() {
               <tbody className="divide-y divide-slate-100">
                 {practitioners.map(p => {
                   const name = p.users?.full_name ?? '—'
-                  const isHealthcare = !p.practitioner_type || p.practitioner_type === 'healthcare'
-                  const displayName = name !== '—' && isHealthcare ? `Dr. ${name}` : name
+                  const prefix = p.users?.prefix?.prefix
+                  const displayName = name !== '—' && prefix ? `${prefix} ${name}` : name
                   return (
                     <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4">
@@ -674,7 +674,9 @@ export default function CollaboratorsPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-[#6f787e]">
-                      {sec.practitioner?.users?.full_name ? `Dr. ${sec.practitioner.users.full_name}` : '—'}
+                      {sec.practitioner?.users?.full_name
+                        ? (sec.practitioner.users.prefix?.prefix ? `${sec.practitioner.users.prefix.prefix} ${sec.practitioner.users.full_name}` : sec.practitioner.users.full_name)
+                        : '—'}
                       {sec.practitioner?.speciality ? ` · ${sec.practitioner.speciality}` : ''}
                     </td>
                     <td className="px-6 py-4">

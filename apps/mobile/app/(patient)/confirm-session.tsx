@@ -9,13 +9,19 @@ import { PaymentSheet } from '@/features/booking/components/PaymentSheet'
 import { useResponsive } from '@/hooks/useResponsive'
 import type { PaymentProvider, SessionType } from '@/types/booking'
 
-const SESSION_OPTIONS: { value: SessionType; label: string; desc: string; icon: React.ComponentProps<typeof MaterialIcons>['name']; danger?: boolean }[] = [
-  { value: 'video', label: 'Vidéo', desc: 'Consultation à distance chiffrée', icon: 'videocam' },
-  { value: 'audio', label: 'Audio', desc: 'Appel vocal uniquement', icon: 'mic' },
-  { value: 'presentiel', label: 'Présentiel', desc: 'En cabinet du praticien', icon: 'location-on' },
-  { value: 'suivi', label: 'Suivi', desc: 'Séance de suivi régulier', icon: 'refresh' },
-  { value: 'urgence', label: 'Urgence', desc: 'Consultation urgente prioritaire', icon: 'emergency', danger: true },
-]
+// Le type est désormais choisi une seule fois, en amont, à l'étape de
+// réservation (booking/[practitionerId].tsx) — dérivé des vraies prestations
+// configurées par le praticien (video/presentiel/both), plus de sélecteur
+// libre ici. Uniquement Présentiel/Vidéo sur mobile (section 11 du cahier
+// des charges) ; 'suivi'/'urgence' restent des valeurs valides côté DB
+// (créées depuis le web) mais ne sont jamais choisies depuis ce parcours.
+const SESSION_LABELS: Partial<Record<SessionType, string>> = {
+  video: 'Vidéo',
+  presentiel: 'Présentiel',
+  audio: 'Audio',
+  suivi: 'Suivi',
+  urgence: 'Urgence',
+}
 
 function DetailRow({ label, value }: { label: string; value?: string | null }) {
   const { fs, scale } = useResponsive()
@@ -35,7 +41,7 @@ export default function ConfirmSessionScreen() {
 
   const {
     practitionerName, selectedSlot, sessionType, amount, currency,
-    setPaymentProvider, setAppointmentId, practitionerId, setSessionType,
+    setPaymentProvider, setAppointmentId, practitionerId,
   } = useBookingStore()
 
   const createAppointment = useCreateAppointment()
@@ -88,54 +94,23 @@ export default function ConfirmSessionScreen() {
           </Text>
         </View>
 
-        {/* Session type toggle — Video / Audio / Présentiel */}
-        <View style={{ marginBottom: scale(20) }}>
-          <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(12) }}>
-            Type de session
-          </Text>
-          <View style={{ gap: scale(8) }}>
-            {SESSION_OPTIONS.map(opt => {
-              const active = sessionType === opt.value
-              const activeBorder = opt.danger ? '#ba1a1a' : '#82d8ff'
-              const activeBg = opt.danger ? 'rgba(186,26,26,0.05)' : 'rgba(0,102,133,0.05)'
-              const iconBg = active ? (opt.danger ? '#ba1a1a' : '#82d8ff') : (opt.danger ? '#fce4ec' : '#e5eeff')
-              const iconColor = active ? '#fff' : (opt.danger ? '#ba1a1a' : '#82d8ff')
-              return (
-                <TouchableOpacity
-                  key={opt.value}
-                  onPress={() => setSessionType(opt.value)}
-                  activeOpacity={0.8}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: scale(12),
-                    padding: scale(14),
-                    borderRadius: scale(14),
-                    borderWidth: active ? 2 : 1,
-                    borderColor: active ? activeBorder : '#e5eeff',
-                    backgroundColor: active ? activeBg : 'rgba(255,255,255,0.85)',
-                  }}
-                >
-                  <View style={{
-                    width: scale(40),
-                    height: scale(40),
-                    borderRadius: scale(12),
-                    backgroundColor: iconBg,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    <MaterialIcons name={opt.icon} size={scale(20)} color={iconColor} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: fs.md, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>{opt.label}</Text>
-                    <Text style={{ fontSize: fs.xs, color: '#6f787e', fontFamily: 'Manrope', marginTop: 2 }}>{opt.desc}</Text>
-                  </View>
-                  {active && (
-                    <MaterialIcons name="check-circle" size={scale(20)} color={activeBorder} />
-                  )}
-                </TouchableOpacity>
-              )
-            })}
+        {/* Type de session — choisi en amont à l'étape de réservation, affiché ici en lecture seule */}
+        <View style={{
+          marginBottom: scale(20),
+          flexDirection: 'row', alignItems: 'center', gap: scale(12),
+          padding: scale(14), borderRadius: scale(14),
+          borderWidth: 1, borderColor: '#e5eeff', backgroundColor: 'rgba(255,255,255,0.85)',
+        }}>
+          <View style={{ width: scale(40), height: scale(40), borderRadius: scale(12), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+            <MaterialIcons name={sessionType === 'video' ? 'videocam' : 'location-on'} size={scale(20)} color="#82d8ff" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope' }}>
+              Type de session
+            </Text>
+            <Text style={{ fontSize: fs.md, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', marginTop: 2 }}>
+              {SESSION_LABELS[sessionType] ?? sessionType}
+            </Text>
           </View>
         </View>
 
@@ -161,7 +136,6 @@ export default function ConfirmSessionScreen() {
             <DetailRow label="Praticien" value={practitionerName} />
             <DetailRow label="Date" value={selectedSlot?.date} />
             <DetailRow label="Créneau" value={selectedSlot ? `${selectedSlot.startTime} → ${selectedSlot.endTime}` : null} />
-            <DetailRow label="Type" value={SESSION_OPTIONS.find(o => o.value === sessionType)?.label} />
           </View>
 
           {/* Total */}

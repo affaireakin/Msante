@@ -66,11 +66,7 @@ function RxCard({ rx, onPress }: { rx: Rx; onPress: () => void }) {
   const { fs, scale } = useResponsive()
   const { label, bg, color } = statusInfo(rx.status)
   const isReco = rx.document_type === 'recommandation'
-  const doctorLabel = isReco
-    ? rx.practitioner_name
-    : rx.practitioner_name.startsWith('Dr')
-      ? rx.practitioner_name
-      : `Dr. ${rx.practitioner_name}`
+  const doctorLabel = rx.practitioner_name
 
   return (
     <TouchableOpacity
@@ -238,23 +234,25 @@ export default function PrescriptionsScreen() {
         .from('prescriptions')
         .select(`
           id, diagnosis, status, created_at, medications, document_type,
-          practitioner:practitioner_id ( user:user_id ( full_name ) )
+          practitioner:practitioner_id ( user:user_id ( full_name, prefix:professional_prefixes(prefix) ) )
         `)
         .eq('patient_id', user.id)
         .in('status', ['signed', 'dispensed'])
         .order('created_at', { ascending: false })
       if (error) throw error
       return (data ?? []).map((r) => {
-        const pract = r.practitioner as unknown as { user: { full_name: string } }
+        const pract = r.practitioner as unknown as { user: { full_name: string; prefix: { prefix: string } | null } }
         const meds = Array.isArray(r.medications) ? r.medications : []
         const docType =
           (r.document_type as string) === 'recommandation' ? 'recommandation' : 'ordonnance'
+        const name = pract?.user?.full_name ?? 'Médecin'
+        const prefix = pract?.user?.prefix?.prefix
         return {
           id: r.id,
           diagnosis: r.diagnosis,
           status: r.status,
           created_at: r.created_at,
-          practitioner_name: pract?.user?.full_name ?? 'Médecin',
+          practitioner_name: prefix ? `${prefix} ${name}` : name,
           medications_count: meds.length,
           document_type: docType as 'ordonnance' | 'recommandation',
         }

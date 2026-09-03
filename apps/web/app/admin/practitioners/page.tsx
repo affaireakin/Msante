@@ -19,7 +19,7 @@ interface Practitioner {
   permissions: { can_prescribe: boolean; can_order_exams: boolean } | null
   created_at: string
   organization_id: string | null
-  users: { full_name: string } | null
+  users: { full_name: string; prefix: { prefix: string } | null } | null
   organizations: { name: string } | null
 }
 
@@ -62,7 +62,7 @@ function usePractitioners() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, organization_id, users!user_id(full_name), organizations(name)')
+        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, organization_id, users!user_id(full_name, prefix:professional_prefixes(prefix)), organizations(name)')
         .order('created_at', { ascending: false })
       if (error) throw error
       const sorted = (data ?? []) as unknown as Practitioner[]
@@ -75,11 +75,15 @@ function usePractitioners() {
   })
 }
 
+// N'affiche un préfixe (Dr, Infirmier, Psychologue...) que s'il a réellement
+// été attribué à ce praticien (/admin/prefixes) — jamais "Dr." par défaut
+// simplement parce que le compte est de type "healthcare" (section 9 du
+// cahier des charges du 2026-09-02).
 function displayName(pract: Practitioner): string {
   const name = pract.users?.full_name ?? '—'
   if (name === '—') return name
-  const isHealthcare = !pract.practitioner_type || pract.practitioner_type === 'healthcare'
-  return isHealthcare ? `Dr. ${name}` : name
+  const prefix = pract.users?.prefix?.prefix
+  return prefix ? `${prefix} ${name}` : name
 }
 
 const STATUS_FILTERS = [

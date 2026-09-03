@@ -26,9 +26,13 @@ Deno.serve(async (req) => {
 
   const { data: practUser } = await supabase
     .from('users')
-    .select('push_token, full_name')
+    .select('push_token, full_name, prefix:professional_prefixes(prefix)')
     .eq('id', practitioner.user_id)
     .single()
+  const practPrefix = (practUser?.prefix as unknown as { prefix: string } | null)?.prefix
+  const practDisplayName = practUser?.full_name
+    ? (practPrefix ? `${practPrefix} ${practUser.full_name}` : practUser.full_name)
+    : 'Votre médecin'
 
   if (action === 'accepted' || action === 'refused') {
     // Notify the patient of the doctor's decision
@@ -42,8 +46,8 @@ Deno.serve(async (req) => {
       ? 'Médecin traitant accepté ✅'
       : 'Désignation refusée'
     const body = action === 'accepted'
-      ? `Dr. ${practUser?.full_name ?? 'Votre médecin'} a accepté votre désignation.`
-      : `Dr. ${practUser?.full_name ?? 'Votre médecin'} n'a pas pu accepter votre désignation.`
+      ? `${practDisplayName} a accepté votre désignation.`
+      : `${practDisplayName} n'a pas pu accepter votre désignation.`
 
     if (patientUser?.push_token) {
       await fetch('https://exp.host/--/api/v2/push/send', {
