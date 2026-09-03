@@ -1,523 +1,298 @@
-import { ScrollView, View, Text, TouchableOpacity, StatusBar } from 'react-native'
+import { ScrollView, View, Text, TouchableOpacity, Alert, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/hooks/useAuth'
-import { useDashboard } from '@/features/practitioner/hooks/useDashboard'
-import { GlassCard } from '@/components/ui/GlassCard'
+import { useAgenda, type AgendaAppointment } from '@/features/practitioner/hooks/useAgenda'
+import {
+  approveAppointment,
+  declineAppointment,
+} from '@/features/practitioner/services/appointmentActions'
+import { useResponsive } from '@/hooks/useResponsive'
 
-function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+function isUrgent(iso: string) {
+  const diff = new Date(iso).getTime() - Date.now()
+  return diff > 0 && diff < 2 * 60 * 60 * 1000 // < 2h
 }
 
-function relativeTime(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime()
-  const h = Math.floor(diff / 3_600_000)
-  if (h < 1) return "À l'instant"
-  if (h < 24) return `Il y a ${h}h`
-  return 'Hier'
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString('fr-FR', {
+    weekday: 'short', day: '2-digit', month: 'short',
+    hour: '2-digit', minute: '2-digit',
+    timeZone: 'Africa/Dakar',
+  })
 }
 
-function InitialsAvatar({ initials, size = 44 }: { initials: string; size?: number }) {
+function InitialsAvatar({ initials, size }: { initials: string; size: number }) {
   return (
-    <View
-      style={{
-        width: size,
-        height: size,
-        borderRadius: size / 2,
-        backgroundColor: '#82d8ff',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Text
-        style={{
-          color: '#fff',
-          fontFamily: 'Manrope',
-          fontWeight: '700',
-          fontSize: size * 0.36,
-        }}
-      >
+    <View style={{
+      width: size, height: size, borderRadius: size / 2,
+      backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <Text style={{ color: '#005e7a', fontFamily: 'Manrope', fontWeight: '800', fontSize: size * 0.35 }}>
         {initials}
       </Text>
     </View>
   )
 }
 
-export default function DashboardScreen() {
-  const router = useRouter()
-  const { profile, practitioner } = useAuth()
-  const { data, isLoading } = useDashboard(practitioner?.id ?? '', profile?.id ?? '')
-
-  const firstName = profile?.full_name?.split(' ')[0] ?? 'Praticien'
-  const headerInitials = (profile?.full_name ?? 'P')
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
+function AppointmentCard({
+  appt, onApprove, onDecline, isWorking,
+}: {
+  appt: AgendaAppointment
+  onApprove: () => void
+  onDecline: () => void
+  isWorking: boolean
+}) {
+  const { fs, scale } = useResponsive()
+  const urgent = isUrgent(appt.scheduledAt)
+  const isVideo = appt.consultationType === 'Telehealth'
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f8f9ff" />
+    <View style={{
+      backgroundColor: 'rgba(255,255,255,0.88)',
+      borderRadius: scale(18),
+      borderWidth: urgent ? 1.5 : 1,
+      borderColor: urgent ? '#ba1a1a' : '#e5eeff',
+      overflow: 'hidden',
+      shadowColor: urgent ? '#ba1a1a' : '#82d8ff',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.07,
+      shadowRadius: 12,
+      elevation: 3,
+    }}>
+      {/* Urgent banner */}
+      {urgent && (
+        <View style={{ backgroundColor: '#fce4ec', paddingHorizontal: scale(14), paddingVertical: scale(6), flexDirection: 'row', alignItems: 'center', gap: scale(6) }}>
+          <MaterialIcons name="access-alarm" size={scale(13)} color="#ba1a1a" />
+          <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#ba1a1a', fontFamily: 'Manrope', letterSpacing: 0.5 }}>URGENT — Dans moins de 2h</Text>
+        </View>
+      )}
 
-      {/* Header */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingHorizontal: 24,
-          paddingVertical: 12,
-          backgroundColor: 'rgba(255,255,255,0.70)',
-          borderBottomWidth: 1,
-          borderBottomColor: 'rgba(255,255,255,0.20)',
-        }}
-      >
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <InitialsAvatar initials={headerInitials} size={40} />
-          <View>
-            <Text
-              style={{
-                fontFamily: 'Manrope',
-                fontWeight: '700',
-                fontSize: 16,
-                color: '#0284c7',
-              }}
-            >
-              {firstName}
+      <View style={{ padding: scale(16), gap: scale(14) }}>
+        {/* Patient info */}
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: scale(12) }}>
+          <InitialsAvatar initials={appt.patientInitials} size={scale(46)} />
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.md, fontWeight: '700', color: '#0b1c30' }}>
+              {appt.patientName}
             </Text>
-            <Text
-              style={{
-                fontFamily: 'Manrope',
-                fontSize: 11,
-                color: '#6f787e',
-                letterSpacing: 0.5,
-                textTransform: 'uppercase',
-              }}
-            >
-              Practitioner Portal
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(6), marginTop: scale(2) }}>
+              <MaterialIcons name={isVideo ? 'videocam' : 'location-on'} size={scale(13)} color="#6f787e" />
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#6f787e' }}>
+                {isVideo ? 'Téléconsultation' : 'Présentiel'}
+              </Text>
+            </View>
+          </View>
+          {/* Type badge */}
+          <View style={{ backgroundColor: isVideo ? '#e5eeff' : '#f0fdf4', borderRadius: scale(8), paddingHorizontal: scale(8), paddingVertical: scale(3) }}>
+            <Text style={{ fontSize: scale(9), fontWeight: '700', color: isVideo ? '#82d8ff' : '#1d7a3a', fontFamily: 'Manrope' }}>
+              {isVideo ? 'Vidéo' : 'Présentiel'}
             </Text>
           </View>
         </View>
-        <TouchableOpacity
-          onPress={() => router.push('/(practitioner)/notifications')}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: 'rgba(255,255,255,0.50)',
-            borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.40)',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <MaterialIcons name="notifications-none" size={22} color="#0b1c30" />
-        </TouchableOpacity>
+
+        {/* Date chip */}
+        <View style={{
+          flexDirection: 'row', alignItems: 'center', gap: scale(8),
+          paddingHorizontal: scale(12), paddingVertical: scale(8),
+          borderRadius: scale(10), backgroundColor: '#f8f9ff',
+          borderWidth: 1, borderColor: '#e5eeff',
+        }}>
+          <MaterialIcons name="event" size={scale(15)} color="#82d8ff" />
+          <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#82d8ff', fontWeight: '600' }}>
+            {formatDateTime(appt.scheduledAt)}
+          </Text>
+        </View>
+
+        {/* Patient note */}
+        {appt.notes ? (
+          <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#3f484d', lineHeight: scale(18), fontStyle: 'italic' }} numberOfLines={2}>
+            "{appt.notes}"
+          </Text>
+        ) : null}
+
+        {/* Action buttons: Approuver · Refuser
+            QA finding: "Reporter" had no onPress and no reschedule feature exists
+            yet in appointmentActions.ts — removed rather than left as a dead
+            button until a real reschedule flow (slot picker + patient
+            re-confirmation) is built. */}
+        <View style={{ flexDirection: 'row', gap: scale(8) }}>
+          <TouchableOpacity
+            onPress={onApprove}
+            disabled={isWorking}
+            style={{ flex: 2, paddingVertical: scale(11), borderRadius: 9999, alignItems: 'center', backgroundColor: '#82d8ff', opacity: isWorking ? 0.5 : 1 }}
+          >
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '800', color: '#0b1c30' }}>Approuver</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={onDecline}
+            disabled={isWorking}
+            style={{ flex: 1, paddingVertical: scale(11), borderRadius: 9999, alignItems: 'center', opacity: isWorking ? 0.5 : 1 }}
+          >
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '600', color: '#ba1a1a' }}>Refuser</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  )
+}
+
+export default function AgendaScreen() {
+  const { practitioner } = useAuth()
+  const { px, fs, scale } = useResponsive()
+  const queryClient = useQueryClient()
+  const { data, isLoading, refetch, isRefetching } = useAgenda(practitioner?.id ?? '')
+
+  const approveMutation = useMutation({
+    mutationFn: ({ appointmentId, patientId }: { appointmentId: string; patientId: string }) =>
+      approveAppointment(appointmentId, patientId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['practitioner-agenda'] }),
+    onError: () => Alert.alert('Erreur', "Impossible d'approuver ce rendez-vous."),
+  })
+
+  const declineMutation = useMutation({
+    mutationFn: ({ appointmentId, patientId }: { appointmentId: string; patientId: string }) =>
+      declineAppointment(appointmentId, patientId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['practitioner-agenda'] }),
+    onError: () => Alert.alert('Erreur', 'Impossible de refuser ce rendez-vous.'),
+  })
+
+  const isWorking = approveMutation.isPending || declineMutation.isPending
+  const pending = data?.pending ?? []
+  const confirmed = data?.confirmed ?? []
+  const urgentCount = pending.filter(a => isUrgent(a.scheduledAt)).length
+
+  const handleDecline = (appt: AgendaAppointment) => {
+    Alert.alert('Refuser ce RDV ?', 'Le patient sera notifié.', [
+      { text: 'Annuler', style: 'cancel' },
+      { text: 'Refuser', style: 'destructive', onPress: () => declineMutation.mutate({ appointmentId: appt.id, patientId: appt.patientId }) },
+    ])
+  }
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }} edges={['top']}>
+
+      {/* Header */}
+      <View style={{
+        flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+        paddingHorizontal: px, paddingVertical: scale(16),
+        backgroundColor: 'rgba(255,255,255,0.80)',
+        borderBottomWidth: 1, borderBottomColor: 'rgba(229,238,255,0.6)',
+      }}>
+        <View>
+          <Text style={{ fontFamily: 'Manrope', fontSize: fs.xxl, fontWeight: '800', color: '#0b1c30', letterSpacing: -0.5 }}>
+            Agenda
+          </Text>
+          <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#6f787e', marginTop: 2 }}>
+            {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+          </Text>
+        </View>
+
+        {/* Badges */}
+        <View style={{ flexDirection: 'row', gap: scale(8) }}>
+          {pending.length > 0 && (
+            <View style={{ paddingHorizontal: scale(10), paddingVertical: scale(5), borderRadius: 9999, backgroundColor: '#e5eeff' }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#82d8ff' }}>
+                {pending.length} Demande{pending.length > 1 ? 's' : ''}
+              </Text>
+            </View>
+          )}
+          {urgentCount > 0 && (
+            <View style={{ paddingHorizontal: scale(10), paddingVertical: scale(5), borderRadius: 9999, backgroundColor: '#fce4ec' }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#ba1a1a' }}>
+                {urgentCount} Urgent{urgentCount > 1 ? 's' : ''}
+              </Text>
+            </View>
+          )}
+        </View>
       </View>
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ padding: 24, gap: 32 }}
+        contentContainerStyle={{ paddingHorizontal: px, paddingTop: scale(20), paddingBottom: 100, gap: scale(24) }}
         showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor="#82d8ff" />}
       >
-        {/* KPI Bento Grid */}
-        <View style={{ gap: 12 }}>
-          {/* Earnings — full width */}
-          <GlassCard style={{ backgroundColor: 'rgba(0,102,133,0.06)', borderColor: 'rgba(0,102,133,0.12)' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
-                  <MaterialIcons name="account-balance-wallet" size={18} color="#0b1c30" />
-                </View>
-                <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase' }}>
-                  Revenus ce mois
-                </Text>
-              </View>
-            </View>
-            {isLoading ? (
-              <View
-                style={{ height: 40, backgroundColor: '#f1f5f9', borderRadius: 8 }}
-              />
-            ) : (
-              <>
-                <Text
-                  style={{
-                    fontFamily: 'Manrope',
-                    fontSize: 32,
-                    fontWeight: '700',
-                    color: '#82d8ff',
-                    letterSpacing: -1,
-                  }}
-                >
-                  {new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(
-                    data?.earningsThisMonth ?? 0,
-                  )}{' '}
-                  XOF
-                </Text>
-                <View
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}
-                >
-                  <MaterialIcons
-                    name={(data?.earningsTrend ?? 0) >= 0 ? 'trending-up' : 'trending-down'}
-                    size={14}
-                    color={(data?.earningsTrend ?? 0) >= 0 ? '#16a34a' : '#dc2626'}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: 'Manrope',
-                      fontSize: 13,
-                      color: (data?.earningsTrend ?? 0) >= 0 ? '#16a34a' : '#dc2626',
-                    }}
-                  >
-                    {(data?.earningsTrend ?? 0) >= 0 ? '+' : ''}
-                    {data?.earningsTrend ?? 0}% ce mois
-                  </Text>
-                </View>
-              </>
-            )}
-          </GlassCard>
-
-          {/* Consultations + Rating + Pending */}
-          <View style={{ flexDirection: 'row', gap: 12 }}>
-            <GlassCard style={{ flex: 1 }}>
-              <View style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-                <MaterialIcons name="video-camera-front" size={17} color="#82d8ff" />
-              </View>
-              <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#6f787e', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>
-                Consultations
-              </Text>
-              <Text style={{ fontFamily: 'Manrope', fontSize: 26, fontWeight: '800', color: '#0b1c30' }}>
-                {data?.consultationsTotal ?? '—'}
-              </Text>
-            </GlassCard>
-            <GlassCard style={{ flex: 1 }}>
-              <View style={{ width: 32, height: 32, borderRadius: 10, backgroundColor: '#fff8e1', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-                <MaterialIcons name="star" size={17} color="#705d00" />
-              </View>
-              <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#6f787e', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>
-                Note
-              </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 2 }}>
-                <Text style={{ fontFamily: 'Manrope', fontSize: 26, fontWeight: '800', color: '#0b1c30' }}>
-                  {data?.rating ? Number(data.rating).toFixed(1) : '—'}
-                </Text>
-                <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e' }}>/5</Text>
-              </View>
-            </GlassCard>
-          </View>
-        </View>
-
-        {/* Today's Agenda */}
-        <View style={{ gap: 12 }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingHorizontal: 4,
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: 'Manrope',
-                fontSize: 20,
-                fontWeight: '600',
-                color: '#0b1c30',
-                letterSpacing: -0.3,
-              }}
-            >
-              Agenda du jour
+        {/* Pending Approvals section */}
+        <View style={{ gap: scale(12) }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.md, fontWeight: '700', color: '#0b1c30' }}>
+              Demandes en attente
             </Text>
-            <TouchableOpacity onPress={() => router.push('/(practitioner)/agenda')}>
-              <Text
-                style={{
-                  fontFamily: 'Manrope',
-                  fontSize: 11,
-                  fontWeight: '700',
-                  color: '#82d8ff',
-                  letterSpacing: 0.5,
-                  textTransform: 'uppercase',
-                }}
-              >
-                VOIR TOUT
-              </Text>
-            </TouchableOpacity>
+            {pending.length > 0 && (
+              <View style={{ paddingHorizontal: scale(10), paddingVertical: scale(4), borderRadius: 9999, backgroundColor: '#e5eeff' }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#82d8ff' }}>
+                  {pending.length} requête{pending.length > 1 ? 's' : ''}
+                </Text>
+              </View>
+            )}
           </View>
 
           {isLoading ? (
-            <GlassCard>
-              <View style={{ height: 80, backgroundColor: '#f1f5f9', borderRadius: 8 }} />
-            </GlassCard>
-          ) : (data?.todayAppointments ?? []).length === 0 ? (
-            <GlassCard>
-              <Text
-                style={{
-                  fontFamily: 'Manrope',
-                  fontSize: 14,
-                  color: '#6f787e',
-                  textAlign: 'center',
-                }}
-              >
-                Aucun rendez-vous aujourd'hui
+            [1, 2].map(i => (
+              <View key={i} style={{ height: scale(176), borderRadius: scale(18), backgroundColor: 'rgba(255,255,255,0.4)' }} />
+            ))
+          ) : pending.length === 0 ? (
+            <View style={{
+              backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: scale(16),
+              padding: scale(24), alignItems: 'center', gap: scale(8),
+              borderWidth: 1, borderColor: '#e5eeff',
+            }}>
+              <MaterialIcons name="check-circle-outline" size={scale(32)} color="#1d7a3a" />
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.md, fontWeight: '600', color: '#1d7a3a' }}>
+                Tout est à jour !
               </Text>
-            </GlassCard>
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#6f787e', textAlign: 'center' }}>
+                Aucune demande en attente d'approbation
+              </Text>
+            </View>
           ) : (
-            (data?.todayAppointments ?? []).map((appt, index) => (
-              <GlassCard key={appt.id}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    marginBottom: 12,
-                  }}
-                >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                    <InitialsAvatar initials={appt.patientInitials} size={44} />
-                    <View>
-                      <Text
-                        style={{
-                          fontFamily: 'Manrope',
-                          fontSize: 15,
-                          fontWeight: '600',
-                          color: '#0b1c30',
-                        }}
-                      >
-                        {appt.patientName}
-                      </Text>
-                      <Text
-                        style={{ fontFamily: 'Manrope', fontSize: 13, color: '#6f787e' }}
-                      >
-                        {appt.type}
-                      </Text>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      paddingHorizontal: 12,
-                      paddingVertical: 4,
-                      borderRadius: 999,
-                      backgroundColor: '#82d8ff',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 4,
-                    }}
-                  >
-                    <MaterialIcons name="schedule" size={13} color="#005e7a" />
-                    <Text
-                      style={{
-                        fontFamily: 'Manrope',
-                        fontSize: 11,
-                        fontWeight: '700',
-                        color: '#005e7a',
-                      }}
-                    >
-                      {formatTime(appt.scheduledAt)}
-                    </Text>
-                  </View>
-                </View>
-
-                {index === 0 && (
-                  <>
-                    <View
-                      style={{ height: 1, backgroundColor: '#f1f5f9', marginBottom: 12 }}
-                    />
-                    <TouchableOpacity
-                      onPress={() => router.push(`/(practitioner)/consultation/${appt.id}` as never)}
-                      style={{
-                        width: '100%',
-                        paddingVertical: 12,
-                        borderRadius: 12,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexDirection: 'row',
-                        gap: 8,
-                        backgroundColor: '#82d8ff',
-                      }}
-                    >
-                      <MaterialIcons name="videocam" size={20} color="#0b1c30" />
-                      <Text
-                        style={{
-                          fontFamily: 'Manrope',
-                          fontSize: 15,
-                          fontWeight: '800',
-                          color: '#0b1c30',
-                        }}
-                      >
-                        Démarrer la session
-                      </Text>
-                    </TouchableOpacity>
-                  </>
-                )}
-              </GlassCard>
+            pending.map(appt => (
+              <AppointmentCard
+                key={appt.id}
+                appt={appt}
+                onApprove={() => approveMutation.mutate({ appointmentId: appt.id, patientId: appt.patientId })}
+                onDecline={() => handleDecline(appt)}
+                isWorking={isWorking}
+              />
             ))
           )}
         </View>
 
-        {/* Quick Actions */}
-        <View style={{ gap: 10 }}>
-          <Text
-            style={{
-              fontFamily: 'Manrope',
-              fontSize: 20,
-              fontWeight: '600',
-              color: '#0b1c30',
-              letterSpacing: -0.3,
-              paddingHorizontal: 4,
-            }}
-          >
-            Raccourcis
-          </Text>
-          <View style={{ flexDirection: 'row', gap: 12 }}>
-            <TouchableOpacity
-              onPress={() => router.push('/(practitioner)/analytics')}
-              style={{
-                flex: 1,
-                backgroundColor: 'rgba(255,255,255,0.90)',
-                borderRadius: 16,
-                borderWidth: 1,
-                borderColor: '#e5eeff',
-                padding: 16,
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
-              <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name="bar-chart" size={22} color="#82d8ff" />
-              </View>
-              <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#0b1c30', textAlign: 'center' }}>
-                Analytics
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => router.push('/(practitioner)/notes-cliniques')}
-              style={{
-                flex: 1,
-                backgroundColor: 'rgba(255,255,255,0.90)',
-                borderRadius: 16,
-                borderWidth: 1,
-                borderColor: '#e5eeff',
-                padding: 16,
-                alignItems: 'center',
-                gap: 8,
-              }}
-            >
-              <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name="description" size={22} color="#82d8ff" />
-              </View>
-              <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#0b1c30', textAlign: 'center' }}>
-                Notes cliniques
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Recent Activity */}
-        <View style={{ gap: 12 }}>
-          <Text
-            style={{
-              fontFamily: 'Manrope',
-              fontSize: 20,
-              fontWeight: '600',
-              color: '#0b1c30',
-              letterSpacing: -0.3,
-              paddingHorizontal: 4,
-            }}
-          >
-            Activité récente
-          </Text>
-          <View
-            style={{
-              borderRadius: 12,
-              borderWidth: 1,
-              borderColor: 'rgba(255,255,255,0.40)',
-              overflow: 'hidden',
-              padding: 8,
-              backgroundColor: 'rgba(255,255,255,0.50)',
-            }}
-          >
-            {(data?.recentActivity ?? []).length === 0 ? (
-              <View style={{ paddingVertical: 24, alignItems: 'center' }}>
-                <Text style={{ fontFamily: 'Manrope', fontSize: 14, color: '#6f787e' }}>
-                  Aucune activité récente
-                </Text>
-              </View>
-            ) : (
-              (data?.recentActivity ?? []).map((item, i) => (
-                <View key={item.id}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      gap: 16,
-                      alignItems: 'flex-start',
-                      padding: 12,
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 20,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderWidth: 1,
-                        borderColor: 'rgba(255,255,255,0.50)',
-                        backgroundColor: item.type?.includes('payment') ? '#ffde5c' : '#e5eeff',
-                      }}
-                    >
-                      <MaterialIcons
-                        name={item.type?.includes('payment') ? 'credit-card' : 'mail'}
-                        size={18}
-                        color={item.type?.includes('payment') ? '#705d00' : '#82d8ff'}
-                      />
-                    </View>
-                    <View style={{ flex: 1, gap: 2 }}>
-                      <Text
-                        style={{
-                          fontFamily: 'Manrope',
-                          fontSize: 14,
-                          fontWeight: '500',
-                          color: '#0b1c30',
-                        }}
-                      >
-                        {item.title}
-                      </Text>
-                      <Text
-                        style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e' }}
-                        numberOfLines={1}
-                      >
-                        {item.body}
-                      </Text>
-                      <Text
-                        style={{
-                          fontFamily: 'Manrope',
-                          fontSize: 11,
-                          color: '#5c5f61',
-                          marginTop: 2,
-                        }}
-                      >
-                        {relativeTime(item.createdAt)}
-                      </Text>
-                    </View>
+        {/* Confirmed today section */}
+        {confirmed.length > 0 && (
+          <View style={{ gap: scale(12) }}>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.md, fontWeight: '700', color: '#0b1c30' }}>
+              Confirmés aujourd'hui
+            </Text>
+            {confirmed.map(appt => (
+              <View key={appt.id} style={{
+                backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: scale(16),
+                padding: scale(14), borderWidth: 1, borderColor: '#e5eeff',
+                flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+                gap: scale(12),
+              }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(12), flex: 1 }}>
+                  <InitialsAvatar initials={appt.patientInitials} size={scale(42)} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontFamily: 'Manrope', fontSize: fs.md, fontWeight: '700', color: '#0b1c30' }}>
+                      {appt.patientName}
+                    </Text>
+                    <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#6f787e' }}>
+                      {appt.consultationType === 'Telehealth' ? 'Téléconsultation' : 'Présentiel'}
+                    </Text>
                   </View>
-                  {i < (data?.recentActivity ?? []).length - 1 && (
-                    <View
-                      style={{
-                        height: 1,
-                        backgroundColor: 'rgba(241,245,249,0.60)',
-                        marginLeft: 64,
-                      }}
-                    />
-                  )}
                 </View>
-              ))
-            )}
+                <View style={{ backgroundColor: '#e5eeff', borderRadius: scale(10), paddingHorizontal: scale(10), paddingVertical: scale(5) }}>
+                  <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#82d8ff' }}>
+                    {new Date(appt.scheduledAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Dakar' })}
+                  </Text>
+                </View>
+              </View>
+            ))}
           </View>
-        </View>
-
-        <View style={{ height: 16 }} />
+        )}
       </ScrollView>
     </SafeAreaView>
   )

@@ -69,7 +69,7 @@ export default function PractitionerConsultationSummary() {
 
   const handleAgenda = () => {
     reset()
-    router.replace('/(practitioner)/agenda')
+    router.replace('/(practitioner)/')
   }
 
   return (

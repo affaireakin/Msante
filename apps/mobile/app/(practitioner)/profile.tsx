@@ -470,6 +470,7 @@ export default function ProfileScreen() {
             Gestion du cabinet
           </Text>
           {[
+            { icon: 'bar-chart' as const, label: 'Tableau de bord & revenus', href: '/(practitioner)/dashboard' as const },
             { icon: 'event-available' as const, label: 'Disponibilités & Prestations', href: '/(practitioner)/availability' as const },
             { icon: 'description' as const, label: 'Mes documents', href: '/(practitioner)/documents' as const },
             { icon: 'support-agent' as const, label: 'Mes secrétaires', href: '/(practitioner)/secretary' as const },

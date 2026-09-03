@@ -65,17 +65,19 @@ export default function PractitionerLayout() {
         tabBarItemStyle: { paddingHorizontal: 2 },
       }}
     >
+      {/* Agenda est l'écran d'accueil (index) — accessible immédiatement au
+          lancement, sans navigation supplémentaire (section 1/12 du cahier
+          des charges). L'ancien Dashboard (stats/revenus) reste disponible
+          sur une route dédiée, cachée de la barre d'onglets. */}
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="dashboard" label="Dashboard" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="calendar-today" label="Agenda" focused={focused} />,
         }}
       />
       <Tabs.Screen
-        name="agenda"
-        options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="calendar-today" label="Agenda" focused={focused} />,
-        }}
+        name="dashboard"
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="patients"
