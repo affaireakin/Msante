@@ -16,7 +16,7 @@
 
 ### Task 1.1 — Disponibilités praticien → moteur de réservation → visibilité patient
 
-**Statut : investigation terminée. Root cause identifiée — bien plus large qu'un bug ponctuel.**
+**Statut : ✅ FAIT — commit `7e50025`.**
 
 **Diagnostic confirmé :** deux systèmes de disponibilités parallèles, sans aucune table en commun.
 - **Legacy (mobile écrit ici)** : `availabilities`, `availability_exceptions`, `practitioner_services`, `availability_day_rules`, `schedule_blocks`.
@@ -61,6 +61,8 @@
 
 ### Task 1.2 — Agenda praticien accessible immédiatement au lancement (mobile)
 
+**Statut : ✅ FAIT — commit `256ef84`.**
+
 **Files:**
 - `apps/mobile/app/(practitioner)/_layout.tsx` (ou fichier de layout/tab-bar praticien)
 - Écran d'accueil praticien actuel (à identifier — probablement pas l'agenda aujourd'hui, cf. section 12 du cahier des charges)
@@ -78,6 +80,8 @@
 ---
 
 ### Task 1.3 — OTP : 60 minutes → 10 minutes
+
+**Statut : ✅ FAIT — commits `2d0ff93`, `ab08ef4`.**
 
 **Files:**
 - `supabase/config.toml` (`[auth.email]` — ajouter `otp_expiry`)
@@ -97,6 +101,8 @@
 ---
 
 ### Task 1.4 — Refonte soumission des documents + prise de photo caméra (mobile)
+
+**Statut : ✅ FAIT — commit `a2542fb`.**
 
 **Files:**
 - `apps/mobile/components/ui/DocumentUploader.tsx` (types MIME déjà corrigés cette session — reste : aperçu, recadrage, remplacement, progression, statut)
