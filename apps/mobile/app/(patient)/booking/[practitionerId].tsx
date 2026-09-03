@@ -1,25 +1,17 @@
-﻿import { useState, useMemo } from 'react'
+﻿import { useState, useMemo, useEffect } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useQuery } from '@tanstack/react-query'
 import { usePractitioner } from '@/features/practitioners/hooks/usePractitioner'
-import { useAvailability } from '@/features/practitioners/hooks/useAvailability'
+import { useAvailability, type ConsultationType } from '@/features/practitioners/hooks/useAvailability'
 import { WeekCalendar } from '@/features/practitioners/components/WeekCalendar'
 import { SlotPicker } from '@/features/practitioners/components/SlotPicker'
 import { PrimaryButton } from '@/components/ui'
 import { useBookingStore } from '@/features/booking/store/bookingStore'
 import { supabase } from '@/services/supabase'
 import type { SessionType, TimeSlot } from '@/types/booking'
-
-type SessionTypeItem = { id: SessionType; label: string; iconName: 'videocam' | 'mic' | 'location-on' }
-
-const ALL_SESSION_TYPES: SessionTypeItem[] = [
-  { id: 'video',      label: 'Vidéo',       iconName: 'videocam' },
-  { id: 'audio',      label: 'Audio',        iconName: 'mic' },
-  { id: 'presentiel', label: 'Présentiel',   iconName: 'location-on' },
-]
 
 export default function BookingScreen() {
   const { practitionerId } = useLocalSearchParams<{ practitionerId: string }>()
@@ -42,40 +34,42 @@ export default function BookingScreen() {
     },
   })
 
-  const { data: slots, isLoading } = useAvailability(
-    practitionerId,
-    practitioner?.session_duration_min ?? 60
-  )
+  // Types de consultation configurés par le praticien (consultation_types) —
+  // remplace l'ancien sélecteur fixe Vidéo/Audio/Présentiel : plus d'Audio
+  // (retiré du mobile, section 11 du cahier des charges), et les types
+  // affichés sont réellement ceux que CE praticien propose.
+  const { data, isLoading } = useAvailability(practitionerId)
+  const types = data?.types ?? []
+  const allSlots = data?.slots ?? []
 
-  const { data: dayRules = [] } = useQuery({
-    queryKey: ['day-rules-booking', practitionerId],
-    enabled: !!practitionerId,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('availability_day_rules')
-        .select('day_of_week, allowed_types')
-        .eq('practitioner_id', practitionerId)
-      return data ?? []
-    },
-  })
-
+  const [selectedType, setSelectedType] = useState<ConsultationType | null>(null)
+  const [selectedSubMode, setSelectedSubMode] = useState<'presentiel' | 'video' | null>(null)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [selectedSlotKey, setSelectedSlotKey] = useState<string | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
-  const [sessionType, setSessionType] = useState<SessionType>('video')
 
-  const availableTypes = useMemo<SessionType[]>(() => {
-    if (!selectedDate) return ALL_SESSION_TYPES.map(t => t.id)
-    const dow = new Date(selectedDate + 'T12:00:00').getDay()
-    const rule = dayRules.find(r => r.day_of_week === dow)
-    return (rule?.allowed_types ?? ALL_SESSION_TYPES.map(t => t.id)) as SessionType[]
-  }, [selectedDate, dayRules])
+  // Sélectionne le premier type dès que la liste charge.
+  useEffect(() => {
+    if (!selectedType && types.length > 0) setSelectedType(types[0])
+  }, [types, selectedType])
 
-  const SESSION_TYPES = ALL_SESSION_TYPES.filter(t => availableTypes.includes(t.id))
+  useEffect(() => {
+    setSelectedSubMode(selectedType?.mode === 'both' ? 'video' : null)
+  }, [selectedType])
+
+  const typeSlots = useMemo(
+    () => selectedType ? allSlots.filter(s => s.type.id === selectedType.id) : [],
+    [allSlots, selectedType],
+  )
+
+  const slots: TimeSlot[] = useMemo(
+    () => typeSlots.map(s => ({ date: s.date, start_time: s.start_time, end_time: s.end_time, available: !s.taken })),
+    [typeSlots],
+  )
 
   const { setSlot, setSessionType: storeSetSessionType, setPractitioner, setAmount } = useBookingStore()
 
-  const availableDates = [...new Set((slots ?? []).filter(s => s.available).map(s => s.date))]
+  const availableDates = [...new Set(slots.filter(s => s.available).map(s => s.date))]
 
   const handleSlotSelect = (slot: TimeSlot) => {
     setSelectedSlotKey(`${slot.date}-${slot.start_time}`)
@@ -83,16 +77,17 @@ export default function BookingScreen() {
   }
 
   const handleConfirm = () => {
-    if (!selectedSlot || !practitioner) return
+    if (!selectedSlot || !practitioner || !selectedType) return
+    const finalType: SessionType = selectedType.mode === 'both' ? (selectedSubMode ?? 'video') : (selectedType.mode as SessionType)
     setPractitioner(practitionerId, practitioner.users?.full_name ?? 'Praticien')
     setSlot({
       date: selectedSlot.date,
       startTime: selectedSlot.start_time,
       endTime: selectedSlot.end_time,
     })
-    storeSetSessionType(sessionType)
-    if (practitioner.session_price) {
-      setAmount(practitioner.session_price, practitioner.session_currency)
+    storeSetSessionType(finalType)
+    if (selectedType.price) {
+      setAmount(selectedType.price, selectedType.currency)
     }
     router.push('/(patient)/confirm-session')
   }
@@ -147,38 +142,63 @@ export default function BookingScreen() {
             Choisir un créneau
           </Text>
           <Text style={{ fontSize: 14, color: '#3f484d', fontFamily: 'Manrope', marginTop: 4 }}>
-            {practitioner?.users?.full_name} · {practitioner?.session_duration_min} min
+            {practitioner?.users?.full_name}{selectedType ? ` · ${selectedType.duration_min} min` : ''}
           </Text>
         </View>
 
-        {/* Type de session */}
+        {/* Type de consultation (prestations réellement configurées par ce praticien) */}
         <View style={{ paddingHorizontal: 24, marginBottom: 24 }}>
           <Text style={{ fontSize: 14, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: 12 }}>
             Type de consultation
           </Text>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            {SESSION_TYPES.map(t => (
-              <TouchableOpacity
-                key={t.id}
-                onPress={() => setSessionType(t.id)}
-                style={{
-                  flex: 1,
-                  paddingVertical: 12,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  alignItems: 'center',
-                  gap: 4,
-                  backgroundColor: sessionType === t.id ? '#82d8ff' : 'rgba(255,255,255,0.6)',
-                  borderColor: sessionType === t.id ? '#82d8ff' : 'rgba(255,255,255,0.8)',
-                }}
-              >
-                <MaterialIcons name={t.iconName} size={20} color={sessionType === t.id ? '#ffffff' : '#0b1c30'} />
-                <Text style={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: '500', color: sessionType === t.id ? '#ffffff' : '#0b1c30' }}>
-                  {t.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          {types.length === 0 && !isLoading ? (
+            <Text style={{ fontSize: 13, color: '#6f787e', fontFamily: 'Manrope', fontStyle: 'italic' }}>
+              Ce praticien n&apos;a pas encore configuré ses prestations.
+            </Text>
+          ) : (
+            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
+              {types.map(t => (
+                <TouchableOpacity
+                  key={t.id}
+                  onPress={() => { setSelectedType(t); setSelectedDate(null); setSelectedSlot(null); setSelectedSlotKey(null) }}
+                  style={{
+                    paddingVertical: 12, paddingHorizontal: 16, borderRadius: 12, borderWidth: 1, alignItems: 'center', gap: 4,
+                    backgroundColor: selectedType?.id === t.id ? '#82d8ff' : 'rgba(255,255,255,0.6)',
+                    borderColor: selectedType?.id === t.id ? '#82d8ff' : 'rgba(255,255,255,0.8)',
+                  }}
+                >
+                  <MaterialIcons
+                    name={t.mode === 'video' ? 'videocam' : t.mode === 'presentiel' ? 'location-on' : 'sync-alt'}
+                    size={20}
+                    color={selectedType?.id === t.id ? '#ffffff' : '#0b1c30'}
+                  />
+                  <Text style={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: '500', color: selectedType?.id === t.id ? '#ffffff' : '#0b1c30' }}>
+                    {t.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {selectedType?.mode === 'both' && (
+            <View style={{ flexDirection: 'row', gap: 8, marginTop: 10 }}>
+              {(['video', 'presentiel'] as const).map(m => (
+                <TouchableOpacity
+                  key={m}
+                  onPress={() => setSelectedSubMode(m)}
+                  style={{
+                    flex: 1, paddingVertical: 8, borderRadius: 999, alignItems: 'center',
+                    backgroundColor: selectedSubMode === m ? '#e5eeff' : 'transparent',
+                    borderWidth: 1, borderColor: selectedSubMode === m ? '#82d8ff' : '#bec8ce',
+                  }}
+                >
+                  <Text style={{ fontSize: 12, fontFamily: 'Manrope', fontWeight: '700', color: selectedSubMode === m ? '#82d8ff' : '#6f787e' }}>
+                    {m === 'video' ? 'Vidéo' : 'Présentiel'}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
 
         {/* Calendrier */}

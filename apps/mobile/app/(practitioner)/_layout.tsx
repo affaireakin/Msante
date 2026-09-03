@@ -101,10 +101,6 @@ export default function PractitionerLayout() {
         }}
       />
       <Tabs.Screen
-        name="services"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
         name="secretary"
         options={{ href: null }}
       />
@@ -124,10 +120,6 @@ export default function PractitionerLayout() {
       />
       <Tabs.Screen
         name="prescription/new"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="schedule-blocks/new"
         options={{ href: null }}
       />
       <Tabs.Screen

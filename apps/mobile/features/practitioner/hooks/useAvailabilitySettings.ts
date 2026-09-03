@@ -1,197 +1,202 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/services/supabase'
 
-export interface DaySlot {
-  id?: string
+// Backed by the SAME tables the web practitioner availability screen uses
+// (apps/web/app/practitioner/availability/page.tsx) — this used to target a
+// legacy table set (`availabilities`, `availability_exceptions`,
+// `practitioner_services`) that a migration silently broke (dropped
+// `availabilities.day_of_week`) and that the booking engine never reads.
+// Locations aren't managed here (mobile always writes location_id: null) —
+// full location management stays a web-only flow for now, it doesn't block
+// booking (generateSlots treats location as display metadata, not a filter).
+
+export interface ConsultationType {
+  id: string
+  name: string
+  duration_min: number
+  price: number | null
+  currency: string
+  color: string
+  description: string | null
+  mode: 'presentiel' | 'video' | 'both'
+  is_active: boolean
+  sort_order: number
+}
+
+export type ConsultationTypeDraft = Omit<ConsultationType, 'id' | 'sort_order'>
+
+export interface WeeklyBlock {
+  id: string
   day_of_week: number
   start_time: string
   end_time: string
+  consultation_type_ids: string[]
   is_active: boolean
 }
 
-export interface AvailabilityException {
+export interface BlockedPeriod {
   id: string
-  label: string
   start_date: string
   end_date: string
+  start_time: string | null
+  end_time: string | null
+  reason_type: string
+  reason_label: string | null
 }
 
-const DAYS = [1, 2, 3, 4, 5, 6, 0]
-const DEFAULT_SLOTS: DaySlot[] = DAYS.map((d) => ({
-  day_of_week: d,
-  start_time: '09:00',
-  end_time: '17:00',
-  is_active: d >= 1 && d <= 5,
-}))
+const QUERY_KEY = (practitionerId: string) => ['availability-v2', practitionerId]
 
-export function useAvailabilitySettings(practitionerId: string) {
+export function useAvailabilityV2(practitionerId: string) {
   return useQuery({
-    queryKey: ['availability-settings', practitionerId],
+    queryKey: QUERY_KEY(practitionerId),
     queryFn: async () => {
-      const [{ data: slots }, { data: exceptions }] = await Promise.all([
-        supabase
-          .from('availabilities')
-          .select('id, day_of_week, start_time, end_time, is_active')
-          .eq('practitioner_id', practitionerId)
-          .order('day_of_week'),
-        supabase
-          .from('availability_exceptions')
-          .select('id, label, start_date, end_date')
-          .eq('practitioner_id', practitionerId)
-          .order('start_date'),
+      const [{ data: types, error: typesErr }, { data: weekly, error: weeklyErr }, { data: blocked, error: blockedErr }] = await Promise.all([
+        supabase.from('consultation_types').select('*').eq('practitioner_id', practitionerId).order('sort_order'),
+        supabase.from('weekly_availabilities').select('id, day_of_week, start_time, end_time, consultation_type_ids, is_active')
+          .eq('practitioner_id', practitionerId).not('day_of_week', 'is', null).order('day_of_week').order('start_time'),
+        supabase.from('blocked_periods').select('*').eq('practitioner_id', practitionerId)
+          .gte('end_date', new Date().toISOString().split('T')[0]).order('start_date'),
       ])
-
-      const merged: DaySlot[] = DEFAULT_SLOTS.map((def) => {
-        const existing = slots?.find((s) => s.day_of_week === def.day_of_week)
-        return existing
-          ? {
-              id: existing.id,
-              day_of_week: existing.day_of_week,
-              start_time: existing.start_time.slice(0, 5),
-              end_time: existing.end_time.slice(0, 5),
-              is_active: existing.is_active,
-            }
-          : def
-      })
+      if (typesErr) throw typesErr
+      if (weeklyErr) throw weeklyErr
+      if (blockedErr) throw blockedErr
 
       return {
-        slots: merged,
-        exceptions: (exceptions ?? []) as AvailabilityException[],
+        types: (types ?? []) as ConsultationType[],
+        weekly: (weekly ?? []) as WeeklyBlock[],
+        blocked: (blocked ?? []) as BlockedPeriod[],
       }
     },
     enabled: !!practitionerId,
-    staleTime: 60_000,
+    staleTime: 30_000,
   })
 }
 
-export function useSaveSchedule(practitionerId: string) {
+function invalidate(qc: ReturnType<typeof useQueryClient>, practitionerId: string) {
+  void qc.invalidateQueries({ queryKey: QUERY_KEY(practitionerId) })
+  // Read by the patient-facing booking screen (useAvailability.ts) — must
+  // refresh too, or a practitioner's change stays invisible to patients
+  // until they happen to refetch some other way.
+  void qc.invalidateQueries({ queryKey: ['availability', practitionerId] })
+}
+
+// ── Consultation types ("Mes prestations") ──────────────────────────────────
+
+export function useCreateConsultationType(practitionerId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (slots: DaySlot[]) => {
-      for (const slot of slots) {
-        if (slot.id) {
-          await supabase
-            .from('availabilities')
-            .update({
-              start_time: slot.start_time,
-              end_time: slot.end_time,
-              is_active: slot.is_active,
-            })
-            .eq('id', slot.id)
-        } else {
-          await supabase.from('availabilities').insert({
-            practitioner_id: practitionerId,
-            day_of_week: slot.day_of_week,
-            start_time: slot.start_time,
-            end_time: slot.end_time,
-            is_active: slot.is_active,
-          })
-        }
-      }
+    mutationFn: async (draft: ConsultationTypeDraft) => {
+      const { data: existing } = await supabase.from('consultation_types').select('id').eq('practitioner_id', practitionerId)
+      const { error } = await supabase.from('consultation_types').insert({ ...draft, practitioner_id: practitionerId, sort_order: existing?.length ?? 0 })
+      if (error) throw error
     },
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: ['availability-settings', practitionerId] })
-      void qc.invalidateQueries({ queryKey: ['availability', practitionerId] })
-    },
+    onSuccess: () => invalidate(qc, practitionerId),
   })
 }
 
-export function useAddException(practitionerId: string) {
+export function useUpdateConsultationType(practitionerId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (exc: Omit<AvailabilityException, 'id'>) => {
-      await supabase.from('availability_exceptions').insert({
+    mutationFn: async ({ id, ...patch }: Partial<ConsultationTypeDraft> & { id: string }) => {
+      const { error } = await supabase.from('consultation_types').update(patch).eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => invalidate(qc, practitionerId),
+  })
+}
+
+export function useDeleteConsultationType(practitionerId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('consultation_types').delete().eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => invalidate(qc, practitionerId),
+  })
+}
+
+// ── Weekly planning ───────────────────────────────────────────────────────────
+
+export function useAddWeeklyBlock(practitionerId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (block: { day_of_week: number; start_time: string; end_time: string; consultation_type_ids: string[] }) => {
+      const { error } = await supabase.from('weekly_availabilities').insert({
         practitioner_id: practitionerId,
-        ...exc,
+        day_of_week: block.day_of_week,
+        start_time: block.start_time,
+        end_time: block.end_time,
+        location_id: null,
+        consultation_type_ids: block.consultation_type_ids,
       })
+      if (error) throw error
     },
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: ['availability-settings', practitionerId] }),
+    onSuccess: () => invalidate(qc, practitionerId),
   })
 }
 
-export function useDeleteException(practitionerId: string) {
+export function useToggleWeeklyBlock(practitionerId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      const { error } = await supabase.from('weekly_availabilities').update({ is_active }).eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => invalidate(qc, practitionerId),
+  })
+}
+
+export function useDeleteWeeklyBlock(practitionerId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      await supabase.from('availability_exceptions').delete().eq('id', id)
-    },
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: ['availability-settings', practitionerId] }),
-  })
-}
-
-// ── Practitioner Services ────────────────────────────────────────────────────
-
-export interface PractitionerService {
-  id: string
-  name: string
-  type: 'video' | 'audio' | 'presentiel'
-  duration_min: number
-  price: number
-  currency: string
-  is_active: boolean
-}
-
-export type ServiceDraft = Omit<PractitionerService, 'id'>
-
-export function usePractitionerServices(practitionerId: string) {
-  return useQuery({
-    queryKey: ['practitioner-services', practitionerId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('practitioner_services')
-        .select('id, name, type, duration_min, price, currency, is_active')
-        .eq('practitioner_id', practitionerId)
-        .order('created_at')
+      const { error } = await supabase.from('weekly_availabilities').delete().eq('id', id)
       if (error) throw error
-      return (data ?? []) as PractitionerService[]
     },
-    enabled: !!practitionerId,
-    staleTime: 60_000,
+    onSuccess: () => invalidate(qc, practitionerId),
   })
 }
 
-export function useCreateService(practitionerId: string) {
+// ── Congés / indisponibilités ─────────────────────────────────────────────────
+
+export function useAddBlockedPeriod(practitionerId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async (draft: ServiceDraft) => {
-      const { error } = await supabase
-        .from('practitioner_services')
-        .insert({ ...draft, practitioner_id: practitionerId })
+    mutationFn: async (period: { start_date: string; end_date: string; reason_type: string; reason_label: string | null }) => {
+      const { error } = await supabase.from('blocked_periods').insert({
+        practitioner_id: practitionerId,
+        start_date: period.start_date,
+        end_date: period.end_date,
+        start_time: null,
+        end_time: null,
+        reason_type: period.reason_type,
+        reason_label: period.reason_label,
+      })
       if (error) throw error
     },
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: ['practitioner-services', practitionerId] }),
+    onSuccess: () => invalidate(qc, practitionerId),
   })
 }
 
-export function useUpdateService(practitionerId: string) {
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: async ({ id, ...patch }: Partial<PractitionerService> & { id: string }) => {
-      const { error } = await supabase
-        .from('practitioner_services')
-        .update(patch)
-        .eq('id', id)
-      if (error) throw error
-    },
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: ['practitioner-services', practitionerId] }),
-  })
-}
-
-export function useDeleteService(practitionerId: string) {
+export function useDeleteBlockedPeriod(practitionerId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('practitioner_services')
-        .delete()
-        .eq('id', id)
+      const { error } = await supabase.from('blocked_periods').delete().eq('id', id)
       if (error) throw error
     },
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: ['practitioner-services', practitionerId] }),
+    onSuccess: () => invalidate(qc, practitionerId),
   })
+}
+
+// Local-midnight parse (not UTC) so the displayed day always matches the
+// stored 'YYYY-MM-DD' regardless of device timezone — same pattern as
+// apps/web/lib/availabilitySlots.ts formatDate/formatDateLong.
+export function formatDateFr(isoDate: string, opts: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' }): string {
+  try {
+    return new Date(`${isoDate}T00:00:00`).toLocaleDateString('fr-FR', opts)
+  } catch {
+    return isoDate
+  }
 }
