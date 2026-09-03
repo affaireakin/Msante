@@ -79,6 +79,11 @@ const TEMPLATES: Record<string, {
     emailSubject: 'Votre compte praticien M-Santé est validé !',
     emailHtml: (_d) => `<p>Bonjour,</p><p>Félicitations ! Votre profil praticien M-Santé a été validé. Vous pouvez maintenant recevoir des patients.</p><p>L'équipe M-Santé</p>`,
   },
+  account_welcome: {
+    title: 'Bienvenue sur M-Santé 👋',
+    emailSubject: 'Bienvenue sur M-Santé !',
+    emailHtml: (_d) => `<p>Bonjour,</p><p>Bienvenue sur M-Santé ! Votre compte est prêt — vous pouvez dès maintenant consulter des praticiens et prendre rendez-vous.</p><p>L'équipe M-Santé</p>`,
+  },
 }
 
 const EVENT_TYPE_MAP: Record<string, string> = {
@@ -89,6 +94,7 @@ const EVENT_TYPE_MAP: Record<string, string> = {
   'payment.completed':        'payment_success',
   'payment.failed':           'payment_failed',
   'practitioner.approved':    'practitioner_approved',
+  'account.welcome':          'account_welcome',
 }
 
 // ── Senders ────────────────────────────────────────────────────────────────────

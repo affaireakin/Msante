@@ -79,6 +79,22 @@ function VerifyOtpContent() {
       acceptedRole = (acceptData as { role?: string } | null)?.role ?? null
     }
 
+    // Notification de bienvenue WhatsApp — une fois, juste après confirmation
+    // de l'email, si un numéro a été renseigné à l'inscription (section 3 du
+    // cahier des charges du 2026-09-02). Best-effort : ne bloque jamais la
+    // suite de l'inscription, et n'envoie que si l'admin a activé ce workflow
+    // (/admin/workflows — "Bienvenue").
+    const signupMeta = data.user.user_metadata as { full_name?: string; phone?: string } | undefined
+    if (signupMeta?.phone) {
+      void supabase.functions.invoke('send-workflow-notification', {
+        body: {
+          template_key: 'account.welcome',
+          recipients: [{ user_id: data.user.id, full_name: signupMeta.full_name ?? '', phone: signupMeta.phone, role: 'patient' }],
+          data: {},
+        },
+      }).catch(() => {})
+    }
+
     setSuccess(true)
     setTimeout(() => {
       if (orgInvitationId && acceptedRole === 'secretary') router.push('/onboarding/secretary')

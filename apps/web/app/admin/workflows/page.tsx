@@ -95,6 +95,18 @@ const TEMPLATES: Template[] = [
     triggerType: 'postgres_changes',
     exampleMsg: 'Votre paiement de [MONTANT] XOF a échoué. Réessayez dans l\'application : [LIEN]',
   },
+  {
+    key: 'account.welcome',
+    name: 'Bienvenue',
+    description: 'Envoyé une fois, juste après confirmation de l\'email d\'un nouveau patient.',
+    icon: 'waving_hand',
+    color: '#005e7a',
+    bgColor: '#e0f2fe',
+    recipients: 'Patient',
+    triggerLabel: 'Inscription confirmée',
+    triggerType: 'postgres_changes',
+    exampleMsg: 'Bienvenue sur M-Santé ! Votre compte est prêt.',
+  },
 ]
 
 // ─── Types ────────────────────────────────────────────────────────────────────

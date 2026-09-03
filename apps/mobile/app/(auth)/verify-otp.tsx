@@ -5,6 +5,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { GlassCard, PrimaryButton } from '@/components/ui'
 import { authService } from '@/features/auth/services/authService'
+import { supabase } from '@/services/supabase'
 
 const OTP_LENGTH = 8
 const RESEND_COOLDOWN = 60
@@ -58,6 +59,21 @@ export default function VerifyOtpScreen() {
         inputRef.current?.focus()
         return
       }
+      // Notification de bienvenue WhatsApp — une fois, si un numéro a été
+      // renseigné à l'inscription (section 3 du cahier des charges du
+      // 2026-09-02). Best-effort : ne bloque jamais la navigation, et n'envoie
+      // que si l'admin a activé ce workflow (/admin/workflows — "Bienvenue").
+      const signupMeta = result.user?.user_metadata as { full_name?: string; phone?: string } | undefined
+      if (result.user && signupMeta?.phone) {
+        supabase.functions.invoke('send-workflow-notification', {
+          body: {
+            template_key: 'account.welcome',
+            recipients: [{ user_id: result.user.id, full_name: signupMeta.full_name ?? '', phone: signupMeta.phone, role: 'patient' }],
+            data: {},
+          },
+        }).catch(() => {})
+      }
+
       // On success _layout.tsx onAuthStateChange handles navigation automatically
       // for every role EXCEPT organization: the account is created role='patient'
       // (the real intent lives only in this query param, not in the DB) until an
