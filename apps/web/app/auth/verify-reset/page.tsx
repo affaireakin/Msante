@@ -223,7 +223,7 @@ function VerifyResetContent() {
         </div>
 
         <p className="text-[10px] text-slate-400 text-center mt-4 leading-relaxed">
-          Ce code est valable 60 minutes · En cas d&apos;urgence médicale : <span className="font-bold">15 (SAMU)</span>
+          Ce code est valable 10 minutes · En cas d&apos;urgence médicale : <span className="font-bold">15 (SAMU)</span>
         </p>
     </>
   )
