@@ -130,6 +130,8 @@ Corps : *"Nous avons bien reçu vos documents. Merci pour votre envoi. Nous allo
 
 ### Task 2.1 — Notification WhatsApp de bienvenue
 
+**Statut : ✅ FAIT — commit `04bcf47`.**
+
 **Files:** `packages/notifications/templates.ts` + trigger d'inscription (`handle_new_user()` ne peut pas appeler une Edge Function directement — nécessite soit un trigger DB→webhook, soit un appel depuis le flux `verify-otp` une fois le compte confirmé et le téléphone connu).
 Ajouter l'événement `welcome` au système existant (déjà simplifié en un seul message générique WhatsApp cette session — le "bienvenue" peut réutiliser `genericWhatsAppMessage` tel quel, déclenché une fois après confirmation OTP si `phone`/`whatsapp_number` renseigné).
 
@@ -140,6 +142,8 @@ Ajouter l'événement `welcome` au système existant (déjà simplifié en un se
 **Step 3:** Commit.
 
 ### Task 2.2 — Notifications de nouveaux messages (push + badge + accès direct)
+
+**Statut : ✅ FAIT — commit `fafa7d7`. Trigger DB unique sur `public.messages`, couvre les 4 sens en un seul point (patient/praticien/organisation/admin passent tous par cette table).**
 
 **Files:** feature messagerie mobile (`apps/mobile/features/messages/` ou équivalent), `NotificationBell` web déjà existant.
 
@@ -153,6 +157,8 @@ Ajouter l'événement `welcome` au système existant (déjà simplifié en un se
 
 ### Task 2.3 — Titres professionnels corrects (pas de "Dr" par défaut)
 
+**Statut : ✅ FAIT — commit `e8f32f4`.**
+
 **Files:** partout où un nom praticien est préfixé "Dr" en dur — grep `Dr\.` / `Dr \$\{` dans `apps/mobile` et `apps/web`. Utiliser `professional_prefixes` (déjà en place, section admin `/admin/prefixes`) au lieu d'un préfixe codé en dur.
 
 **Step 1:** Grep exhaustif des préfixes "Dr" codés en dur (ex. déjà repéré cette session : `notify-practitioner-approved/index.ts` avant simplification WhatsApp — vérifier s'il en reste dans les sujets d'email, les titres de notification, l'affichage mobile fiche praticien).
@@ -165,6 +171,8 @@ Ajouter l'événement `welcome` au système existant (déjà simplifié en un se
 
 ### Task 2.4 — Mobile : uniquement Présentiel / Visioconférence (retirer Audio)
 
+**Statut : ✅ FAIT — résolu par Task 1.1 (consultation_types n'a pas de mode 'audio') + commit `e8f32f4` (confirm-session.tsx).**
+
 **Files:** `apps/mobile/app/(practitioner)/availability.tsx` (toggles Vidéo/Audio/Présentiel → Vidéo/Présentiel), tout écran mobile de sélection de type de consultation patient.
 **Ne pas toucher le web** (gestion avancée conservée, cf. cahier des charges section 11).
 
@@ -174,6 +182,8 @@ Ajouter l'événement `welcome` au système existant (déjà simplifié en un se
 
 ### Task 2.5 — Logos d'organisation (upload + caméra + recadrage + sync web) & Task 2.6 — Recadrage photo de profil
 
+**Statut : ✅ FAIT. Logo : commit `0284ba7` (caméra ajoutée ; upload+crop existaient déjà). Photos de profil (patient, praticien onboarding + post-onboarding) : vérifiées déjà correctes (`allowsEditing: true` déjà en place partout), aucun changement nécessaire.**
+
 **Files:** `apps/mobile/app/(onboarding)/organization.tsx`, `apps/mobile/app/(organization)/profile.tsx` (ou équivalent), même lib de recadrage que Task 1.4.
 
 **Step 1:** Réutiliser le composant de recadrage construit en Task 1.4 pour logo d'organisation et photo de profil (DRY — un seul composant `ImageCropPicker` partagé).
@@ -181,6 +191,8 @@ Ajouter l'événement `welcome` au système existant (déjà simplifié en un se
 **Step 3:** Commit.
 
 ### Task 2.7 — Parcours organisation : message de confirmation générique
+
+**Statut : ✅ FAIT. Message de confirmation : commit `a2542fb` (Task 1.4). Notification fin d'analyse : déjà pleinement implémentée dans `validate-organization` (push + email sur approve/reject/request_info) — vérifié, aucun changement nécessaire.**
 
 **Files:** équivalent organisation de Task 1.4 Step 4, web (`apps/web/app/onboarding/organization/page.tsx` déjà vu cette session avec message "Demande envoyée !" — vérifier s'il faut aussi l'aligner sur le texte imposé, ou si "Demande envoyée !" reste acceptable puisqu'il ne mentionne pas "en attente de validation" — la capture fournie par l'utilisateur montre que ce texte web actuel est probablement déjà correct).
 
