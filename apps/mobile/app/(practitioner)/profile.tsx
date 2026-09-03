@@ -13,7 +13,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { GlassCard } from '@/components/ui/GlassCard'
-import { AppTextInput, PrimaryButton } from '@/components/ui'
+import { AppTextInput, PrimaryButton, DeleteAccountSection } from '@/components/ui'
 import { usePractitionerAssetUpload } from '@/features/practitioner/hooks/usePractitionerProfile'
 import { supabase } from '@/services/supabase'
 
@@ -502,6 +502,7 @@ export default function ProfileScreen() {
           <MaterialIcons name="logout" size={18} color="#ba1a1a" />
           <Text style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 14, color: '#ba1a1a' }}>Déconnexion</Text>
         </TouchableOpacity>
+        <DeleteAccountSection />
 
         <View style={{ height: 16 }} />
       </ScrollView>

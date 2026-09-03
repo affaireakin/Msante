@@ -10,6 +10,7 @@ import * as ImagePicker from 'expo-image-picker'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useAuthStore } from '@/features/auth/store/authStore'
+import { DeleteAccountSection } from '@/components/ui'
 import { supabase } from '@/services/supabase'
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name']
@@ -529,7 +530,8 @@ export default function ProfileScreen() {
             <MaterialIcons name="logout" size={18} color="#ba1a1a" />
             <Text style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 14, color: '#ba1a1a' }}>Déconnexion</Text>
           </TouchableOpacity>
-          <Text style={{ fontFamily: 'Manrope', fontSize: 11, color: '#bec8ce', textAlign: 'center', marginTop: 12 }}>
+          <DeleteAccountSection />
+          <Text style={{ fontFamily: 'Manrope', fontSize: 11, color: '#bec8ce', textAlign: 'center', marginTop: 4 }}>
             M-Santé v1.0 — Vos données sont chiffrées et sécurisées
           </Text>
         </View>

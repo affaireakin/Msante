@@ -4,6 +4,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useResponsive } from '@/hooks/useResponsive'
+import { DeleteAccountSection } from '@/components/ui'
 
 export default function SecretaryProfileScreen() {
   const { profile } = useAuth()
@@ -36,6 +37,7 @@ export default function SecretaryProfileScreen() {
           <MaterialIcons name="logout" size={scale(18)} color="#ba1a1a" />
           <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#ba1a1a' }}>Se déconnecter</Text>
         </TouchableOpacity>
+        <DeleteAccountSection />
       </View>
     </SafeAreaView>
   )
