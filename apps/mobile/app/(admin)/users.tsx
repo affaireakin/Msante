@@ -93,7 +93,7 @@ function UserDetailModal({ user, onClose }: { user: UserRow; onClose: () => void
           <TouchableOpacity onPress={onClose}><MaterialIcons name="close" size={22} color="#6f787e" /></TouchableOpacity>
         </View>
 
-        <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(16) }}>
+        <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(16), paddingBottom: scale(100) }}>
           <View style={{ alignItems: 'center', gap: scale(10) }}>
             <View style={{ width: scale(64), height: scale(64), borderRadius: scale(32), backgroundColor: '#82d8ff', alignItems: 'center', justifyContent: 'center' }}>
               <Text style={{ fontFamily: 'Manrope', fontSize: fs.lg, fontWeight: '800', color: '#005e7a' }}>{getInitials(user.full_name)}</Text>
@@ -186,7 +186,7 @@ export default function AdminUsersScreen() {
         </ScrollView>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(8) }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(8), paddingBottom: scale(100) }} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <ActivityIndicator color="#82d8ff" style={{ marginTop: scale(20) }} />
         ) : users.length === 0 ? (

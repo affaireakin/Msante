@@ -156,7 +156,7 @@ export default function AdminVerificationsScreen() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(12) }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(12), paddingBottom: scale(100) }} showsVerticalScrollIndicator={false}>
         {tab === 'practitioners' ? (
           loadingPract ? (
             <ActivityIndicator color="#82d8ff" style={{ marginTop: scale(20) }} />

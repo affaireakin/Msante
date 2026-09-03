@@ -88,7 +88,7 @@ export default function AdminFinanceScreen() {
       {isLoading ? (
         <ActivityIndicator color="#82d8ff" style={{ marginTop: scale(40) }} />
       ) : (
-        <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(18) }} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(18), paddingBottom: scale(100) }} showsVerticalScrollIndicator={false}>
           <View style={{ flexDirection: 'row', gap: scale(10) }}>
             <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: scale(14), borderWidth: 1, borderColor: '#e5eeff', padding: scale(14) }}>
               <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: '#82d8ff', textTransform: 'uppercase', letterSpacing: 0.5 }}>Revenu brut</Text>

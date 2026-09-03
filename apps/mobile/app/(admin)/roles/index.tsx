@@ -43,7 +43,7 @@ export default function AdminRolesScreen() {
         <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.lg, fontWeight: '800', color: '#0b1c30' }}>Rôles &amp; Permissions</Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(16) }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(16), paddingBottom: scale(100) }} showsVerticalScrollIndicator={false}>
         <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: scale(8), backgroundColor: '#e5eeff', borderRadius: scale(12), padding: scale(12) }}>
           <MaterialIcons name="info-outline" size={scale(16)} color="#82d8ff" />
           <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.xs, color: '#005e7a', lineHeight: scale(17) }}>

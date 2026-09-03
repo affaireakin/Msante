@@ -71,7 +71,7 @@ export default function AdminDelegationScreen() {
         <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.lg, fontWeight: '800', color: '#0b1c30' }}>Délégation</Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(16) }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(16), paddingBottom: scale(100) }} showsVerticalScrollIndicator={false}>
         <View style={{ backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: scale(16), borderWidth: 1, borderColor: '#e5eeff', padding: scale(16), gap: scale(10) }}>
           <Text style={{ fontFamily: 'Manrope', fontSize: fs.md, fontWeight: '700', color: '#0b1c30' }}>Délégation aux secrétaires</Text>
           <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, color: '#6f787e', lineHeight: scale(17) }}>

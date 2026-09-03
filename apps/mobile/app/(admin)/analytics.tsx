@@ -171,7 +171,7 @@ export default function AdminAnalyticsScreen() {
       {loadingP || loadingD || !p || !d ? (
         <ActivityIndicator color="#82d8ff" style={{ marginTop: scale(40) }} />
       ) : (
-        <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(20) }} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(20), paddingBottom: scale(100) }} showsVerticalScrollIndicator={false}>
           <View style={{ gap: scale(10) }}>
             <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#0b1c30' }}>Santé plateforme</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: scale(10) }}>

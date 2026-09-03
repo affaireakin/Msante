@@ -98,7 +98,7 @@ export default function AdminPaymentsScreen() {
         <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.lg, fontWeight: '800', color: '#0b1c30' }}>Paiements</Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(16) }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(16), paddingBottom: scale(100) }} showsVerticalScrollIndicator={false}>
         <View style={{ flexDirection: 'row', gap: scale(10) }}>
           <View style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: scale(14), borderWidth: 1, borderColor: '#e5eeff', padding: scale(12) }}>
             <Text style={{ fontFamily: 'Manrope', fontSize: fs.md, fontWeight: '800', color: '#1d7a3a' }}>{formatXOF(totals?.todayRevenue ?? 0)}</Text>

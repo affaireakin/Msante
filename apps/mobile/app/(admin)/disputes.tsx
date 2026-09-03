@@ -222,7 +222,7 @@ export default function AdminDisputesScreen() {
         </ScrollView>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(10) }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(10), paddingBottom: scale(100) }} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <ActivityIndicator color="#82d8ff" style={{ marginTop: scale(20) }} />
         ) : disputes.length === 0 ? (

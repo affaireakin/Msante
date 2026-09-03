@@ -115,7 +115,7 @@ export default function AdminAuditScreen() {
         <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.lg, fontWeight: '800', color: '#0b1c30' }}>Journal d&apos;audit</Text>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(10) }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(10), paddingBottom: scale(100) }} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <ActivityIndicator color="#82d8ff" style={{ marginTop: scale(20) }} />
         ) : logs.length === 0 ? (
