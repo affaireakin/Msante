@@ -40,6 +40,23 @@ const HEALTH_CONDITIONS = [
   'Autre',
 ]
 
+// Affichage JJ/MM/AAAA (section 10 du cahier des charges 2026-09-02) — le
+// stockage/schema reste AAAA-MM-JJ (colonne DATE + regex Zod inchangés),
+// seule la couche de présentation change. Saisie masquée : les "/"
+// s'insèrent automatiquement pendant la frappe.
+function digitsToFrDate(digits: string): string {
+  if (digits.length > 4) return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`
+  if (digits.length > 2) return `${digits.slice(0, 2)}/${digits.slice(2, 4)}`
+  return digits
+}
+function digitsToIso(digits: string): string {
+  return digits.length === 8 ? `${digits.slice(4, 8)}-${digits.slice(2, 4)}-${digits.slice(0, 2)}` : ''
+}
+function isoToDigits(iso: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso)
+  return m ? `${m[3]}${m[2]}${m[1]}` : ''
+}
+
 const WELLNESS_GOALS = [
   'Réduire le stress',
   'Améliorer le sommeil',
@@ -183,6 +200,7 @@ function BackButton({ onPress }: { onPress: () => void }) {
 export default function PatientOnboardingScreen() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [dobDigits, setDobDigits] = useState('') // JJMMAAAA en cours de saisie
 
   // Step 2 state — health metadata
   const [healthConditions, setHealthConditions] = useState<string[]>([])
@@ -278,13 +296,20 @@ export default function PatientOnboardingScreen() {
                 />
               )} />
 
-            {/* Date de naissance */}
+            {/* Date de naissance — saisie/affichage JJ/MM/AAAA, valeur du
+                formulaire (schema + colonne DATE) reste AAAA-MM-JJ */}
             <Controller control={control} name="date_of_birth"
               render={({ field: { onChange, value } }) => (
                 <AppTextInput
-                  label="Date de naissance" value={value} onChangeText={onChange}
-                  error={errors.date_of_birth?.message} placeholder="AAAA-MM-JJ"
-                  keyboardType="numeric"
+                  label="Date de naissance"
+                  value={digitsToFrDate(dobDigits || isoToDigits(value ?? ''))}
+                  onChangeText={(text) => {
+                    const digits = text.replace(/\D/g, '').slice(0, 8)
+                    setDobDigits(digits)
+                    onChange(digitsToIso(digits))
+                  }}
+                  error={errors.date_of_birth?.message} placeholder="JJ/MM/AAAA"
+                  keyboardType="numeric" maxLength={10}
                 />
               )} />
 

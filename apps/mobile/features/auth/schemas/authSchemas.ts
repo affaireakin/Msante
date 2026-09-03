@@ -25,7 +25,10 @@ export const patientOnboardingSchema = z.object({
   full_name: z.string().min(2, 'Nom requis'),
   phone: z.string().regex(/^\+?[0-9]{8,15}$/, 'Numéro invalide'),
   country: z.enum(['SN', 'CI', 'CM', 'FR']),
-  date_of_birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date invalide (AAAA-MM-JJ)'),
+  // Stocké en AAAA-MM-JJ (colonne DATE) — l'écran de saisie affiche/valide
+  // en JJ/MM/AAAA et convertit ; ce message ne doit donc citer que le format
+  // que l'utilisateur voit réellement.
+  date_of_birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date de naissance invalide ou incomplète (JJ/MM/AAAA)'),
   language: z.enum(['fr', 'en']),
 })
 
