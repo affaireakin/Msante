@@ -49,7 +49,7 @@ export default function ResetPasswordPage() {
 
   if (done) return (
     <div className="glass-card rounded-xl p-8 text-center space-y-4">
-      <span className="material-symbols-outlined text-emerald-500 text-5xl">check_circle</span>
+      <span className="material-symbols-outlined text-[#82d8ff] text-5xl">check_circle</span>
       <h2 className="text-xl font-bold text-slate-900">Mot de passe mis à jour !</h2>
       <p className="text-slate-500 text-sm">Redirection vers la connexion...</p>
     </div>

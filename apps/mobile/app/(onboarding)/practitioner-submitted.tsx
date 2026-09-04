@@ -13,8 +13,8 @@ export default function PractitionerSubmittedScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}>
-        <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: '#d1fae5', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
-          <MaterialIcons name="check-circle" size={40} color="#059669" />
+        <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+          <MaterialIcons name="check-circle" size={40} color="#82d8ff" />
         </View>
         <Text style={{ fontFamily: 'Manrope', fontSize: 22, fontWeight: '800', color: '#0b1c30', textAlign: 'center', marginBottom: 10 }}>
           Documents reçus

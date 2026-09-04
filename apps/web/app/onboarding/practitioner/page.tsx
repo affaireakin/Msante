@@ -222,8 +222,8 @@ export default function PractitionerOnboardingPage() {
   if (step === 4) return (
     <div className="min-h-screen bg-[#f8f9ff] flex items-center justify-center p-6">
       <div className="bg-white rounded-2xl p-10 max-w-md w-full text-center space-y-5 shadow-xl">
-        <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
-          <Icon name="check_circle" size={32} color="#059669" />
+        <div className="w-16 h-16 rounded-full bg-[#e5eeff] flex items-center justify-center mx-auto">
+          <Icon name="check_circle" size={32} color="#82d8ff" />
         </div>
         <h2 className="text-xl font-black text-[#0b1c30]">Demande envoyée !</h2>
         <p className="text-sm text-[#6f787e]">
@@ -408,8 +408,8 @@ export default function PractitionerOnboardingPage() {
           {step === 3 && (
             <div className="space-y-5">
               <div className="text-center">
-                <div className="w-16 h-16 rounded-full bg-[#e8f5e9] flex items-center justify-center mx-auto mb-3">
-                  <Icon name="check_circle" size={32} color="#1d7a3a" />
+                <div className="w-16 h-16 rounded-full bg-[#e5eeff] flex items-center justify-center mx-auto mb-3">
+                  <Icon name="check_circle" size={32} color="#82d8ff" />
                 </div>
                 <h2 className="text-xl font-black text-[#0b1c30]">Tout est prêt !</h2>
                 <p className="text-sm text-[#6f787e] mt-1">Résumé de votre profil praticien</p>

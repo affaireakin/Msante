@@ -331,8 +331,8 @@ export default function PatientOnboardingPage() {
           {step === 3 && (
             <div className="space-y-5 text-center">
               <div>
-                <div className="w-20 h-20 rounded-full bg-[#e8f5e9] flex items-center justify-center mx-auto mb-4">
-                  <Icon name="check_circle" size={40} color="#1d7a3a" />
+                <div className="w-20 h-20 rounded-full bg-[#e5eeff] flex items-center justify-center mx-auto mb-4">
+                  <Icon name="check_circle" size={40} color="#82d8ff" />
                 </div>
                 <h2 className="text-2xl font-black text-[#0b1c30]">Vous êtes prêt(e) !</h2>
                 <p className="text-sm text-[#6f787e] mt-2 max-w-sm mx-auto">

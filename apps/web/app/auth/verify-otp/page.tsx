@@ -171,8 +171,8 @@ function VerifyOtpContent() {
           {success ? (
             /* Success state */
             <div className="flex flex-col items-center gap-4 py-4 text-center">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center">
-                <span className="material-symbols-outlined text-emerald-600" style={{ fontSize: '36px' }}>check_circle</span>
+              <div className="w-16 h-16 rounded-full bg-[#e5eeff] flex items-center justify-center">
+                <span className="material-symbols-outlined text-[#82d8ff]" style={{ fontSize: '36px' }}>check_circle</span>
               </div>
               <div>
                 <p className="text-lg font-black text-[#0b1c30]">Email vérifié !</p>
