@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity, ScrollView, Alert, Switch } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useForm, Controller } from 'react-hook-form'
@@ -214,10 +214,25 @@ export default function PatientOnboardingScreen() {
     community: false,
   })
 
-  const { control, handleSubmit, formState: { errors } } = useForm<PatientOnboardingFormData>({
+  const { control, handleSubmit, setValue, getValues, formState: { errors } } = useForm<PatientOnboardingFormData>({
     resolver: zodResolver(patientOnboardingSchema),
     defaultValues: { country: 'SN', language: 'fr' },
   })
+
+  // Anomalie remontée : nom et téléphone venaient d'être saisis à l'inscription
+  // (signup-patient.tsx, avec indicatif pays via PhoneCountryField) mais cet
+  // écran repartait vide, forçant une double saisie — et sans le sélecteur de
+  // pays, le second essai pouvait perdre l'indicatif. On pré-remplit depuis
+  // les métadonnées du compte ; l'utilisateur reste libre de corriger. Champ
+  // par champ (pas reset()) et seulement si encore vide, pour ne jamais
+  // écraser une saisie déjà commencée pendant que l'appel réseau résout.
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      const meta = user?.user_metadata as { full_name?: string; phone?: string } | undefined
+      if (meta?.full_name && !getValues('full_name')) setValue('full_name', meta.full_name)
+      if (meta?.phone && !getValues('phone')) setValue('phone', meta.phone)
+    })
+  }, [getValues, setValue])
 
   // Toggle helpers
   const toggleChip = (list: string[], setter: (v: string[]) => void, value: string) => {
