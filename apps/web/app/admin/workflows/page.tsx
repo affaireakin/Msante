@@ -355,6 +355,105 @@ function ConfigPill({ label, configured }: { label: string; configured: boolean 
   )
 }
 
+// ─── Test d'envoi WhatsApp ────────────────────────────────────────────────────
+// Diagnostic direct : envoie le message générique à un numéro donné, sans
+// passer par la gate "workflow actif" ni déclencher un vrai événement métier
+// (RDV, message...) juste pour vérifier que la config Meta fonctionne.
+// Affiche la réponse brute de l'API — utile pour distinguer un vrai bug de
+// code d'une restriction sandbox (numéro non ajouté comme testeur Meta).
+
+interface WhatsAppTestResult {
+  success: boolean
+  status?: number
+  sent_to?: string
+  message_body?: string
+  meta_response?: unknown
+  error?: string
+}
+
+function WhatsAppTestCard() {
+  const [phone, setPhone] = useState('')
+  const [name, setName] = useState('')
+  const [result, setResult] = useState<WhatsAppTestResult | null>(null)
+
+  const send = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke('test-whatsapp-message', {
+        body: { phone, name },
+      })
+      if (error) throw error
+      return data as WhatsAppTestResult
+    },
+    onSuccess: (data) => setResult(data),
+    onError: (e: Error) => setResult({ success: false, error: e.message }),
+  })
+
+  const metaError = result?.meta_response && typeof result.meta_response === 'object' && 'error' in (result.meta_response as object)
+    ? (result.meta_response as { error?: { message?: string; error_data?: { details?: string } } }).error
+    : null
+
+  return (
+    <div
+      className="rounded-2xl p-5"
+      style={{ backgroundColor: 'rgba(255,255,255,0.70)', border: '1px solid rgba(255,255,255,0.80)', backdropFilter: 'blur(16px)' }}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <Icon name="science" style={{ fontSize: '16px', color: '#6f787e' }} />
+        <p className="text-sm font-bold text-[#0b1c30]">Tester l&apos;envoi WhatsApp</p>
+      </div>
+      <p className="text-xs text-[#6f787e] mb-4">
+        Envoie le message générique à un numéro précis, immédiatement — sans attendre un vrai RDV ou message.
+        Utile pour vérifier la config Meta (token, numéro autorisé en sandbox).
+      </p>
+      <div className="flex flex-col sm:flex-row gap-2">
+        <input
+          value={phone}
+          onChange={e => setPhone(e.target.value)}
+          placeholder="+221778806877"
+          className="flex-1 px-4 py-2.5 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff]"
+        />
+        <input
+          value={name}
+          onChange={e => setName(e.target.value)}
+          placeholder="Prénom (optionnel)"
+          className="w-full sm:w-48 px-4 py-2.5 bg-[#f8f9ff] border border-[#bec8ce] rounded-xl text-sm text-[#0b1c30] placeholder-[#6f787e] focus:outline-none focus:border-[#82d8ff]"
+        />
+        <button
+          onClick={() => { setResult(null); send.mutate() }}
+          disabled={send.isPending || !phone.trim()}
+          className="px-5 py-2.5 bg-[#82d8ff] text-[#0b1c30] text-sm font-bold rounded-xl disabled:opacity-50 flex-shrink-0"
+        >
+          {send.isPending ? 'Envoi...' : 'Envoyer un test'}
+        </button>
+      </div>
+
+      {result && (
+        <div
+          className="mt-4 rounded-xl p-4 text-sm"
+          style={{
+            backgroundColor: result.success && !metaError ? '#dcfce7' : '#ffdad6',
+            color: result.success && !metaError ? '#1d7a3a' : '#ba1a1a',
+          }}
+        >
+          {result.error ? (
+            <p className="font-semibold">Erreur : {result.error}</p>
+          ) : metaError ? (
+            <>
+              <p className="font-semibold">Rejeté par Meta : {metaError.message}</p>
+              {metaError.error_data?.details && <p className="text-xs mt-1 opacity-80">{metaError.error_data.details}</p>}
+              <p className="text-xs mt-2 opacity-80">
+                Cause fréquente en mode test : ce numéro n&apos;est pas ajouté comme destinataire vérifié dans Meta Business Manager (WhatsApp → Configuration de l&apos;API → section &quot;Vers&quot;).
+              </p>
+            </>
+          ) : (
+            <p className="font-semibold">✓ Message accepté par Meta pour {result.sent_to} — vérifie le téléphone destinataire.</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function WorkflowsPage() {
@@ -400,16 +499,20 @@ export default function WorkflowsPage() {
           <p className="text-sm font-bold text-[#0b1c30]">Canaux de communication</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <ConfigPill label="WhatsApp Business API" configured={false} />
-          <ConfigPill label="Email (Resend)" configured={false} />
+          <ConfigPill label="WhatsApp Business API" configured />
+          <ConfigPill label="Email (Resend)" configured />
         </div>
         <p className="text-xs text-[#6f787e] mt-3 leading-relaxed">
-          Configurez les variables <code className="px-1 py-0.5 rounded bg-slate-100 font-mono text-[10px]">TWILIO_ACCOUNT_SID</code>,{' '}
-          <code className="px-1 py-0.5 rounded bg-slate-100 font-mono text-[10px]">TWILIO_AUTH_TOKEN</code> et{' '}
+          Secrets Supabase utilisés : <code className="px-1 py-0.5 rounded bg-slate-100 font-mono text-[10px]">WHATSAPP_TOKEN</code>,{' '}
+          <code className="px-1 py-0.5 rounded bg-slate-100 font-mono text-[10px]">WHATSAPP_PHONE_NUMBER_ID</code> et{' '}
           <code className="px-1 py-0.5 rounded bg-slate-100 font-mono text-[10px]">RESEND_API_KEY</code>{' '}
-          dans les secrets Supabase (Dashboard → Edge Functions → Secrets) pour activer les envois.
+          (Dashboard Supabase → Edge Functions → Secrets).
         </p>
       </div>
+
+      {/* Test d'envoi WhatsApp — diagnostic direct, sans dépendre d'un
+          événement métier réel ni d'un workflow actif */}
+      <WhatsAppTestCard />
 
       {/* Template grid */}
       {isLoading ? (
