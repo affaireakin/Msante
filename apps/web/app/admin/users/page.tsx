@@ -234,6 +234,7 @@ function PractitionerSection({ userId }: { userId: string }) {
 
   const { data: practitioner, isLoading: loadingPrac } = usePractitionerProfile(userId)
   const { data: documents, isLoading: loadingDocs } = useVerificationDocuments(practitioner?.id ?? null)
+  const [approveError, setApproveError] = useState('')
 
   const approveMutation = useMutation({
     mutationFn: async (practitionerId: string) => {
@@ -244,7 +245,13 @@ function PractitionerSection({ userId }: { userId: string }) {
       if (error) throw error
       return practitionerId
     },
+    // Ce bouton dupliquait /admin/practitioners sans aucun garde-fou — le
+    // trigger DB trg_practitioner_approval_requires_documents (20260904000001)
+    // le bloque désormais aussi ici si aucun document n'est soumis ; il faut
+    // donc afficher son message au lieu de le laisser échouer en silence.
+    onError: (err: Error) => setApproveError(err.message || "Erreur lors de l'approbation."),
     onSuccess: async (practitionerId: string) => {
+      setApproveError('')
       try {
         // Missing actor_id used to mean these two logs had no "auteur" at all.
         const { data: { user: actor } } = await supabase.auth.getUser()
@@ -379,13 +386,21 @@ function PractitionerSection({ userId }: { userId: string }) {
         )}
       </div>
 
+      {approveError && (
+        <div className="rounded-lg px-3 py-2 text-xs text-red-700 bg-red-50 border border-red-100 flex items-start justify-between gap-2">
+          <span>{approveError}</span>
+          <button onClick={() => setApproveError('')} className="text-red-400 hover:text-red-600 flex-shrink-0">✕</button>
+        </div>
+      )}
+
       {/* Approve / Reject actions */}
       {canAct && (
         <div className="flex gap-2">
           <button
             onClick={() => approveMutation.mutate(practitioner.id)}
-            disabled={isBusy}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+            disabled={isBusy || (documents?.length ?? 0) === 0}
+            title={(documents?.length ?? 0) === 0 ? 'Aucun document soumis — impossible à approuver' : undefined}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ backgroundColor: '#e8f5e9', color: '#1d7a3a' }}
           >
             <span className="material-symbols-outlined text-sm">check_circle</span>

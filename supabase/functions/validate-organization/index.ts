@@ -114,6 +114,18 @@ Deno.serve(async (req) => {
 
     const newStatus = action === 'approve' ? 'active' : 'rejected'
 
+    // Un admin ne doit jamais pouvoir valider une organisation dont aucun
+    // justificatif n'a été soumis (bug remonté : pratique possible côté web
+    // même quand l'upload mobile avait échoué en amont). Miroir du même
+    // garde-fou côté practitioners (trigger trg_practitioner_approval_requires_documents).
+    if (action === 'approve') {
+      const { count } = await supabase
+        .from('organization_documents')
+        .select('id', { count: 'exact', head: true })
+        .eq('organization_id', organization_id)
+      if (!count) return json({ error: 'Impossible d\'approuver : aucun document justificatif soumis pour cette organisation.' }, 400)
+    }
+
     const { error: updateError } = await supabase
       .from('organizations')
       .update({ status: newStatus, validated_by: user.id, validated_at: new Date().toISOString() })

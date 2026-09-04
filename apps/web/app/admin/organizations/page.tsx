@@ -80,7 +80,23 @@ export default function OrganizationsPage() {
   const validate = useMutation({
     mutationFn: async (body: { organization_id: string; action: 'approve' | 'reject' | 'request_info'; note?: string }) => {
       const { error } = await supabase.functions.invoke('validate-organization', { body })
-      if (error) throw error
+      if (error) {
+        // .invoke() throws a generic "non-2xx status code" FunctionsHttpError
+        // whose .message hides the function's real { error: "..." } JSON body
+        // (e.g. the "aucun document soumis" guard) — read the actual response
+        // so the admin sees why, instead of a meaningless generic message.
+        const context = (error as { context?: Response }).context
+        let parsedMessage: string | undefined
+        if (context) {
+          try {
+            const responseBody = await context.json() as { error?: string }
+            parsedMessage = responseBody?.error
+          } catch {
+            // response wasn't JSON — fall through to the generic error below
+          }
+        }
+        throw parsedMessage ? new Error(parsedMessage) : error
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-organizations'] })
@@ -155,6 +171,12 @@ export default function OrganizationsPage() {
         })}
       </div>
 
+      {validate.error && (
+        <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-100 text-sm text-red-700">
+          {(validate.error as Error).message}
+        </div>
+      )}
+
       {queryError && (
         <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-100 text-sm text-red-700">
           Erreur de chargement : {(queryError as Error).message}
@@ -212,8 +234,9 @@ export default function OrganizationsPage() {
 
                   {org.status === 'pending' && (
                     <>
-                      <button onClick={() => handleApprove(org.id)} disabled={validate.isPending}
-                        className="px-4 py-2 bg-emerald-500 text-white text-sm font-semibold rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-50">
+                      <button onClick={() => handleApprove(org.id)} disabled={validate.isPending || org.organization_documents.length === 0}
+                        title={org.organization_documents.length === 0 ? 'Aucun document soumis — impossible à valider' : undefined}
+                        className="px-4 py-2 bg-emerald-500 text-white text-sm font-semibold rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                         Valider
                       </button>
                       <button onClick={() => setInfoDialog({ orgId: org.id })}

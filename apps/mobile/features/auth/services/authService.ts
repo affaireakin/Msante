@@ -141,20 +141,23 @@ export const authService = {
       const response = await fetch(doc.uri)
       const blob = await response.blob()
 
+      // Bucket réel : 'documents' (privé, cf. 20260722000002_private_documents_bucket.sql)
+      // — pas 'verification-documents', un bucket legacy jamais consolidé ici.
+      // file_url stocke le path nu (résolu en URL signée à l'ouverture, jamais
+      // getPublicUrl() qui échoue silencieusement sur un bucket privé) — même
+      // convention que le flux organisation (onboarding/organization.tsx) et
+      // web (lib/signedDocumentUrl.ts). C'est ce bug qui rendait tout document
+      // praticien soumis par mobile invisible/inouvrable côté admin.
       const { error: uploadError } = await supabase.storage
-        .from('verification-documents')
+        .from('documents')
         .upload(filePath, blob, { upsert: true })
 
       if (uploadError) throw uploadError
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('verification-documents')
-        .getPublicUrl(filePath)
-
       await supabase.from('verification_documents').insert({
         practitioner_id: practitioner.id,
         document_type: doc.document_type,
-        file_url: publicUrl,
+        file_url: filePath,
       })
     }
 

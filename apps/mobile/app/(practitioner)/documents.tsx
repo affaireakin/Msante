@@ -42,6 +42,23 @@ const STATUS_META: Record<VerificationDocument['status'], { label: string; bg: s
   rejected: { label: 'À corriger', bg: '#ffdad6', color: '#ba1a1a', icon: 'error-outline' },
 }
 
+// Le bucket réel des documents de vérification est 'documents' (privé depuis
+// 20260722000002_private_documents_bucket.sql) — cet écran ciblait encore
+// l'ancien bucket 'verification-documents' (pré-consolidation) avec
+// getPublicUrl(), ce qui échouait à l'upload (bucket jamais peuplé côté
+// pratique par le flux d'onboarding actuel) et aurait de toute façon produit
+// des liens inutilisables sur un bucket privé. Même convention de path que
+// web (apps/web/lib/signedDocumentUrl.ts) : {user_id}/type_timestamp.ext,
+// file_url stocke le path nu, résolu en URL signée à l'ouverture.
+async function resolveDocumentUrl(fileUrlOrPath: string): Promise<string | null> {
+  const marker = '/documents/'
+  const idx = fileUrlOrPath.indexOf(marker)
+  const path = idx === -1 ? fileUrlOrPath : fileUrlOrPath.slice(idx + marker.length)
+  const { data, error } = await supabase.storage.from('documents').createSignedUrl(path, 300)
+  if (error || !data) return null
+  return data.signedUrl
+}
+
 function usePractitionerType(practitionerId: string | undefined) {
   return useQuery<'healthcare' | 'wellness'>({
     queryKey: ['practitioner-type', practitionerId],
@@ -76,6 +93,7 @@ export default function PractitionerDocumentsScreen() {
   const { profile, practitioner } = useAuth()
   const qc = useQueryClient()
   const [uploading, setUploading] = useState<string | null>(null)
+  const [openingId, setOpeningId] = useState<string | null>(null)
 
   const { data: practitionerType } = usePractitionerType(practitioner?.id)
   const { data: docs = [], isLoading } = useVerificationDocuments(practitioner?.id)
@@ -98,14 +116,13 @@ export default function PractitionerDocumentsScreen() {
 
       const response = await fetch(asset.uri)
       const blob = await response.blob()
-      const { error: uploadError } = await supabase.storage.from('verification-documents').upload(filePath, blob, { upsert: true })
+      const { error: uploadError } = await supabase.storage.from('documents').upload(filePath, blob, { upsert: true })
       if (uploadError) throw uploadError
 
-      const { data: { publicUrl } } = supabase.storage.from('verification-documents').getPublicUrl(filePath)
       const { error: insertError } = await supabase.from('verification_documents').insert({
         practitioner_id: practitioner.id,
         document_type: type,
-        file_url: publicUrl,
+        file_url: filePath,
         status: 'pending',
       })
       if (insertError) throw insertError
@@ -125,6 +142,22 @@ export default function PractitionerDocumentsScreen() {
       Alert.alert('Erreur', e instanceof Error ? e.message : "Impossible d'envoyer le document.")
     } finally {
       setUploading(null)
+    }
+  }
+
+  async function openDocument(doc: VerificationDocument) {
+    setOpeningId(doc.id)
+    try {
+      const url = await resolveDocumentUrl(doc.file_url)
+      if (!url) {
+        Alert.alert('Erreur', "Impossible d'ouvrir ce document.")
+        return
+      }
+      await Linking.openURL(url)
+    } catch {
+      Alert.alert('Erreur', "Impossible d'ouvrir ce document.")
+    } finally {
+      setOpeningId(null)
     }
   }
 
@@ -170,8 +203,10 @@ export default function PractitionerDocumentsScreen() {
                         <MaterialIcons name={meta.icon} size={scale(12)} color={meta.color} />
                         <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: meta.color }}>{meta.label}</Text>
                       </View>
-                      <TouchableOpacity onPress={() => Linking.openURL(doc.file_url)}>
-                        <MaterialIcons name="open-in-new" size={scale(16)} color="#6f787e" />
+                      <TouchableOpacity onPress={() => openDocument(doc)} disabled={openingId === doc.id}>
+                        {openingId === doc.id
+                          ? <ActivityIndicator size="small" color="#6f787e" />
+                          : <MaterialIcons name="open-in-new" size={scale(16)} color="#6f787e" />}
                       </TouchableOpacity>
                     </View>
                   )

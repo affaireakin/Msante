@@ -4,10 +4,27 @@ import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { getSignedDocumentUrl } from '@/lib/signedDocumentUrl'
 
 type VerifStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
 type AccountStatus = 'active' | 'suspended' | 'blocked'
 type PractType = 'healthcare' | 'wellness'
+
+const DOC_TYPE_LABELS: Record<string, string> = {
+  diploma: 'Diplôme',
+  license: "Autorisation d'exercer",
+  id_card: "Pièce d'identité",
+  order_certificate: "Carte de l'Ordre",
+  professional_insurance: 'Assurance pro',
+  other: 'Autre',
+}
+
+interface VerificationDoc {
+  id: string
+  document_type: string
+  file_url: string
+  status: 'pending' | 'approved' | 'rejected'
+}
 
 interface Practitioner {
   id: string
@@ -21,6 +38,7 @@ interface Practitioner {
   organization_id: string | null
   users: { full_name: string; prefix: { prefix: string } | null } | null
   organizations: { name: string } | null
+  verification_documents: VerificationDoc[]
 }
 
 const ACCOUNT_STATUS_COLORS: Record<AccountStatus, string> = {
@@ -62,7 +80,7 @@ function usePractitioners() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('practitioners')
-        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, organization_id, users!user_id(full_name, prefix:professional_prefixes(prefix)), organizations(name)')
+        .select('id, user_id, speciality, verification_status, account_status, practitioner_type, permissions, created_at, organization_id, users!user_id(full_name, prefix:professional_prefixes(prefix)), organizations(name), verification_documents(id, document_type, file_url, status)')
         .order('created_at', { ascending: false })
       if (error) throw error
       const sorted = (data ?? []) as unknown as Practitioner[]
@@ -112,6 +130,7 @@ function PractitionersContent() {
   const [rejectReason, setRejectReason] = useState('')
   const [statusDialog, setStatusDialog] = useState<{ practId: string; action: 'suspended' | 'blocked' | 'active' } | null>(null)
   const [statusReason, setStatusReason] = useState('')
+  const [actionError, setActionError] = useState('')
 
   const updateStatus = useMutation({
     mutationFn: async ({ practId, status, userId, reason }: { practId: string; status: VerifStatus; userId: string; reason?: string }) => {
@@ -130,7 +149,15 @@ function PractitionersContent() {
         }
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-practitioners'] }),
+    onSuccess: () => {
+      setActionError('')
+      queryClient.invalidateQueries({ queryKey: ['admin-practitioners'] })
+    },
+    // Le trigger Postgres trg_practitioner_approval_requires_documents (voir
+    // 20260904000001) rejette un passage à 'approved' sans document soumis —
+    // ce message doit rester visible, pas juste avaler l'erreur en silence
+    // comme avant (le bouton s'arrêtait de tourner sans aucun retour).
+    onError: (err: Error) => setActionError(err.message || "Erreur lors de la mise à jour du statut."),
   })
 
   const updatePermissions = useMutation({
@@ -154,6 +181,18 @@ function PractitionersContent() {
 
   const handleApprove = (practId: string, userId: string) => {
     updateStatus.mutate({ practId, status: 'approved', userId })
+  }
+
+  const [openingDocId, setOpeningDocId] = useState<string | null>(null)
+  const handleOpenDocument = async (doc: VerificationDoc) => {
+    setOpeningDocId(doc.id)
+    try {
+      const url = await getSignedDocumentUrl(doc.file_url)
+      if (!url) { setActionError("Impossible d'ouvrir ce document."); return }
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } finally {
+      setOpeningDocId(null)
+    }
   }
 
   const handleReview = (practId: string, userId: string) => {
@@ -262,6 +301,13 @@ function PractitionersContent() {
         </div>
       )}
 
+      {actionError && (
+        <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-100 text-sm text-red-700 flex items-start justify-between gap-4">
+          <span>{actionError}</span>
+          <button onClick={() => setActionError('')} className="text-red-400 hover:text-red-600 flex-shrink-0">✕</button>
+        </div>
+      )}
+
       {isLoading ? (
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -318,8 +364,9 @@ function PractitionersContent() {
                   {pract.verification_status !== 'approved' && (
                     <button
                       onClick={() => handleApprove(pract.id, pract.user_id)}
-                      disabled={updateStatus.isPending}
-                      className="px-4 py-2 bg-emerald-500 text-white text-sm font-semibold rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                      disabled={updateStatus.isPending || pract.verification_documents.length === 0}
+                      title={pract.verification_documents.length === 0 ? 'Aucun document soumis — impossible à approuver' : undefined}
+                      className="px-4 py-2 bg-emerald-500 text-white text-sm font-semibold rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Approuver
                     </button>
@@ -366,6 +413,37 @@ function PractitionersContent() {
                     </button>
                   )}
                 </div>
+              </div>
+
+              {/* Documents de vérification — un praticien ne doit jamais être
+                  approuvable sans qu'un admin ait pu au moins voir ce qu'il a
+                  soumis (voir trigger trg_practitioner_approval_requires_documents,
+                  20260904000001, qui refuse le passage à 'approved' côté DB si
+                  cette liste est vide). */}
+              <div className="mt-4 pt-4 border-t border-slate-100/60">
+                <p className="text-xs font-bold text-[#6f787e] uppercase tracking-widest mb-2">
+                  Documents ({pract.verification_documents.length})
+                </p>
+                {pract.verification_documents.length === 0 ? (
+                  <p className="text-sm text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 inline-block">
+                    Aucun document soumis
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {pract.verification_documents.map(doc => (
+                      <button
+                        key={doc.id}
+                        onClick={() => handleOpenDocument(doc)}
+                        disabled={openingDocId === doc.id}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#e5eeff] text-[#005e7a] hover:bg-[#d3e4fe] transition-colors disabled:opacity-50"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>description</span>
+                        {DOC_TYPE_LABELS[doc.document_type] ?? doc.document_type}
+                        {doc.status === 'rejected' && <span className="text-red-600">· rejeté</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Permissions */}
