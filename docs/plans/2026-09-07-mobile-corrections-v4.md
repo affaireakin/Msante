@@ -65,29 +65,51 @@ signaler et ne pas trancher seul les décisions métier ambiguës ou les changem
 
 ---
 
+## ✅ Corrigé — 2ᵉ vague ("faut tout corriger")
+
+| # | Problème | Cause | Correction | Fichier(s) |
+|---|----------|-------|------------|-----------|
+| 16 | Rendez-vous patient : pas de règles pour les créneaux proposés par le praticien, délai d'annulation ignoré | Logique jamais portée du web (patient/appointments/page.tsx) vers le mobile | Accepter/Refuser ajouté, délai d'annulation respecté, motif obligatoire saisi (plus de texte figé) | `app/(patient)/appointments.tsx` |
+| 17 | Prestations et Disponibilités devaient être deux rubriques séparées sur la nav bar (comme Doctolib) | Un seul écran caché "Disponibilités & Prestations", accessible seulement depuis Profil | Écran scindé en deux (`prestations.tsx` nouveau + `availability.tsx` réduit), deux onglets ajoutés à la nav, Profil renommé Paramètres | `app/(practitioner)/_layout.tsx`, `prestations.tsx` (nouveau), `availability.tsx`, `profile.tsx` |
+| 18 | "Rajouter prénom" sur le profil praticien | `users.full_name` reste un champ unique dans tout le schéma (web inclus) — pas de vraie colonne séparée | Saisie Prénom/Nom sur cet écran uniquement, recomposée en un seul `full_name` à l'enregistrement — zéro migration | `app/(practitioner)/profile.tsx` |
+| 19 | "Supprimer mon compte" trop visible juste sous Déconnexion | — | Éloigné/regroupé avec les réglages secondaires sur les 3 écrans (patient/praticien/secrétaire) | `profile.tsx` ×3 |
+| 20 | CMS : "l'écriture ancienne reste figée... on aperçoit les anciens textes au rafraîchissement" | `useHomepageContent()` est un fetch client (React Query) — `data ?? DEFAULT_HOMEPAGE_CONTENT` affichait systématiquement le texte placeholder en dur au premier rendu (cache froid), sur la home ET dans le formulaire d'édition CMS lui-même | N'affiche chaque section (et le formulaire admin) qu'une fois le vrai contenu chargé | 5 fichiers `components/homepage/*.tsx` + `admin/content/page.tsx` |
+| 21 | Modification profession/préfixe par un praticien → validation admin | Fonctionnalité inexistante (simple champ libre, aucune validation) | Nouvelle table `profession_change_requests` (RLS dédiée) ; mobile : spécialité en lecture seule + bouton "Demander un changement" ; web `/admin/practitioners` : panneau Approuver/Refuser | migration `20260907000001`, `useProfessionChangeRequest.ts` (nouveau), `profile.tsx`, `admin/practitioners/page.tsx` |
+| 22 | Recadrage logo organisation / photo profil patient / photo profil praticien | — (vérifié, déjà correct sur les 3) | RAS : `allowsEditing:true` déjà en place partout, bucket organisation-logos confirmé public et fonctionnel | `(organization)/index.tsx`, `(patient)/profile.tsx`, `usePractitionerProfile.ts` |
+
+## 🔎 Investigué en profondeur, sciemment PAS touché (2ᵉ vague)
+
+- **Décalage horaire disponibilités** : réinvestigué plus précisément. Les
+  blocs hebdomadaires (création + affichage) sont de purs strings "HH:MM"
+  sans aucune conversion de fuseau — pas de bug là. La génération de
+  créneaux réservables (`useAvailability.ts`, mobile ET web identiques)
+  traite l'heure locale comme UTC (`new Date(...:00Z)`) — fonctionne par
+  coïncidence pour Dakar (UTC+0) mais pas si le fuseau du cabinet diffère.
+  Web est déjà la référence ici (mobile ne régresse rien), donc conforme à
+  la règle "le web fait référence" — mais une vraie correction demande de
+  toucher les DEUX ensemble avec une conversion de fuseau réelle
+  (`practitioners.timezone`), jamais un correctif `+1h` arbitraire sur des
+  horaires de RDV médicaux. **Question ouverte avant de coder** : sur quel
+  écran précis le décalage a-t-il été observé (création du créneau,
+  affichage de l'agenda, ou réservation patient) ? Sans ce détail, risque
+  réel d'introduire un bug là où il n'y en avait pas.
+- **Badges "MINDFULNESS SANCTUARY" / "WELLNESS SPACE"** : toujours non
+  retrouvés par recherche exacte dans le code — la chaîne affichée diffère
+  probablement légèrement de ce qui est lisible sur la capture, ou vient
+  d'un composant/traduction partagée non grepable directement.
+- **Libellés des émotions (mood check-in)** : écriture manuscrite sur la
+  capture pas assez nette pour être certain du texte exact voulu — je ne
+  veux pas remplacer un libellé au hasard sur un écran de suivi émotionnel.
+
 ## 📋 Reste à traiter (prioriré haute → basse, pas commencé)
 
 ### P0 — bloquant
 - [ ] Onboarding organisation mobile : confirmer que le flux complet (bout en bout, avec le fix
       anti-doublon) passe réellement sur un device, pas seulement relu.
-- [ ] Rendez-vous patient : pas de bouton "Rejoindre"/"Annuler", logique à aligner sur le web.
-- [ ] Décalage horaire disponibilités (voir ci-dessus — chantier dédié web+mobile).
-
-### P1 — fonctionnel
-- [ ] Admin : modification profession/préfixe par un praticien → validation admin (nouveau
-      workflow, web + mobile).
-- [ ] Profil praticien : séparer "Prénom" de "Nom complet".
-- [ ] Nav praticien : séparer Prestations et Disponibilités en deux onglets (actuellement un
-      seul écran combiné) ; Profil déplacé dans Paramètres (déjà fait pour l'agenda-first,
-      reste la séparation Prestations/Dispo + le déplacement du Profil).
-- [ ] CMS web : contenu modifié ne se propage pas immédiatement (cache), flash de l'ancien texte
-      au refresh — probablement ISR/cache Next.js à revalidate, côté web uniquement.
-- [ ] Recadrage photo profil / logo organisation (zoom, déplacement, confirmation) — vérifier ce
-      qui existe déjà (`allowsEditing` natif) vs ce qui manque réellement.
+- [ ] Décalage horaire disponibilités — chantier dédié web+mobile, question ouverte ci-dessus
+      avant de commencer (quel écran exactement ?).
 
 ### P2 — UX/UI
-- [ ] "Supprimer mon compte" (patient) : le déplacer plus bas / le rendre moins visible (sous
-      Aide & Support par ex.) — actuellement juste sous Déconnexion.
 - [ ] Badges "MINDFULNESS SANCTUARY" / "WELLNESS SPACE" à retirer — chaîne exacte non retrouvée
       par recherche automatique, probablement un nom légèrement différent ou un composant
       partagé ; à relocaliser précisément.
