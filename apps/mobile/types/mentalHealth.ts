@@ -37,7 +37,6 @@ export type AmiMessage = MounimaMessage
 
 export const EMOTIONS = [
   { id: 'calm', label: 'Calme', icon: 'sentiment_satisfied' },
-  { id: 'grateful', label: 'Reconnaissant', icon: 'sentiment_content' },
   { id: 'anxious', label: 'Anxieux', icon: 'water_drop' },
   { id: 'fatigued', label: 'Fatigué', icon: 'bedtime' },
   { id: 'hopeful', label: 'Confiant', icon: 'light_mode' },
