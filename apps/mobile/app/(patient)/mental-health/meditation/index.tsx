@@ -192,9 +192,6 @@ export default function MeditationCatalogue() {
 
       {/* Header */}
       <View style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 8 }}>
-        <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#82d8ff', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 4 }}>
-          Wellness Space
-        </Text>
         <Text style={{ fontFamily: 'Manrope', fontSize: 24, fontWeight: '800', color: '#0b1c30' }}>
           Méditation guidée
         </Text>

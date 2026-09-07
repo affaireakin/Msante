@@ -481,6 +481,16 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
             <p className="text-sm text-[#82d8ff] font-semibold mb-4">{DAYS[showForm]}</p>
 
             <div className="space-y-4">
+              {/* Bug remonté : un praticien en déplacement (France, heure
+                  d'été) a tapé son heure locale en pensant qu'elle serait
+                  comprise ainsi — la plateforme interprète toujours les
+                  horaires en heure du Sénégal (GMT), d'où un décalage de 2h
+                  à l'usage. Rendu explicite plutôt que de deviner un fuseau
+                  par praticien (voir aussi lib/availabilitySlots.ts). */}
+              <div className="flex items-center gap-2 bg-[#e5eeff] rounded-lg px-3 py-2">
+                <span className="material-symbols-outlined text-[#006685]" style={{ fontSize: '16px' }}>public</span>
+                <p className="text-xs font-semibold text-[#006685]">Heures en heure du Sénégal (GMT), même si vous êtes ailleurs</p>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Début</label>
@@ -558,6 +568,10 @@ function PlanningTab({ data }: { data: ReturnType<typeof useAvailData>['data'] }
             <p className="text-sm text-slate-400 mb-4">Ce créneau ne s&apos;appliquera qu&apos;à la date choisie.</p>
 
             <div className="space-y-4">
+              <div className="flex items-center gap-2 bg-[#e5eeff] rounded-lg px-3 py-2">
+                <span className="material-symbols-outlined text-[#006685]" style={{ fontSize: '16px' }}>public</span>
+                <p className="text-xs font-semibold text-[#006685]">Heures en heure du Sénégal (GMT), même si vous êtes ailleurs</p>
+              </div>
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Date</label>
                 <input type="date" value={dateForm.specific_date} min={new Date().toISOString().split('T')[0]}

@@ -77,6 +77,18 @@ function WeeklyBlockModal({ visible, day, types, onSave, onClose, isSaving }: {
           <Text style={{ fontFamily: 'Manrope', fontSize: 18, fontWeight: '800', color: '#0b1c30' }}>
             Ajouter un créneau · {day !== null ? DAY_LABELS[day] : ''}
           </Text>
+          {/* Bug remonté : un praticien en déplacement (ex: France, heure
+              d'été) a tapé son heure locale en pensant qu'elle serait
+              comprise ainsi — la plateforme interprète toujours les horaires
+              en heure du Sénégal (GMT, pas de changement d'heure), d'où un
+              décalage de 2h à l'usage. On le rend explicite plutôt que de
+              deviner un fuseau par praticien. */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#e5eeff', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8, marginTop: -8 }}>
+            <MaterialIcons name="public" size={14} color="#006685" />
+            <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#006685', flex: 1 }}>
+              Heures en heure du Sénégal (GMT), même si vous êtes ailleurs
+            </Text>
+          </View>
 
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <View style={{ flex: 1, gap: 6 }}>

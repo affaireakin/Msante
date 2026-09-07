@@ -64,8 +64,7 @@ export default function WellnessHub() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
         {/* Header */}
         <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 16 }}>
-          <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Mindfulness Sanctuary</Text>
-          <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope', marginTop: 4 }}>Espace bien-être</Text>
+          <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Espace bien-être</Text>
           <Text style={{ fontSize: 14, color: '#6f787e', fontFamily: 'Manrope', marginTop: 4 }}>
             Respirez. Écoutez-vous. Avancez doucement.
           </Text>

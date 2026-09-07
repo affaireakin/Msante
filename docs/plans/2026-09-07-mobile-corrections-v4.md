@@ -77,26 +77,15 @@ signaler et ne pas trancher seul les décisions métier ambiguës ou les changem
 | 21 | Modification profession/préfixe par un praticien → validation admin | Fonctionnalité inexistante (simple champ libre, aucune validation) | Nouvelle table `profession_change_requests` (RLS dédiée) ; mobile : spécialité en lecture seule + bouton "Demander un changement" ; web `/admin/practitioners` : panneau Approuver/Refuser | migration `20260907000001`, `useProfessionChangeRequest.ts` (nouveau), `profile.tsx`, `admin/practitioners/page.tsx` |
 | 22 | Recadrage logo organisation / photo profil patient / photo profil praticien | — (vérifié, déjà correct sur les 3) | RAS : `allowsEditing:true` déjà en place partout, bucket organisation-logos confirmé public et fonctionnel | `(organization)/index.tsx`, `(patient)/profile.tsx`, `usePractitionerProfile.ts` |
 
-## 🔎 Investigué en profondeur, sciemment PAS touché (2ᵉ vague)
+## ✅ Corrigé — 3ᵉ vague (précisions de l'utilisateur)
 
-- **Décalage horaire disponibilités** : réinvestigué plus précisément. Les
-  blocs hebdomadaires (création + affichage) sont de purs strings "HH:MM"
-  sans aucune conversion de fuseau — pas de bug là. La génération de
-  créneaux réservables (`useAvailability.ts`, mobile ET web identiques)
-  traite l'heure locale comme UTC (`new Date(...:00Z)`) — fonctionne par
-  coïncidence pour Dakar (UTC+0) mais pas si le fuseau du cabinet diffère.
-  Web est déjà la référence ici (mobile ne régresse rien), donc conforme à
-  la règle "le web fait référence" — mais une vraie correction demande de
-  toucher les DEUX ensemble avec une conversion de fuseau réelle
-  (`practitioners.timezone`), jamais un correctif `+1h` arbitraire sur des
-  horaires de RDV médicaux. **Question ouverte avant de coder** : sur quel
-  écran précis le décalage a-t-il été observé (création du créneau,
-  affichage de l'agenda, ou réservation patient) ? Sans ce détail, risque
-  réel d'introduire un bug là où il n'y en avait pas.
-- **Badges "MINDFULNESS SANCTUARY" / "WELLNESS SPACE"** : toujours non
-  retrouvés par recherche exacte dans le code — la chaîne affichée diffère
-  probablement légèrement de ce qui est lisible sur la capture, ou vient
-  d'un composant/traduction partagée non grepable directement.
+| # | Problème | Cause confirmée | Correction | Fichier(s) |
+|---|----------|------------------|------------|-----------|
+| 23 | Décalage horaire confirmé : créneau écrit 16h30, session réelle +2h (heure d'été) | Repro précise obtenue : la plateforme interprète TOUJOURS les horaires saisis comme heure du Sénégal (GMT, sans DST) — design assumé et documenté dans `availabilitySlots.ts` ("Dakar = UTC+0"), identique web/mobile. Un praticien en France l'ignorait et tapait son heure locale (ex. CEST, GMT+2), d'où le décalage à l'usage. Ce n'est pas un bug arithmétique — deviner/convertir un fuseau par praticien serait risqué et non demandé ; rendre le fuseau explicite corrige la vraie cause (l'ambiguïté), sans toucher au calcul des créneaux/RDV. | Bandeau "Heures en heure du Sénégal (GMT), même si vous êtes ailleurs" ajouté sur les 3 formulaires de saisie d'horaire (créneau hebdo mobile, créneau hebdo web, date spécifique web) | `app/(practitioner)/availability.tsx`, `app/practitioner/availability/page.tsx` |
+| 24 | Badges "Mindfulness Sanctuary" / "Wellness Space" | Trouvés — le texte source est en Title Case (`textTransform: uppercase` en CSS les affichait en majuscules sur les captures, d'où l'échec de la recherche exacte précédente) | Retirés des 3 écrans où ils apparaissaient (bien-être, méditation, journal — le 3ᵉ non signalé mais même motif, retiré par cohérence) | `mental-health/index.tsx`, `meditation/index.tsx`, `journal/index.tsx` |
+
+## 🔎 Toujours pas touché
+
 - **Libellés des émotions (mood check-in)** : écriture manuscrite sur la
   capture pas assez nette pour être certain du texte exact voulu — je ne
   veux pas remplacer un libellé au hasard sur un écran de suivi émotionnel.

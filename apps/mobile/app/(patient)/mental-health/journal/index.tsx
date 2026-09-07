@@ -15,7 +15,6 @@ export default function JournalList() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
       <View style={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View>
-          <Text style={{ fontSize: 12, color: '#82d8ff', fontFamily: 'Manrope', textTransform: 'uppercase', letterSpacing: 1.2 }}>Wellness Space</Text>
           <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Mon Journal</Text>
         </View>
         <TouchableOpacity onPress={() => router.back()}>
