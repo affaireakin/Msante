@@ -28,6 +28,9 @@ signaler et ne pas trancher seul les décisions métier ambiguës ou les changem
 | 10 | "Abandonner la session" (méditation) — wording | — | Renommé "Arrêter la session" | `app/(patient)/mental-health/meditation/session.tsx` |
 | 11 | Carte "Compagnon Bien-être IA" en doublon avec le raccourci Mounima (mêmes destination) | — | Carte retirée | `app/(patient)/home.tsx` |
 | 12 | OTP en vert (signalé à nouveau sur l'inscription organisation) | Déjà corrigé dans un tour précédent (verify-otp.tsx, onboarding confirmations) | Rien à refaire côté code — probablement testé sur un APK antérieur au fix ; à reconfirmer sur le prochain build | — |
+| 13 | Admin mobile : liste utilisateurs affiche "Praticien" au lieu de la vraie profession | Requête ne récupérait jamais `practitioners.speciality` | Jointure ajoutée, affiche préfixe + spécialité réelle | `app/(admin)/users.tsx` |
+| 14 | Analytics admin mobile : pas de KPI "Praticiens" dédié | — | Carte KPI ajoutée (donnée déjà calculée, juste pas affichée) | `app/(admin)/analytics.tsx` |
+| 15 | Dashboard admin mobile : pas de raccourci Messages/Utilisateurs | — | Ajoutés (pas de raccourci "Agenda" — aucun écran admin-wide de ce type n'existe, ce serait un nouvel écran à construire) | `app/(admin)/index.tsx` |
 
 ---
 
@@ -73,11 +76,6 @@ signaler et ne pas trancher seul les décisions métier ambiguës ou les changem
 ### P1 — fonctionnel
 - [ ] Admin : modification profession/préfixe par un praticien → validation admin (nouveau
       workflow, web + mobile).
-- [ ] Admin mobile : afficher la vraie profession au lieu de "Praticien" dans la liste
-      utilisateurs.
-- [ ] Admin mobile analytics : ajouter un bloc "Praticiens" (actuellement patients seulement).
-- [ ] Admin mobile dashboard : raccourcis Messages / Agenda / Utilisateurs.
-- [ ] Praticien mobile dashboard : mêmes raccourcis ("pareil" — même demande que l'admin).
 - [ ] Profil praticien : séparer "Prénom" de "Nom complet".
 - [ ] Nav praticien : séparer Prestations et Disponibilités en deux onglets (actuellement un
       seul écran combiné) ; Profil déplacé dans Paramètres (déjà fait pour l'agenda-first,
