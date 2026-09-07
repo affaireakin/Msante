@@ -17,6 +17,21 @@ interface UserRow {
   phone: string | null
   account_status: AccountStatus | null
   created_at: string
+  // PostgREST renvoie l'embed en tableau (pas d'objet unique typé côté client
+  // ici) même si user_id est unique côté base — un seul élément en pratique.
+  practitioners: { speciality: string; prefix: { prefix: string }[] }[]
+}
+
+// Affichait "Praticien" pour tout le monde au lieu de la vraie profession
+// (Infirmier, Psychologue, Médecin...) — la spécialité existe pourtant déjà
+// en base (practitioners.speciality), simplement jamais récupérée ici.
+function roleLabel(user: UserRow): string {
+  const practitioner = user.practitioners?.[0]
+  if (user.role === 'practitioner' && practitioner?.speciality) {
+    const prefix = practitioner.prefix?.[0]?.prefix
+    return prefix ? `${prefix} · ${practitioner.speciality}` : practitioner.speciality
+  }
+  return ROLE_LABELS[user.role] ?? user.role
 }
 
 const ROLE_TABS: { value: Role; label: string }[] = [
@@ -45,7 +60,7 @@ function useUsers(role: Role, search: string) {
     queryFn: async () => {
       let query = supabase
         .from('users')
-        .select('id, full_name, role, email, phone, account_status, created_at')
+        .select('id, full_name, role, email, phone, account_status, created_at, practitioners(speciality, prefix:professional_prefixes(prefix))')
         .order('created_at', { ascending: false })
         .limit(100)
       if (role !== 'all') query = query.eq('role', role)
@@ -99,7 +114,7 @@ function UserDetailModal({ user, onClose }: { user: UserRow; onClose: () => void
               <Text style={{ fontFamily: 'Manrope', fontSize: fs.lg, fontWeight: '800', color: '#005e7a' }}>{getInitials(user.full_name)}</Text>
             </View>
             <Text style={{ fontFamily: 'Manrope', fontSize: fs.lg, fontWeight: '800', color: '#0b1c30' }}>{user.full_name}</Text>
-            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#6f787e' }}>{ROLE_LABELS[user.role] ?? user.role}</Text>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#6f787e' }}>{roleLabel(user)}</Text>
             <View style={{ paddingHorizontal: scale(12), paddingVertical: scale(5), borderRadius: 999, backgroundColor: STATUS_META[status].bg }}>
               <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: STATUS_META[status].color }}>{STATUS_META[status].label}</Text>
             </View>
@@ -204,7 +219,7 @@ export default function AdminUsersScreen() {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#0b1c30' }}>{u.full_name}</Text>
-                <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, color: '#6f787e' }}>{ROLE_LABELS[u.role] ?? u.role}</Text>
+                <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, color: '#6f787e' }}>{roleLabel(u)}</Text>
               </View>
               {status !== 'active' && (
                 <View style={{ paddingHorizontal: scale(8), paddingVertical: scale(3), borderRadius: 999, backgroundColor: STATUS_META[status].bg }}>

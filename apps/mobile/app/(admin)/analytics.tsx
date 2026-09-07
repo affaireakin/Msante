@@ -175,7 +175,11 @@ export default function AdminAnalyticsScreen() {
           <View style={{ gap: scale(10) }}>
             <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#0b1c30' }}>Santé plateforme</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: scale(10) }}>
-              <KpiCard icon="group" color="#82d8ff" bg="#e5eeff" value={p.totalPatients.toLocaleString('fr-FR')} label="Patients inscrits" sub={`${p.totalPractitioners} praticiens`} />
+              <KpiCard icon="group" color="#82d8ff" bg="#e5eeff" value={p.totalPatients.toLocaleString('fr-FR')} label="Patients inscrits" />
+              {/* Retour terrain : "si nous avons les patients, les praticiens
+                  aussi ?" — le total existait déjà (utilisé en sous-texte
+                  ci-dessus) mais sans sa propre carte. */}
+              <KpiCard icon="medical-services" color="#705d00" bg="#fff8e1" value={p.totalPractitioners.toLocaleString('fr-FR')} label="Praticiens" sub={p.pendingPractitioners > 0 ? `${p.pendingPractitioners} en attente` : undefined} />
               <KpiCard icon={p.newUsersGrowth >= 0 ? 'trending-up' : 'trending-down'} color={p.newUsersGrowth >= 0 ? '#1d7a3a' : '#ba1a1a'} bg={p.newUsersGrowth >= 0 ? '#e8f5e9' : '#ffdad6'} value={p.newUsersThisMonth.toLocaleString('fr-FR')} label="Nouveaux ce mois" sub={`${p.newUsersGrowth >= 0 ? '+' : ''}${p.newUsersGrowth}% vs mois dernier`} />
               <KpiCard icon="checklist" color={p.onboardingRate >= 70 ? '#1d7a3a' : '#705d00'} bg={p.onboardingRate >= 70 ? '#e8f5e9' : '#fff8e1'} value={`${p.onboardingRate}%`} label="Taux d'onboarding" />
               <KpiCard icon="event-busy" color={p.noShowRate > 10 ? '#ba1a1a' : '#1d7a3a'} bg={p.noShowRate > 10 ? '#ffdad6' : '#e8f5e9'} value={`${p.noShowRate}%`} label="Taux de no-show" sub={`sur ${p.totalAppointments.toLocaleString('fr-FR')} RDV`} />

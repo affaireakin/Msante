@@ -158,6 +158,28 @@ export default function AdminDashboardScreen() {
               <MaterialIcons name="account-balance" size={scale(18)} color="#82d8ff" />
               <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '800', color: '#82d8ff' }}>Réconciliation financière</Text>
             </TouchableOpacity>
+
+            {/* Retour terrain : raccourcis Messages / Utilisateurs manquants
+                sur ce tableau de bord (déjà des onglets de la nav, mais
+                l'accès direct depuis l'accueil était demandé). Pas d'écran
+                "Agenda" admin-wide existant côté mobile ni web à raccourcir —
+                ce serait un nouvel écran à construire, pas un simple lien. */}
+            <View style={{ flexDirection: 'row', gap: scale(10) }}>
+              <TouchableOpacity
+                onPress={() => router.push('/(admin)/messages')}
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: scale(8), paddingVertical: scale(14), borderRadius: 999, backgroundColor: '#f0fdf4' }}
+              >
+                <MaterialIcons name="chat-bubble-outline" size={scale(18)} color="#1d7a3a" />
+                <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '800', color: '#1d7a3a' }}>Messages</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push('/(admin)/users')}
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: scale(8), paddingVertical: scale(14), borderRadius: 999, backgroundColor: '#e5eeff' }}
+              >
+                <MaterialIcons name="group" size={scale(18)} color="#82d8ff" />
+                <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '800', color: '#82d8ff' }}>Utilisateurs</Text>
+              </TouchableOpacity>
+            </View>
           </>
         )}
       </ScrollView>
