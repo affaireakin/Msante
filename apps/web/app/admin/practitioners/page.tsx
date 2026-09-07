@@ -271,6 +271,8 @@ function PractitionersContent() {
         )}
       </div>
 
+      <ProfessionChangeRequestsPanel />
+
       {/* Status filter tabs */}
       <div className="flex gap-2 flex-wrap">
         {STATUS_FILTERS.map(f => {
@@ -557,6 +559,140 @@ function PractitionersContent() {
                 className="flex-1 py-2.5 bg-red-500 text-white rounded-full text-sm font-semibold hover:bg-red-600 disabled:opacity-50 transition-colors"
               >
                 Confirmer le rejet
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Demandes de changement de profession ──────────────────────────────────
+// Retour terrain (2026-09-07) : un praticien ne modifie plus sa profession/
+// préfixe lui-même (mobile) — il soumet une demande ici validée par un admin.
+// cf. supabase/migrations/20260907000001_profession_change_requests.sql
+
+interface ProfessionChangeRequest {
+  id: string
+  practitioner_id: string
+  current_speciality: string
+  requested_speciality: string
+  requested_prefix_id: string | null
+  reason: string | null
+  status: 'pending' | 'approved' | 'rejected'
+  created_at: string
+  practitioners: { id: string; users: { full_name: string } | null } | null
+}
+
+function useProfessionChangeRequests() {
+  return useQuery({
+    queryKey: ['profession-change-requests'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profession_change_requests')
+        .select('id, practitioner_id, current_speciality, requested_speciality, requested_prefix_id, reason, status, created_at, practitioners(id, users!user_id(full_name))')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: true })
+      if (error) throw error
+      return (data ?? []) as unknown as ProfessionChangeRequest[]
+    },
+    staleTime: 30_000,
+  })
+}
+
+function ProfessionChangeRequestsPanel() {
+  const { data: requests = [] } = useProfessionChangeRequests()
+  const queryClient = useQueryClient()
+  const [rejectTarget, setRejectTarget] = useState<ProfessionChangeRequest | null>(null)
+  const [rejectNote, setRejectNote] = useState('')
+
+  const respond = useMutation({
+    mutationFn: async ({ req, decision, note }: { req: ProfessionChangeRequest; decision: 'approved' | 'rejected'; note?: string }) => {
+      if (decision === 'approved') {
+        const { error: e1 } = await supabase.from('practitioners')
+          .update({ speciality: req.requested_speciality })
+          .eq('id', req.practitioner_id)
+        if (e1) throw e1
+        if (req.requested_prefix_id) {
+          const { data: pract } = await supabase.from('practitioners').select('user_id').eq('id', req.practitioner_id).single()
+          if (pract?.user_id) {
+            const { error: e2 } = await supabase.from('users').update({ prefix_id: req.requested_prefix_id }).eq('id', pract.user_id)
+            if (e2) throw e2
+          }
+        }
+      }
+      const { data: { user } } = await supabase.auth.getUser()
+      const { error } = await supabase.from('profession_change_requests')
+        .update({ status: decision, admin_note: note ?? null, reviewed_by: user?.id ?? null, reviewed_at: new Date().toISOString() })
+        .eq('id', req.id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profession-change-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-practitioners'] })
+      setRejectTarget(null)
+      setRejectNote('')
+    },
+  })
+
+  if (requests.length === 0) return null
+
+  return (
+    <div className="rounded-2xl p-5 space-y-3" style={{ backgroundColor: 'rgba(255,248,225,0.60)', border: '1px solid rgba(112,93,0,0.20)' }}>
+      <p className="text-sm font-bold text-[#705d00] flex items-center gap-2">
+        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>swap_horiz</span>
+        Demandes de changement de profession ({requests.length})
+      </p>
+      {requests.map(req => (
+        <div key={req.id} className="rounded-xl p-4 bg-white/70 flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <p className="font-semibold text-[#0b1c30] text-sm">{req.practitioners?.users?.full_name ?? '—'}</p>
+            <p className="text-xs text-[#6f787e] mt-0.5">
+              « {req.current_speciality} » → « {req.requested_speciality} »
+            </p>
+            {req.reason && <p className="text-xs text-[#3f484d] mt-1 italic">{req.reason}</p>}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => respond.mutate({ req, decision: 'approved' })}
+              disabled={respond.isPending}
+              className="px-3 py-1.5 bg-emerald-500 text-white text-xs font-semibold rounded-full hover:bg-emerald-600 disabled:opacity-50"
+            >
+              Approuver
+            </button>
+            <button
+              onClick={() => setRejectTarget(req)}
+              className="px-3 py-1.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full hover:bg-red-200"
+            >
+              Refuser
+            </button>
+          </div>
+        </div>
+      ))}
+
+      {rejectTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setRejectTarget(null)} />
+          <div className="relative bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 className="text-base font-bold text-[#0b1c30] mb-3">Refuser cette demande</h3>
+            <textarea
+              value={rejectNote}
+              onChange={e => setRejectNote(e.target.value)}
+              placeholder="Motif (optionnel)..."
+              rows={3}
+              className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff] resize-none"
+            />
+            <div className="flex gap-2 mt-4">
+              <button onClick={() => setRejectTarget(null)} className="flex-1 py-2 border border-slate-200 rounded-full text-sm font-medium text-[#6f787e]">
+                Annuler
+              </button>
+              <button
+                onClick={() => respond.mutate({ req: rejectTarget, decision: 'rejected', note: rejectNote.trim() || undefined })}
+                disabled={respond.isPending}
+                className="flex-1 py-2 bg-red-500 text-white rounded-full text-sm font-semibold disabled:opacity-50"
+              >
+                Confirmer
               </button>
             </div>
           </div>

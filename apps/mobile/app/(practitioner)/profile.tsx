@@ -1,6 +1,6 @@
 import {
   View, Text, TouchableOpacity, StatusBar, Alert, ScrollView,
-  Image, ActivityIndicator, Modal, KeyboardAvoidingView, Platform,
+  Image, ActivityIndicator, Modal, KeyboardAvoidingView, Platform, TextInput,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
@@ -15,6 +15,7 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { AppTextInput, PrimaryButton, DeleteAccountSection } from '@/components/ui'
 import { usePractitionerAssetUpload } from '@/features/practitioner/hooks/usePractitionerProfile'
+import { usePrefixOptions, useLatestProfessionChangeRequest, useSubmitProfessionChangeRequest } from '@/features/practitioner/hooks/useProfessionChangeRequest'
 import { supabase } from '@/services/supabase'
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -90,6 +91,136 @@ function AssetTile({
 }
 
 // ── Edit Profile Modal ────────────────────────────────────────────────────────
+
+// Retour terrain (2026-09-07) : "possibilité de pouvoir modifier les
+// professions... si praticien par exemple infirmier qui veut un changement
+// de préfixe ou changer de profession il fait l'aval de l'admin." — demande
+// soumise, jamais une modification directe (cf. profession_change_requests).
+function ProfessionChangeCard() {
+  const { practitioner } = useAuth()
+  const { data: prefixOptions = [] } = usePrefixOptions()
+  const { data: latestRequest, isLoading } = useLatestProfessionChangeRequest(practitioner?.id)
+  const submit = useSubmitProfessionChangeRequest(practitioner?.id)
+
+  const [visible, setVisible] = useState(false)
+  const [requestedSpeciality, setRequestedSpeciality] = useState('')
+  const [requestedPrefixId, setRequestedPrefixId] = useState<string | null>(null)
+  const [reason, setReason] = useState('')
+
+  const openModal = () => {
+    setRequestedSpeciality('')
+    setRequestedPrefixId(null)
+    setReason('')
+    setVisible(true)
+  }
+
+  const handleSubmit = () => {
+    if (!practitioner || !requestedSpeciality.trim() || !reason.trim()) return
+    submit.mutate({
+      current_speciality: practitioner.speciality ?? '',
+      requested_speciality: requestedSpeciality.trim(),
+      current_prefix_id: null,
+      requested_prefix_id: requestedPrefixId,
+      reason: reason.trim(),
+    }, { onSuccess: () => setVisible(false) })
+  }
+
+  if (isLoading) return null
+
+  return (
+    <View style={{ marginTop: 4 }}>
+      {latestRequest?.status === 'pending' ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, padding: 12, borderRadius: 12, backgroundColor: '#fff8e1' }}>
+          <MaterialIcons name="pending-actions" size={18} color="#705d00" />
+          <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: 12, color: '#705d00', fontWeight: '600' }}>
+            Demande de changement vers « {latestRequest.requested_speciality} » en attente de validation.
+          </Text>
+        </View>
+      ) : (
+        <TouchableOpacity onPress={openModal} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start' }}>
+          <MaterialIcons name="swap-horiz" size={16} color="#82d8ff" />
+          <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '700', color: '#82d8ff' }}>Demander un changement de profession</Text>
+        </TouchableOpacity>
+      )}
+      {latestRequest?.status === 'rejected' && latestRequest.admin_note && (
+        <Text style={{ fontFamily: 'Manrope', fontSize: 11, color: '#ba1a1a', marginTop: 6 }}>
+          Dernière demande refusée : {latestRequest.admin_note}
+        </Text>
+      )}
+
+      <Modal visible={visible} transparent animationType="slide" onRequestClose={() => setVisible(false)}>
+        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(11,28,48,0.45)' }}>
+          <View style={{ backgroundColor: '#f8f9ff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, gap: 16 }}>
+            <Text style={{ fontFamily: 'Manrope', fontSize: 18, fontWeight: '800', color: '#0b1c30' }}>Demander un changement</Text>
+            <Text style={{ fontFamily: 'Manrope', fontSize: 12, color: '#6f787e' }}>
+              Spécialité actuelle : {practitioner?.speciality ?? '—'}
+            </Text>
+
+            <View style={{ gap: 6 }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#6f787e' }}>Nouvelle spécialité</Text>
+              <TextInput
+                value={requestedSpeciality}
+                onChangeText={setRequestedSpeciality}
+                placeholder="Ex: Infirmier spécialisé en santé mentale"
+                placeholderTextColor="#bec8ce"
+                style={{ height: 48, borderRadius: 12, borderWidth: 1, borderColor: '#bec8ce', paddingHorizontal: 16, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', backgroundColor: 'rgba(255,255,255,0.80)' }}
+              />
+            </View>
+
+            {prefixOptions.length > 0 && (
+              <View style={{ gap: 8 }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#6f787e' }}>Nouveau préfixe (optionnel)</Text>
+                <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
+                  <TouchableOpacity
+                    onPress={() => setRequestedPrefixId(null)}
+                    style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, borderWidth: 2, borderColor: requestedPrefixId === null ? '#82d8ff' : '#e5eeff', backgroundColor: requestedPrefixId === null ? '#e5eeff' : 'rgba(255,255,255,0.60)' }}
+                  >
+                    <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: requestedPrefixId === null ? '#82d8ff' : '#6f787e' }}>Aucun</Text>
+                  </TouchableOpacity>
+                  {prefixOptions.map(p => (
+                    <TouchableOpacity
+                      key={p.id}
+                      onPress={() => setRequestedPrefixId(p.id)}
+                      style={{ paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, borderWidth: 2, borderColor: requestedPrefixId === p.id ? '#82d8ff' : '#e5eeff', backgroundColor: requestedPrefixId === p.id ? '#e5eeff' : 'rgba(255,255,255,0.60)' }}
+                    >
+                      <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: requestedPrefixId === p.id ? '#82d8ff' : '#6f787e' }}>{p.prefix}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            )}
+
+            <View style={{ gap: 6 }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#6f787e' }}>Motif (obligatoire)</Text>
+              <TextInput
+                value={reason}
+                onChangeText={setReason}
+                placeholder="Expliquez brièvement la raison de ce changement..."
+                placeholderTextColor="#bec8ce"
+                multiline
+                numberOfLines={3}
+                style={{ height: 80, borderRadius: 12, borderWidth: 1, borderColor: '#bec8ce', paddingHorizontal: 16, paddingTop: 10, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', backgroundColor: 'rgba(255,255,255,0.80)', textAlignVertical: 'top' }}
+              />
+            </View>
+
+            <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
+              <TouchableOpacity onPress={() => setVisible(false)} style={{ flex: 1, paddingVertical: 14, borderRadius: 999, alignItems: 'center', borderWidth: 1, borderColor: '#bec8ce', backgroundColor: 'rgba(255,255,255,0.60)' }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '600', color: '#3f484d' }}>Annuler</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleSubmit}
+                disabled={submit.isPending || !requestedSpeciality.trim() || !reason.trim()}
+                style={{ flex: 1, paddingVertical: 14, borderRadius: 999, alignItems: 'center', backgroundColor: '#82d8ff', opacity: (submit.isPending || !requestedSpeciality.trim() || !reason.trim()) ? 0.5 : 1 }}
+              >
+                {submit.isPending ? <ActivityIndicator color="#0b1c30" size="small" /> : <Text style={{ fontFamily: 'Manrope', fontSize: 14, fontWeight: '800', color: '#0b1c30' }}>Envoyer la demande</Text>}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  )
+}
 
 function EditProfileModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { profile, practitioner } = useAuth()
@@ -222,11 +353,19 @@ function EditProfileModal({ visible, onClose }: { visible: boolean; onClose: () 
                 Informations professionnelles
               </Text>
 
-              <Controller control={control} name="speciality"
-                render={({ field: { onChange, value } }) => (
-                  <AppTextInput label="Spécialité" value={value} onChangeText={onChange}
-                    placeholder="ex. Psychologue clinicien" error={errors.speciality?.message} />
-                )} />
+              {/* Retour terrain : la profession/spécialité ne se modifie plus
+                  librement ici — un changement passe désormais par une
+                  demande soumise à l'aval d'un admin (cf. ProfessionChangeCard
+                  plus bas). Le champ reste dans le schéma (nécessaire à la
+                  sauvegarde des autres champs du formulaire) mais n'est plus
+                  éditable : sa valeur est toujours la spécialité actuelle. */}
+              <View style={{ gap: 4 }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: 13, fontWeight: '600', color: '#3f484d' }}>Spécialité</Text>
+                <View style={{ paddingVertical: 12, paddingHorizontal: 14, borderRadius: 12, backgroundColor: 'rgba(190,200,206,0.15)', borderWidth: 1, borderColor: 'rgba(190,200,206,0.35)' }}>
+                  <Text style={{ fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30' }}>{practitioner?.speciality ?? '—'}</Text>
+                </View>
+              </View>
+              <ProfessionChangeCard />
 
               <Controller control={control} name="bio"
                 render={({ field: { onChange, value } }) => (
