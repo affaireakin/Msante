@@ -382,7 +382,7 @@ function RichTextField({ label, value, onChange, resetKey }: { label: string; va
 }
 
 function HomepageTab() {
-  const { data } = useHomepageContent()
+  const { data, isLoading } = useHomepageContent()
   const save = useSaveHomepageContent()
   const uploadImage = useUploadHeroImage()
   const [content, setContent] = useState<HomepageContent>(DEFAULT_HOMEPAGE_CONTENT)
@@ -391,6 +391,16 @@ function HomepageTab() {
   useEffect(() => {
     if (data) setContent(data)
   }, [data])
+
+  // Retour terrain : "l'écriture ancienne reste figée côté CMS" — le
+  // formulaire affichait DEFAULT_HOMEPAGE_CONTENT (placeholder en dur, state
+  // initial ci-dessus) le temps que le fetch réel résolve, et l'admin
+  // pouvait éditer/sauver par-dessus ce contenu par défaut s'il tapait vite.
+  // On n'affiche le formulaire qu'une fois le vrai contenu chargé —
+  // `content` lui-même reste non-null partout ailleurs, rien d'autre à changer.
+  if (isLoading) {
+    return <div className="text-sm text-[#6f787e] py-8 text-center">Chargement du contenu…</div>
+  }
 
   const handleSave = () => {
     save.mutate(content, { onSuccess: () => { setSaved(true); setTimeout(() => setSaved(false), 2500) } })

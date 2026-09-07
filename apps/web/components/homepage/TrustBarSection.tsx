@@ -8,7 +8,10 @@ function Icon({ name, className = '', style }: { name: string; className?: strin
 const PARTNER_ICONS = ['waves', 'cell_tower', 'shield']
 
 export default function TrustBarSection() {
-  const { data } = useHomepageContent()
+  // cf. HeroSection.tsx — évite le flash du texte par défaut avant le vrai
+  // contenu CMS sur un chargement à froid (cache React Query vide).
+  const { data, isLoading } = useHomepageContent()
+  if (isLoading) return null
   const c = (data ?? DEFAULT_HOMEPAGE_CONTENT).trustBar
 
   return (

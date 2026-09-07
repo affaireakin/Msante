@@ -9,7 +9,12 @@ function Icon({ name, className = '', style }: { name: string; className?: strin
 }
 
 export default function HeroSection() {
-  const { data } = useHomepageContent()
+  // Retour terrain : ce contenu vient d'un fetch client (React Query), pas
+  // du SSR — sans ce garde, chaque chargement/rafraîchissement affichait
+  // brièvement DEFAULT_HOMEPAGE_CONTENT (placeholder) avant de basculer sur
+  // le vrai texte CMS, lu comme "les anciens textes qui réapparaissent".
+  const { data, isLoading } = useHomepageContent()
+  if (isLoading) return null
   const c = (data ?? DEFAULT_HOMEPAGE_CONTENT).hero
 
   return (
