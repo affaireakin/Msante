@@ -42,9 +42,18 @@ export default function RootLayout() {
   usePushNotifications(isAuthenticated)
   useMoodReminder(isAuthenticated)
 
+  // Bug remonté : à la réouverture de l'app déjà connectée, un flash de
+  // l'écran de connexion apparaissait avant de rebasculer vers l'espace
+  // authentifié ("se déconnecte et se reconnecte"). Cause : le splash natif
+  // se cachait dès que les polices étaient prêtes (quasi instantané), bien
+  // avant que la session Supabase persistée soit restaurée (isLoading reste
+  // true jusque-là, cf. l'effet de navigation ci-dessous) — le routeur
+  // affichait donc brièvement (auth)/welcome par défaut le temps que
+  // isLoading passe à false. Le splash reste maintenant affiché jusqu'à ce
+  // que les deux soient prêts : on ne voit jamais l'un avant l'autre.
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync()
-  }, [fontsLoaded])
+    if (fontsLoaded && !isLoading) SplashScreen.hideAsync()
+  }, [fontsLoaded, isLoading])
 
   useEffect(() => {
     // QA finding: supabase-js awaits every onAuthStateChange callback to

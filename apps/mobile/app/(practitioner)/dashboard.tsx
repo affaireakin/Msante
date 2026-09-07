@@ -87,17 +87,6 @@ export default function DashboardScreen() {
             >
               {firstName}
             </Text>
-            <Text
-              style={{
-                fontFamily: 'Manrope',
-                fontSize: 11,
-                color: '#6f787e',
-                letterSpacing: 0.5,
-                textTransform: 'uppercase',
-              }}
-            >
-              Practitioner Portal
-            </Text>
           </View>
         </View>
         <TouchableOpacity
@@ -426,7 +415,7 @@ export default function DashboardScreen() {
               paddingHorizontal: 4,
             }}
           >
-            Activité récente
+            Activités récentes
           </Text>
           <View
             style={{

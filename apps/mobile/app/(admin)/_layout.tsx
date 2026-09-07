@@ -1,5 +1,6 @@
 import { Redirect, Tabs } from 'expo-router'
 import { View, Text, Platform } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 
@@ -41,6 +42,7 @@ function TabIcon({ name, label, focused }: TabIconProps) {
 
 export default function AdminLayout() {
   const { isAuthenticated, profile } = useAuth()
+  const insets = useSafeAreaInsets()
   if (!isAuthenticated || profile?.role !== 'admin') {
     return <Redirect href="/(auth)/welcome" />
   }
@@ -51,7 +53,11 @@ export default function AdminLayout() {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          height: Platform.OS === 'ios' ? 92 : 72,
+          // cf. (patient)/_layout.tsx — hauteur fixe = plus de padding de
+          // zone de sécurité automatique, d'où le chevauchement avec la barre
+          // système Android en navigation gestuelle.
+          height: (Platform.OS === 'ios' ? 92 : 72) + insets.bottom,
+          paddingBottom: insets.bottom,
           paddingTop: 8,
           backgroundColor: 'rgba(255,255,255,0.80)',
           borderTopColor: 'rgba(255,255,255,0.30)',

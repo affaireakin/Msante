@@ -60,6 +60,16 @@ export default function OrganizationOnboardingScreen() {
   // Step 1 — documents (au moins un requis, sans limite au-delà)
   const [docs, setDocs] = useState<PickedDoc[]>([])
 
+  // Bug remonté : un échec réseau pendant l'envoi des documents (fréquent,
+  // cf. "Network request failed") laissait l'utilisateur sur cet écran avec
+  // la seule option de recliquer "Soumettre la demande" — qui refaisait un
+  // INSERT organizations complet (slug randomisé à chaque appel, donc jamais
+  // de conflit détecté) : deux lignes en base pour une seule vraie demande.
+  // On retient l'id créé au premier passage pour ne jamais réinsérer, et les
+  // index déjà envoyés pour ne pas dupliquer non plus les documents.
+  const [orgId, setOrgId] = useState<string | null>(null)
+  const [uploadedIdx, setUploadedIdx] = useState<Set<number>>(new Set())
+
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) { router.replace('/(auth)/login'); return }
@@ -112,27 +122,36 @@ export default function OrganizationOnboardingScreen() {
     setSaving(true)
     setError('')
     try {
-      const { data: org, error: orgError } = await supabase
-        .from('organizations')
-        .insert({
-          name: name.trim(),
-          slug: slugify(name),
-          email: email.trim(),
-          phone: phone.trim(),
-          address: address.trim(),
-          city: city.trim(),
-          postal_code: postalCode.trim() || null,
-          country,
-          siret: siret.trim() || null,
-          status: 'pending',
-          created_by: userId,
-        })
-        .select('id')
-        .single()
+      let currentOrgId = orgId
+      const isFreshSubmission = !currentOrgId
 
-      if (orgError || !org) throw new Error(orgError?.message ?? "Impossible de créer l'organisation")
+      if (!currentOrgId) {
+        const { data: org, error: orgError } = await supabase
+          .from('organizations')
+          .insert({
+            name: name.trim(),
+            slug: slugify(name),
+            email: email.trim(),
+            phone: phone.trim(),
+            address: address.trim(),
+            city: city.trim(),
+            postal_code: postalCode.trim() || null,
+            country,
+            siret: siret.trim() || null,
+            status: 'pending',
+            created_by: userId,
+          })
+          .select('id')
+          .single()
+
+        if (orgError || !org) throw new Error(orgError?.message ?? "Impossible de créer l'organisation")
+        currentOrgId = org.id
+        setOrgId(org.id)
+      }
+      if (!currentOrgId) throw new Error("Impossible de créer l'organisation")
 
       for (let i = 0; i < docs.length; i++) {
+        if (uploadedIdx.has(i)) continue // déjà envoyé lors d'un essai précédent
         const doc = docs[i]
         setSubmitProgress(`Envoi du document ${i + 1}/${docs.length}...`)
         const ext = doc.name.split('.').pop() ?? 'pdf'
@@ -142,28 +161,31 @@ export default function OrganizationOnboardingScreen() {
         const { error: uploadError } = await supabase.storage.from('documents').upload(path, blob, { upsert: true })
         if (uploadError) throw new Error(`Échec de l'envoi de "${doc.name}" : ${uploadError.message}`)
         await supabase.from('organization_documents').insert({
-          organization_id: org.id,
+          organization_id: currentOrgId,
           document_type: doc.type,
           file_url: path,
         })
+        setUploadedIdx(prev => new Set(prev).add(i))
       }
 
-      const { data: admins } = await supabase.from('users').select('id').eq('role', 'admin')
-      if (admins && admins.length > 0) {
-        await supabase.from('notifications').insert(
-          admins.map(a => ({
-            user_id: a.id,
-            type: 'organization_pending',
-            title: 'Nouvelle organisation à valider',
-            body: `${name.trim()} a soumis une demande de création.`,
-            data: { organization_id: org.id },
-            channel: 'push',
-            status: 'pending',
-          })),
-        )
+      if (isFreshSubmission) {
+        const { data: admins } = await supabase.from('users').select('id').eq('role', 'admin')
+        if (admins && admins.length > 0) {
+          await supabase.from('notifications').insert(
+            admins.map(a => ({
+              user_id: a.id,
+              type: 'organization_pending',
+              title: 'Nouvelle organisation à valider',
+              body: `${name.trim()} a soumis une demande de création.`,
+              data: { organization_id: currentOrgId },
+              channel: 'push',
+              status: 'pending',
+            })),
+          )
+        }
       }
 
-      setPendingOrganization({ id: org.id, name: name.trim(), status: 'pending' })
+      setPendingOrganization({ id: currentOrgId, name: name.trim(), status: 'pending' })
       setSubmitted(true)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Une erreur est survenue.')

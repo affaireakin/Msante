@@ -1,5 +1,6 @@
 import { Redirect, Tabs } from 'expo-router'
 import { View, Text, Platform } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 
@@ -45,6 +46,7 @@ function TabIcon({ name, label, focused }: TabIconProps) {
 
 export default function PatientLayout() {
   const { isAuthenticated, profile } = useAuth()
+  const insets = useSafeAreaInsets()
   if (!isAuthenticated || profile?.role !== 'patient') {
     return <Redirect href="/(auth)/welcome" />
   }
@@ -55,7 +57,13 @@ export default function PatientLayout() {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
-          height: Platform.OS === 'ios' ? 92 : 72,
+          // Une hauteur fixe désactive le padding de zone de sécurité que
+          // @react-navigation/bottom-tabs ajoute normalement tout seul — sur
+          // Android en navigation gestuelle, la barre chevauchait donc celle
+          // du système. On rajoute insets.bottom explicitement (constat
+          // identique sur les 5 layouts par rôle).
+          height: (Platform.OS === 'ios' ? 92 : 72) + insets.bottom,
+          paddingBottom: insets.bottom,
           paddingTop: 8,
           backgroundColor: 'rgba(255,255,255,0.92)',
           borderTopColor: 'rgba(130,216,255,0.15)',

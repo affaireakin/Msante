@@ -47,10 +47,13 @@ export default function PatientHome() {
         {/* Header */}
         <View style={{ paddingHorizontal: px, paddingTop: scale(16), paddingBottom: scale(12), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(10) }}>
+            {/* icon.png (icône de lancement) a un fond bleu opaque intégré —
+                rendait un carré bleu autour du logo dans ce header. Même fix
+                que welcome.tsx : logo-mark.png, fond transparent. */}
             <Image
-              source={require('../../assets/icon.png')}
-              style={{ width: scale(38), height: scale(38), borderRadius: scale(10) }}
-              resizeMode="cover"
+              source={require('../../assets/logo-mark.png')}
+              style={{ width: scale(38), height: scale(38) }}
+              resizeMode="contain"
             />
             <Text style={{ fontSize: fs.lg, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', letterSpacing: -0.3 }}>M-Santé</Text>
           </View>
@@ -108,34 +111,10 @@ export default function PatientHome() {
           </View>
         </View>
 
-        {/* Une seule mise en avant — le compagnon IA, différenciant de l'app.
-            Les autres cartes "solutions" retirées faisaient doublon avec les
-            Actions rapides ci-dessus (mêmes destinations), et les blocs
-            Partenaires/Stats/CTA final ont été retirés pour désencombrer
-            l'accueil (inspiré de Doctolib : un seul appel à l'action à la
-            fois, beaucoup de respiration). */}
-        <View style={{ paddingHorizontal: px, marginTop: scale(30) }}>
-          <TouchableOpacity onPress={() => router.push('/(patient)/assistant')} activeOpacity={0.85}
-            style={{ borderRadius: scale(20), overflow: 'hidden', borderWidth: 1, borderColor: '#00668520', shadowColor: '#006685', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 2 }}
-          >
-            <View style={{ height: scale(100), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              <View style={{ position: 'absolute', right: -25, top: -25, width: 130, height: 130, borderRadius: 65, backgroundColor: '#00668518' }} />
-              <View style={{ position: 'absolute', left: -15, bottom: -15, width: 80, height: 80, borderRadius: 40, backgroundColor: '#00668510' }} />
-              <View style={{ width: scale(60), height: scale(60), borderRadius: scale(18), backgroundColor: '#00668520', alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name="psychology" size={scale(32)} color="#006685" />
-              </View>
-            </View>
-            <View style={{ backgroundColor: '#fff', padding: scale(14), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View style={{ flex: 1, marginRight: scale(10) }}>
-                <Text style={{ fontSize: fs.md, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: 2 }}>Compagnon Bien-être IA</Text>
-                <Text style={{ fontSize: fs.sm, color: '#6f787e', fontFamily: 'Manrope', lineHeight: scale(17) }}>Mounima vous écoute, analyse vos humeurs et propose des exercices 24/7.</Text>
-              </View>
-              <View style={{ width: scale(32), height: scale(32), borderRadius: scale(16), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialIcons name="chevron-right" size={scale(20)} color="#006685" />
-              </View>
-            </View>
-          </TouchableOpacity>
-        </View>
+        {/* La carte "Compagnon Bien-être IA" (mise en avant Mounima) a été
+            retirée — retour terrain : elle faisait doublon avec le raccourci
+            Mounima des Actions rapides ci-dessus (même route /assistant),
+            jugé suffisant et plus pertinent seul. */}
 
         <View style={{ paddingHorizontal: px, marginTop: scale(30), alignItems: 'center' }}>
           <Text style={{ fontSize: scale(10), color: '#bec8ce', fontFamily: 'Manrope', textAlign: 'center' }}>© 2026 M-Santé · Innovation sénégalaise</Text>

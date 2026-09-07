@@ -282,7 +282,7 @@ export default function MeditationSession() {
           {timer.isActive && (
             <TouchableOpacity onPress={() => { timer.reset(); router.back() }} style={{ alignItems: 'center', paddingVertical: 8 }}>
               <Text style={{ fontFamily: 'Manrope', fontSize: 13, color: 'rgba(255,255,255,0.30)' }}>
-                Abandonner la session
+                Arrêter la session
               </Text>
             </TouchableOpacity>
           )}

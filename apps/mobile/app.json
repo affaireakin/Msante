@@ -14,7 +14,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#72cef9"
+      "backgroundColor": "#0bc2ee"
     },
     "plugins": [
       "expo-router",
@@ -47,7 +47,7 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "versionCode": 2
+      "versionCode": 6
     },
     "ios": {
       "bundleIdentifier": "com.msante.app",

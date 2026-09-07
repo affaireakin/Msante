@@ -12,10 +12,14 @@ export default function WelcomeScreen() {
 
         {/* ── Logo ── */}
         <View style={{ alignItems: 'center', paddingTop: 40 }}>
+          {/* icon.png est l'icône de lancement Android — fond carré bleu
+              opaque intégré à l'image (attendu pour un icône d'app), mais
+              rendait ici un carré bleu autour du logo ("couleur bleue qui le
+              recouvre"). logo-mark.png est le M seul, fond transparent. */}
           <Image
-            source={require('@/assets/icon.png')}
-            style={{ width: 96, height: 96, borderRadius: 22 }}
-            resizeMode="cover"
+            source={require('@/assets/logo-mark.png')}
+            style={{ width: 96, height: 96 }}
+            resizeMode="contain"
           />
           <Text style={{ fontSize: 13, color: '#6f787e', fontFamily: 'Manrope', fontWeight: '600', marginTop: 10, letterSpacing: 0.5 }}>
             MIND · CARE · CONNECT

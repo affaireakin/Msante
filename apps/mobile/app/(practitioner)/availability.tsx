@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {
   ScrollView, View, Text, TouchableOpacity, Alert,
   TextInput, Modal, StatusBar, ActivityIndicator,
+  KeyboardAvoidingView, Platform,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
@@ -199,6 +200,19 @@ function TypeModal({ visible, initial, onSave, onClose, isSaving }: {
 
 interface BlockForm { start_time: string; end_time: string; type_ids: string[] }
 
+// Bug remonté : le clavier par défaut (alphabétique) n'expose pas ":"
+// directement, donc HH:MM tapé à la main tombait presque toujours sur
+// "Format d'heure invalide". Même technique de masque déjà utilisée pour la
+// date de naissance (onboarding/patient.tsx) : on ne saisit que des chiffres
+// (clavier numérique dédié), le ":" s'insère tout seul.
+function digitsToTime(digits: string): string {
+  if (digits.length > 2) return `${digits.slice(0, 2)}:${digits.slice(2, 4)}`
+  return digits
+}
+function timeToDigits(time: string): string {
+  return time.replace(/\D/g, '').slice(0, 4)
+}
+
 function WeeklyBlockModal({ visible, day, types, onSave, onClose, isSaving }: {
   visible: boolean; day: number | null; types: ConsultationType[]
   onSave: (day: number, form: BlockForm) => void; onClose: () => void; isSaving: boolean
@@ -208,6 +222,10 @@ function WeeklyBlockModal({ visible, day, types, onSave, onClose, isSaving }: {
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} onShow={() => setForm({ start_time: '09:00', end_time: '17:00', type_ids: types.map(t => t.id) })}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
       <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(11,28,48,0.45)' }}>
         <View style={{ backgroundColor: '#f8f9ff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, gap: 18 }}>
           <Text style={{ fontFamily: 'Manrope', fontSize: 18, fontWeight: '800', color: '#0b1c30' }}>
@@ -217,12 +235,20 @@ function WeeklyBlockModal({ visible, day, types, onSave, onClose, isSaving }: {
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <View style={{ flex: 1, gap: 6 }}>
               <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#6f787e' }}>Début</Text>
-              <TextInput value={form.start_time} onChangeText={v => setForm(f => ({ ...f, start_time: v }))} placeholder="09:00" placeholderTextColor="#bec8ce"
+              <TextInput
+                value={form.start_time}
+                onChangeText={v => setForm(f => ({ ...f, start_time: digitsToTime(timeToDigits(v)) }))}
+                placeholder="09:00" placeholderTextColor="#bec8ce"
+                keyboardType="number-pad" maxLength={5}
                 style={{ height: 44, borderRadius: 12, borderWidth: 1, borderColor: '#bec8ce', paddingHorizontal: 14, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', backgroundColor: 'rgba(255,255,255,0.80)', textAlign: 'center' }} />
             </View>
             <View style={{ flex: 1, gap: 6 }}>
               <Text style={{ fontFamily: 'Manrope', fontSize: 12, fontWeight: '700', color: '#6f787e' }}>Fin</Text>
-              <TextInput value={form.end_time} onChangeText={v => setForm(f => ({ ...f, end_time: v }))} placeholder="17:00" placeholderTextColor="#bec8ce"
+              <TextInput
+                value={form.end_time}
+                onChangeText={v => setForm(f => ({ ...f, end_time: digitsToTime(timeToDigits(v)) }))}
+                placeholder="17:00" placeholderTextColor="#bec8ce"
+                keyboardType="number-pad" maxLength={5}
                 style={{ height: 44, borderRadius: 12, borderWidth: 1, borderColor: '#bec8ce', paddingHorizontal: 14, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', backgroundColor: 'rgba(255,255,255,0.80)', textAlign: 'center' }} />
             </View>
           </View>
@@ -257,6 +283,7 @@ function WeeklyBlockModal({ visible, day, types, onSave, onClose, isSaving }: {
           </View>
         </View>
       </View>
+      </KeyboardAvoidingView>
     </Modal>
   )
 }
