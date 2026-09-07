@@ -37,7 +37,10 @@ export default function SecretaryProfileScreen() {
           <MaterialIcons name="logout" size={scale(18)} color="#ba1a1a" />
           <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#ba1a1a' }}>Se déconnecter</Text>
         </TouchableOpacity>
-        <DeleteAccountSection />
+        {/* Retour terrain : plus en retrait par rapport à la déconnexion */}
+        <View style={{ marginTop: scale(20) }}>
+          <DeleteAccountSection />
+        </View>
       </View>
     </SafeAreaView>
   )

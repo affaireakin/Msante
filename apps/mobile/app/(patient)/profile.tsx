@@ -515,6 +515,11 @@ export default function ProfileScreen() {
             <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: 14, color: '#0b1c30', fontWeight: '500' }}>Aide & Support</Text>
             <MaterialIcons name="chevron-right" size={20} color="#bec8ce" />
           </TouchableOpacity>
+          {/* Retour terrain : trop visible juste sous Déconnexion — déplacé
+              ici (section Aide & Support), plus en retrait. */}
+          <View style={{ borderTopWidth: 1, borderTopColor: 'rgba(190,200,206,0.25)' }}>
+            <DeleteAccountSection />
+          </View>
         </View>
 
         {/* Sign out */}
@@ -530,8 +535,7 @@ export default function ProfileScreen() {
             <MaterialIcons name="logout" size={18} color="#ba1a1a" />
             <Text style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 14, color: '#ba1a1a' }}>Déconnexion</Text>
           </TouchableOpacity>
-          <DeleteAccountSection />
-          <Text style={{ fontFamily: 'Manrope', fontSize: 11, color: '#bec8ce', textAlign: 'center', marginTop: 4 }}>
+          <Text style={{ fontFamily: 'Manrope', fontSize: 11, color: '#bec8ce', textAlign: 'center', marginTop: 12 }}>
             M-Santé v1.0 — Vos données sont chiffrées et sécurisées
           </Text>
         </View>

@@ -113,6 +113,20 @@ function EditProfileModal({ visible, onClose }: { visible: boolean; onClose: () 
   const selectedLangs = watch('languages') ?? ['fr']
   const selectedDuration = watch('session_duration_min')
 
+  // Retour terrain : "rajouter prénom" — le schéma (users.full_name) reste un
+  // champ unique partout dans l'appli (web inclus, aucune colonne
+  // first_name/last_name séparée) ; séparer réellement les deux demanderait
+  // une migration + toucher inscription/listes admin/prescriptions/etc. des
+  // deux côtés. Ici : juste la saisie sur cet écran, recomposée en un seul
+  // full_name à l'enregistrement — zéro changement de schéma, zéro risque.
+  const [firstName, setFirstName] = useState(() => (profile?.full_name ?? '').split(' ')[0] ?? '')
+  const [lastName, setLastName] = useState(() => (profile?.full_name ?? '').split(' ').slice(1).join(' '))
+  function updateName(first: string, last: string) {
+    setFirstName(first)
+    setLastName(last)
+    setValue('full_name', `${first} ${last}`.trim(), { shouldValidate: true })
+  }
+
   const save = useMutation({
     mutationFn: async (data: EditProfileFormData) => {
       if (!profile?.id || !practitioner?.id) throw new Error('Non authentifié')
@@ -186,11 +200,16 @@ function EditProfileModal({ visible, onClose }: { visible: boolean; onClose: () 
                 Informations personnelles
               </Text>
 
-              <Controller control={control} name="full_name"
-                render={({ field: { onChange, value } }) => (
-                  <AppTextInput label="Nom complet" value={value} onChangeText={onChange}
-                    placeholder="Prénom Nom" error={errors.full_name?.message} />
-                )} />
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <View style={{ flex: 1 }}>
+                  <AppTextInput label="Prénom" value={firstName} onChangeText={t => updateName(t, lastName)}
+                    placeholder="Mamadou" autoCapitalize="words" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <AppTextInput label="Nom" value={lastName} onChangeText={t => updateName(firstName, t)}
+                    placeholder="Mbodj NDAO" autoCapitalize="words" error={errors.full_name?.message} />
+                </View>
+              </View>
 
               <Controller control={control} name="phone"
                 render={({ field: { onChange, value } }) => (
@@ -471,7 +490,6 @@ export default function ProfileScreen() {
           </Text>
           {[
             { icon: 'bar-chart' as const, label: 'Tableau de bord & revenus', href: '/(practitioner)/dashboard' as const },
-            { icon: 'event-available' as const, label: 'Disponibilités & Prestations', href: '/(practitioner)/availability' as const },
             { icon: 'description' as const, label: 'Mes documents', href: '/(practitioner)/documents' as const },
             { icon: 'support-agent' as const, label: 'Mes secrétaires', href: '/(practitioner)/secretary' as const },
             { icon: 'gavel' as const, label: 'Litiges', href: '/(practitioner)/disputes' as const },
@@ -488,6 +506,11 @@ export default function ProfileScreen() {
               <MaterialIcons name="chevron-right" size={20} color="#bec8ce" />
             </TouchableOpacity>
           ))}
+          {/* Retour terrain : trop visible juste sous Déconnexion — regroupé
+              ici avec les autres réglages secondaires, plus en retrait. */}
+          <View style={{ borderTopWidth: 1, borderTopColor: 'rgba(190,200,206,0.25)', marginTop: 4 }}>
+            <DeleteAccountSection />
+          </View>
         </View>
 
         {/* ── Sign out ── */}
@@ -502,7 +525,6 @@ export default function ProfileScreen() {
           <MaterialIcons name="logout" size={18} color="#ba1a1a" />
           <Text style={{ fontFamily: 'Manrope', fontWeight: '700', fontSize: 14, color: '#ba1a1a' }}>Déconnexion</Text>
         </TouchableOpacity>
-        <DeleteAccountSection />
 
         <View style={{ height: 16 }} />
       </ScrollView>

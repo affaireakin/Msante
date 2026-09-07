@@ -91,6 +91,22 @@ export default function PractitionerLayout() {
           tabBarIcon: ({ focused }) => <TabIcon name="group" label="Patients" focused={focused} />,
         }}
       />
+      {/* Retour terrain (2026-09-07) : Prestations et Disponibilités étaient
+          combinées dans un seul écran caché de la nav, accessible seulement
+          depuis Profil — demande explicite de deux onglets séparés, comme
+          Doctolib. Écrans scindés (prestations.tsx / availability.tsx). */}
+      <Tabs.Screen
+        name="prestations"
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon name="medical-services" label="Prestations" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="availability"
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon name="event-available" label="Disponib." focused={focused} />,
+        }}
+      />
       {/* QA finding: messages/ is a folder (index.tsx + [id].tsx) — Expo
           Router registers it under those full names, not "messages", so this
           Tabs.Screen never actually matched a route and messages/[id]
@@ -102,10 +118,12 @@ export default function PractitionerLayout() {
         }}
       />
       <Tabs.Screen name="messages/[id]" options={{ href: null }} />
+      {/* Renommé Profil → Paramètres (retour terrain) — même écran, le profil
+          y reste accessible en premier mais n'est plus l'onglet principal. */}
       <Tabs.Screen
         name="profile"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="person" label="Profil" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="settings" label="Paramètres" focused={focused} />,
         }}
       />
       <Tabs.Screen
@@ -136,12 +154,6 @@ export default function PractitionerLayout() {
       />
       <Tabs.Screen
         name="notes-cliniques"
-        options={{ href: null }}
-      />
-      {/* Was missing entirely (neither shown nor hidden) — auto-registered
-          as the one extra unlabeled tab icon after "Profil". */}
-      <Tabs.Screen
-        name="availability"
         options={{ href: null }}
       />
       <Tabs.Screen
