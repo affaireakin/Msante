@@ -61,7 +61,9 @@ export default function WellnessHub() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
+      {/* 24px ne suffisait pas à dégager la barre d'onglets : le bas du
+          contenu passait dessous ("l'écriture déborde"). */}
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 110 }}>
         {/* Header */}
         <View style={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 16 }}>
           <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0b1c30', fontFamily: 'Manrope' }}>Espace bien-être</Text>

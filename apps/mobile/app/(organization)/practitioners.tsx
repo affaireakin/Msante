@@ -170,7 +170,7 @@ export default function OrganizationPractitionersScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(10) }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{ padding: scale(20), paddingBottom: scale(110), gap: scale(10) }} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <ActivityIndicator color="#82d8ff" style={{ marginTop: scale(20) }} />
         ) : practitioners.length === 0 ? (

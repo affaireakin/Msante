@@ -40,7 +40,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#72cef9"
+        "backgroundColor": "#0bc2ee"
       },
       "package": "com.msante.app",
       "permissions": [

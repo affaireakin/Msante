@@ -216,7 +216,7 @@ export default function PrestationsScreen() {
           <ActivityIndicator color="#82d8ff" />
         </View>
       ) : (
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 24, gap: 20 }} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 24, paddingBottom: 110, gap: 20 }} showsVerticalScrollIndicator={false}>
         <GlassCard>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
