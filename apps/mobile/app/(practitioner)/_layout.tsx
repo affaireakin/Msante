@@ -118,13 +118,12 @@ export default function PractitionerLayout() {
         }}
       />
       <Tabs.Screen name="messages/[id]" options={{ href: null }} />
-      {/* Renommé Profil → Paramètres (retour terrain) — même écran, le profil
-          y reste accessible en premier mais n'est plus l'onglet principal. */}
+      {/* Paramètres retiré de la barre d'onglets (retour terrain) : la roue
+          dentée est désormais en haut à droite de l'agenda, comme la
+          référence fournie. L'écran reste accessible par cette route. */}
       <Tabs.Screen
         name="profile"
-        options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="settings" label="Paramètres" focused={focused} />,
-        }}
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="secretary"
