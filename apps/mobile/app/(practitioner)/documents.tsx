@@ -7,6 +7,7 @@ import * as DocumentPicker from 'expo-document-picker'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 import { supabase } from '@/services/supabase'
+import { uploadLocalFile, mimeFromUri } from '@/services/uploadFile'
 import { useResponsive } from '@/hooks/useResponsive'
 import type { DocumentType, VerificationDocument } from '@/types/database'
 
@@ -114,10 +115,7 @@ export default function PractitionerDocumentsScreen() {
         ? `${profile.id}/other_${Date.now()}_${baseName}.${ext}`
         : `${profile.id}/${type}_${Date.now()}.${ext}`
 
-      const response = await fetch(asset.uri)
-      const blob = await response.blob()
-      const { error: uploadError } = await supabase.storage.from('documents').upload(filePath, blob, { upsert: true })
-      if (uploadError) throw uploadError
+      await uploadLocalFile('documents', filePath, asset.uri, mimeFromUri(asset.name, 'application/pdf'))
 
       const { error: insertError } = await supabase.from('verification_documents').insert({
         practitioner_id: practitioner.id,

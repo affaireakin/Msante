@@ -10,6 +10,7 @@ import * as DocumentPicker from 'expo-document-picker'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { supabase } from '@/services/supabase'
+import { uploadLocalFile, mimeFromUri } from '@/services/uploadFile'
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name']
 
@@ -235,10 +236,7 @@ export default function MessageThreadScreen() {
     setSending(true)
     try {
       const filePath = `messages/${profile!.id}/${Date.now()}_${asset.name}`
-      const response = await fetch(asset.uri)
-      const blob = await response.blob()
-      const { error: uploadErr } = await supabase.storage.from('message-attachments').upload(filePath, blob, { upsert: false })
-      if (uploadErr) throw uploadErr
+      await uploadLocalFile('message-attachments', filePath, asset.uri, mimeFromUri(asset.name), { upsert: false })
       await sendMessage.mutateAsync({ body: asset.name, attachmentUrl: filePath, attachmentName: asset.name, attachmentType: docType })
     } catch {
       Alert.alert('Erreur', 'Impossible d\'envoyer le document.')

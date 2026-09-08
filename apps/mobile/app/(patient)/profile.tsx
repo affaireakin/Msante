@@ -12,6 +12,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { DeleteAccountSection } from '@/components/ui'
 import { supabase } from '@/services/supabase'
+import { uploadLocalFile, mimeFromUri } from '@/services/uploadFile'
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name']
 
@@ -165,14 +166,12 @@ export default function ProfileScreen() {
     const fileExt = asset.uri.split('.').pop() ?? 'jpg'
     const filePath = `${profile!.id}/avatar.${fileExt}`
 
-    const response = await fetch(asset.uri)
-    const blob = await response.blob()
-
-    const { error: uploadError } = await supabase.storage
-      .from('avatars')
-      .upload(filePath, blob, { upsert: true })
-
-    if (uploadError) { Alert.alert('Erreur', uploadError.message); return }
+    try {
+      await uploadLocalFile('avatars', filePath, asset.uri, mimeFromUri(asset.uri, 'image/jpeg'))
+    } catch (e) {
+      Alert.alert('Erreur', e instanceof Error ? e.message : "Impossible d'envoyer la photo.")
+      return
+    }
 
     const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath)
     updateProfile.mutate({ full_name: profile!.full_name } as never)

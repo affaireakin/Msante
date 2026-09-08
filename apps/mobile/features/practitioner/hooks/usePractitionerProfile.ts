@@ -2,6 +2,7 @@ import { useState } from 'react'
 import * as ImagePicker from 'expo-image-picker'
 import { Alert, ActionSheetIOS, Platform } from 'react-native'
 import { supabase } from '@/services/supabase'
+import { uploadLocalFile } from '@/services/uploadFile'
 import { useAuthStore } from '@/features/auth/store/authStore'
 
 type AssetType = 'avatar' | 'stamp' | 'signature'
@@ -67,13 +68,9 @@ async function uploadAsset(uri: string, userId: string, practitionerId: string, 
   const ext = uri.split('.').pop()?.toLowerCase() ?? 'jpg'
   const mime = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg'
 
-  const response = await fetch(uri)
-  const blob = await response.blob()
-
   if (assetType === 'avatar') {
     const path = `${userId}/avatar.${ext}`
-    const { error } = await supabase.storage.from('avatars').upload(path, blob, { upsert: true, contentType: mime })
-    if (error) throw error
+    await uploadLocalFile('avatars', path, uri, mime)
     const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
     const { error: dbErr } = await supabase.from('users').update({ avatar_url: publicUrl }).eq('id', userId)
     if (dbErr) throw dbErr
@@ -82,8 +79,7 @@ async function uploadAsset(uri: string, userId: string, practitionerId: string, 
 
   const assetName = assetType === 'stamp' ? 'stamp' : 'signature'
   const path = `${userId}/${assetName}.${ext}`
-  const { error } = await supabase.storage.from('practitioner-assets').upload(path, blob, { upsert: true, contentType: mime })
-  if (error) throw error
+  await uploadLocalFile('practitioner-assets', path, uri, mime)
 
   const { data: { publicUrl } } = supabase.storage.from('practitioner-assets').getPublicUrl(path)
   const column = assetType === 'stamp' ? 'stamp_url' : 'signature_url'

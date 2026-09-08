@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { GlassCard, AppTextInput, PrimaryButton, StepIndicator, pickDocumentAsset } from '@/components/ui'
 import { supabase } from '@/services/supabase'
+import { uploadLocalFile, mimeFromUri } from '@/services/uploadFile'
 import { useAuthStore } from '@/features/auth/store/authStore'
 
 const STEP_LABELS = ['Organisation', 'Documents']
@@ -181,10 +182,11 @@ export default function OrganizationOnboardingScreen() {
         setSubmitProgress(`Envoi du document ${i + 1}/${docs.length}...`)
         const ext = doc.name.split('.').pop() ?? 'pdf'
         const path = `${userId}/org_${doc.type}_${Date.now()}.${ext}`
-        const response = await fetch(doc.uri)
-        const blob = await response.blob()
-        const { error: uploadError } = await supabase.storage.from('documents').upload(path, blob, { upsert: true })
-        if (uploadError) throw new Error(`Échec de l'envoi de "${doc.name}" : ${uploadError.message}`)
+        try {
+          await uploadLocalFile('documents', path, doc.uri, mimeFromUri(doc.name, 'application/pdf'))
+        } catch (e) {
+          throw new Error(`Échec de l'envoi de "${doc.name}" : ${e instanceof Error ? e.message : 'erreur inconnue'}`)
+        }
         await supabase.from('organization_documents').insert({
           organization_id: currentOrgId,
           document_type: doc.type,

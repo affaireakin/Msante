@@ -6,6 +6,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import * as ImagePicker from 'expo-image-picker'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/services/supabase'
+import { uploadLocalFile, mimeFromUri } from '@/services/uploadFile'
 import { useResponsive } from '@/hooks/useResponsive'
 
 interface OrgOverview {
@@ -117,10 +118,7 @@ export default function OrganizationDashboardScreen() {
     try {
       const ext = result.assets[0].uri.split('.').pop() ?? 'jpg'
       const path = `${data.organizationId}/logo.${ext}`
-      const response = await fetch(result.assets[0].uri)
-      const blob = await response.blob()
-      const { error: uploadError } = await supabase.storage.from('organization-logos').upload(path, blob, { upsert: true })
-      if (uploadError) throw uploadError
+      await uploadLocalFile('organization-logos', path, result.assets[0].uri, mimeFromUri(result.assets[0].uri, 'image/jpeg'))
       const { data: { publicUrl } } = supabase.storage.from('organization-logos').getPublicUrl(path)
       await supabase.from('organizations').update({ logo_url: `${publicUrl}?t=${Date.now()}` }).eq('id', data.organizationId)
       qc.invalidateQueries({ queryKey: ['org-overview'] })

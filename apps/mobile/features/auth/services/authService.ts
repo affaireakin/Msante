@@ -1,6 +1,7 @@
 import * as WebBrowser from 'expo-web-browser'
 import * as AuthSession from 'expo-auth-session'
 import { supabase, fetchUserProfile, fetchPractitionerProfile } from '@/services/supabase'
+import { uploadLocalFile, mimeFromUri } from '@/services/uploadFile'
 import { useAuthStore } from '../store/authStore'
 import type { AuthResult } from '@/types/auth'
 import type { PatientOnboardingData, PractitionerOnboardingData } from '@/types/auth'
@@ -122,14 +123,12 @@ export const authService = {
     if (data.profilePhotoUri) {
       const photoExt = data.profilePhotoUri.split('.').pop() ?? 'jpg'
       const photoPath = `${user.id}/avatar.${photoExt}`
-      const photoResponse = await fetch(data.profilePhotoUri)
-      const photoBlob = await photoResponse.blob()
-      const { error: photoUploadErr } = await supabase.storage
-        .from('avatars')
-        .upload(photoPath, photoBlob, { upsert: true })
-      if (!photoUploadErr) {
+      try {
+        await uploadLocalFile('avatars', photoPath, data.profilePhotoUri, mimeFromUri(data.profilePhotoUri, 'image/jpeg'))
         const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(photoPath)
         await supabase.from('users').update({ avatar_url: publicUrl }).eq('id', user.id)
+      } catch {
+        // la photo est optionnelle — ne bloque pas la soumission du dossier
       }
     }
 
@@ -138,9 +137,6 @@ export const authService = {
       onProgress?.(i + 1, data.documents.length)
       const fileExt = doc.name.split('.').pop() ?? 'pdf'
       const filePath = `${user.id}/${doc.document_type}.${fileExt}`
-      const response = await fetch(doc.uri)
-      const blob = await response.blob()
-
       // Bucket réel : 'documents' (privé, cf. 20260722000002_private_documents_bucket.sql)
       // — pas 'verification-documents', un bucket legacy jamais consolidé ici.
       // file_url stocke le path nu (résolu en URL signée à l'ouverture, jamais
@@ -148,11 +144,7 @@ export const authService = {
       // convention que le flux organisation (onboarding/organization.tsx) et
       // web (lib/signedDocumentUrl.ts). C'est ce bug qui rendait tout document
       // praticien soumis par mobile invisible/inouvrable côté admin.
-      const { error: uploadError } = await supabase.storage
-        .from('documents')
-        .upload(filePath, blob, { upsert: true })
-
-      if (uploadError) throw uploadError
+      await uploadLocalFile('documents', filePath, doc.uri, mimeFromUri(doc.name, 'application/pdf'))
 
       await supabase.from('verification_documents').insert({
         practitioner_id: practitioner.id,
