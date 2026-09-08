@@ -16,11 +16,11 @@ function TabIcon({ name, label, focused }: TabIconProps) {
       style={{
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 10,
+        paddingHorizontal: 4,
         paddingVertical: 6,
         borderRadius: 12,
         backgroundColor: focused ? 'rgba(0,102,133,0.08)' : 'transparent',
-        minWidth: 58,
+        minWidth: 46,
       }}
     >
       <MaterialIcons name={name} size={focused ? 24 : 22} color={focused ? '#82d8ff' : '#6f787e'} />
@@ -33,6 +33,7 @@ function TabIcon({ name, label, focused }: TabIconProps) {
           marginTop: 2,
           letterSpacing: 0.3,
         }}
+        numberOfLines={1}
       >
         {label}
       </Text>
@@ -74,19 +75,19 @@ export default function AdminLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="dashboard" label="Dashboard" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="dashboard" label="Accueil" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="verifications"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="fact-check" label="Vérifications" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="fact-check" label="Vérifs" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="users"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="group" label="Utilisateurs" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="group" label="Comptes" focused={focused} />,
         }}
       />
       <Tabs.Screen

@@ -64,10 +64,11 @@ Deno.serve(async (req) => {
     const { data: caller } = await supabase.from('users').select('role').eq('id', user.id).single()
     if (caller?.role !== 'admin') return json({ error: 'Forbidden' }, 403)
 
-    const { organization_id, action, note } = await req.json() as {
+    const { organization_id, action, note, force_without_documents } = await req.json() as {
       organization_id?: string
       action?: 'approve' | 'reject' | 'request_info'
       note?: string
+      force_without_documents?: boolean
     }
     if (!organization_id || !action) return json({ error: 'organization_id and action are required' }, 400)
     if (!['approve', 'reject', 'request_info'].includes(action)) return json({ error: 'Invalid action' }, 400)
@@ -118,12 +119,32 @@ Deno.serve(async (req) => {
     // justificatif n'a été soumis (bug remonté : pratique possible côté web
     // même quand l'upload mobile avait échoué en amont). Miroir du même
     // garde-fou côté practitioners (trigger trg_practitioner_approval_requires_documents).
+    // Sortie de secours : les organisations créées pendant la panne d'upload
+    // (fetch().blob() en RN) ont zéro document et devenaient donc impossibles
+    // à valider — le compte restait bloqué sur "en attente" indéfiniment.
+    // L'admin peut passer outre, mais seulement de façon explicite et motivée,
+    // et le contournement est tracé dans l'audit.
+    let forcedWithoutDocuments = false
     if (action === 'approve') {
       const { count } = await supabase
         .from('organization_documents')
         .select('id', { count: 'exact', head: true })
         .eq('organization_id', organization_id)
-      if (!count) return json({ error: 'Impossible d\'approuver : aucun document justificatif soumis pour cette organisation.' }, 400)
+      if (!count) {
+        if (!force_without_documents) {
+          return json({
+            error: 'Impossible d\'approuver : aucun document justificatif soumis pour cette organisation.',
+            code: 'no_documents',
+          }, 400)
+        }
+        if (!note?.trim()) {
+          return json({
+            error: 'Validation sans document : un motif est obligatoire.',
+            code: 'reason_required',
+          }, 400)
+        }
+        forcedWithoutDocuments = true
+      }
     }
 
     const { error: updateError } = await supabase
@@ -181,7 +202,7 @@ Deno.serve(async (req) => {
       resource_type: 'organization',
       resource_id: organization_id,
       old_values: { status: org.status },
-      new_values: { status: newStatus, note },
+      new_values: { status: newStatus, note, forced_without_documents: forcedWithoutDocuments },
       module: 'organization',
       target_user_id: org.created_by,
       target_role: 'organization_admin',

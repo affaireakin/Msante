@@ -77,8 +77,15 @@ export default function OrganizationsPage() {
   const [statusDialog, setStatusDialog] = useState<{ orgId: string; action: 'suspend' | 'reactivate' | 'archive' | 'delete' } | null>(null)
   const [statusReason, setStatusReason] = useState('')
 
+  // Validation sans document : sortie de secours motivée pour les
+  // organisations créées pendant la panne d'upload, qui n'ont aucun
+  // justificatif et devenaient donc impossibles à valider (compte bloqué
+  // sur "en attente de validation" indéfiniment).
+  const [forceDialog, setForceDialog] = useState<{ orgId: string; name: string } | null>(null)
+  const [forceReason, setForceReason] = useState('')
+
   const validate = useMutation({
-    mutationFn: async (body: { organization_id: string; action: 'approve' | 'reject' | 'request_info'; note?: string }) => {
+    mutationFn: async (body: { organization_id: string; action: 'approve' | 'reject' | 'request_info'; note?: string; force_without_documents?: boolean }) => {
       const { error } = await supabase.functions.invoke('validate-organization', { body })
       if (error) {
         // .invoke() throws a generic "non-2xx status code" FunctionsHttpError
@@ -102,6 +109,7 @@ export default function OrganizationsPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-organizations'] })
       setRejectDialog(null); setRejectReason('')
       setInfoDialog(null); setInfoNote('')
+      setForceDialog(null); setForceReason('')
     },
   })
 
@@ -117,6 +125,15 @@ export default function OrganizationsPage() {
   })
 
   const handleApprove = (orgId: string) => validate.mutate({ organization_id: orgId, action: 'approve' })
+  const handleForceApprove = () => {
+    if (!forceDialog || !forceReason.trim()) return
+    validate.mutate({
+      organization_id: forceDialog.orgId,
+      action: 'approve',
+      note: forceReason.trim(),
+      force_without_documents: true,
+    })
+  }
   const handleReject = () => {
     if (!rejectDialog || !rejectReason.trim()) return
     validate.mutate({ organization_id: rejectDialog.orgId, action: 'reject', note: rejectReason })
@@ -208,6 +225,19 @@ export default function OrganizationsPage() {
                       Demandé par {org.users?.full_name ?? '—'} le {new Date(org.created_at).toLocaleDateString('fr-FR')}
                       {org.siret && ` · SIRET ${org.siret}`}
                     </p>
+                    {/* Le nombre de documents et l'heure exacte permettent de
+                        distinguer des demandes en doublon, autrement
+                        identiques (même nom, même demandeur). */}
+                    <p className="text-xs mt-0.5">
+                      <span className={org.organization_documents.length === 0 ? 'text-amber-700 font-semibold' : 'text-[#6f787e]'}>
+                        {org.organization_documents.length === 0
+                          ? 'Aucun document'
+                          : `${org.organization_documents.length} document${org.organization_documents.length > 1 ? 's' : ''}`}
+                      </span>
+                      <span className="text-[#bec8ce]">
+                        {' · créée à '}{new Date(org.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </p>
                     {org.organization_documents.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {org.organization_documents.map(doc => (
@@ -234,11 +264,24 @@ export default function OrganizationsPage() {
 
                   {org.status === 'pending' && (
                     <>
-                      <button onClick={() => handleApprove(org.id)} disabled={validate.isPending || org.organization_documents.length === 0}
-                        title={org.organization_documents.length === 0 ? 'Aucun document soumis — impossible à valider' : undefined}
-                        className="px-4 py-2 bg-emerald-500 text-white text-sm font-semibold rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        Valider
-                      </button>
+                      {/* Sans document, le bouton était purement désactivé :
+                          les organisations créées pendant la panne d'upload
+                          devenaient invalidables et leur compte restait bloqué
+                          sur "en attente". La validation reste possible, mais
+                          passe par une confirmation motivée et tracée. */}
+                      {org.organization_documents.length === 0 ? (
+                        <button onClick={() => { setForceDialog({ orgId: org.id, name: org.name }); setForceReason('') }}
+                          disabled={validate.isPending}
+                          title="Aucun document soumis — validation possible avec motif"
+                          className="px-4 py-2 bg-amber-500 text-white text-sm font-semibold rounded-full hover:bg-amber-600 transition-colors disabled:opacity-50">
+                          Valider sans document
+                        </button>
+                      ) : (
+                        <button onClick={() => handleApprove(org.id)} disabled={validate.isPending}
+                          className="px-4 py-2 bg-emerald-500 text-white text-sm font-semibold rounded-full hover:bg-emerald-600 transition-colors disabled:opacity-50">
+                          Valider
+                        </button>
+                      )}
                       <button onClick={() => setInfoDialog({ orgId: org.id })}
                         className="px-4 py-2 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full hover:bg-blue-200 transition-colors">
                         Demander des infos
@@ -292,6 +335,32 @@ export default function OrganizationsPage() {
       )}
 
       {/* Reject dialog */}
+      {/* Validation sans document — confirmation motivée, tracée dans l'audit */}
+      {forceDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setForceDialog(null)} />
+          <div className="relative bg-white rounded-2xl p-8 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl mx-4">
+            <h3 className="text-lg font-bold text-[#0b1c30] mb-2">Valider sans document</h3>
+            <p className="text-sm text-[#6f787e] mb-4">
+              <strong className="text-[#0b1c30]">{forceDialog.name}</strong> n&apos;a aucun justificatif.
+              Cette validation sera enregistrée dans le journal d&apos;audit avec votre motif.
+            </p>
+            <textarea value={forceReason} onChange={(e) => setForceReason(e.target.value)}
+              placeholder="Ex : documents reçus par un autre canal, échec technique d'envoi constaté..."
+              className="w-full h-28 px-4 py-3 border border-slate-200 rounded-xl text-sm text-[#0b1c30] outline-none focus:border-[#82d8ff] resize-none" />
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setForceDialog(null)} className="flex-1 py-2.5 border border-slate-200 rounded-full text-sm font-medium text-[#6f787e] hover:bg-slate-50">
+                Annuler
+              </button>
+              <button onClick={handleForceApprove} disabled={!forceReason.trim() || validate.isPending}
+                className="flex-1 py-2.5 bg-amber-500 text-white rounded-full text-sm font-semibold hover:bg-amber-600 disabled:opacity-50 transition-colors">
+                Valider quand même
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {rejectDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setRejectDialog(null)} />

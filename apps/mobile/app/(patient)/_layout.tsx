@@ -16,11 +16,11 @@ function TabIcon({ name, label, focused }: TabIconProps) {
       style={{
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 10,
+        paddingHorizontal: 4,
         paddingVertical: 6,
         borderRadius: 12,
         backgroundColor: focused ? 'rgba(0,102,133,0.08)' : 'transparent',
-        minWidth: 58,
+        minWidth: 46,
       }}
     >
       <MaterialIcons
@@ -37,6 +37,7 @@ function TabIcon({ name, label, focused }: TabIconProps) {
           marginTop: 2,
           letterSpacing: 0.3,
         }}
+        numberOfLines={1}
       >
         {label}
       </Text>
@@ -103,13 +104,13 @@ export default function PatientLayout() {
       <Tabs.Screen
         name="appointments"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="calendar-today" label="Rendez-vous" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="calendar-today" label="RDV" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="messages/index"
         options={{
-          tabBarIcon: ({ focused }) => <TabIcon name="chat-bubble-outline" label="Messagerie" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon name="chat-bubble-outline" label="Messages" focused={focused} />,
         }}
       />
 
