@@ -93,9 +93,13 @@ export default function AdminDashboardScreen() {
           </View>
           <TouchableOpacity
             onPress={() => router.push('/(admin)/notifications')}
-            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.70)', borderWidth: 1, borderColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: '#fff', borderWidth: 1, borderColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}
           >
             <MaterialIcons name="notifications-none" size={20} color="#0b1c30" />
+            {/* Pastille d'alerte quand des validations attendent (référence) */}
+            {pendingTotal > 0 && (
+              <View style={{ position: 'absolute', top: 10, right: 10, width: 9, height: 9, borderRadius: 5, backgroundColor: '#e4c546', borderWidth: 2, borderColor: '#fff' }} />
+            )}
           </TouchableOpacity>
         </View>
 
@@ -106,9 +110,12 @@ export default function AdminDashboardScreen() {
             {pendingTotal > 0 && (
               <TouchableOpacity
                 onPress={() => router.push('/(admin)/verifications')}
-                style={{ flexDirection: 'row', alignItems: 'center', gap: scale(12), backgroundColor: '#fef3c7', borderRadius: scale(16), padding: scale(16) }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: scale(12), backgroundColor: '#fef3c7', borderRadius: scale(16), padding: scale(16), borderWidth: 1, borderColor: 'rgba(146,64,14,0.18)' }}
               >
-                <MaterialIcons name="pending-actions" size={scale(22)} color="#92400e" />
+                {/* Badge d'icône arrondi (référence) plutôt qu'une icône nue */}
+                <View style={{ width: scale(42), height: scale(42), borderRadius: scale(13), backgroundColor: 'rgba(146,64,14,0.15)', alignItems: 'center', justifyContent: 'center' }}>
+                  <MaterialIcons name="pending-actions" size={scale(21)} color="#92400e" />
+                </View>
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#92400e' }}>
                     {pendingTotal} vérification{pendingTotal > 1 ? 's' : ''} en attente

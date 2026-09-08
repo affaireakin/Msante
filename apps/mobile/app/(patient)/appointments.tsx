@@ -280,7 +280,14 @@ export default function AppointmentsScreen() {
 
   const qc = useQueryClient()
   const upcoming = (data ?? []).filter(a => isUpcoming(a.scheduled_at) && a.status !== 'cancelled')
-  const past = (data ?? []).filter(a => !isUpcoming(a.scheduled_at) || a.status === 'cancelled')
+  const past = (data ?? []).filter(a => !isUpcoming(a.scheduled_at) && a.status !== 'cancelled')
+  const cancelled = (data ?? []).filter(a => a.status === 'cancelled')
+
+  // Onglets de filtre (référence fournie) — remplacent les deux sections
+  // empilées "À venir"/"Historique", et sortent les annulés de l'historique
+  // pour qu'ils ne noient plus les consultations réellement honorées.
+  const [filter, setFilter] = useState<'upcoming' | 'past' | 'cancelled'>('upcoming')
+  const filtered = filter === 'upcoming' ? upcoming : filter === 'past' ? past : cancelled
 
   function handleJoin(appt: AppointmentRow) {
     router.push(`/(patient)/consultation/waiting?appointmentId=${appt.id}` as never)
@@ -340,11 +347,33 @@ export default function AppointmentsScreen() {
         </View>
         <TouchableOpacity
           onPress={() => router.push('/(patient)/find-practitioners')}
-          style={{ backgroundColor: '#82d8ff', borderRadius: scale(14), paddingHorizontal: scale(14), paddingVertical: scale(10), flexDirection: 'row', alignItems: 'center', gap: scale(6) }}
+          style={{ backgroundColor: '#82d8ff', borderRadius: 999, paddingHorizontal: scale(14), paddingVertical: scale(10), flexDirection: 'row', alignItems: 'center', gap: scale(6) }}
         >
           <MaterialIcons name="add" size={scale(18)} color="#0b1c30" />
           <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.sm, fontFamily: 'Manrope' }}>Nouveau</Text>
         </TouchableOpacity>
+      </View>
+
+      {/* Onglets de filtre (référence fournie) */}
+      <View style={{ marginHorizontal: px, marginBottom: scale(14), flexDirection: 'row', backgroundColor: 'rgba(229,238,255,0.6)', borderRadius: scale(14), padding: scale(4), gap: scale(4) }}>
+        {([
+          { key: 'upcoming' as const, label: `À venir${upcoming.length ? ` (${upcoming.length})` : ''}` },
+          { key: 'past' as const, label: 'Passés' },
+          { key: 'cancelled' as const, label: 'Annulés' },
+        ]).map(t => {
+          const active = filter === t.key
+          return (
+            <TouchableOpacity
+              key={t.key}
+              onPress={() => setFilter(t.key)}
+              style={{ flex: 1, paddingVertical: scale(8), borderRadius: scale(10), alignItems: 'center', backgroundColor: active ? '#fff' : 'transparent' }}
+            >
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: active ? '800' : '600', color: active ? '#0b1c30' : '#6f787e' }}>
+                {t.label}
+              </Text>
+            </TouchableOpacity>
+          )
+        })}
       </View>
 
       {isLoading ? (
@@ -366,29 +395,9 @@ export default function AppointmentsScreen() {
             />
           }
         >
-          {/* Upcoming */}
-          {upcoming.length > 0 && (
-            <View style={{ marginBottom: scale(8) }}>
-              <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#82d8ff', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(14) }}>
-                À venir
-              </Text>
-              {upcoming.map(a => (
-                <AppointmentCard key={a.id} appt={a} onJoin={() => handleJoin(a)} onCancel={() => handleCancel(a)} onAccept={() => handleAccept(a)} onDecline={() => handleDecline(a)} />
-              ))}
-            </View>
-          )}
-
-          {/* Past */}
-          {past.length > 0 && (
-            <View>
-              <Text style={{ fontSize: fs.xs, fontWeight: '700', color: '#6f787e', letterSpacing: 1, textTransform: 'uppercase', fontFamily: 'Manrope', marginBottom: scale(14), marginTop: upcoming.length > 0 ? scale(8) : 0 }}>
-                Historique
-              </Text>
-              {past.map(a => (
-                <AppointmentCard key={a.id} appt={a} onJoin={() => handleJoin(a)} onCancel={() => handleCancel(a)} onAccept={() => handleAccept(a)} onDecline={() => handleDecline(a)} />
-              ))}
-            </View>
-          )}
+          {filtered.map(a => (
+            <AppointmentCard key={a.id} appt={a} onJoin={() => handleJoin(a)} onCancel={() => handleCancel(a)} onAccept={() => handleAccept(a)} onDecline={() => handleDecline(a)} />
+          ))}
 
           {/* Bug remonté : un RDV confirmé n'apparaissait pas ici. Si la
               requête échoue (RLS, réseau, embed invalide…), `data` reste
@@ -412,27 +421,63 @@ export default function AppointmentsScreen() {
             </View>
           )}
 
-          {/* Empty state */}
-          {!queryError && (data ?? []).length === 0 && (
-            <View style={{ alignItems: 'center', paddingTop: scale(60) }}>
-              <View style={{ width: scale(80), height: scale(80), borderRadius: scale(40), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginBottom: scale(16) }}>
-                <MaterialIcons name="calendar-today" size={scale(38)} color="#82d8ff" />
+          {/* État vide illustré (référence fournie) : cercles concentriques,
+              icône, message rassurant, appel à l'action, puis les garanties. */}
+          {!queryError && filtered.length === 0 && (
+            <View style={{ alignItems: 'center', paddingTop: scale(40) }}>
+              <View style={{ width: scale(150), height: scale(150), alignItems: 'center', justifyContent: 'center', marginBottom: scale(20) }}>
+                <View style={{ position: 'absolute', width: scale(150), height: scale(150), borderRadius: scale(75), backgroundColor: 'rgba(229,238,255,0.55)' }} />
+                <View style={{ position: 'absolute', width: scale(110), height: scale(110), borderRadius: scale(55), backgroundColor: 'rgba(190,233,255,0.55)' }} />
+                <View style={{ width: scale(80), height: scale(80), borderRadius: scale(24), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#fff' }}>
+                  <MaterialIcons name="calendar-today" size={scale(38)} color="#82d8ff" />
+                </View>
               </View>
-              <Text style={{ fontSize: fs.xl, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: scale(8) }}>
-                Aucun rendez-vous
+
+              <Text style={{ fontSize: fs.xl, fontWeight: '800', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: scale(8), textAlign: 'center' }}>
+                {filter === 'upcoming' ? 'Aucun rendez-vous planifié'
+                  : filter === 'past' ? 'Aucune consultation passée'
+                  : 'Aucun rendez-vous annulé'}
               </Text>
-              <Text style={{ fontSize: fs.md, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center', lineHeight: scale(22), marginBottom: scale(28), paddingHorizontal: scale(20) }}>
-                Réservez votre première consultation avec un professionnel de santé.
+              <Text style={{ fontSize: fs.md, color: '#6f787e', fontFamily: 'Manrope', textAlign: 'center', lineHeight: scale(22), marginBottom: scale(24), paddingHorizontal: scale(24) }}>
+                {filter === 'upcoming'
+                  ? 'Consultez rapidement un praticien de santé certifié.'
+                  : filter === 'past'
+                    ? 'Vos consultations terminées apparaîtront ici.'
+                    : 'Les rendez-vous que vous annulez apparaîtront ici.'}
               </Text>
-              <TouchableOpacity
-                onPress={() => router.push('/(patient)/find-practitioners')}
-                style={{ backgroundColor: '#82d8ff', borderRadius: scale(16), paddingHorizontal: scale(24), paddingVertical: scale(14), flexDirection: 'row', alignItems: 'center', gap: scale(8) }}
-              >
-                <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.md, fontFamily: 'Manrope' }}>
-                  Trouver un praticien
-                </Text>
-                <MaterialIcons name="arrow-forward" size={scale(18)} color="#0b1c30" />
-              </TouchableOpacity>
+
+              {filter === 'upcoming' && (
+                <>
+                  <TouchableOpacity
+                    onPress={() => router.push('/(patient)/find-practitioners')}
+                    style={{ backgroundColor: '#82d8ff', borderRadius: scale(18), paddingHorizontal: scale(28), paddingVertical: scale(15), flexDirection: 'row', alignItems: 'center', gap: scale(8) }}
+                  >
+                    <Text style={{ color: '#0b1c30', fontWeight: '800', fontSize: fs.md, fontFamily: 'Manrope' }}>
+                      Trouver un praticien
+                    </Text>
+                    <MaterialIcons name="arrow-forward" size={scale(18)} color="#0b1c30" />
+                  </TouchableOpacity>
+
+                  <View style={{ flexDirection: 'row', gap: scale(12), marginTop: scale(28), paddingTop: scale(18), borderTopWidth: 1, borderTopColor: 'rgba(229,238,255,0.9)' }}>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+                      <View style={{ width: scale(28), height: scale(28), borderRadius: scale(9), backgroundColor: '#e8f5e9', alignItems: 'center', justifyContent: 'center' }}>
+                        <MaterialIcons name="verified-user" size={scale(15)} color="#1d7a3a" />
+                      </View>
+                      <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '600', color: '#3f484d' }}>
+                        Praticiens vérifiés
+                      </Text>
+                    </View>
+                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+                      <View style={{ width: scale(28), height: scale(28), borderRadius: scale(9), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}>
+                        <MaterialIcons name="notifications-active" size={scale(15)} color="#006685" />
+                      </View>
+                      <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '600', color: '#3f484d' }}>
+                        Rappels automatiques
+                      </Text>
+                    </View>
+                  </View>
+                </>
+              )}
             </View>
           )}
         </ScrollView>
