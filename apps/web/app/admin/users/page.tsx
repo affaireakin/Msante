@@ -6,7 +6,10 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { getSignedDocumentUrl } from '@/lib/signedDocumentUrl'
 
-type Role = 'all' | 'patient' | 'practitioner' | 'admin'
+// Les comptes organisation et secrétaire manquaient à cette vue : ils
+// existent bien en base (organization_admin, organization_member, secretary)
+// mais n'étaient filtrables nulle part, donc invisibles côté admin.
+type Role = 'all' | 'patient' | 'practitioner' | 'admin' | 'organization_admin' | 'organization_member' | 'secretary'
 type AccountStatus = 'active' | 'suspended' | 'blocked'
 type VerificationStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
 type DocumentStatus = 'pending' | 'approved' | 'rejected'
@@ -167,6 +170,17 @@ function initials(name: string) {
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
+// Le badge affichait la valeur brute en base ("organization_admin") — peu
+// lisible dans une console d'administration en français.
+const ROLE_LABELS: Record<string, string> = {
+  patient: 'Patient',
+  practitioner: 'Praticien',
+  admin: 'Admin',
+  organization_admin: 'Organisation',
+  organization_member: 'Collaborateur',
+  secretary: 'Secrétaire',
+}
+
 function RoleBadge({ role }: { role: string }) {
   const c = roleColors[role] ?? { bg: '#f1f5f9', text: '#64748b' }
   return (
@@ -174,7 +188,7 @@ function RoleBadge({ role }: { role: string }) {
       className="text-xs font-semibold px-2 py-0.5 rounded-full"
       style={{ backgroundColor: c.bg, color: c.text }}
     >
-      {role}
+      {ROLE_LABELS[role] ?? role}
     </span>
   )
 }
@@ -933,6 +947,9 @@ function UsersPageInner() {
     { label: 'Tous', value: 'all' },
     { label: 'Patients', value: 'patient' },
     { label: 'Praticiens', value: 'practitioner' },
+    { label: 'Organisations', value: 'organization_admin' },
+    { label: 'Collaborateurs', value: 'organization_member' },
+    { label: 'Secrétaires', value: 'secretary' },
     { label: 'Admins', value: 'admin' },
   ]
 

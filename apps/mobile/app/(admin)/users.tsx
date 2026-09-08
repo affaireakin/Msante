@@ -70,16 +70,45 @@ function useUsers(role: Role, search: string) {
   return useQuery<UserRow[]>({
     queryKey: ['admin-users-mobile', role, search],
     queryFn: async () => {
+      // L'organisation N'EST PAS jointe ici : `organizations` a deux clés
+      // étrangères vers `users` (created_by, validated_by), et un embed
+      // inverse exige alors le nom exact de la contrainte. Une syntaxe
+      // approximative fait échouer TOUTE la requête — la liste paraissait
+      // alors simplement vide ("Aucun utilisateur trouvé"). Requête séparée,
+      // insensible au nommage des contraintes.
       let query = supabase
         .from('users')
-        .select('id, full_name, role, email, phone, account_status, created_at, practitioners(speciality, prefix:professional_prefixes(prefix)), organizations!created_by(name, status)')
+        .select('id, full_name, role, email, phone, account_status, created_at, practitioners(speciality, prefix:professional_prefixes(prefix))')
         .order('created_at', { ascending: false })
         .limit(100)
       if (role !== 'all') query = query.eq('role', role)
       if (search.trim()) query = query.ilike('full_name', `%${search.trim()}%`)
       const { data, error } = await query
       if (error) throw error
-      return (data ?? []) as UserRow[]
+      const rows = (data ?? []) as UserRow[]
+
+      // Rattachement des organisations en une requête distincte, uniquement
+      // pour les comptes concernés (un créateur d'organisation garde le rôle
+      // 'patient' tant que sa demande n'est pas validée — l'afficher comme un
+      // simple patient côté admin était trompeur).
+      const candidateIds = rows.filter(r => r.role === 'patient').map(r => r.id)
+      if (candidateIds.length > 0) {
+        const { data: orgs } = await supabase
+          .from('organizations')
+          .select('name, status, created_by')
+          .in('created_by', candidateIds)
+        const byCreator = new Map<string, { name: string; status: string }>()
+        for (const o of orgs ?? []) {
+          if (o.created_by && !byCreator.has(o.created_by)) {
+            byCreator.set(o.created_by, { name: o.name as string, status: o.status as string })
+          }
+        }
+        for (const r of rows) {
+          const org = byCreator.get(r.id)
+          r.organizations = org ? [org] : []
+        }
+      }
+      return rows
     },
   })
 }
@@ -190,7 +219,7 @@ export default function AdminUsersScreen() {
   const [role, setRole] = useState<Role>('all')
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<UserRow | null>(null)
-  const { data: users = [], isLoading } = useUsers(role, search)
+  const { data: users = [], isLoading, error: queryError, refetch } = useUsers(role, search)
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }} edges={['top']}>
@@ -216,6 +245,23 @@ export default function AdminUsersScreen() {
       <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(8), paddingBottom: scale(100) }} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <ActivityIndicator color="#82d8ff" style={{ marginTop: scale(20) }} />
+        ) : queryError ? (
+          // Sans ceci, une requête en échec s'affichait comme une liste vide :
+          // impossible de distinguer "aucun résultat" de "la requête a planté".
+          <View style={{ padding: scale(14), borderRadius: scale(14), backgroundColor: '#ffdad6', borderWidth: 1, borderColor: 'rgba(186,26,26,0.25)', gap: scale(6) }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+              <MaterialIcons name="error-outline" size={scale(18)} color="#ba1a1a" />
+              <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#ba1a1a' }}>
+                Impossible de charger les utilisateurs
+              </Text>
+            </View>
+            <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, color: '#ba1a1a' }}>
+              {(queryError as Error).message}
+            </Text>
+            <TouchableOpacity onPress={() => refetch()} style={{ alignSelf: 'flex-start', marginTop: scale(4), paddingHorizontal: scale(14), paddingVertical: scale(8), borderRadius: 999, backgroundColor: '#ba1a1a' }}>
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '800', color: '#fff' }}>Réessayer</Text>
+            </TouchableOpacity>
+          </View>
         ) : users.length === 0 ? (
           <View style={{ alignItems: 'center', gap: scale(8), paddingVertical: scale(40) }}>
             <MaterialIcons name="person-search" size={scale(36)} color="#bec8ce" />
