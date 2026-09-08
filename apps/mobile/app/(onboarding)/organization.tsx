@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { View, Text, TouchableOpacity, ScrollView, Alert, ActivityIndicator, Image } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, Alert, ActivityIndicator, Image, KeyboardAvoidingView, Platform } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -77,12 +77,18 @@ export default function OrganizationOnboardingScreen() {
 
       const { data: profile } = await supabase.from('users').select('email').eq('id', user.id).single()
 
-      const { data: existingOrg } = await supabase
+      // .maybeSingle() lève une erreur dès qu'il existe 2 lignes ou plus —
+      // exactement l'état où les doublons déjà créés mettent la base. La
+      // vérification anti-doublon tombait donc en panne précisément quand
+      // elle était le plus nécessaire, laissant passer une création de plus.
+      // .limit(1) prend la demande la plus récente sans jamais échouer.
+      const { data: existingOrgs } = await supabase
         .from('organizations')
         .select('name, status')
         .eq('created_by', user.id)
         .order('created_at', { ascending: false })
-        .maybeSingle()
+        .limit(1)
+      const existingOrg = existingOrgs?.[0] ?? null
 
       if (existingOrg) {
         setExistingRequest({ name: existingOrg.name, status: existingOrg.status })
@@ -123,6 +129,25 @@ export default function OrganizationOnboardingScreen() {
     setError('')
     try {
       let currentOrgId = orgId
+
+      // L'état local ne survit pas à une fermeture de l'app : après un échec
+      // d'envoi de documents, rouvrir l'app et resoumettre recréait une
+      // organisation (c'est ainsi que 3 "Clinique rabi" se sont retrouvées en
+      // base). On revérifie donc aussi côté serveur avant toute insertion.
+      if (!currentOrgId) {
+        const { data: priorOrgs } = await supabase
+          .from('organizations')
+          .select('id')
+          .eq('created_by', userId)
+          .eq('status', 'pending')
+          .order('created_at', { ascending: false })
+          .limit(1)
+        if (priorOrgs && priorOrgs.length > 0) {
+          currentOrgId = priorOrgs[0].id
+          setOrgId(priorOrgs[0].id)
+        }
+      }
+
       const isFreshSubmission = !currentOrgId
 
       if (!currentOrgId) {
@@ -252,7 +277,18 @@ export default function OrganizationOnboardingScreen() {
   // ── Formulaire ──
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9ff' }}>
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+      {/* Bug remonté : le clavier recouvrait les derniers champs (SIRET en
+          particulier) — on ne voyait pas ce qu'on tapait, d'où des valeurs
+          saisies à l'aveugle ("Hh", "Ff") retrouvées en base. */}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={{ fontFamily: 'Manrope', fontSize: 22, fontWeight: '800', color: '#0b1c30', textAlign: 'center', marginBottom: 4 }}>
           Créer votre organisation
         </Text>
@@ -354,6 +390,7 @@ export default function OrganizationOnboardingScreen() {
           <Text style={{ textAlign: 'center', fontSize: 13, color: '#6f787e', fontFamily: 'Manrope' }}>Se déconnecter</Text>
         </TouchableOpacity>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }

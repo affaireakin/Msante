@@ -49,7 +49,7 @@ function generateSlots(
   weekly: WeeklyAvail[],
   types: ConsultationType[],
   blocked: BlockedPeriod[],
-  taken: string[],
+  taken: number[],
   daysAhead: number,
 ): AvailabilitySlot[] {
   const slots: AvailabilitySlot[] = []
@@ -94,10 +94,15 @@ function generateSlots(
             const endMin2 = cur + ctype.duration_min
             const endStr = `${pad(Math.floor(endMin2 / 60))}:${pad(endMin2 % 60)}`
             const slotDt = new Date(`${dateStr}T${startStr}:00Z`)
-            const takenKey = `${dateStr}T${startStr}:00`
 
             if (slotDt >= earliest) {
-              slots.push({ date: dateStr, start_time: startStr, end_time: endStr, type: ctype, taken: taken.includes(takenKey) })
+              // Bug remonté : un créneau déjà réservé restait sélectionnable et
+              // n'échouait qu'au moment de payer ("Slot already taken"). La
+              // détection comparait des CHAÎNES de dates (préfixe de 19
+              // caractères de scheduled_at) — au moindre écart de format ou de
+              // fuseau renvoyé par Postgres, plus aucune correspondance. On
+              // compare désormais des instants réels.
+              slots.push({ date: dateStr, start_time: startStr, end_time: endStr, type: ctype, taken: taken.includes(slotDt.getTime()) })
             }
             cur += ctype.duration_min
           }
@@ -124,7 +129,7 @@ export function useAvailability(practitionerId: string, daysAhead = 30) {
       if (blockedErr) throw blockedErr
       if (apptErr) throw apptErr
 
-      const taken = (appointments ?? []).map(a => (a.scheduled_at as string).substring(0, 19))
+      const taken = (appointments ?? []).map(a => new Date(a.scheduled_at as string).getTime())
       const consultationTypes = (types ?? []) as ConsultationType[]
       const slots = generateSlots((weekly ?? []) as WeeklyAvail[], consultationTypes, (blocked ?? []) as BlockedPeriod[], taken, daysAhead)
 

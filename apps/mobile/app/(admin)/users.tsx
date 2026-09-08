@@ -20,6 +20,9 @@ interface UserRow {
   // PostgREST renvoie l'embed en tableau (pas d'objet unique typé côté client
   // ici) même si user_id est unique côté base — un seul élément en pratique.
   practitioners: { speciality: string; prefix: { prefix: string }[] }[]
+  // organizations a DEUX clés étrangères vers users (created_by, validated_by)
+  // — l'embed doit être désambiguïsé explicitement (!created_by).
+  organizations: { name: string; status: string }[]
 }
 
 // Affichait "Praticien" pour tout le monde au lieu de la vraie profession
@@ -30,6 +33,15 @@ function roleLabel(user: UserRow): string {
   if (user.role === 'practitioner' && practitioner?.speciality) {
     const prefix = practitioner.prefix?.[0]?.prefix
     return prefix ? `${prefix} · ${practitioner.speciality}` : practitioner.speciality
+  }
+  // Un créateur d'organisation reste role='patient' en base tant que sa
+  // demande n'est pas validée (le rôle réel n'existe qu'après approbation) —
+  // l'afficher comme un simple "Patient" côté admin était trompeur.
+  const org = user.organizations?.[0]
+  if (user.role === 'patient' && org) {
+    return org.status === 'pending'
+      ? `Organisation en attente · ${org.name}`
+      : `Organisation · ${org.name}`
   }
   return ROLE_LABELS[user.role] ?? user.role
 }
@@ -60,7 +72,7 @@ function useUsers(role: Role, search: string) {
     queryFn: async () => {
       let query = supabase
         .from('users')
-        .select('id, full_name, role, email, phone, account_status, created_at, practitioners(speciality, prefix:professional_prefixes(prefix))')
+        .select('id, full_name, role, email, phone, account_status, created_at, practitioners(speciality, prefix:professional_prefixes(prefix)), organizations!created_by(name, status)')
         .order('created_at', { ascending: false })
         .limit(100)
       if (role !== 'all') query = query.eq('role', role)

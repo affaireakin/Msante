@@ -256,7 +256,7 @@ export default function AppointmentsScreen() {
   const { profile } = useAuthStore()
   const { px, fs, scale } = useResponsive()
 
-  const { data, isLoading, refetch, isRefetching } = useQuery({
+  const { data, isLoading, refetch, isRefetching, error: queryError } = useQuery({
     queryKey: ['patient-appointments', profile?.id],
     enabled: !!profile?.id,
     queryFn: async () => {
@@ -390,8 +390,30 @@ export default function AppointmentsScreen() {
             </View>
           )}
 
+          {/* Bug remonté : un RDV confirmé n'apparaissait pas ici. Si la
+              requête échoue (RLS, réseau, embed invalide…), `data` reste
+              undefined et l'écran affichait "Aucun rendez-vous" — indiscernable
+              d'une liste réellement vide, et donc impossible à diagnostiquer.
+              L'erreur réelle est maintenant affichée. */}
+          {queryError && (
+            <View style={{ marginBottom: scale(16), padding: scale(14), borderRadius: scale(14), backgroundColor: '#ffdad6', borderWidth: 1, borderColor: 'rgba(186,26,26,0.25)', gap: scale(6) }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+                <MaterialIcons name="error-outline" size={scale(18)} color="#ba1a1a" />
+                <Text style={{ flex: 1, fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: '#ba1a1a' }}>
+                  Impossible de charger vos rendez-vous
+                </Text>
+              </View>
+              <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, color: '#ba1a1a' }}>
+                {(queryError as Error).message}
+              </Text>
+              <TouchableOpacity onPress={() => refetch()} style={{ alignSelf: 'flex-start', marginTop: scale(4), paddingHorizontal: scale(14), paddingVertical: scale(8), borderRadius: 999, backgroundColor: '#ba1a1a' }}>
+                <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '800', color: '#fff' }}>Réessayer</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           {/* Empty state */}
-          {(data ?? []).length === 0 && (
+          {!queryError && (data ?? []).length === 0 && (
             <View style={{ alignItems: 'center', paddingTop: scale(60) }}>
               <View style={{ width: scale(80), height: scale(80), borderRadius: scale(40), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center', marginBottom: scale(16) }}>
                 <MaterialIcons name="calendar-today" size={scale(38)} color="#82d8ff" />

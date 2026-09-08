@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, Modal } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, Modal, KeyboardAvoidingView, Platform } from 'react-native'
 import { useState } from 'react'
 import type { PaymentProvider } from '@/types/booking'
 import { PrimaryButton } from '@/components/ui'
@@ -32,6 +32,13 @@ export function PaymentSheet({ visible, amount, currency, onConfirm, onClose }: 
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      {/* Bug remonté : au moment de saisir le numéro pour Wave/Orange Money,
+          le clavier recouvrait le champ — on ne voyait pas ce qu'on tapait.
+          Même correctif que la saisie des créneaux praticien. */}
+      <KeyboardAvoidingView
+        style={{ flex: 1, justifyContent: 'flex-end' }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
       <TouchableOpacity className="flex-1 bg-black/40" activeOpacity={1} onPress={onClose} />
       <View className="bg-background rounded-t-2xl px-6 pt-6 pb-10">
         <View className="w-10 h-1 bg-outline-variant rounded-full self-center mb-6" />
@@ -100,6 +107,7 @@ export function PaymentSheet({ visible, amount, currency, onConfirm, onClose }: 
           disabled={!canPay}
         />
       </View>
+      </KeyboardAvoidingView>
     </Modal>
   )
 }

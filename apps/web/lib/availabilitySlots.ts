@@ -33,7 +33,7 @@ export function generateSlots(
   weekly: WeeklyAvail[],
   types: ConsultationType[],
   blocked: BlockedPeriod[],
-  taken: string[],
+  taken: number[],
   settings: BookingSettings,
 ): TimeSlot[] {
   const slots: TimeSlot[] = []
@@ -86,10 +86,14 @@ export function generateSlots(
             const endStr = `${pad(Math.floor(endMin2 / 60))}:${pad(endMin2 % 60)}`
             // Parse slot as UTC (Dakar = UTC+0), compare against UTC earliest
             const slotDt = new Date(`${dateStr}T${startStr}:00Z`)
-            const takenKey = `${dateStr}T${startStr}:00`
 
             if (slotDt >= earliest) {
-              slots.push({ date: dateStr, start_time: startStr, end_time: endStr, type: ctype, location: avail.location ?? null, taken: taken.includes(takenKey) })
+              // La détection des créneaux pris comparait des CHAÎNES (préfixe
+              // de 19 caractères de scheduled_at) — au moindre écart de format
+              // ou de fuseau renvoyé par Postgres, plus aucune correspondance
+              // et un créneau déjà réservé restait proposé (échec seulement au
+              // moment de payer). On compare désormais des instants réels.
+              slots.push({ date: dateStr, start_time: startStr, end_time: endStr, type: ctype, location: avail.location ?? null, taken: taken.includes(slotDt.getTime()) })
             }
             cur += dur
           }

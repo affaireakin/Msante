@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Modal, TextInput } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -87,11 +87,23 @@ export default function AdminVerificationsScreen() {
   const { fs, scale } = useResponsive()
   const qc = useQueryClient()
   const [tab, setTab] = useState<'practitioners' | 'organizations'>('practitioners')
+  const [tabTouched, setTabTouched] = useState(false)
   const [rejectingPract, setRejectingPract] = useState<{ id: string; userId: string } | null>(null)
   const [rejectingOrg, setRejectingOrg] = useState<string | null>(null)
 
   const { data: practitioners = [], isLoading: loadingPract } = usePendingPractitioners()
   const { data: organizations = [], isLoading: loadingOrgs } = usePendingOrganizations()
+
+  // Bug remonté : "quand je me rends sur la notif en jaune rien n'apparaît".
+  // La bannière du tableau de bord compte praticiens ET organisations, mais
+  // cet écran s'ouvrait toujours sur l'onglet Praticiens — vide quand seules
+  // des organisations sont en attente. On bascule automatiquement sur
+  // l'onglet qui a réellement des demandes, tant que l'admin n'a pas
+  // lui-même choisi un onglet.
+  useEffect(() => {
+    if (tabTouched || loadingPract || loadingOrgs) return
+    if (practitioners.length === 0 && organizations.length > 0) setTab('organizations')
+  }, [tabTouched, loadingPract, loadingOrgs, practitioners.length, organizations.length])
 
   const approvePract = useMutation({
     mutationFn: async ({ practId, userId }: { practId: string; userId: string }) => {
@@ -148,7 +160,7 @@ export default function AdminVerificationsScreen() {
             { key: 'practitioners' as const, label: `Praticiens${practitioners.length ? ` (${practitioners.length})` : ''}` },
             { key: 'organizations' as const, label: `Organisations${organizations.length ? ` (${organizations.length})` : ''}` },
           ].map(t => (
-            <TouchableOpacity key={t.key} onPress={() => setTab(t.key)}
+            <TouchableOpacity key={t.key} onPress={() => { setTabTouched(true); setTab(t.key) }}
               style={{ paddingHorizontal: scale(14), paddingVertical: scale(8), borderRadius: 999, backgroundColor: tab === t.key ? '#82d8ff' : '#e5eeff' }}>
               <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, fontWeight: '700', color: tab === t.key ? '#fff' : '#82d8ff' }}>{t.label}</Text>
             </TouchableOpacity>

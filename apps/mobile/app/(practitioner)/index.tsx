@@ -1,5 +1,6 @@
 import { ScrollView, View, Text, TouchableOpacity, Alert, RefreshControl } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/features/auth/hooks/useAuth'
@@ -141,6 +142,7 @@ function AppointmentCard({
 export default function AgendaScreen() {
   const { practitioner } = useAuth()
   const { px, fs, scale } = useResponsive()
+  const router = useRouter()
   const queryClient = useQueryClient()
   const { data, isLoading, refetch, isRefetching } = useAgenda(practitioner?.id ?? '')
 
@@ -205,6 +207,14 @@ export default function AgendaScreen() {
               </Text>
             </View>
           )}
+          {/* Retour terrain : la roue dentée doit être accessible en haut à
+              droite, pas seulement via l'onglet Paramètres en bas. */}
+          <TouchableOpacity
+            onPress={() => router.push('/(practitioner)/profile')}
+            style={{ width: scale(36), height: scale(36), borderRadius: scale(18), backgroundColor: '#e5eeff', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <MaterialIcons name="settings" size={scale(20)} color="#006685" />
+          </TouchableOpacity>
         </View>
       </View>
 

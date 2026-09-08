@@ -55,7 +55,7 @@ function useBookingData(practId: string) {
 
       const defaultSettings: BookingSettings = { min_booking_delay_h: 2, max_booking_days_ahead: 60, buffer_between_min: 0, auto_confirm: true }
       const effectiveSettings: BookingSettings = settings ? { ...defaultSettings, ...settings } : defaultSettings
-      const taken = (appointments ?? []).map(a => (a.scheduled_at as string).substring(0, 19))
+      const taken = (appointments ?? []).map(a => new Date(a.scheduled_at as string).getTime())
       const slots = generateSlots(
         (weekly ?? []) as unknown as WeeklyAvail[],
         (types ?? []) as ConsultationType[],
