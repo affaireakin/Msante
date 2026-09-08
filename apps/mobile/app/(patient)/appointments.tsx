@@ -11,6 +11,8 @@ import { supabase } from '@/services/supabase'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useResponsive } from '@/hooks/useResponsive'
 import { APPOINTMENT_STATUS_STYLES, type AppointmentStatus, type SessionType } from '@/types/booking'
+import { localEquivalent } from '@/services/timezone'
+import { TimezoneNotice } from '@/components/ui'
 
 interface AppointmentRow {
   id: string
@@ -143,6 +145,12 @@ function AppointmentCard({ appt, onJoin, onCancel, onAccept, onDecline }: {
       <View style={{ backgroundColor: '#f8f9ff', paddingHorizontal: scale(16), paddingVertical: scale(10), flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: 1, borderBottomColor: '#e5eeff' }}>
         <Text style={{ fontSize: fs.sm, fontWeight: '700', color: '#0b1c30', fontFamily: 'Manrope' }}>
           {formatDate(appt.scheduled_at)} · {formatTime(appt.scheduled_at)}
+          {/* Heure locale si le téléphone n'est pas sur l'heure du Sénégal */}
+          {localEquivalent(appt.scheduled_at) && (
+            <Text style={{ fontWeight: '600', color: '#705d00' }}>
+              {' '}({localEquivalent(appt.scheduled_at)} chez vous)
+            </Text>
+          )}
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(6) }}>
           <MaterialIcons name={TYPE_ICON[appt.type] ?? 'videocam'} size={scale(16)} color="#6f787e" />
@@ -395,6 +403,12 @@ export default function AppointmentsScreen() {
             />
           }
         >
+          {filtered.length > 0 && (
+            <View style={{ marginBottom: scale(14) }}>
+              <TimezoneNotice />
+            </View>
+          )}
+
           {filtered.map(a => (
             <AppointmentCard key={a.id} appt={a} onJoin={() => handleJoin(a)} onCancel={() => handleCancel(a)} onAccept={() => handleAccept(a)} onDecline={() => handleDecline(a)} />
           ))}

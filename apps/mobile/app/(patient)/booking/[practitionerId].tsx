@@ -8,7 +8,7 @@ import { usePractitioner } from '@/features/practitioners/hooks/usePractitioner'
 import { useAvailability, type ConsultationType } from '@/features/practitioners/hooks/useAvailability'
 import { WeekCalendar } from '@/features/practitioners/components/WeekCalendar'
 import { SlotPicker } from '@/features/practitioners/components/SlotPicker'
-import { PrimaryButton } from '@/components/ui'
+import { PrimaryButton, TimezoneNotice } from '@/components/ui'
 import { useBookingStore } from '@/features/booking/store/bookingStore'
 import { supabase } from '@/services/supabase'
 import type { SessionType, TimeSlot } from '@/types/booking'
@@ -225,6 +225,10 @@ export default function BookingScreen() {
             <Text style={{ fontSize: 14, fontWeight: '600', color: '#0b1c30', fontFamily: 'Manrope', marginBottom: 12 }}>
               Créneaux disponibles
             </Text>
+            {/* N'apparaît que si le téléphone n'est pas à l'heure du Sénégal */}
+            <View style={{ marginBottom: 12 }}>
+              <TimezoneNotice />
+            </View>
             <SlotPicker
               slots={slots ?? []}
               selectedDate={selectedDate}

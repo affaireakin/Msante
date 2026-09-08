@@ -14,6 +14,8 @@ import {
   declineAppointment,
 } from '@/features/practitioner/services/appointmentActions'
 import { useResponsive } from '@/hooks/useResponsive'
+import { localEquivalent } from '@/services/timezone'
+import { TimezoneNotice } from '@/components/ui'
 
 // Écran d'accueil praticien refondu sur la référence fournie (agenda type
 // Doctolib) : bandeau d'identité, sélecteur de jour de la semaine, résumé de
@@ -102,6 +104,13 @@ function AgendaCard({ appt, onJoin, onApprove, onDecline, isWorking, scale, fs }
         <Text style={{ fontFamily: 'Manrope', fontSize: fs.sm, fontWeight: '700', color: live ? '#ba1a1a' : past ? '#bec8ce' : '#0b1c30' }}>
           {timeLabel(appt.scheduledAt)}
         </Text>
+        {/* Heure locale si le praticien n'est pas sur l'heure du Sénégal
+            (cas du praticien en déplacement, à l'origine du décalage de 2h) */}
+        {localEquivalent(appt.scheduledAt) && (
+          <Text style={{ fontFamily: 'Manrope', fontSize: 10, fontWeight: '700', color: '#705d00', marginTop: 1 }}>
+            ({localEquivalent(appt.scheduledAt)})
+          </Text>
+        )}
         <Text style={{ fontFamily: 'Manrope', fontSize: fs.xs, color: '#bec8ce', marginTop: 1 }}>
           {appt.durationMin} min
         </Text>
@@ -342,6 +351,11 @@ export default function AgendaScreen() {
 
         {/* ── Timeline ── */}
         <View style={{ paddingHorizontal: px, paddingTop: scale(16) }}>
+          {dayAppointments.length > 0 && (
+            <View style={{ marginBottom: scale(14) }}>
+              <TimezoneNotice />
+            </View>
+          )}
           {isLoading ? (
             <View style={{ paddingVertical: scale(40), alignItems: 'center' }}>
               <ActivityIndicator color="#82d8ff" />

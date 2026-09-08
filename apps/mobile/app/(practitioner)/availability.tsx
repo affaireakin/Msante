@@ -19,6 +19,7 @@ import {
   type WeeklyBlock,
 } from '@/features/practitioner/hooks/useAvailabilitySettings'
 import { GlassCard } from '@/components/ui/GlassCard'
+import { TimezoneNotice } from '@/components/ui'
 
 // Retour terrain (2026-09-07) : Prestations et Disponibilités doivent être
 // deux rubriques séparées sur la nav bar (comme Doctolib), pas un seul écran
@@ -81,13 +82,10 @@ function WeeklyBlockModal({ visible, day, types, onSave, onClose, isSaving }: {
               d'été) a tapé son heure locale en pensant qu'elle serait
               comprise ainsi — la plateforme interprète toujours les horaires
               en heure du Sénégal (GMT, pas de changement d'heure), d'où un
-              décalage de 2h à l'usage. On le rend explicite plutôt que de
-              deviner un fuseau par praticien. */}
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#e5eeff', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8, marginTop: -8 }}>
-            <MaterialIcons name="public" size={14} color="#006685" />
-            <Text style={{ fontFamily: 'Manrope', fontSize: 11, fontWeight: '700', color: '#006685', flex: 1 }}>
-              Heures en heure du Sénégal (GMT), même si vous êtes ailleurs
-            </Text>
+              décalage de 2h à l'usage. L'avertissement ne s'affiche que si le
+              téléphone est effectivement sur un autre fuseau. */}
+          <View style={{ marginTop: -8 }}>
+            <TimezoneNotice context="saisis" compact />
           </View>
 
           <View style={{ flexDirection: 'row', gap: 8 }}>

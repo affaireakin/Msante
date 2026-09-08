@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import type { TimeSlot } from '@/types/booking'
+import { localEquivalent } from '@/services/timezone'
 
 interface SlotPickerProps {
   slots: TimeSlot[]
@@ -40,6 +41,16 @@ export function SlotPicker({ slots, selectedDate, selectedSlot, onSelectSlot }: 
             <Text className={`text-sm font-manrope font-medium ${isSelected ? 'text-white' : 'text-on-surface'}`}>
               {slot.start_time}
             </Text>
+            {/* Équivalent dans le fuseau du téléphone, uniquement s'il diffère
+                de l'heure du Sénégal (sinon null, aucun bruit visuel). */}
+            {(() => {
+              const local = localEquivalent(`${slot.date}T${slot.start_time}:00Z`)
+              return local ? (
+                <Text className={`text-[10px] font-manrope ${isSelected ? 'text-white/80' : 'text-on-surface-variant'}`}>
+                  ({local} chez vous)
+                </Text>
+              ) : null
+            })()}
           </TouchableOpacity>
         )
       })}
