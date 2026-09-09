@@ -73,12 +73,11 @@ export interface PendingOrganization {
   status: string
 }
 
-// An organization-creation request is NOT tracked via users.role or
-// onboarding_completed — the requester stays role='patient' until a Super
-// Admin approves the org (see validate-organization edge function), so the
-// only way to know "this patient is actually mid organization-signup" is to
-// look up the organizations row by created_by. Mirrors the equivalent
-// per-page check on web (onboarding/organization/page.tsx).
+// Le demandeur porte désormais le rôle 'organization_pending' (cf.
+// 20260909000001) jusqu'à validation, où il devient 'organization_admin'.
+// L'état de la demande elle-même (pending / rejected / active) vit toujours
+// dans la table organizations, retrouvée par created_by — le rôle dit qui
+// est l'utilisateur, cette requête dit où en est son dossier.
 export async function fetchPendingOrganization(userId: string): Promise<PendingOrganization | null> {
   const { data, error } = await supabase
     .from('organizations')

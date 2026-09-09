@@ -10,13 +10,14 @@ import { authService } from '@/features/auth/services/authService'
 import { signupSchema, type SignupFormData } from '@/features/auth/schemas/authSchemas'
 import { supabase } from '@/services/supabase'
 
-// Le compte du créateur d'organisation reste role='patient' en base jusqu'à
-// validation par un Super Admin (voir validate-organization côté web) — la
-// vraie organisation vit dans sa propre table, retrouvée via `created_by`.
-// 'organization' n'est donc jamais envoyé comme rôle DB, seulement comme
-// intent de navigation transmis à verify-otp (même logique que le web,
-// où le query param `role` ne sert qu'à la redirection post-OTP, jamais
-// à l'insert lui-même).
+// Le compte du créateur d'organisation est créé avec le rôle dédié
+// 'organization_pending' (cf. 20260909000001) jusqu'à validation par un
+// Super Admin, qui le promeut en 'organization_admin'. Il était auparavant
+// enregistré comme 'patient' : la donnée était fausse côté admin, le compte
+// héritait réellement des droits patient, et les indicateurs "Patients
+// inscrits" comptaient les demandes en attente.
+// Ce rôle n'accorde aucun droit — le parcours d'inscription repose
+// entièrement sur created_by = auth.uid() (org_rls.sql).
 export default function SignupOrganizationScreen() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -58,7 +59,7 @@ export default function SignupOrganizationScreen() {
     setPhoneError('')
     setLoading(true)
     try {
-      const result = await authService.signUpWithEmail(data.email, data.password, 'patient', data.full_name, {
+      const result = await authService.signUpWithEmail(data.email, data.password, 'organization_pending', data.full_name, {
         phone: `${selectedCountry.dialCode}${phone.trim()}`,
         country: selectedCountry.isoCode,
       })

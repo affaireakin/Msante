@@ -18,7 +18,9 @@ export const authService = {
   async signUpWithEmail(
     email: string,
     password: string,
-    role: 'patient' | 'practitioner',
+    // 'organization_pending' : compte de demandeur d'organisation, promu en
+    // 'organization_admin' à la validation (cf. 20260909000001).
+    role: 'patient' | 'practitioner' | 'organization_pending',
     full_name: string,
     extra?: { practitioner_type?: string; speciality?: string; phone?: string; country?: string }
   ): Promise<AuthResult> {

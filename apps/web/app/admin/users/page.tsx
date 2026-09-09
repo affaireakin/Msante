@@ -9,7 +9,7 @@ import { getSignedDocumentUrl } from '@/lib/signedDocumentUrl'
 // Les comptes organisation et secrétaire manquaient à cette vue : ils
 // existent bien en base (organization_admin, organization_member, secretary)
 // mais n'étaient filtrables nulle part, donc invisibles côté admin.
-type Role = 'all' | 'patient' | 'practitioner' | 'admin' | 'organization_admin' | 'organization_member' | 'secretary'
+type Role = 'all' | 'patient' | 'practitioner' | 'admin' | 'organization_admin' | 'organization_member' | 'organization_pending' | 'secretary'
 type AccountStatus = 'active' | 'suspended' | 'blocked'
 type VerificationStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
 type DocumentStatus = 'pending' | 'approved' | 'rejected'
@@ -178,6 +178,7 @@ const ROLE_LABELS: Record<string, string> = {
   admin: 'Admin',
   organization_admin: 'Organisation',
   organization_member: 'Collaborateur',
+  organization_pending: 'Organisation (en attente)',
   secretary: 'Secrétaire',
 }
 
@@ -948,6 +949,7 @@ function UsersPageInner() {
     { label: 'Patients', value: 'patient' },
     { label: 'Praticiens', value: 'practitioner' },
     { label: 'Organisations', value: 'organization_admin' },
+    { label: 'Orgs en attente', value: 'organization_pending' },
     { label: 'Collaborateurs', value: 'organization_member' },
     { label: 'Secrétaires', value: 'secretary' },
     { label: 'Admins', value: 'admin' },

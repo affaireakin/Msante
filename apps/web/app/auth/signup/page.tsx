@@ -113,10 +113,13 @@ function SignupForm() {
 
     setLoading(true)
 
-    // The DB role check only accepts patient/practitioner/admin/organization_admin.
-    // A future org creator starts as a plain 'patient' — validate-organization
-    // promotes them to 'organization_admin' once the Super Admin approves the org.
-    const dbRole = role === 'organization' ? 'patient' : role
+    // Un demandeur d'organisation est créé avec le rôle dédié
+    // 'organization_pending' (cf. 20260909000001), promu en
+    // 'organization_admin' par validate-organization une fois la demande
+    // validée. Il était auparavant enregistré comme 'patient' : donnée fausse
+    // côté admin, droits patient réellement accordés, et indicateurs
+    // "Patients inscrits" gonflés par les demandes en attente.
+    const dbRole = role === 'organization' ? 'organization_pending' : role
 
     const { data: signUpData, error: authError } = await supabase.auth.signUp({
       email,

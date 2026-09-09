@@ -120,7 +120,20 @@ export default function RootLayout() {
     // every fresh app launch instead of back to their organization's status.
     // Once approved, role flips to 'organization_admin' and is handled by its
     // own tab group just below instead.
-    if (pendingOrganization && profile?.role === 'patient') {
+    // Demandeur d'organisation : rôle dédié 'organization_pending' depuis
+    // 20260909000001. 'patient' reste accepté ici pour les comptes créés
+    // avant la migration et dont la demande n'était plus en attente (donc non
+    // régularisés) — sans ce filet, ils se retrouveraient dans l'espace
+    // patient sans accès à leur demande.
+    if (pendingOrganization && (profile?.role === 'organization_pending' || profile?.role === 'patient')) {
+      if (segments[0] !== '(onboarding)') router.replace('/(onboarding)/organization')
+      return
+    }
+
+    // Demandeur dont la demande a été refusée ou supprimée : sans ceci, un
+    // compte 'organization_pending' sans organisation ne matcherait aucune
+    // branche et tomberait dans l'écran "réservé au web".
+    if (profile?.role === 'organization_pending') {
       if (segments[0] !== '(onboarding)') router.replace('/(onboarding)/organization')
       return
     }

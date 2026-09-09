@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/services/supabase'
 import { useResponsive } from '@/hooks/useResponsive'
 
-type Role = 'all' | 'patient' | 'practitioner' | 'admin' | 'organization_admin' | 'secretary'
+type Role = 'all' | 'patient' | 'practitioner' | 'admin' | 'organization_admin' | 'organization_pending' | 'secretary'
 type AccountStatus = 'active' | 'suspended' | 'blocked'
 
 interface UserRow {
@@ -38,7 +38,7 @@ function roleLabel(user: UserRow): string {
   // demande n'est pas validée (le rôle réel n'existe qu'après approbation) —
   // l'afficher comme un simple "Patient" côté admin était trompeur.
   const org = user.organizations?.[0]
-  if (user.role === 'patient' && org) {
+  if ((user.role === 'organization_pending' || user.role === 'patient') && org) {
     return org.status === 'pending'
       ? `Organisation en attente · ${org.name}`
       : `Organisation · ${org.name}`
@@ -51,13 +51,15 @@ const ROLE_TABS: { value: Role; label: string }[] = [
   { value: 'patient', label: 'Patients' },
   { value: 'practitioner', label: 'Praticiens' },
   { value: 'organization_admin', label: 'Orgs' },
+  { value: 'organization_pending', label: 'Orgs en attente' },
   { value: 'secretary', label: 'Secrétaires' },
   { value: 'admin', label: 'Admins' },
 ]
 
 const ROLE_LABELS: Record<string, string> = {
   patient: 'Patient', practitioner: 'Praticien', admin: 'Admin',
-  organization_admin: "Admin d'org", organization_member: 'Collaborateur', secretary: 'Secrétaire',
+  organization_admin: "Admin d'org", organization_member: 'Collaborateur',
+  organization_pending: 'Organisation (en attente)', secretary: 'Secrétaire',
 }
 
 const STATUS_META: Record<AccountStatus, { label: string; bg: string; color: string }> = {
@@ -123,7 +125,9 @@ function useUsers(role: Role, search: string) {
       // Organisation rattachée : un créateur d'organisation garde le rôle
       // 'patient' tant que sa demande n'est pas validée — l'afficher comme un
       // simple patient côté admin était trompeur.
-      const candidateIds = rows.filter(r => r.role === 'patient').map(r => r.id)
+      // 'patient' reste inclus pour les comptes antérieurs à la migration
+      // 20260909000001 (demande refusée, donc non régularisée).
+      const candidateIds = rows.filter(r => r.role === 'organization_pending' || r.role === 'patient').map(r => r.id)
       if (candidateIds.length > 0) {
         const { data: orgs } = await supabase
           .from('organizations')

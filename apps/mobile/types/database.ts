@@ -1,4 +1,9 @@
-export type UserRole = 'patient' | 'practitioner' | 'admin' | 'organization_admin' | 'organization_member' | 'secretary'
+// 'organization_pending' : demandeur d'organisation, du dépôt du dossier
+// jusqu'à sa validation (cf. 20260909000001). Il n'accorde aucun droit —
+// il évite surtout que ces comptes soient enregistrés comme patients, ce
+// qui leur donnait réellement les permissions patient et gonflait les
+// indicateurs "Patients inscrits".
+export type UserRole = 'patient' | 'practitioner' | 'admin' | 'organization_admin' | 'organization_member' | 'organization_pending' | 'secretary'
 export type VerificationStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
 // Doit rester strictement aligné avec le CHECK constraint Postgres
 // (verification_documents_document_type_check) — toute autre valeur
