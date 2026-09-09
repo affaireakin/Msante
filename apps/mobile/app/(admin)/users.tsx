@@ -70,15 +70,17 @@ function useUsers(role: Role, search: string) {
   return useQuery<UserRow[]>({
     queryKey: ['admin-users-mobile', role, search],
     queryFn: async () => {
-      // L'organisation N'EST PAS jointe ici : `organizations` a deux clés
-      // étrangères vers `users` (created_by, validated_by), et un embed
-      // inverse exige alors le nom exact de la contrainte. Une syntaxe
-      // approximative fait échouer TOUTE la requête — la liste paraissait
-      // alors simplement vide ("Aucun utilisateur trouvé"). Requête séparée,
-      // insensible au nommage des contraintes.
+      // AUCUN embed ici, volontairement. `practitioners` (user_id,
+      // org_validated_by) comme `organizations` (created_by, validated_by)
+      // ont chacune DEUX clés étrangères vers `users` : un embed inverse est
+      // alors ambigu et PostgREST rejette TOUTE la requête
+      // ("more than one relationship was found"). La liste entière
+      // disparaissait pour un simple libellé de spécialité. Les données
+      // annexes sont donc récupérées par des requêtes séparées, insensibles
+      // au nommage des contraintes et à l'ajout futur d'une clé étrangère.
       let query = supabase
         .from('users')
-        .select('id, full_name, role, email, phone, account_status, created_at, practitioners(speciality, prefix:professional_prefixes(prefix))')
+        .select('id, full_name, role, email, phone, account_status, created_at')
         .order('created_at', { ascending: false })
         .limit(100)
       if (role !== 'all') query = query.eq('role', role)
@@ -86,11 +88,41 @@ function useUsers(role: Role, search: string) {
       const { data, error } = await query
       if (error) throw error
       const rows = (data ?? []) as UserRow[]
+      for (const r of rows) { r.practitioners = []; r.organizations = [] }
 
-      // Rattachement des organisations en une requête distincte, uniquement
-      // pour les comptes concernés (un créateur d'organisation garde le rôle
+      // Spécialité + préfixe des praticiens
+      const practitionerIds = rows.filter(r => r.role === 'practitioner').map(r => r.id)
+      if (practitionerIds.length > 0) {
+        const { data: practs } = await supabase
+          .from('practitioners')
+          .select('user_id, speciality')
+          .in('user_id', practitionerIds)
+        const { data: withPrefix } = await supabase
+          .from('users')
+          .select('id, prefix_id, professional_prefixes(prefix)')
+          .in('id', practitionerIds)
+        const prefixById = new Map<string, string>()
+        for (const u of withPrefix ?? []) {
+          const p = (u.professional_prefixes as unknown as { prefix: string }[] | { prefix: string } | null)
+          const value = Array.isArray(p) ? p[0]?.prefix : p?.prefix
+          if (value) prefixById.set(u.id as string, value)
+        }
+        const byUser = new Map<string, string>()
+        for (const p of practs ?? []) {
+          if (p.user_id) byUser.set(p.user_id as string, p.speciality as string)
+        }
+        for (const r of rows) {
+          const speciality = byUser.get(r.id)
+          if (speciality) {
+            const prefix = prefixById.get(r.id)
+            r.practitioners = [{ speciality, prefix: prefix ? [{ prefix }] : [] }]
+          }
+        }
+      }
+
+      // Organisation rattachée : un créateur d'organisation garde le rôle
       // 'patient' tant que sa demande n'est pas validée — l'afficher comme un
-      // simple patient côté admin était trompeur).
+      // simple patient côté admin était trompeur.
       const candidateIds = rows.filter(r => r.role === 'patient').map(r => r.id)
       if (candidateIds.length > 0) {
         const { data: orgs } = await supabase
@@ -105,7 +137,7 @@ function useUsers(role: Role, search: string) {
         }
         for (const r of rows) {
           const org = byCreator.get(r.id)
-          r.organizations = org ? [org] : []
+          if (org) r.organizations = [org]
         }
       }
       return rows
