@@ -28,7 +28,7 @@ function useMyPermissionEntries() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('patient_data_permissions')
-        .select('practitioner_id, practitioners(id, speciality, users(full_name))')
+        .select('practitioner_id, practitioners(id, speciality, users!user_id(full_name))')
         .eq('patient_id', profile!.id)
       if (error) throw error
       return (data ?? []).map(row => {

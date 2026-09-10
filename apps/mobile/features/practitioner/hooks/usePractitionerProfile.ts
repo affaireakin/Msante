@@ -77,15 +77,20 @@ async function uploadAsset(uri: string, userId: string, practitionerId: string, 
     return publicUrl
   }
 
+  // Le bucket 'practitioner-assets' est PRIVÉ (à juste titre : une signature
+  // est un artefact juridique). getPublicUrl() y renvoyait une URL qui ne
+  // fonctionne pas — le cachet et la signature ne s'affichaient donc jamais,
+  // alors que l'envoi lui-même réussissait. Même bug que celui corrigé pour
+  // les documents de vérification.
+  // On stocke désormais le CHEMIN NU, résolu en URL signée à l'affichage.
   const assetName = assetType === 'stamp' ? 'stamp' : 'signature'
   const path = `${userId}/${assetName}.${ext}`
   await uploadLocalFile('practitioner-assets', path, uri, mime)
 
-  const { data: { publicUrl } } = supabase.storage.from('practitioner-assets').getPublicUrl(path)
   const column = assetType === 'stamp' ? 'stamp_url' : 'signature_url'
-  const { error: dbErr } = await supabase.from('practitioners').update({ [column]: publicUrl }).eq('id', practitionerId)
+  const { error: dbErr } = await supabase.from('practitioners').update({ [column]: path }).eq('id', practitionerId)
   if (dbErr) throw dbErr
-  return publicUrl
+  return path
 }
 
 export function usePractitionerAssetUpload() {

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { getSignedDocumentUrl } from '@/lib/signedDocumentUrl'
+import { getSignedPractitionerAssetUrl } from '@/lib/practitionerAssetUrl'
 
 function Icon({ name, size = 20, color }: { name: string; size?: number; color?: string }) {
   return <span className="material-symbols-outlined" style={{ fontSize: `${size}px`, color }}>{name}</span>
@@ -118,8 +119,9 @@ export default function PractitionerProfilePage() {
       setProfessionalTitle((pract as unknown as Record<string, string>).professional_title ?? '')
       setRegistrationNumber((pract as unknown as Record<string, string>).registration_number ?? '')
       setClinicAddress((pract as unknown as Record<string, string>).clinic_address ?? '')
-      setSignatureUrl((pract as unknown as Record<string, string | null>).signature_url ?? null)
-      setStampUrl((pract as unknown as Record<string, string | null>).stamp_url ?? null)
+      // Bucket privé : la valeur en base est un chemin, à signer pour l'afficher.
+      void getSignedPractitionerAssetUrl((pract as unknown as Record<string, string | null>).signature_url ?? null).then(setSignatureUrl)
+      void getSignedPractitionerAssetUrl((pract as unknown as Record<string, string | null>).stamp_url ?? null).then(setStampUrl)
     }
   }, [data])
 
@@ -206,14 +208,19 @@ export default function PractitionerProfilePage() {
     try {
       const ext = file.name.split('.').pop() ?? 'png'
       const path = `${userId}/${kind}.${ext}`
-      const { error: uploadError } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+      // Cachet et signature vont dans `practitioner-assets` (privé), pas dans
+      // `avatars` (public) : ce sont des artefacts juridiques, ils ne doivent
+      // pas être lisibles par quiconque devine l'URL. On stocke le chemin nu,
+      // résolu en URL signée à l'affichage.
+      const { error: uploadError } = await supabase.storage
+        .from('practitioner-assets').upload(path, file, { upsert: true })
       if (uploadError) throw uploadError
-      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
       await supabase.from('practitioners').update(
-        kind === 'signature' ? { signature_url: publicUrl } : { stamp_url: publicUrl }
+        kind === 'signature' ? { signature_url: path } : { stamp_url: path }
       ).eq('id', practId)
-      if (kind === 'signature') setSignatureUrl(publicUrl)
-      else setStampUrl(publicUrl)
+      const signed = await getSignedPractitionerAssetUrl(path)
+      if (kind === 'signature') setSignatureUrl(signed)
+      else setStampUrl(signed)
       queryClient.invalidateQueries({ queryKey: ['practitioner-full-profile'] })
     } finally {
       setSigUploading(null)

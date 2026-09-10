@@ -4,7 +4,7 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,6 +15,7 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 import { GlassCard } from '@/components/ui/GlassCard'
 import { AppTextInput, PrimaryButton, DeleteAccountSection } from '@/components/ui'
 import { usePractitionerAssetUpload } from '@/features/practitioner/hooks/usePractitionerProfile'
+import { getSignedPractitionerAssetUrl } from '@/services/practitionerAssets'
 import { usePrefixOptions, useLatestProfessionChangeRequest, useSubmitProfessionChangeRequest } from '@/features/practitioner/hooks/useProfessionChangeRequest'
 import { supabase } from '@/services/supabase'
 
@@ -42,7 +43,7 @@ const DURATION_OPTIONS = [30, 45, 60, 90]
 // ── Asset tile ────────────────────────────────────────────────────────────────
 
 function AssetTile({
-  label, icon, url, loading, onUpload, onRemove, contain,
+  label, icon, url, loading, onUpload, onRemove, contain, signed,
 }: {
   label: string
   icon: string
@@ -51,7 +52,21 @@ function AssetTile({
   onUpload: () => void
   onRemove: () => void
   contain?: boolean
+  /** Le cachet et la signature vivent dans un bucket privé : leur valeur
+      stockée est un chemin, à résoudre en URL signée pour être affichée. */
+  signed?: boolean
 }) {
+  const [resolved, setResolved] = useState<string | null>(signed ? null : url)
+
+  useEffect(() => {
+    let cancelled = false
+    if (!signed) { setResolved(url); return }
+    if (!url) { setResolved(null); return }
+    getSignedPractitionerAssetUrl(url).then(u => { if (!cancelled) setResolved(u) })
+    return () => { cancelled = true }
+  }, [url, signed])
+
+  url = resolved
   return (
     <View style={{ flex: 1, alignItems: 'center', gap: 8 }}>
       <TouchableOpacity
@@ -576,10 +591,10 @@ export default function ProfileScreen() {
               <AssetTile label="Photo" icon="photo-camera"
                 url={profile?.avatar_url ?? null} loading={uploading === 'avatar'}
                 onUpload={() => void upload('avatar')} onRemove={() => remove('avatar')} />
-              <AssetTile label="Cachet" icon="verified"
+              <AssetTile label="Cachet" icon="verified" signed
                 url={practitioner?.stamp_url ?? null} loading={uploading === 'stamp'}
                 onUpload={() => void upload('stamp')} onRemove={() => remove('stamp')} contain />
-              <AssetTile label="Signature" icon="draw"
+              <AssetTile label="Signature" icon="draw" signed
                 url={practitioner?.signature_url ?? null} loading={uploading === 'signature'}
                 onUpload={() => void upload('signature')} onRemove={() => remove('signature')} contain />
             </View>

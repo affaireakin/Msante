@@ -6,13 +6,18 @@ interface AppTextInputProps extends TextInputProps {
   label: string
   error?: string
   rightElement?: React.ReactNode
+  /** Affiche un astérisque : le champ bloque la soumission tant qu'il est vide. */
+  required?: boolean
+  /** Précision sous le champ (format attendu, usage de la donnée…). */
+  hint?: string
 }
 
-export function AppTextInput({ label, error, style, rightElement, ...props }: AppTextInputProps) {
+export function AppTextInput({ label, error, style, rightElement, required, hint, ...props }: AppTextInputProps) {
   return (
     <View style={{ gap: 6 }}>
       <Text style={{ fontSize: 13, fontFamily: 'Manrope', fontWeight: '500', color: '#3f484d' }}>
         {label}
+        {required ? <Text style={{ color: '#ba1a1a' }}> *</Text> : null}
       </Text>
       <View style={{ position: 'relative' }}>
         <TextInput
@@ -39,6 +44,8 @@ export function AppTextInput({ label, error, style, rightElement, ...props }: Ap
       </View>
       {error ? (
         <Text style={{ fontSize: 12, color: '#ba1a1a', fontFamily: 'Manrope' }}>{error}</Text>
+      ) : hint ? (
+        <Text style={{ fontSize: 12, color: '#6f787e', fontFamily: 'Manrope' }}>{hint}</Text>
       ) : null}
     </View>
   )

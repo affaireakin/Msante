@@ -274,7 +274,7 @@ export default function AppointmentsScreen() {
           id, scheduled_at, duration_min, status, type, notes, created_by, cancellation_reason,
           practitioners (
             id, speciality, session_price, session_currency,
-            users ( full_name, avatar_url ),
+            users!user_id ( full_name, avatar_url ),
             practitioner_booking_settings ( cancellation_deadline_hours )
           )
         `)

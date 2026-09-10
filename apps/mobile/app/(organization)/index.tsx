@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, TextInput, Alert } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -8,6 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/services/supabase'
 import { uploadLocalFile, mimeFromUri } from '@/services/uploadFile'
 import { useResponsive } from '@/hooks/useResponsive'
+import { AppTextInput } from '@/components/ui/AppTextInput'
 
 interface OrgOverview {
   organizationId: string
@@ -207,13 +208,19 @@ export default function OrganizationDashboardScreen() {
           </View>
           {editingProfile ? (
             <>
-              <TextInput
-                value={desc} onChangeText={setDesc} placeholder="Présentez votre cabinet..." multiline numberOfLines={3}
-                style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#0b1c30', backgroundColor: '#f8f9ff', borderRadius: scale(10), borderWidth: 1, borderColor: '#e5eeff', padding: scale(10), minHeight: scale(70), textAlignVertical: 'top' }}
+              <AppTextInput
+                label="Description" value={desc} onChangeText={setDesc}
+                placeholder="Ex. Cabinet pluridisciplinaire spécialisé en santé mentale, au cœur de Dakar."
+                hint="Visible par les patients sur votre fiche publique."
+                multiline numberOfLines={3}
+                style={{ minHeight: scale(70), textAlignVertical: 'top' }}
               />
-              <TextInput
-                value={hours} onChangeText={setHours} placeholder="Ex: Lun-Ven 8h-18h" multiline
-                style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#0b1c30', backgroundColor: '#f8f9ff', borderRadius: scale(10), borderWidth: 1, borderColor: '#e5eeff', padding: scale(10), minHeight: scale(44), textAlignVertical: 'top' }}
+              <AppTextInput
+                label="Horaires d'ouverture" value={hours} onChangeText={setHours}
+                placeholder="Ex. Lun-Ven 8h-18h, Sam 9h-13h"
+                hint="Heure de Dakar (UTC+0)."
+                multiline
+                style={{ minHeight: scale(44), textAlignVertical: 'top' }}
               />
               <View style={{ flexDirection: 'row', gap: scale(10) }}>
                 <TouchableOpacity onPress={() => setEditingProfile(false)} style={{ flex: 1, paddingVertical: scale(10), borderRadius: 999, borderWidth: 1, borderColor: '#bec8ce', alignItems: 'center' }}>

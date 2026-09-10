@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Modal, TextInput, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Modal, Alert } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/services/supabase'
 import { useResponsive } from '@/hooks/useResponsive'
+import { AppTextInput } from '@/components/ui/AppTextInput'
 
 type VerifStatus = 'pending' | 'under_review' | 'approved' | 'rejected'
 
@@ -101,14 +102,14 @@ function InviteModal({ onClose, organizationId }: { onClose: () => void; organiz
           </View>
         ) : (
           <ScrollView contentContainerStyle={{ padding: scale(20), gap: scale(12) }}>
-            <TextInput placeholder="Prénom" value={firstname} onChangeText={setFirstname}
-              style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#0b1c30', borderWidth: 1, borderColor: '#bec8ce', borderRadius: 10, padding: scale(12) }} />
-            <TextInput placeholder="Nom" value={lastname} onChangeText={setLastname}
-              style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#0b1c30', borderWidth: 1, borderColor: '#bec8ce', borderRadius: 10, padding: scale(12) }} />
-            <TextInput placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none"
-              style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#0b1c30', borderWidth: 1, borderColor: '#bec8ce', borderRadius: 10, padding: scale(12) }} />
-            <TextInput placeholder="Téléphone (optionnel)" value={phone} onChangeText={setPhone} keyboardType="phone-pad"
-              style={{ fontFamily: 'Manrope', fontSize: fs.sm, color: '#0b1c30', borderWidth: 1, borderColor: '#bec8ce', borderRadius: 10, padding: scale(12) }} />
+            <AppTextInput label="Prénom" required placeholder="Ex. Aminata" value={firstname} onChangeText={setFirstname} />
+            <AppTextInput label="Nom" required placeholder="Ex. Diallo" value={lastname} onChangeText={setLastname} />
+            <AppTextInput label="Adresse email" required placeholder="Ex. a.diallo@exemple.sn"
+              hint="L'invitation et le code de vérification y seront envoyés."
+              value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoComplete="email" />
+            <AppTextInput label="Téléphone" placeholder="Ex. +221 77 123 45 67"
+              hint="Facultatif — utilisé uniquement pour vous joindre en cas de besoin."
+              value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
             <TouchableOpacity
               onPress={() => invite.mutate()}
               disabled={!firstname.trim() || !lastname.trim() || !email.trim() || invite.isPending}

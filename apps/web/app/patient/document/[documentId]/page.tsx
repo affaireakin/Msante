@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { getSignedPractitionerAssetUrl } from '@/lib/practitionerAssetUrl'
 
 interface DocumentData {
   content: string
@@ -78,8 +79,9 @@ export default function PatientDocumentPage() {
         registrationNumber: (pract as any)?.registration_number ?? '',
         clinicAddress: (pract as any)?.clinic_address ?? '',
         practitionerPhone: practUser?.phone ?? '',
-        signatureUrl: (pract as any)?.signature_url ?? null,
-        stampUrl: (pract as any)?.stamp_url ?? null,
+        // Bucket privé : la valeur en base est un chemin, à signer pour l'afficher.
+        signatureUrl: await getSignedPractitionerAssetUrl((pract as any)?.signature_url ?? null),
+        stampUrl: await getSignedPractitionerAssetUrl((pract as any)?.stamp_url ?? null),
       })
       setIsLoading(false)
     }

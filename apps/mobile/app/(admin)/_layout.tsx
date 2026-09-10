@@ -3,6 +3,7 @@ import { View, Text, Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { TabBarButton } from '@/components/ui/TabBarButton'
 
 interface TabIconProps {
   name: React.ComponentProps<typeof MaterialIcons>['name']
@@ -70,6 +71,8 @@ export default function AdminLayout() {
           shadowRadius: 24,
         },
         tabBarItemStyle: { paddingHorizontal: 2 },
+        // Supprime le ripple gris d'Android à l'appui sur un onglet.
+        tabBarButton: TabBarButton,
       }}
     >
       <Tabs.Screen

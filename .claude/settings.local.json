@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(curl -s https://jilpynvkpkepusvwcqch.supabase.co/rest/v1/?select=* -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImppbHB5bnZrcGtlcHVzdndjcWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NTY2NzAsImV4cCI6MjA5MzEzMjY3MH0.R97YE0Xs6cpX7dnOvznGnbPGnkL2aO5x9YoCPvgF3MI' -o /dev/null -w '%{http_code}\\\\n')"
     ]
   }
 }

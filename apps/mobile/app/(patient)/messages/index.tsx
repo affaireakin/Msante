@@ -47,7 +47,7 @@ function useMyPractitioners(enabled: boolean) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('appointments')
-        .select('practitioners(user_id, speciality, users(full_name))')
+        .select('practitioners(user_id, speciality, users!user_id(full_name))')
         .eq('patient_id', profile!.id)
       if (error) throw error
       const map = new Map<string, MyPractitioner>()

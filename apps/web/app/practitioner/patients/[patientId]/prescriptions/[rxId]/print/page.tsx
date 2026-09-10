@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { getSignedPractitionerAssetUrl } from '@/lib/practitionerAssetUrl'
 
 interface Medication { name: string; dosage?: string; frequency?: string; duration?: string; instructions?: string }
 interface RxData {
@@ -65,8 +66,9 @@ export default function PrescriptionPrintPage() {
         registration_number: p?.registration_number ?? '',
         clinic_address: p?.clinic_address ?? '',
         practitioner_phone: p?.pract_user?.phone ?? '',
-        signature_url: p?.signature_url ?? null,
-        stamp_url: p?.stamp_url ?? null,
+        // Bucket privé : la valeur en base est un chemin, à signer pour l'afficher.
+        signature_url: await getSignedPractitionerAssetUrl(p?.signature_url ?? null),
+        stamp_url: await getSignedPractitionerAssetUrl(p?.stamp_url ?? null),
       })
       setLoading(false)
     }
