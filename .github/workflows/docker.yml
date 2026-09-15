@@ -1,0 +1,54 @@
+name: Build and push Docker image
+
+on:
+  push:
+    branches: [dev, staging, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: apps/web
+        run: npm install --legacy-peer-deps
+
+      - name: Lint (non bloquant)
+        working-directory: apps/web
+        continue-on-error: true
+        run: npm run lint
+
+      - name: Determine image tag
+        id: tag
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            main)    echo "value=latest"  >> $GITHUB_OUTPUT ;;
+            staging) echo "value=staging" >> $GITHUB_OUTPUT ;;
+            dev)     echo "value=dev"     >> $GITHUB_OUTPUT ;;
+          esac
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/m-sante-web-test:${{ steps.tag.outputs.value }}
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+            NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL }}
