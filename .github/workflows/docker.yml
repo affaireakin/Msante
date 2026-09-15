@@ -35,6 +35,10 @@ jobs:
             dev)     echo "value=dev"     >> $GITHUB_OUTPUT ;;
           esac
 
+      - name: Short SHA
+        id: sha
+        run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -47,7 +51,9 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/m-sante-web-test:${{ steps.tag.outputs.value }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/m-sante-web-test:${{ steps.tag.outputs.value }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/m-sante-web-test:${{ steps.tag.outputs.value }}-${{ steps.sha.outputs.short }}
           build-args: |
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
